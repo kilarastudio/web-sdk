@@ -1,5 +1,7 @@
 import { setup, assign } from 'xstate';
 
+import { stateReplay, stateUrlDerived } from 'state-shared';
+
 import { context, type Context } from './machineContext';
 import type { PrimaryMachines } from './types';
 
@@ -49,6 +51,12 @@ export const createIntermediateMachineResumeBet = (actors: {
 								target: 'ending',
 							},
 						],
+						onError: [
+							{
+								guard: () => stateUrlDerived.replay(),
+								target: 'end',
+							},
+						],
 					},
 				},
 				ending: {
@@ -64,10 +72,20 @@ export const createIntermediateMachineResumeBet = (actors: {
 								target: 'end',
 							},
 						],
+						onError: [
+							{
+								guard: () => stateUrlDerived.replay(),
+								target: 'end',
+							},
+						],
 					},
 				},
 				end: {
 					type: 'final',
+					// Always release the replay controls, including after a failed playback.
+					entry: () => {
+						if (stateUrlDerived.replay()) stateReplay.phase = 'finished';
+					},
 				},
 			},
 		});

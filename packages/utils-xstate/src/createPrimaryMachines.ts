@@ -1,7 +1,7 @@
 import { fromPromise } from 'xstate';
 
 import { API_AMOUNT_MULTIPLIER } from 'constants-shared/bet';
-import { stateBet, stateUrlDerived, stateModal, stateReplay } from 'state-shared';
+import { stateBet, stateUrlDerived, stateModal } from 'state-shared';
 import { requestBet, requestEndRound } from 'rgs-requests';
 
 import type { BaseBet } from './types';
@@ -197,7 +197,6 @@ function createPrimaryMachines<TBet extends BaseBet>(options: Options<TBet>) {
 				const betType = getBetType({ bet: targetBet });
 				await BET_TYPE_METHODS_MAP[betType].endGame();
 			}
-			if (stateUrlDerived.replay()) stateReplay.phase = 'finished';
 		},
 	);
 
