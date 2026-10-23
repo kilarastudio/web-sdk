@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { EnableSpaceHold } from 'components-shared';
-
 	import UiFadeContainer from './UiFadeContainer.svelte';
 	import LabelWin from './LabelWin.svelte';
-	import LabelBet from './LabelBet.svelte';
+	import UiLabel from './UiLabel.svelte';
+	import ButtonReplay from './ButtonReplay.svelte';
 	import ButtonPayTable from './ButtonPayTable.svelte';
 	import ButtonGameRules from './ButtonGameRules.svelte';
 	import ButtonSettings from './ButtonSettings.svelte';
@@ -11,7 +10,9 @@
 	import ButtonMenu from './ButtonMenu.svelte';
 	import ButtonMenuClose from './ButtonMenuClose.svelte';
 	import ButtonSoundSwitch from './ButtonSoundSwitch.svelte';
-	import { stateUi } from 'state-shared';
+	import { stateUi, stateBet, stateReplay } from 'state-shared';
+	import { numberToCurrencyString } from 'utils-shared/amount';
+	import { i18nDerived } from '../i18n/i18nDerived';
 	import { BLACK } from 'constants-shared/colors';
 	import { MainContainer } from 'components-layout';
 	import { Container, Rectangle } from 'pixi-svelte';
@@ -27,8 +28,6 @@
 	const props: Props = $props();
 	const context = getContext();
 </script>
-
-<EnableSpaceHold />
 
 <UiFadeContainer>
 	<Container x={20}>
@@ -59,7 +58,31 @@
 			y={context.stateLayoutDerived.mainLayoutStandard().height - 150}
 			scale={0.8}
 		>
-			<LabelBet stacked />
+			<UiLabel
+				stacked
+				label={i18nDerived.bet()}
+				value={numberToCurrencyString(stateBet.wageredBetAmount)}
+			/>
+		</Container>
+
+		<Container
+			x={context.stateLayoutDerived.mainLayoutStandard().width * 0.5 + 350}
+			y={context.stateLayoutDerived.mainLayoutStandard().height - 270}
+			scale={0.6}
+		>
+			<UiLabel
+				stacked
+				label={`REAL COST (×${stateReplay.costMultiplier})`}
+				value={numberToCurrencyString(stateBet.wageredBetAmount * stateReplay.costMultiplier)}
+			/>
+		</Container>
+
+		<Container
+			x={context.stateLayoutDerived.mainLayoutStandard().width * 0.5 + 350}
+			y={context.stateLayoutDerived.mainLayoutStandard().height - 150}
+			scale={0.7}
+		>
+			<ButtonReplay anchor={0.5} />
 		</Container>
 
 		<Container

@@ -20,10 +20,7 @@ export const requestAuthenticate = async (options: {
 	return data;
 };
 
-export const requestEndRound = async (options: {
-	sessionID: string;
-	rgsUrl: string;
-}) => {
+export const requestEndRound = async (options: { sessionID: string; rgsUrl: string }) => {
 	const data = await rgsFetcher.post({
 		rgsUrl: options.rgsUrl,
 		url: '/wallet/end-round',
@@ -73,6 +70,12 @@ export const requestBet = async (options: {
 	return data;
 };
 
+type ReplayData = {
+	payoutMultiplier: number;
+	costMultiplier: number;
+	state?: Record<string, unknown>[];
+};
+
 export const requestReplay = async (options: {
 	game: string;
 	version: string;
@@ -80,11 +83,10 @@ export const requestReplay = async (options: {
 	event: string;
 	rgsUrl: string;
 }) => {
-	const data = await rgsFetcher.get({
+	const data = await rgsFetcher.get<ReplayData>({
 		rgsUrl: options.rgsUrl,
-		// @ts-ignore TODO: update the schema.ts
-		url: `/bet/replay/${options.game}/${options.version}/${options.mode}/${options.event}`,
+		url: `/bet/replay/${[options.game, options.version, options.mode, options.event].map(encodeURIComponent).join('/')}`,
 	});
 
 	return data;
-}
+};

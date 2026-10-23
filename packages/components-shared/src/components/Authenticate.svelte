@@ -2,7 +2,14 @@
 	import { onMount, type Snippet } from 'svelte';
 
 	import { requestAuthenticate, requestReplay } from 'rgs-requests';
-	import { stateUrlDerived, stateBet, stateConfig, stateModal, stateUi } from 'state-shared';
+	import {
+		stateUrlDerived,
+		stateBet,
+		stateConfig,
+		stateModal,
+		stateUi,
+		stateReplayDerived,
+	} from 'state-shared';
 	import { API_AMOUNT_MULTIPLIER, MOST_USED_BET_INDEXES } from 'constants-shared/bet';
 
 	type Props = { children: Snippet };
@@ -66,11 +73,18 @@
 				stateConfig.betMenuOptions = stateConfig.betAmountOptions.filter((_, index) =>
 					MOST_USED_BET_INDEXES.includes(index),
 				);
+				if (!authenticateData.round?.active) {
+					const defaultBet = (authenticateData.config.defaultBetLevel ?? 0) / API_AMOUNT_MULTIPLIER;
+					if (Number.isFinite(defaultBet) && defaultBet > 0) {
+						stateBet.betAmount = defaultBet;
+						stateBet.wageredBetAmount = defaultBet;
+					}
+				}
 			}
 
 			// round
 			if (authenticateData?.round) {
-				// Example of authenticateData.round 
+				// Example of authenticateData.round
 				// {
 				// 	"betID": 62277967,
 				// 	"amount": 1000000,
@@ -82,12 +96,12 @@
 				// 	"event": null
 				// }
 
-				if(authenticateData.round?.state) {
+				if (authenticateData.round?.state) {
 					// @ts-ignore
-					stateBet.betToResume =  authenticateData.round;
+					stateBet.betToResume = authenticateData.round;
 				}
 
-				if(authenticateData.round?.amount) {
+				if (authenticateData.round?.active && authenticateData.round?.amount) {
 					const betAmountValue =
 						authenticateData.round.amount > 0
 							? authenticateData.round.amount / API_AMOUNT_MULTIPLIER
@@ -96,9 +110,9 @@
 					stateBet.wageredBetAmount = betAmountValue;
 				}
 
-				if (authenticateData.round?.mode) {
+				if (authenticateData.round?.active && authenticateData.round?.mode) {
 					stateBet.activeBetModeKey = authenticateData.round.mode;
-				};
+				}
 			}
 		} catch (error) {
 			console.error(error);
@@ -107,8 +121,10 @@
 	};
 
 	const handleReplay = async () => {
-		stateBet.betAmount = (stateUrlDerived.amount() / API_AMOUNT_MULTIPLIER) || 0;
-		stateBet.wageredBetAmount = (stateUrlDerived.amount() / API_AMOUNT_MULTIPLIER) || 0;
+		const amount = stateUrlDerived.amount() || API_AMOUNT_MULTIPLIER;
+		stateBet.currency = stateUrlDerived.currency();
+		stateBet.betAmount = amount / API_AMOUNT_MULTIPLIER;
+		stateBet.wageredBetAmount = stateBet.betAmount;
 		stateBet.activeBetModeKey = stateUrlDerived.mode();
 
 		const data = await requestReplay({
@@ -119,27 +135,36 @@
 			event: stateUrlDerived.event(),
 		});
 
-		if(data) {
-			// @ts-ignore
-			stateBet.betToResume = {
-				...data,
-				event: '0',
-				active: true,
-				mode: stateUrlDerived.mode(),
-			};
+		if (data) {
+			stateReplayDerived.prepare(
+				{
+					amount,
+					payout: Math.round(amount * data.payoutMultiplier),
+					payoutMultiplier: data.payoutMultiplier,
+					state: data.state || [],
+					event: '0',
+					active: true,
+					mode: stateUrlDerived.mode(),
+				},
+				data.costMultiplier,
+			);
 		}
 	};
 
 	onMount(async () => {
-		if(stateUrlDerived.replay()) {
-			stateUi.config.mode = 'replay';
-			await handleReplay();
-		} else {
-			stateUi.config.mode = 'default';
-			await authenticate();
-		};
-
-		authenticated = true;
+		try {
+			if (stateUrlDerived.replay()) {
+				stateUi.config.mode = 'replay';
+				await handleReplay();
+			} else {
+				stateUi.config.mode = 'default';
+				await authenticate();
+			}
+		} catch (error) {
+			stateModal.modal = { name: 'error', error };
+		} finally {
+			authenticated = true;
+		}
 	});
 </script>
 

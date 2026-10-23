@@ -1,11 +1,13 @@
 import { Howl } from 'howler';
 
 import { type LoadedAudio } from 'pixi-svelte';
-import { waitForTimeout } from 'utils-shared/wait';
 
 import type { StopOptions, FadeOptions, GetSound, GetSoundMap, RateOptions } from './types';
 
-function createPlayer<TSoundName extends string, TPlay extends Function>(playerOptions: {
+function createPlayer<
+	TSoundName extends string,
+	TPlay extends (...args: any[]) => unknown,
+>(playerOptions: {
 	loadedAudio: LoadedAudio<TSoundName>;
 	loop: boolean;
 	howl: Howl;
@@ -109,8 +111,9 @@ function createPlayer<TSoundName extends string, TPlay extends Function>(playerO
 	};
 }
 
-export type Player<TSoundName extends string, TPlay extends Function> = ReturnType<
-	typeof createPlayer<TSoundName, TPlay>
->;
+export type Player<
+	TSoundName extends string,
+	TPlay extends (...args: any[]) => unknown,
+> = ReturnType<typeof createPlayer<TSoundName, TPlay>>;
 
 export { createPlayer };

@@ -19,7 +19,7 @@
 	});
 
 	$effect(() => {
-		props.symbolInfo;
+		void props.symbolInfo;
 		props.oncomplete?.();
 	});
 </script>

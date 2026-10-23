@@ -1,80 +1,91 @@
 <script lang="ts">
-	  import './app.css';
-		import { getContext } from '../game/context';
-		import EnableGameActor from './EnableGameActor.svelte';
-		import { waitForTimeout } from 'utils-shared/wait';
+	import './app.css';
+	import { getContext } from '../game/context';
+	import EnableGameActor from './EnableGameActor.svelte';
+	import { waitForTimeout } from 'utils-shared/wait';
+	import { stateBet, stateReplay, stateReplayDerived, stateUrlDerived } from 'state-shared';
+	import { numberToCurrencyString } from 'utils-shared/amount';
 
-		const context = getContext();
+	const context = getContext();
 
-    type State = 'start' | 'playing' | 'won' | 'lost';
+	type State = 'start' | 'playing' | 'won' | 'lost';
 
-    let gameState: State = 'start';
-    let isProcessing = false;
-    let won = false;
-    let eventDict: mainEvent | null = null;
-    let winDict: winEvent | null = null;
-    let targetValue: number = 10;
-    let currentValue: number | null = null;
+	let gameState: State = 'start';
+	let isProcessing = false;
+	let won = false;
+	let eventDict: mainEvent | null = null;
+	let winDict: winEvent | null = null;
+	let targetValue: number = 10;
+	let currentValue: number | null = null;
 
-    interface mainEvent {
-        index: number
-        type: string,
-        numberRolled: number,
-        totalWin: number 
-    }
-    interface winEvent {
-        index: number,
-        type: string,
-        amount: number
-    }
+	interface mainEvent {
+		index: number;
+		type: string;
+		numberRolled: number;
+		totalWin: number;
+	}
+	interface winEvent {
+		index: number;
+		type: string;
+		amount: number;
+	}
 
-		let flickering = false;
+	let flickering = false;
 
-		const flicker = async () => {
-			if(!flickering) return;
+	const flicker = async () => {
+		if (!flickering) return;
 
-			currentValue = Math.floor(Math.random() * (10+1));
-			
-			await waitForTimeout(80);
+		currentValue = Math.floor(Math.random() * (10 + 1));
 
-			flicker();
-		};
+		await waitForTimeout(80);
 
-    function playGame() {
-        if(isProcessing) return;
+		flicker();
+	};
 
-        isProcessing = true;
-        gameState = 'playing';
-        currentValue = null;
-        eventDict = null;
-        winDict = null;
-        won = false;
+	function playGame() {
+		if (isProcessing) return;
+		if (stateUrlDerived.replay() && !stateReplayDerived.start()) return;
 
-        // let result = getResult(); // result AKA a book
-				context.eventEmitter.broadcast({ type: 'bet' });
+		isProcessing = true;
+		gameState = 'playing';
+		currentValue = null;
+		eventDict = null;
+		winDict = null;
+		won = false;
 
-				flickering = true;
-				flicker();
-    }
+		// let result = getResult(); // result AKA a book
+		context.eventEmitter.broadcast({ type: stateUrlDerived.replay() ? 'resumeBet' : 'bet' });
 
-		context.eventEmitter.subscribeOnMount({
-			winInfo: ({ data }) => {
-				flickering = false;
+		flickering = true;
+		flicker();
+	}
 
-			 	eventDict = data
-				currentValue = eventDict.numberRolled;
-			},
-			finalWin: ({ data }) => {
-				winDict = data
-				won = winDict.amount > 0;
+	context.eventEmitter.subscribeOnMount({
+		winInfo: ({ data }) => {
+			flickering = false;
 
-				gameState = won ? 'won' : 'lost';
-        isProcessing = false;
-			},
-		});
+			eventDict = data;
+			currentValue = eventDict.numberRolled;
+		},
+		finalWin: ({ data }) => {
+			winDict = data;
+			won = winDict.amount > 0;
+
+			gameState = won ? 'won' : 'lost';
+			isProcessing = false;
+		},
+	});
 </script>
 
 <EnableGameActor />
+
+{#if stateUrlDerived.replay()}
+	<p>
+		{numberToCurrencyString(stateBet.wageredBetAmount)} × {stateReplay.costMultiplier} — REAL COST: {numberToCurrencyString(
+			stateBet.wageredBetAmount * stateReplay.costMultiplier,
+		)}
+	</p>
+{/if}
 
 {#if gameState === 'start'}
 	<h1>Number Picker</h1>
@@ -106,7 +117,12 @@
 		</div>
 	</div>
 	<h2>You Won!</h2>
-	<button class="play-style" on:click={playGame}>Bet Again?</button>
+	<button
+		class="play-style"
+		on:click={playGame}
+		disabled={isProcessing || (stateUrlDerived.replay() && stateReplay.phase === 'playing')}
+		>{stateUrlDerived.replay() ? 'Play Again' : 'Bet Again?'}</button
+	>
 {/if}
 
 {#if gameState == 'lost'}
@@ -121,5 +137,10 @@
 		</div>
 	</div>
 	<h2>You Lost</h2>
-	<button class="play-style" on:click={playGame} disabled={isProcessing}> Bet Again? </button>
+	<button
+		class="play-style"
+		on:click={playGame}
+		disabled={isProcessing || (stateUrlDerived.replay() && stateReplay.phase === 'playing')}
+		>{stateUrlDerived.replay() ? 'Play Again' : 'Bet Again?'}</button
+	>
 {/if}

@@ -10,13 +10,15 @@
 		"lint": "eslint *.js*"
 	},
 	"devDependencies": {
-		"eslint": "9.21.0",
+		"eslint": "10.13.0",
 		"eslint-config-custom": "workspace:*"
 	},
 	"dependencies": {
-		"svelte": "5.20.5",
-		"vite": "6.2.0",
-		"@sveltejs/kit": "2.17.3",
-		"@lingui/vite-plugin": "5.2.0"
+		"@babel/core": "7.29.7",
+		"config-svelte": "workspace:*",
+		"svelte": "5.57.2",
+		"vite": "8.3.5",
+		"@sveltejs/kit": "3.1.0",
+		"@lingui/vite-plugin": "6.10.0"
 	}
 }

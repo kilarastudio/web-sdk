@@ -9,14 +9,14 @@
 		"lint": "eslint *.js*"
 	},
 	"devDependencies": {
-		"eslint": "9.21.0",
+		"eslint": "10.13.0",
 		"eslint-config-custom": "workspace:*",
-		"sass-embedded": "1.85.1"
+		"sass-embedded": "1.106.1"
 	},
 	"dependencies": {
-		"svelte": "5.20.5",
-		"vite": "6.2.0",
-		"@sveltejs/adapter-static": "latest",
-		"@sveltejs/vite-plugin-svelte": "5.0.3"
+		"svelte": "5.57.2",
+		"vite": "8.3.5",
+		"@sveltejs/adapter-static": "4.0.0",
+		"@sveltejs/vite-plugin-svelte": "7.3.1"
 	}
 }

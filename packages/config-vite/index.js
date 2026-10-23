@@ -2,25 +2,24 @@
 import { sveltekit } from '@sveltejs/kit/vite';
 import { lingui } from '@lingui/vite-plugin';
 import { defineConfig } from 'vite';
+import configSvelte from 'config-svelte';
 
-const NODE_ENV = process.env.NODE_ENV;
-let dev = NODE_ENV === 'development';
+const dev = process.env.NODE_ENV === 'development';
 
-export default () =>
+export default ({ i18n = true } = {}) =>
 	defineConfig({
-		plugins: [sveltekit(), lingui()],
+		plugins: [sveltekit(configSvelte()), ...(i18n ? [lingui()] : [])],
 		logLevel: 'info',
 		build: {
+			// Keep the SDK's existing browser baseline when upgrading the bundler.
+			target: ['chrome87', 'edge88', 'firefox78', 'safari14'],
 			assetsInlineLimit: Infinity,
-			sourcemap: dev ? true : false,
-			output: {
-				sourcemap: dev ? true : false,
-			},
+			sourcemap: dev,
 		},
 		css: {
 			preprocessorOptions: {
 				scss: {
-					api: 'modern-compiler',
+					api: 'modern',
 				},
 			},
 		},

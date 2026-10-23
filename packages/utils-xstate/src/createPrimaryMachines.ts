@@ -1,13 +1,14 @@
 import { fromPromise } from 'xstate';
 
 import { API_AMOUNT_MULTIPLIER } from 'constants-shared/bet';
-import { stateBet, stateUrlDerived, stateModal } from 'state-shared';
+import { stateBet, stateUrlDerived, stateModal, stateReplay } from 'state-shared';
 import { requestBet, requestEndRound } from 'rgs-requests';
 
 import type { BaseBet } from './types';
 
 const handleRequestBet = async ({ onError }: { onError: () => void }) => {
 	try {
+		if (stateUrlDerived.replay()) throw new Error('Wallet play is unavailable during replay.');
 		const data = await requestBet({
 			rgsUrl: stateUrlDerived.rgsUrl(),
 			sessionID: stateUrlDerived.sessionID(),
@@ -40,7 +41,7 @@ const handleRequestBet = async ({ onError }: { onError: () => void }) => {
 };
 
 const handleRequestEndRound = async () => {
-	if(stateUrlDerived.replay()) return;
+	if (stateUrlDerived.replay()) return;
 
 	try {
 		const data = await requestEndRound({
@@ -170,7 +171,10 @@ function createPrimaryMachines<TBet extends BaseBet>(options: Options<TBet>) {
 			const betType = getBetType({ bet });
 			await BET_TYPE_METHODS_MAP[betType].newGame();
 
-			return { bet: onResumeGameActive(betToResume), rawBet: betToResume };
+			return {
+				bet: stateUrlDerived.replay() ? betToResume : onResumeGameActive(betToResume),
+				rawBet: betToResume,
+			};
 		}
 
 		if (betToResume && betToResume.state && betToResume.state.length > 0) {
@@ -193,6 +197,7 @@ function createPrimaryMachines<TBet extends BaseBet>(options: Options<TBet>) {
 				const betType = getBetType({ bet: targetBet });
 				await BET_TYPE_METHODS_MAP[betType].endGame();
 			}
+			if (stateUrlDerived.replay()) stateReplay.phase = 'finished';
 		},
 	);
 

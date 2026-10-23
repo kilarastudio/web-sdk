@@ -1,2 +1,5 @@
 // https://github.com/storybookjs/storybook/issues/29567
-export { main as default } from 'config-storybook';
+import { main } from 'config-storybook';
+
+// These component stories import their assets; this package has no static directory.
+export default { ...main, staticDirs: [] };

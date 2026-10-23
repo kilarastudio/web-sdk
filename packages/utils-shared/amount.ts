@@ -3,10 +3,7 @@ import { stateI18n } from 'state-shared';
 import { BOOK_AMOUNT_MULTIPLIER } from 'constants-shared/bet';
 import { stateBet } from 'state-shared';
 
-const NO_LOCALISATION_CURRENCY_MAP: Record<string, string> = {
-	XGC: 'GC',
-	XSC: 'SC',
-};
+import { CURRENCY_META } from './currency';
 
 // bookEventAmount: is the amount or win numbers in the events of books, e.g. the amount in setTotalWin bookEvent
 // {
@@ -29,21 +26,23 @@ export const bookEventAmountToNormalisedAmount = (bookEventAmount: number) => {
 
 export const numberToFloat = (value: number) => Number.parseFloat(`${value}`);
 
-export const numberToCurrencyString = (value: number) => {
-	if (stateBet.currency in NO_LOCALISATION_CURRENCY_MAP) {
-		return `${NO_LOCALISATION_CURRENCY_MAP[stateBet.currency]} ${numberToFloat(value).toFixed(2)}`;
-	}
-
-	return stateI18n.i18n.number(value, {
-		minimumFractionDigits: 2,
-		maximumFractionDigits: 2,
-		style: 'currency',
-		currency: stateBet.currency,
-		// numberingSystem: 'latn',
+const formatCurrency = (value: number, win: boolean) => {
+	const meta = CURRENCY_META[stateBet.currency] ?? {
+		symbol: stateBet.currency,
+		decimals: 2,
+		after: true,
+	};
+	const amount = stateI18n.i18n.number(value, {
+		minimumFractionDigits: meta.decimals,
+		maximumFractionDigits: win ? Math.max(meta.decimals, 4) : meta.decimals,
 	});
+	return meta.after ? `${amount} ${meta.symbol}` : `${meta.symbol}${amount}`;
 };
+
+export const numberToCurrencyString = (value: number) => formatCurrency(value, false);
+export const numberToWinCurrencyString = (value: number) => formatCurrency(value, true);
 
 export const bookEventAmountToCurrencyString = (bookEventAmount: number) => {
 	const normalisedAmount = bookEventAmountToNormalisedAmount(bookEventAmount);
-	return numberToCurrencyString(normalisedAmount);
+	return numberToWinCurrencyString(normalisedAmount);
 };

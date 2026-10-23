@@ -9,13 +9,13 @@
 		"lint": "eslint *.ts*"
 	},
 	"devDependencies": {
-		"eslint": "9.21.0",
+		"eslint": "10.13.0",
 		"eslint-config-custom": "workspace:*",
 		"config-ts": "workspace:*"
 	},
 	"dependencies": {
-		"xstate": "5.19.2",
-		"svelte": "5.20.5",
+		"xstate": "5.33.3",
+		"svelte": "5.57.2",
 		"utils-shared": "workspace:*",
 		"state-shared": "workspace:*",
 		"constants-shared": "workspace:*",
