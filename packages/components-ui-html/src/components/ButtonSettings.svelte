@@ -13,4 +13,4 @@
 	};
 </script>
 
-<UiButton label={i18nDerived.settings()} {onpress} variant="light" size="large" />
+<UiButton label={i18nDerived.settings()} icon="settings" {onpress} variant="light" size="large" />

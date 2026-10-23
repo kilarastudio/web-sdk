@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { stateReplay, stateReplayDerived } from 'state-shared';
 
+	import UiIcon from './UiIcon.svelte';
 	import { getContext } from '../context';
 	import { i18nDerived } from '../i18n/i18nDerived';
 
@@ -22,10 +23,17 @@
 	};
 </script>
 
-<button type="button" class="button-replay" {disabled} onclick={onpress}>{label}</button>
+<button type="button" class="button-replay" {disabled} onclick={onpress}>
+	<UiIcon name={stateReplay.phase === 'finished' ? 'playAgain' : 'play'} weight="fill" />
+	{label}
+</button>
 
 <style lang="scss">
 	.button-replay {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 12px;
 		width: 224px;
 		height: 70px;
 		padding: 0;

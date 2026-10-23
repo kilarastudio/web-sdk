@@ -22,4 +22,4 @@
 	};
 </script>
 
-<UiButton label={i18nDerived.decrease()} {disabled} {onpress} />
+<UiButton label={i18nDerived.decrease()} icon="decrease" {disabled} {onpress} />

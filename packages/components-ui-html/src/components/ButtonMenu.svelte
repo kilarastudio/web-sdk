@@ -13,4 +13,4 @@
 	};
 </script>
 
-<UiButton label={i18nDerived.menu()} {onpress} />
+<UiButton label={i18nDerived.menu()} icon="menu" {onpress} />

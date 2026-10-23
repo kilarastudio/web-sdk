@@ -1,8 +1,14 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
+	import UiIcon, { type UiIconName, type UiIconWeight } from './UiIcon.svelte';
+
 	type Props = {
-		label?: string;
+		// shown as text, or as the accessible name and tooltip when the button has an icon
+		label: string;
+		icon?: UiIconName;
+		iconWeight?: UiIconWeight;
+		iconRotation?: number;
 		onpress: () => void;
 		disabled?: boolean;
 		// greyed out like a disabled button, but still pressable
@@ -15,6 +21,9 @@
 
 	const {
 		label,
+		icon,
+		iconWeight,
+		iconRotation,
 		onpress,
 		disabled = false,
 		muted = false,
@@ -30,11 +39,17 @@
 	class="ui-button {variant} {size}"
 	class:muted
 	class:active
+	aria-label={icon ? label : undefined}
+	title={icon ? label : undefined}
 	aria-pressed={active || undefined}
 	{disabled}
 	onclick={onpress}
 >
-	{#if label}
+	{#if icon}
+		<span class="ui-button-icon">
+			<UiIcon name={icon} weight={iconWeight} rotation={iconRotation} />
+		</span>
+	{:else}
 		<span class="ui-button-label">{label}</span>
 	{/if}
 	{@render children?.()}
@@ -111,5 +126,9 @@
 
 	.ui-button-label {
 		max-width: 100%;
+	}
+
+	.ui-button-icon {
+		font-size: calc(var(--size) * 0.45);
 	}
 </style>

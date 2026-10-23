@@ -17,10 +17,11 @@
 <ButtonBetProvider>
 	{#snippet children({ key, onpress })}
 		<OnHotkey hotkey="Space" {disabled} {onpress} />
+		{@const spin = ['spin_default', 'spin_disabled'].includes(key)}
 		<UiButton
-			label={['spin_default', 'spin_disabled'].includes(key)
-				? i18nDerived.bet()
-				: i18nDerived.stop()}
+			label={spin ? i18nDerived.bet() : i18nDerived.stop()}
+			icon={spin ? 'spin' : 'stop'}
+			iconWeight={spin ? 'bold' : 'fill'}
 			muted={['spin_disabled', 'stop_disabled'].includes(key)}
 			{disabled}
 			{onpress}

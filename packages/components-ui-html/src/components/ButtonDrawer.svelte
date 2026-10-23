@@ -6,6 +6,7 @@
 
 	import UiButton from './UiButton.svelte';
 	import { getContext } from '../context';
+	import { i18nDerived } from '../i18n/i18nDerived';
 
 	type Props = {
 		disabled?: boolean;
@@ -54,12 +55,10 @@
 	});
 </script>
 
-<UiButton {disabled} {onpress}>
-	<span class="arrow" style:transform="rotate({rotationTween.current}deg)">↓</span>
-</UiButton>
-
-<style lang="scss">
-	.arrow {
-		position: absolute;
-	}
-</style>
+<UiButton
+	label={stateUi.drawerFold ? i18nDerived.showControls() : i18nDerived.hideControls()}
+	icon="drawer"
+	iconRotation={rotationTween.current}
+	{disabled}
+	{onpress}
+/>

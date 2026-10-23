@@ -20,4 +20,4 @@
 	};
 </script>
 
-<UiButton label={i18nDerived.increase()} {disabled} {onpress} />
+<UiButton label={i18nDerived.increase()} icon="increase" {disabled} {onpress} />

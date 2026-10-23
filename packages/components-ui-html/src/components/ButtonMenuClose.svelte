@@ -13,4 +13,4 @@
 	};
 </script>
 
-<UiButton label={i18nDerived.menuExit()} {onpress} />
+<UiButton label={i18nDerived.menuExit()} icon="close" {onpress} />

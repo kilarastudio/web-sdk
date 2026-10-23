@@ -39,6 +39,8 @@ export const i18nDerived = {
 	soundOn: () => stateI18nDerived.translate('SOUND ON'),
 	soundOff: () => stateI18nDerived.translate('SOUND OFF'),
 	menuExit: () => stateI18nDerived.translate('EXIT'),
+	showControls: () => stateI18nDerived.translate('SHOW CONTROLS'),
+	hideControls: () => stateI18nDerived.translate('HIDE CONTROLS'),
 	// replay
 	play: () => stateI18nDerived.translate('PLAY'),
 	playing: () => stateI18nDerived.translate('PLAYING'),

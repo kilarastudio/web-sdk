@@ -6,9 +6,7 @@
 	import { i18nDerived } from '../i18n/i18nDerived';
 
 	const context = getContext();
-	const label = $derived(
-		stateSound.volumeValueMaster === 0 ? i18nDerived.soundOff() : i18nDerived.soundOn(),
-	);
+	const silent = $derived(stateSound.volumeValueMaster === 0);
 
 	const onpress = () => {
 		context.eventEmitter.broadcast({ type: 'soundPressGeneral' });
@@ -21,4 +19,10 @@
 	};
 </script>
 
-<UiButton {label} {onpress} variant="light" size="large" />
+<UiButton
+	label={silent ? i18nDerived.soundOff() : i18nDerived.soundOn()}
+	icon={silent ? 'soundOff' : 'soundOn'}
+	{onpress}
+	variant="light"
+	size="large"
+/>

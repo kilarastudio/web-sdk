@@ -28,7 +28,7 @@
 	};
 </script>
 
-<UiButton label={i18nDerived.autoSpin()} {active} {disabled} {onpress}>
+<UiButton label={i18nDerived.autoSpin()} icon="autoSpin" {active} {disabled} {onpress}>
 	{#if stateBet.autoSpinsCounter > 0}
 		<span class="counter" style:--counter-font-size={counterFontSize}>
 			{stateBet.autoSpinsCounter === Infinity ? '∞' : stateBet.autoSpinsCounter}
