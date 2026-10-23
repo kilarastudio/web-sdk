@@ -1,5 +1,5 @@
 import _ from 'lodash';
-import type { Tween } from 'svelte/motion';
+import { prefersReducedMotion, type Tween } from 'svelte/motion';
 
 import { stateBet } from 'state-shared';
 import { createEnhanceBoard, createReelForCascading } from 'utils-slots';
@@ -16,6 +16,7 @@ import {
 	BOARD_DIMENSIONS,
 	SPIN_OPTIONS_DEFAULT,
 	SPIN_OPTIONS_FAST,
+	SPIN_OPTIONS_REDUCED_MOTION,
 	INITIAL_SYMBOL_STATE,
 	SCATTER_LAND_SOUND_MAP,
 } from './constants';
@@ -53,8 +54,14 @@ const board = _.range(BOARD_DIMENSIONS.x).map((reelIndex) => {
 		onSymbolLand,
 	});
 
-	reel.reelState.spinOptions = () =>
-		reel.reelState.spinType === 'fast' ? SPIN_OPTIONS_FAST : SPIN_OPTIONS_DEFAULT;
+	reel.reelState.spinOptions = () => {
+		const spinOptions =
+			reel.reelState.spinType === 'fast' ? SPIN_OPTIONS_FAST : SPIN_OPTIONS_DEFAULT;
+
+		return prefersReducedMotion.current
+			? { ...spinOptions, ...SPIN_OPTIONS_REDUCED_MOTION }
+			: spinOptions;
+	};
 
 	return reel;
 });

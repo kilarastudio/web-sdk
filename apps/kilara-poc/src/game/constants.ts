@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { cubicOut } from 'svelte/easing';
 
 import type { RawSymbol, SymbolState } from './types';
 
@@ -99,19 +100,22 @@ const HIGH_SYMBOL_SIZE = 0.9;
 const LOW_SYMBOL_SIZE = 0.9;
 const SPECIAL_SYMBOL_SIZE = 1;
 
+// Kilara reel motion: columns land one by one, 1.25 × 160 = 200 ms apart, and an anticipated
+// column waits (6.25 − 1.25) × 160 = 800 ms longer, so it lands about 1 s after the one before
 const SPIN_OPTIONS_SHARED = {
-	reelFallInDelay: 80,
+	reelFallInDelay: 160,
 	reelPaddingMultiplierNormal: 1.25,
-	reelPaddingMultiplierAnticipated: 18,
+	reelPaddingMultiplierAnticipated: 6.25,
 	reelFallOutDelay: 145,
 };
 
+// a short, firm settle: the last 25 px into place in 125 ms
 export const SPIN_OPTIONS_DEFAULT = {
 	...SPIN_OPTIONS_SHARED,
 	symbolFallInSpeed: 3.5,
 	symbolFallInInterval: 30,
-	symbolFallInBounceSpeed: 0.15,
-	symbolFallInBounceSizeMulti: 0.5,
+	symbolFallInBounceSpeed: 0.2,
+	symbolFallInBounceSizeMulti: 0.25,
 	symbolFallOutSpeed: 3.5,
 	symbolFallOutInterval: 20,
 };
@@ -121,9 +125,22 @@ export const SPIN_OPTIONS_FAST = {
 	symbolFallInSpeed: 7,
 	symbolFallInInterval: 0,
 	symbolFallInBounceSpeed: 0.3,
-	symbolFallInBounceSizeMulti: 0.25,
+	symbolFallInBounceSizeMulti: 0.12,
 	symbolFallOutSpeed: 7,
 	symbolFallOutInterval: 0,
+};
+
+// prefers-reduced-motion: the same distances and timings, eased into place without the overshoot
+export const SPIN_OPTIONS_REDUCED_MOTION = {
+	symbolFallInBounceEasing: cubicOut,
+};
+
+// a back-out whose overshoot is about 4% of the distance instead of backOut's 10%
+export const settleOut = (t: number) => {
+	const overshoot = 1;
+	const u = t - 1;
+
+	return u * u * ((overshoot + 1) * u + overshoot) + 1;
 };
 
 export const MOTION_BLUR_VELOCITY = 31;

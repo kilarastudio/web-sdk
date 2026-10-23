@@ -16,8 +16,8 @@
 
 <script lang="ts">
 	import _ from 'lodash';
-	import { Tween } from 'svelte/motion';
-	import { backOut } from 'svelte/easing';
+	import { prefersReducedMotion, Tween } from 'svelte/motion';
+	import { cubicOut } from 'svelte/easing';
 
 	import { BoardContext } from 'components-shared';
 	import { waitForResolve } from 'utils-shared/wait';
@@ -26,6 +26,7 @@
 	import BoardContainer from './BoardContainer.svelte';
 	import BoardMask from './BoardMask.svelte';
 	import { getSymbolY } from '../game/utils';
+	import { settleOut } from '../game/constants';
 	import { getContext } from '../game/context';
 
 	const context = getContext();
@@ -109,7 +110,7 @@
 
 								await tumbleSymbol.symbolY.set(targetY, {
 									duration: bounceDuration,
-									easing: backOut,
+									easing: prefersReducedMotion.current ? cubicOut : settleOut,
 								});
 
 								if (symbolIndex > 0 && symbolIndex < tumbleReel.length - 1) {

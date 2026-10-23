@@ -168,7 +168,7 @@ export function createReelForCascading<TRawSymbol extends object, TSymbolState e
 			}
 			await reelSymbol.symbolY.set(newSymbolY, {
 				duration: bounceDuration,
-				easing: backOut,
+				easing: reelState.spinOptions().symbolFallInBounceEasing ?? backOut,
 			});
 		});
 
