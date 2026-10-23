@@ -28,7 +28,6 @@
 	import MultiplierTotal from './MultiplierTotal.svelte';
 	import Win from './Win.svelte';
 	import FreeSpinIntro from './FreeSpinIntro.svelte';
-	import FreeSpinCounter from './FreeSpinCounter.svelte';
 	import FreeSpinOutro from './FreeSpinOutro.svelte';
 	import Transition from './Transition.svelte';
 
@@ -88,9 +87,6 @@
 
 		<Win />
 		<FreeSpinIntro />
-		{#if ['desktop', 'landscape'].includes(context.stateLayoutDerived.layoutType())}
-			<FreeSpinCounter />
-		{/if}
 		<FreeSpinOutro />
 		<Transition />
 	{/if}

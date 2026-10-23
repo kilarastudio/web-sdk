@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import { prefersReducedMotion, type Tween } from 'svelte/motion';
 
-import { stateBet } from 'state-shared';
+import { stateBet, stateUi } from 'state-shared';
 import { createEnhanceBoard, createReelForCascading } from 'utils-slots';
 import { createGetWinLevelDataByWinLevelAlias } from 'utils-shared/winLevel';
 
@@ -12,6 +12,7 @@ import { eventEmitter } from './eventEmitter';
 import {
 	SYMBOL_SIZE,
 	BOARD_SIZES,
+	BOARD_MARGINS,
 	INITIAL_BOARD,
 	BOARD_DIMENSIONS,
 	SPIN_OPTIONS_DEFAULT,
@@ -95,9 +96,33 @@ export const stateGame = $state({
 	scatterCounter: 0,
 });
 
+// the space the HUD leaves free between its header and its controls, in main layout units
+const freeArea = () => {
+	const { height, scale } = stateLayoutDerived.mainLayout();
+	const canvasHeight = stateLayoutDerived.canvasSizes().height;
+	// the main layout is centred on the canvas, which can reach past its top and bottom
+	const canvasTop = height / 2 - canvasHeight / 2 / scale;
+
+	return {
+		top: canvasTop + stateUi.hudInset.top / scale,
+		bottom: canvasTop + (canvasHeight - stateUi.hudInset.bottom) / scale,
+	};
+};
+
+// the board, with its frame and the panels above it, centred in the free area; when it does not
+// fit it stays clear of the controls and lets its top run under the header
+const boardY = () => {
+	const margins = stateLayoutDerived.isStacked() ? BOARD_MARGINS.stacked : BOARD_MARGINS.normal;
+	const above = BOARD_SIZES.height / 2 + margins.top;
+	const below = BOARD_SIZES.height / 2 + margins.bottom;
+	const { top, bottom } = freeArea();
+
+	return Math.min((top + bottom + above - below) / 2, bottom - below);
+};
+
 const boardLayout = () => ({
 	x: stateLayoutDerived.mainLayout().width * 0.5,
-	y: stateLayoutDerived.mainLayout().height * 0.5,
+	y: boardY(),
 	anchor: { x: 0.5, y: 0.5 },
 	pivot: { x: BOARD_SIZES.width / 2, y: BOARD_SIZES.height / 2 },
 	...BOARD_SIZES,
@@ -132,6 +157,7 @@ export const { getWinLevelDataByWinLevelAlias } = createGetWinLevelDataByWinLeve
 
 export const stateGameDerived = {
 	onSymbolLand,
+	freeArea,
 	boardLayout,
 	boardRaw,
 	tumbleBoardCombined,

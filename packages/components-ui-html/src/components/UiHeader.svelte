@@ -1,6 +1,8 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
+	import { stateUi } from 'state-shared';
+
 	import UiLogo from './UiLogo.svelte';
 
 	type Props = {
@@ -11,7 +13,8 @@
 	const props: Props = $props();
 </script>
 
-<header class="ui-header">
+<!-- its height is published to the game as stateUi.hudInset.top -->
+<header class="ui-header" bind:clientHeight={stateUi.hudInset.top}>
 	<div>{@render props.gameName()}</div>
 	<!-- every game shows the Kilara logo; the logo snippet only replaces it when a game passes one -->
 	<div>

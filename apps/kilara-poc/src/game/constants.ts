@@ -72,6 +72,13 @@ export const BOARD_SIZES = {
 	height: SYMBOL_SIZE * BOARD_DIMENSIONS.y,
 };
 
+// how far the frame and the panels above the board (tumble win, multiplier) reach past the
+// symbols; the panels are bigger and sit higher in the stacked layout
+export const BOARD_MARGINS = {
+	normal: { top: 82, bottom: 22 },
+	stacked: { top: 100, bottom: 22 },
+};
+
 export const BACKGROUND_RATIO = 2039 / 1000;
 export const PORTRAIT_BACKGROUND_RATIO = 1242 / 2208;
 const PORTRAIT_RATIO = 800 / 1422;

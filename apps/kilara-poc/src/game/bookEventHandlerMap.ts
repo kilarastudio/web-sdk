@@ -1,7 +1,7 @@
 import _ from 'lodash';
 
 import { recordBookEvent, checkIsMultipleRevealEvents, type BookEventHandlerMap } from 'utils-book';
-import { stateBet } from 'state-shared';
+import { stateBet, stateUi } from 'state-shared';
 
 import { eventEmitter } from './eventEmitter';
 import { playBookEvent } from './utils';
@@ -114,33 +114,24 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 			type: 'globalMultiplierUpdate',
 			multiplier: 1, // resets when multiplier === 1
 		});
-		eventEmitter.broadcast({ type: 'freeSpinCounterShow' });
-		eventEmitter.broadcast({
-			type: 'freeSpinCounterUpdate',
-			current: undefined,
-			total: bookEvent.totalFs,
-		});
+		// the HUD shows the free spins counter in every layout
+		stateUi.freeSpinCounterShow = true;
+		stateUi.freeSpinCounterCurrent = 0;
+		stateUi.freeSpinCounterTotal = bookEvent.totalFs;
 		await eventEmitter.broadcastAsync({ type: 'uiShow' });
 		await eventEmitter.broadcastAsync({ type: 'drawerButtonShow' });
 		eventEmitter.broadcast({ type: 'drawerFold' });
 	},
 	updateFreeSpin: async (bookEvent: BookEventOfType<'updateFreeSpin'>) => {
-		eventEmitter.broadcast({ type: 'freeSpinCounterShow' });
-		eventEmitter.broadcast({
-			type: 'freeSpinCounterUpdate',
-			current: bookEvent.amount,
-			total: bookEvent.total,
-		});
+		stateUi.freeSpinCounterShow = true;
+		stateUi.freeSpinCounterCurrent = bookEvent.amount;
+		stateUi.freeSpinCounterTotal = bookEvent.total;
 	},
 	freeSpinRetrigger: async (bookEvent: BookEventOfType<'freeSpinRetrigger'>) => {
 		// animate scatters, then raise the total (the next updateFreeSpin carries the same total)
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_scatter_win_v2' });
 		await animateSymbols({ positions: bookEvent.positions });
-		eventEmitter.broadcast({
-			type: 'freeSpinCounterUpdate',
-			current: undefined,
-			total: bookEvent.totalFs,
-		});
+		stateUi.freeSpinCounterTotal = bookEvent.totalFs;
 	},
 	wincap: async () => {
 		// max win reached: math ends the round here, and the setTotalWin, freeSpinEnd and
@@ -173,7 +164,7 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		});
 		winLevelSoundsStop();
 		eventEmitter.broadcast({ type: 'freeSpinOutroHide' });
-		eventEmitter.broadcast({ type: 'freeSpinCounterHide' });
+		stateUi.freeSpinCounterShow = false;
 		eventEmitter.broadcast({ type: 'globalMultiplierHide' });
 		eventEmitter.broadcast({ type: 'tumbleWinAmountHide' });
 		await eventEmitter.broadcastAsync({ type: 'transition' });

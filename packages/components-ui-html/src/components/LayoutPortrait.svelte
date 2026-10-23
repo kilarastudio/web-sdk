@@ -61,10 +61,11 @@
 	stage: 1080 × 1920. One centred column: win line, the spin button with autoplay and turbo beside
 	it, and the dock along the bottom (menu, balance, bet stepper). The buy bonus badge sits at the
 	left edge level with the spin button, opposite the drawer button. Everything above the dock
-	folds away with the drawer.
+	folds away with the drawer. The HUD reaches up to the top of the win line, a stacked label about
+	1.9 × the font size tall, with the drawer open.
 -->
 <div class="layout">
-	<UiStage>
+	<UiStage insetBottom="calc(var(--win-bottom) + var(--ui-font-size) * 1.9)">
 		<!-- slides out of the screen when the drawer folds -->
 		<div
 			class="slide"
@@ -126,6 +127,7 @@
 		--bar-padding: 16px;
 		--stepper-height: 100px;
 		--spin-row-bottom: 224px;
+		--win-bottom: calc(var(--spin-row-bottom) + var(--ui-button-size-large) + 32px);
 		/* the menu opens over the menu button, the first item in the dock */
 		--menu-x: calc(24px + var(--bar-padding) + var(--ui-button-size) / 2);
 		--menu-bottom: calc(var(--bar-bottom) + (var(--bar-height) - var(--ui-button-size)) / 2);
@@ -163,7 +165,7 @@
 	}
 
 	.win {
-		bottom: calc(var(--spin-row-bottom) + var(--ui-button-size-large) + 32px);
+		bottom: var(--win-bottom);
 	}
 
 	.balance {

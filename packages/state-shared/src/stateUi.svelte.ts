@@ -65,6 +65,9 @@ export const stateUi = $state({
 	menuOpen: false,
 	drawerFold: false,
 	drawerButtonShow: false,
+	// how far the HUD reaches in from the top and bottom edge of the canvas, in CSS px, so a game
+	// can keep its board clear of it
+	hudInset: { top: 0, bottom: 0 },
 	config: {
 		mode: 'default' as UIConfigMode,
 	}

@@ -19,9 +19,12 @@
 	The dock: money on the left (menu, balance, win), the spin button in the middle of the screen
 	sticking out of the dock, play controls on the right (bet stepper, autoplay, turbo). During free
 	spins the counter takes the stepper's place. Buy bonus is its own round badge left of the
-	dock. The layout sets the --bar-*, --stepper-height and --ui-feature-size sizes.
+	dock. The layout sets the --bar-*, --stepper-height and --ui-feature-size sizes. The HUD reaches
+	up to the top of the spin button, the highest thing sticking out of the dock.
 -->
-<UiStage>
+<UiStage
+	insetBottom="calc(var(--bar-bottom) + (var(--bar-height) + var(--ui-button-size-large)) / 2)"
+>
 	<div class="buy-bonus">
 		<ButtonBuyBonus />
 	</div>
