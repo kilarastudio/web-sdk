@@ -127,5 +127,5 @@ Mandatory for new games. Reviewers request event IDs per mode for: normal win, b
 | Bet lifecycle, end-round, replay guards | `packages/utils-xstate/src/createPrimaryMachines.ts`, `createIntermediateMachine*.ts` |
 | Bet state, cost multiplier, balance clamp | `packages/state-shared/src/stateBet.svelte.ts` |
 | Replay state (`prepare` / `start` / phase) | `packages/state-shared/src/stateReplay.svelte.ts` |
-| Replay UI | `packages/components-ui-pixi/src/components/UIReplay.svelte`, `ButtonReplay.svelte` |
+| Replay UI | `packages/components-ui-html/src/components/UIReplay.svelte`, `ButtonReplay.svelte` |
 | Per-app resume trigger (skipped in replay) | `apps/<game>/src/components/ResumeBet.svelte` |

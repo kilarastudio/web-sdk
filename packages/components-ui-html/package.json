@@ -31,6 +31,7 @@
 		"rgs-requests": "workspace:*",
 		"utils-shared": "workspace:*",
 		"utils-layout": "workspace:*",
+		"utils-xstate": "workspace:*",
 		"utils-event-emitter": "workspace:*",
 		"utils-resize-observer": "workspace:*",
 		"state-shared": "workspace:*",

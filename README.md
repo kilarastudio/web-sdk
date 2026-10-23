@@ -250,7 +250,7 @@ Check out the example of spritesheet animation here: [SpriteSheet.stories.svelte
     - Do anything you want
 
 - Q: What are the requirements to launch the same game on social casinos like [stake.us](https://stake.us)?
-  - A: You will need to add a different set of text for your UI when `social=true` in the query string. For example 'BET' to 'SPIN'. Check the example in the codebase here `packages/components-ui-pixi/src/i18n/i18nDerived.ts`
+  - A: You will need to add a different set of text for your UI when `social=true` in the query string. For example 'BET' to 'SPIN'. Check the example in the codebase here `packages/components-ui-html/src/i18n/i18nDerived.ts`
 
 - Q: When updating things in packages/pixi-svelte, it doesn't seem to take effect. Why is that?
   - A: It's because the pixi-svelte is using the built version, which is described in the (package.json).main. Built it again after anything is changed in the folder.
@@ -830,7 +830,7 @@ pnpm run dev --filter=lines
 </Story>
 ```
 
-- We can render [<Game \/>](/apps/lines/src/components/Game.svelte) component in the app or in the storybook. Either way it requires the context to set in advance, otherwise the children or the descendants will throw errors if they use the ["getContext()"](/apps/lines/src/game/context.ts#L21) from [apps](/apps) or ["getContext()"](/packages/components-ui-pixi/src/context.ts#L8) from [packages](/packages).
+- We can render [<Game \/>](/apps/lines/src/components/Game.svelte) component in the app or in the storybook. Either way it requires the context to set in advance, otherwise the children or the descendants will throw errors if they use the ["getContext()"](/apps/lines/src/game/context.ts#L21) from [apps](/apps) or ["getContext()"](/packages/components-ui-html/src/context.ts#L7) from [packages](/packages).
 
 <a name="packages"></a>
 
@@ -893,8 +893,7 @@ The naming convention of packages is a combination of `<PACKAGE_TYPE>`, hyphen a
   - [components-pixi](/packages/components-pixi): This local package contains reusable svelte components based on `pixi-svelte`.
   - [components-shared](/packages/components-shared): This local package contains reusable svelte components based on `html`.
   - [components-storybook](/packages/components-storybook): This local package contains reusable svelte components for storybooks.
-  - [components-ui-pixi](/packages/components-ui-pixi): This local package contains reusable svelte pixi-svelte components for the game UI.
-  - [components-ui-html](/packages/components-ui-html): This local package contains reusable svelte html components for the game UI.
+  - [components-ui-html](/packages/components-ui-html): This local package contains reusable svelte html components for the game UI: the HUD rendered on top of the canvas and the modals.
 
 For `*-shared` packages, they are created to be reused as much as possible by other apps and packages. Instead of having a special dependency or usage, they should have a minimum list of dependencies and a broad set of use cases.
 
@@ -1062,34 +1061,29 @@ const stateApp = $state({
 
 # UI
 
-We have provided solutions for the UI, which are [components-ui-pixi](/packages/components-ui-pixi) and [components-ui-html](/packages/components-ui-html). They are functional with a few features like auto gaming, turbo mode, bonus button, responsiveness and so on, although they are not as beautiful.
+We have provided a solution for the UI in [components-ui-html](/packages/components-ui-html). It is functional with a few features like auto gaming, turbo mode, bonus button, responsiveness and so on, although it is not as beautiful.
+
+The game is rendered in the Pixi canvas and the UI is rendered in HTML on top of it: `<UI />` is the HUD (bet, auto spin, turbo, buy bonus, balance/win/bet, menu, replay controls) and `<Modals />` are the popups. `<UI />` is placed outside of `<App />` and is shown once the loading screen is gone.
 
 ```
 <script lang="ts">
-	import { UI, UiGameName } from 'components-ui-pixi';
-	import { GameVersion, Modals } from 'components-ui-html';
+	import { UI, UiGameName, GameVersion, Modals } from 'components-ui-html';
 </script>
 
 <App>
+  <!-- game components -->
+</App>
+
+{#if !context.stateLayout.showLoadingScreen}
   <UI>
     {#snippet gameName()}
       <UiGameName name="LINES GAME" />
     {/snippet}
     {#snippet logo()}
-      <Text
-        anchor={{ x: 1, y: 0 }}
-        text="ADD YOUR LOGO"
-        style={{
-          fontFamily: 'proxima-nova',
-          fontSize: REM * 1.5,
-          fontWeight: '600',
-          lineHeight: REM * 2,
-          fill: 0xffffff,
-        }}
-      />
+      ADD YOUR LOGO
     {/snippet}
   </UI>
-</App>
+{/if}
 
 <Modals>
 	{#snippet version()}
@@ -1098,6 +1092,8 @@ We have provided solutions for the UI, which are [components-ui-pixi](/packages/
 </Modals>
 
 ```
+
+The HUD is laid out in the same standard design size as `<MainContainer standard />` (e.g. 1920 × 1080) and scaled to the canvas, so it lines up with the game on every screen size. Each layout type (`desktop`, `tablet`, `landscape`, `portrait`) has its own `Layout*.svelte` component to restyle.
 
 For the branding purpose, we recommend you to regard them as just an example of UI packages instead of applying them directly to your final product. It would be a good choice to use them as a starting point and add more style to them to build your UI. It is completely fine to ignore them and build your own UI from scratch.
 

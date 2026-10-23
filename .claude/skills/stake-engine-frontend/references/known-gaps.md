@@ -11,8 +11,7 @@ Verified against this repo at commit `ba88c8d` (2026-10-23). The sample apps (`c
 | `LoaderStakeEngine` + `stake-engine-loader.gif` rendered at launch | `apps/*/src/routes/+layout.svelte`, `apps/*/static/stake-engine-loader.gif` | 275 | Remove it; use the studio's own loader |
 | Sample art, symbols, spines, sounds, "ADD YOUR LOGO", placeholder game names | `apps/*/static/assets`, `Game.svelte` | Unique assets requirement | Replace all |
 | `DEFAULT_BET_MODE_META` icons/images point to an external S3 bucket (`test-fart-cdn-bucket…amazonaws.com`) | `packages/state-shared/src/constants.ts` | Static-only / CSP | Ship mode art locally and define the game's own bet-mode meta |
-| `payTable` label has no social variant (shows "PAYTABLE") | `packages/components-ui-pixi/src/i18n/i18nDerived.ts` | 77 | Add `stateUrlDerived.social() ? 'WIN TABLE' : …`; audit every other `i18nDerived` key the same way |
-| Replay labels hardcoded in English (`PLAY`, `PLAYING`, `PLAY AGAIN`, `REAL COST (×n)`) | `packages/components-ui-pixi/src/components/ButtonReplay.svelte`, `UIReplay.svelte`; number-picker `Game.svelte` | 239/240 | Route through `i18nDerived` |
+| Replay labels hardcoded in English (`REAL COST`, `×`) | number-picker `Game.svelte` | 239/240 | Route through `i18nDerived` |
 | Debug translation overlay ("TRANSLATIONS TEST") rendered in `Game.svelte` | `apps/*/src/components/I18nTest.svelte` | Visual bugs | Remove from the game |
 | Second runtime Typekit load: `WebFont.load({ typekit })` before Pixi starts | `packages/pixi-svelte/src/lib/utils.svelte.ts` (~line 61) | Static-only / CSP | Load bundled fonts instead (e.g. `FontFace` / CSS `@font-face` from `static/`) |
 | Game rules and paytable modals contain only "ADD YOUR GAME RULES" / "ADD YOUR PAY TABLE" | `packages/components-ui-html/src/components/ModalGameRules.svelte`, `ModalPayTable.svelte` | 24, 25, 26, 27, 29, 185, 235 | Write the full rules: RTP and max win per mode, symbol payouts, win formation, mode costs, free spins, every control, disclaimer |
@@ -47,3 +46,5 @@ Verified against this repo at commit `ba88c8d` (2026-10-23). The sample apps (`c
 - New sessions ignored `defaultBetLevel`.
 - Sub-cent wins rounded to zero; `XEC` missing; `AED`/`QAR`/`EGP` symbol placement wrong.
 - Unsupported `lang` fell through to broken text.
+- HUD `payTable` label had no social variant; HUD replay labels (`PLAY`, `PLAYING`, `PLAY AGAIN`, `REAL COST`) were hardcoded → both go through `components-ui-html` `i18nDerived`.
+- STOP (button and space bar) was disabled during the last affordable spin because `ButtonBet` disabled itself whenever `isBetCostAvailable()` was false → it now only blocks a new bet while idle.

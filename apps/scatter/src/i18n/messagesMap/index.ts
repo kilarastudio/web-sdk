@@ -1,5 +1,4 @@
 import { mergeMessagesMaps } from 'utils-shared/i18n';
-import { messagesMap as messagesMapUiPixi } from 'components-ui-pixi';
 import { messagesMap as messagesMapUiHtml } from 'components-ui-html';
 
 import en from './en';
@@ -10,6 +9,6 @@ const messagesMapGame = {
 	zh,
 };
 
-const messagesMap = mergeMessagesMaps([messagesMapGame, messagesMapUiPixi, messagesMapUiHtml]);
+const messagesMap = mergeMessagesMaps([messagesMapGame, messagesMapUiHtml]);
 
 export default messagesMap;

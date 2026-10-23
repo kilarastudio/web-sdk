@@ -1,7 +1,7 @@
-import { stateI18nDerived } from 'state-shared';
+import { stateI18nDerived, stateUrlDerived } from 'state-shared';
 
 export const i18nDerived = {
-	bet: () => stateI18nDerived.translate('BET'),
+	bet: () => (stateUrlDerived.social() ? 'SPIN' : stateI18nDerived.translate('BET')),
 	max: () => stateI18nDerived.translate('MAX'),
 	betMenu: () => stateI18nDerived.translate('BET MENU'),
 	selectYourBet: () => stateI18nDerived.translate('SELECT YOUR BET'),
@@ -21,4 +21,27 @@ export const i18nDerived = {
 	lossLimitReached: () => stateI18nDerived.translate('LOSS LIMIT REACHED'),
 	singleWinLimitReached: () => stateI18nDerived.translate('SINGLE WIN LIMIT REACHED'),
 	settings: () => stateI18nDerived.translate('SETTINGS'),
+	// hud
+	audio: () => stateI18nDerived.translate('AUDIO'),
+	balance: () => stateI18nDerived.translate('BALANCE'),
+	win: () => stateI18nDerived.translate('WIN'),
+	stop: () => stateI18nDerived.translate('STOP'),
+	buyBonus: () => (stateUrlDerived.social() ? 'PLAY BONUS' : stateI18nDerived.translate('BUY BONUS')),
+	disable: () => stateI18nDerived.translate('DISABLE'),
+	freeSpins: () => stateI18nDerived.translate('FREE SPINS'),
+	decrease: () => stateI18nDerived.translate('-'),
+	increase: () => stateI18nDerived.translate('+'),
+	menu: () => stateI18nDerived.translate('MENU'),
+	turbo: () => stateI18nDerived.translate('TURBO'),
+	autoSpin: () => stateI18nDerived.translate('AUTO SPIN'),
+	payTable: () => (stateUrlDerived.social() ? 'WIN TABLE' : stateI18nDerived.translate('PAYTABLE')),
+	info: () => stateI18nDerived.translate('INFO'),
+	soundOn: () => stateI18nDerived.translate('SOUND ON'),
+	soundOff: () => stateI18nDerived.translate('SOUND OFF'),
+	menuExit: () => stateI18nDerived.translate('EXIT'),
+	// replay
+	play: () => stateI18nDerived.translate('PLAY'),
+	playing: () => stateI18nDerived.translate('PLAYING'),
+	playAgain: () => stateI18nDerived.translate('PLAY AGAIN'),
+	realCost: () => stateI18nDerived.translate('REAL COST'),
 };

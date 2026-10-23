@@ -27,7 +27,7 @@ Distilled from Engine Studio front-end docs (file structure, flowchart, adding n
 | `packages/utils-book` | `createPlayBookUtils` (sequential playback), `recordBookEvent` |
 | `packages/utils-event-emitter` | `createEventEmitter` → `broadcast`, `broadcastAsync`, `subscribeOnMount` |
 | `packages/utils-xstate` | Bet lifecycle machines (bet, autoBet, resumeBet) |
-| `packages/components-ui-pixi`, `components-ui-html` | Default UI (Pixi) and HTML modals (rules, paytable, buy bonus, settings, autoplay) — examples to restyle |
+| `packages/components-ui-html` | Default HUD (HTML over the canvas: bet, autoplay, turbo, buy bonus, balance/win/bet, menu, replay) and HTML modals (rules, paytable, buy bonus, settings, autoplay) — examples to restyle |
 | `packages/components-shared` | `Authenticate`, `LoadI18n`, hotkeys, loaders |
 | `packages/pixi-svelte` | Declarative Svelte components for PixiJS (consumed as a built package) |
 | `packages/utils-shared` | `amount.ts`, `currency.ts`, `sequence`, `wait`, … |
@@ -131,7 +131,14 @@ From `apps/<game>`: `PUBLIC_CHROMATIC=true pnpm exec storybook dev -p <free port
 
 ## 8. UI packages
 
-`<UI>` (components-ui-pixi) renders the default UI, or `UIReplay` when `stateUi.config.mode === 'replay'` (set by `Authenticate`). `<Modals>` (components-ui-html) renders buy bonus, rules, paytable, settings, autoplay. They are deliberately plain examples — restyle or replace them, but keep their behaviours (confirmations, social text, sound toggle, bet menu from server levels). Social text lives in each package's `src/i18n/i18nDerived.ts`.
+Both come from `components-ui-html`; the game itself stays in the Pixi canvas.
+
+- `<UI>` is the HUD: plain HTML in a fixed overlay above the canvas (`zIndex.ui`, below the modals), mounted in `Game.svelte` *outside* `<App>` once the loading screen is gone. It renders `UIDefault` (one `Layout*` per `layoutType()`: desktop, tablet, landscape, portrait with its drawer) or `UIReplay` when `stateUi.config.mode === 'replay'` (set by `Authenticate`). `gameName` / `logo` are HTML snippets.
+- `UiStage` is the HTML twin of `<MainContainer standard alignVertical="bottom">`: children are positioned in the standard design size (1920×1080, 1920×1920 or 1080×1920) and the stage is scaled to the canvas, so the HUD lines up with the board at every size, Popout S included. Layouts set `--ui-font-size`, `--ui-button-size`, `--ui-button-size-large` and the menu anchor (`--menu-x`, `--menu-bottom`).
+- The overlay ignores pointer events except on controls, so taps elsewhere still reach the canvas ("press anywhere to continue"). `uiShow` / `uiHide` fade it (and make it non-interactive while hidden); `drawer*` events drive the portrait drawer.
+- `<Modals>` renders buy bonus, rules, paytable, settings, autoplay.
+
+They are deliberately plain examples — restyle or replace them, but keep their behaviours (confirmations, social text, sound toggle, bet menu from server levels, space bar through `OnHotkey`). Social text lives in `components-ui-html/src/i18n/i18nDerived.ts`.
 
 ## 9. Commands and build output
 
