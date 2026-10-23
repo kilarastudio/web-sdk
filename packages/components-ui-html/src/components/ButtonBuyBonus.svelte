@@ -23,6 +23,7 @@
 </script>
 
 <UiButton
+	kind="feature"
 	label={active && !disabled ? i18nDerived.disable() : i18nDerived.buyBonus()}
 	{active}
 	{disabled}

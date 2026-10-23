@@ -13,4 +13,4 @@
 	};
 </script>
 
-<UiButton label={i18nDerived.info()} icon="info" {onpress} variant="light" size="large" />
+<UiButton kind="row" label={i18nDerived.info()} icon="info" {onpress} />

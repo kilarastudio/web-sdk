@@ -1,87 +1,31 @@
 <script lang="ts">
-	import UiStage from './UiStage.svelte';
-	import UiMenu from './UiMenu.svelte';
-	import LabelBalance from './LabelBalance.svelte';
-	import LabelWin from './LabelWin.svelte';
-	import LabelBet from './LabelBet.svelte';
-	import ButtonMenu from './ButtonMenu.svelte';
-	import ButtonBuyBonus from './ButtonBuyBonus.svelte';
-	import ButtonAutoSpin from './ButtonAutoSpin.svelte';
-	import ButtonBet from './ButtonBet.svelte';
-	import ButtonTurbo from './ButtonTurbo.svelte';
-	import ButtonDecrease from './ButtonDecrease.svelte';
-	import ButtonIncrease from './ButtonIncrease.svelte';
+	import HudBar from './HudBar.svelte';
 </script>
 
 <!-- stage: 1920 × 1080 -->
 <div class="layout">
-	<UiStage>
-		<div class="labels">
-			<LabelBalance stacked />
-			<LabelWin stacked />
-			<LabelBet stacked />
-		</div>
-
-		<div class="group left">
-			<ButtonMenu />
-			<ButtonBuyBonus />
-		</div>
-
-		<div class="group center">
-			<ButtonAutoSpin />
-			<ButtonBet />
-			<ButtonTurbo />
-		</div>
-
-		<div class="group right">
-			<ButtonDecrease />
-			<ButtonIncrease />
-		</div>
-	</UiStage>
-
-	<UiMenu />
+	<HudBar />
 </div>
 
 <style lang="scss">
 	.layout {
-		--ui-font-size: 36px;
-		--ui-button-size: 120px;
-		--ui-button-size-large: 156px;
-		--menu-x: 298px;
-		--menu-bottom: 18px;
+		--ui-font-size: 34px;
+		--ui-button-size: 84px;
+		--ui-button-size-large: 164px;
+		--ui-feature-width: 216px;
+		--ui-feature-height: 96px;
+		--ui-feature-font-size: 26px;
+		--bar-width: 1400px;
+		--bar-height: 112px;
+		--bar-bottom: 44px;
+		--bar-padding: 20px;
+		--stepper-height: 84px;
+		/* the menu opens over the menu button, the first item in the dock */
+		--menu-x: calc(50% - var(--bar-width) / 2 + var(--bar-padding) + var(--ui-button-size) / 2);
+		--menu-bottom: calc(var(--bar-bottom) + (var(--bar-height) - var(--ui-button-size)) / 2);
 		--menu-gap: 14px;
 
 		position: absolute;
 		inset: 0;
-	}
-
-	.labels {
-		position: absolute;
-		left: 50%;
-		bottom: 146px;
-		transform: translateX(-50%);
-		display: flex;
-		gap: 18px;
-	}
-
-	.group {
-		position: absolute;
-		bottom: 18px;
-		display: flex;
-		gap: 30px;
-
-		&.left {
-			left: calc(var(--menu-x) - var(--ui-button-size) / 2);
-			bottom: var(--menu-bottom);
-		}
-
-		&.center {
-			left: 50%;
-			transform: translateX(-50%);
-		}
-
-		&.right {
-			right: 192px;
-		}
 	}
 </style>

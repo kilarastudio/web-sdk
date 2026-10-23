@@ -7,6 +7,7 @@
 	import UiFadeContainer from './UiFadeContainer.svelte';
 	import UiHeader from './UiHeader.svelte';
 	import UiStage from './UiStage.svelte';
+	import UiBar from './UiBar.svelte';
 	import UiMenu from './UiMenu.svelte';
 	import UiLabel from './UiLabel.svelte';
 	import LabelWin from './LabelWin.svelte';
@@ -24,44 +25,47 @@
 
 	const props: Props = $props();
 	const context = getContext();
+	// portrait is too narrow for PLAY inside the bar, so it sits above it
+	const portrait = $derived(context.stateLayoutDerived.layoutType() === 'portrait');
 </script>
 
 <UiFadeContainer>
 	<UiHeader gameName={props.gameName} logo={props.logo} />
 
 	<!-- stage: the standard size of the current layout type, e.g. 1920 × 1080 -->
-	<div class="layout">
+	<div class="layout" class:portrait>
 		<UiStage>
-			{#if stateUi.freeSpinCounterShow && ['portrait', 'tablet'].includes(context.stateLayoutDerived.layoutType())}
-				<div class="free-spins">
-					<LabelFreeSpinCounter stacked />
+			{#if portrait}
+				<div class="play-above">
+					<ButtonReplay />
 				</div>
 			{/if}
 
-			<div class="row">
-				<div class="column">
-					<ButtonMenu />
-					<ButtonTurbo />
-				</div>
+			<UiBar>
+				<ButtonMenu />
+				<ButtonTurbo />
 
-				<div class="column">
+				<div class="labels">
 					<LabelWin stacked />
+					{#if stateUi.freeSpinCounterShow}
+						<LabelFreeSpinCounter stacked />
+					{/if}
 					<UiLabel
 						stacked
 						label={i18nDerived.bet()}
 						value={numberToCurrencyString(stateBet.wageredBetAmount)}
 					/>
-				</div>
-
-				<div class="column real-cost">
 					<UiLabel
 						stacked
 						label={`${i18nDerived.realCost()} (×${stateReplay.costMultiplier})`}
 						value={numberToCurrencyString(stateBet.wageredBetAmount * stateReplay.costMultiplier)}
 					/>
-					<ButtonReplay />
 				</div>
-			</div>
+
+				{#if !portrait}
+					<ButtonReplay />
+				{/if}
+			</UiBar>
 		</UiStage>
 
 		<UiMenu />
@@ -71,43 +75,38 @@
 <style lang="scss">
 	.layout {
 		--ui-font-size: 36px;
-		--ui-button-size: 105px;
-		--ui-button-size-large: 156px;
-		/* centre of the menu column: half the row (105 + 20 + 482 + 20 + 362) minus half a button */
-		--menu-x: calc(50% - 442px);
-		/* row bottom + turbo button + column gap */
-		--menu-bottom: 175px;
+		--ui-button-size: 96px;
+		--ui-button-size-large: 176px;
+		--bar-width: 1440px;
+		--bar-height: 120px;
+		--bar-bottom: 40px;
+		--bar-padding: 24px;
+		/* the menu opens over the menu button, the first item in the bar */
+		--menu-x: calc(50% - var(--bar-width) / 2 + var(--bar-padding) + var(--ui-button-size) / 2);
+		--menu-bottom: calc(var(--bar-bottom) + (var(--bar-height) - var(--ui-button-size)) / 2);
 		--menu-gap: 14px;
 
 		position: absolute;
 		inset: 0;
+
+		&.portrait {
+			--bar-width: 1032px;
+			--bar-bottom: 60px;
+		}
 	}
 
-	.free-spins {
-		position: absolute;
-		top: 100px;
-		left: 50%;
-		transform: translateX(-50%);
-	}
-
-	.row {
-		position: absolute;
-		left: 50%;
-		bottom: 58px;
-		transform: translateX(-50%);
+	.labels {
 		display: flex;
-		align-items: flex-end;
-		gap: 20px;
-	}
-
-	.column {
-		display: flex;
-		flex-direction: column;
+		flex: 1;
+		justify-content: space-around;
 		align-items: center;
-		gap: 12px;
+		min-width: 0;
 	}
 
-	.real-cost {
-		--ui-font-size: 27px;
+	.play-above {
+		position: absolute;
+		left: 50%;
+		bottom: calc(var(--bar-bottom) + var(--bar-height) + 32px);
+		transform: translateX(-50%);
 	}
 </style>

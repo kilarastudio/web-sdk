@@ -25,6 +25,7 @@
 	icon="turbo"
 	iconWeight={active ? 'fill' : 'bold'}
 	{active}
+	toggle
 	{disabled}
 	{onpress}
 />

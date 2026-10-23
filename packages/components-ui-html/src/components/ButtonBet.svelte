@@ -19,6 +19,7 @@
 		<OnHotkey hotkey="Space" {disabled} {onpress} />
 		{@const spin = ['spin_default', 'spin_disabled'].includes(key)}
 		<UiButton
+			kind={spin ? 'spin' : 'stop'}
 			label={spin ? i18nDerived.bet() : i18nDerived.stop()}
 			icon={spin ? 'spin' : 'stop'}
 			iconWeight={spin ? 'bold' : 'fill'}

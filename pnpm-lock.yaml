@@ -928,6 +928,9 @@ importers:
 
   packages/components-ui-html:
     dependencies:
+      '@fontsource-variable/geist':
+        specifier: 5.3.0
+        version: 5.3.0
       '@lingui/core':
         specifier: 6.10.0
         version: 6.10.0(@babel/core@7.29.7)(babel-plugin-macros@3.1.0)
@@ -2173,6 +2176,9 @@ packages:
     resolution: {integrity: sha512-5Upjk0mlqEMWGpJgJ2aEM7R4Uy8ODmYi2MYKyiqYNNLngH0korvVSZ8+Y7WiWqM5uMRQ6fo8Q0rtjoWfJt28Fg==}
     peerDependencies:
       pixi.js: ^8.16.0
+
+  '@fontsource-variable/geist@5.3.0':
+    resolution: {integrity: sha512-j0m+vLQuG5XAYoHtGCVu0spvlGreR3EzpECUVzkFmI1mTVnAO38l/NEPDCFgZ177JxzYJCLSmTQibIiYPilGrA==}
 
   '@humanfs/core@0.19.1':
     resolution: {integrity: sha512-5DyQ4+1JEUzejeK1JGICcideyfUbGixgS9jNgex5nqkW+cY7WZhxBigmieN5Qnw9ZosSNVC9KQKyb+GUaGyKUA==}
@@ -4958,6 +4964,8 @@ snapshots:
     dependencies:
       '@esotericsoftware/spine-canvas': 4.2.120
       pixi.js: 8.22.0
+
+  '@fontsource-variable/geist@5.3.0': {}
 
   '@humanfs/core@0.19.1': {}
 

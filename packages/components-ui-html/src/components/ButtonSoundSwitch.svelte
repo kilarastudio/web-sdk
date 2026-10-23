@@ -20,9 +20,44 @@
 </script>
 
 <UiButton
-	label={silent ? i18nDerived.soundOff() : i18nDerived.soundOn()}
+	kind="row"
+	label={i18nDerived.audio()}
 	icon={silent ? 'soundOff' : 'soundOn'}
+	active={!silent}
+	toggle
 	{onpress}
-	variant="light"
-	size="large"
-/>
+>
+	<span class="switch" class:on={!silent} aria-hidden="true"></span>
+</UiButton>
+
+<style lang="scss">
+	.switch {
+		position: relative;
+		width: 2.1em;
+		height: 1.2em;
+		margin-left: auto;
+		border-radius: 999px;
+		background-color: var(--ui-disabled-bg);
+		transition: background-color 0.2s;
+
+		&::after {
+			content: '';
+			position: absolute;
+			top: 0.15em;
+			left: 0.15em;
+			width: 0.9em;
+			height: 0.9em;
+			border-radius: 50%;
+			background-color: var(--ui-text);
+			transition: transform 0.2s;
+		}
+
+		&.on {
+			background-color: var(--ui-accent);
+
+			&::after {
+				transform: translateX(0.9em);
+			}
+		}
+	}
+</style>

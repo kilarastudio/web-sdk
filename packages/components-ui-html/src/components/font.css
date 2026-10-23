@@ -1,0 +1,12 @@
+/*
+	The one UI font, bundled with the game (never a CDN): Geist (OFL-1.1, Vercel), one variable
+	file for every weight, split by script so the browser only loads what the language needs.
+	Arabic, Hindi and CJK fall back to the system fonts.
+*/
+@import '@fontsource-variable/geist';
+
+:root {
+	--font-family:
+		'Geist Variable', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial,
+		sans-serif;
+}

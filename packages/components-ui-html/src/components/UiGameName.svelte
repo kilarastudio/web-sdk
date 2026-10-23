@@ -34,6 +34,16 @@
 <style lang="scss">
 	.ui-game-name {
 		display: inline-flex;
-		gap: 5px;
+		gap: 0.6em;
+	}
+
+	time {
+		font-variant-numeric: tabular-nums;
+
+		&::after {
+			content: '|';
+			margin-left: 0.6em;
+			opacity: 0.6;
+		}
 	}
 </style>

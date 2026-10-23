@@ -31,25 +31,35 @@
 <style lang="scss">
 	.button-replay {
 		display: flex;
+		flex-shrink: 0;
 		justify-content: center;
 		align-items: center;
-		gap: 12px;
-		width: 224px;
-		height: 70px;
-		padding: 0;
+		gap: 0.45em;
+		min-width: 260px;
+		height: 84px;
+		padding: 0 1.1em;
 		border: none;
-		background-color: #000000;
-		color: #ffffff;
+		border-radius: 999px;
+		background-color: var(--ui-accent);
+		color: var(--ui-accent-contrast);
 		font-family: inherit;
-		font-size: 25px;
-		font-weight: 600;
+		font-size: 28px;
+		font-weight: 700;
+		letter-spacing: 0.04em;
+		text-transform: uppercase;
 		cursor: pointer;
 		pointer-events: auto;
 		touch-action: manipulation;
+		transition: transform 0.1s ease-out;
 
 		&:disabled {
-			background-color: #555555;
+			background-color: var(--ui-disabled-bg);
+			color: var(--ui-text-disabled);
 			cursor: not-allowed;
+		}
+
+		&:not(:disabled):active {
+			transform: scale(0.96);
 		}
 	}
 </style>

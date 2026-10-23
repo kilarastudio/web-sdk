@@ -44,8 +44,8 @@
 		justify-content: center;
 		align-items: center;
 		border-radius: inherit;
-		background-color: #000000;
-		color: #ffffff;
+		background-color: var(--ui-accent);
+		color: var(--ui-accent-contrast);
 		font-size: calc(var(--ui-button-size) * 0.2 * var(--counter-font-size));
 		font-weight: bold;
 	}
