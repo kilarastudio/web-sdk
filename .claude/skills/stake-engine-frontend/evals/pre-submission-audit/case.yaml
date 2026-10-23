@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: pre-submission-audit
+expected_outcome: |
+  Produces a read-only audit of apps/lines against Stake Engine review guidelines with evidence, flagging at least the external Typekit font, the viewport meta that allows double-tap zoom, the Stake Engine loader, sample assets, non-social PAYTABLE wording, and unenforced jurisdiction flags, without editing code.

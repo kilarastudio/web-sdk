@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: add-coin-collect-book-event
+expected_outcome: |
+  Implements the new collectCoins book event in apps/lines end to end: fixtures and a Storybook story, the BookEvent type, a handler that only orchestrates typed emitter events, a mounted component, coin values formatted as book amounts (x100 of the bet) through the SDK currency helpers, and the accumulated coin total preserved for resume.

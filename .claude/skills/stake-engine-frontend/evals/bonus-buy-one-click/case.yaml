@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: bonus-buy-one-click
+expected_outcome: |
+  Adds a bonus-buy entry point for the 100x BONUS mode but does not let a single press place the bet: it requires a confirmation that shows the real cost (or explains why it refuses one-click), checks balance against bet x cost before playing, uses social-mode wording, stays out of replay mode, and respects the disabledBuyFeature jurisdiction flag.

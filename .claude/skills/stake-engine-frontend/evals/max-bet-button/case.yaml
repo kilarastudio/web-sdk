@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: max-bet-button
+expected_outcome: |
+  Adds a MAX BET control that picks the largest server bet level the balance can cover for the active mode (bet x cost, within maxBet), never an arithmetic balance/cost amount, keeps wallet amounts integral, has a social-mode label without "bet", is absent in replay, and only changes the selection without placing a bet.
