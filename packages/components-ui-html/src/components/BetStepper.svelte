@@ -21,7 +21,10 @@
 		--ui-button-size: calc(var(--stepper-height) - 16px);
 		--ui-button-bg: transparent;
 		--ui-button-hover-bg: var(--ui-field);
-		--ui-icon-scale: 0.5;
+		/* − and + hover corners concentric with the stepper's: its radius minus the 8px gap */
+		--ui-squircle: max(4px, calc(var(--stepper-height) * var(--ui-corner) - 8px));
+		/* larger than the dock's 0.56: the stepper's buttons are smaller, the glyphs should not be */
+		--ui-icon-scale: 0.62;
 		--ui-label-align: center;
 
 		box-sizing: border-box;

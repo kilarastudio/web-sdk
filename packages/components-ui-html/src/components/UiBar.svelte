@@ -22,9 +22,16 @@
 
 <style lang="scss">
 	.ui-bar {
-		/* icon buttons sit flat in the dock and light up on hover */
+		/*
+			icon buttons sit flat in the dock and light up on hover, their corners concentric with
+			the dock's: its radius minus the gap between button and dock edge
+		*/
 		--ui-button-bg: transparent;
 		--ui-button-hover-bg: var(--ui-field);
+		--ui-squircle: max(
+			4px,
+			calc(var(--bar-height) * var(--ui-corner) - (var(--bar-height) - var(--ui-button-size)) / 2)
+		);
 
 		position: absolute;
 		left: 50%;
