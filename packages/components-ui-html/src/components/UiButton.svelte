@@ -54,7 +54,7 @@
 		padding: 0;
 		border: none;
 		border-radius: calc(var(--size) / 3);
-		font-family: 'proxima-nova', sans-serif;
+		font-family: inherit;
 		font-size: calc(var(--ui-font-size) * 0.9);
 		font-weight: 600;
 		line-height: 1.1;

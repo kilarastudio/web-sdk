@@ -6,14 +6,9 @@ Verified against this repo at commit `ba88c8d` (2026-10-23). The sample apps (`c
 
 | Gap | Where | Guideline | Fix |
 | --- | --- | --- | --- |
-| External Typekit stylesheet `https://use.typekit.net/aba0ebl.css` | `apps/*/src/app.html` | Static-only / CSP; console errors | Bundle the font files in `static/` and load them with local `@font-face` |
 | Viewport meta is `width=device-width` only | `apps/*/src/app.html` (and `packages/config-svelte/app.html`) | 223 double-tap zoom | `width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no`; consider `touch-action: none` on the game surface |
-| `LoaderStakeEngine` + `stake-engine-loader.gif` rendered at launch | `apps/*/src/routes/+layout.svelte`, `apps/*/static/stake-engine-loader.gif` | 275 | Remove it; use the studio's own loader |
-| Sample art, symbols, spines, sounds, "ADD YOUR LOGO", placeholder game names | `apps/*/static/assets`, `Game.svelte` | Unique assets requirement | Replace all |
-| `DEFAULT_BET_MODE_META` icons/images point to an external S3 bucket (`test-fart-cdn-bucket…amazonaws.com`) | `packages/state-shared/src/constants.ts` | Static-only / CSP | Ship mode art locally and define the game's own bet-mode meta |
+| Sample art, symbols, spines, sounds, loading-screen art, `static/loader.gif` spinner, placeholder game names | `apps/*/static/assets`, `apps/*/static/loader.gif`, `Game.svelte` | Unique assets requirement | Replace all; the Kilara logo goes in the HUD's optional `logo` slot |
 | Replay labels hardcoded in English (`REAL COST`, `×`) | number-picker `Game.svelte` | 239/240 | Route through `i18nDerived` |
-| Debug translation overlay ("TRANSLATIONS TEST") rendered in `Game.svelte` | `apps/*/src/components/I18nTest.svelte` | Visual bugs | Remove from the game |
-| Second runtime Typekit load: `WebFont.load({ typekit })` before Pixi starts | `packages/pixi-svelte/src/lib/utils.svelte.ts` (~line 61) | Static-only / CSP | Load bundled fonts instead (e.g. `FontFace` / CSS `@font-face` from `static/`) |
 | Game rules and paytable modals contain only "ADD YOUR GAME RULES" / "ADD YOUR PAY TABLE" | `packages/components-ui-html/src/components/ModalGameRules.svelte`, `ModalPayTable.svelte` | 24, 25, 26, 27, 29, 185, 235 | Write the full rules: RTP and max win per mode, symbol payouts, win formation, mode costs, free spins, every control, disclaimer |
 | Buy-bonus menu lists the five sample modes from `DEFAULT_BET_MODE_META` (ANTE, SUPERANTE, SUPERSPIN, BONUS, SUPER) with other games' copy, while `lines` math has only `base`/`bonus` | `packages/state-shared/src/constants.ts`, `apps/lines/src/game/config.ts` | 27, 225; unknown mode → `ERR_VAL` | Define the game's own modes, matching math `index.json` names and costs |
 | `freeSpinRetrigger` appears in the bonus fixtures but has no handler (console error, retrigger not shown) | `apps/lines/src/game/bookEventHandlerMap.ts` | Rules must match play; console errors | Add a handler; compare every event type in the real math books with the handler map |
@@ -46,5 +41,6 @@ Verified against this repo at commit `ba88c8d` (2026-10-23). The sample apps (`c
 - New sessions ignored `defaultBetLevel`.
 - Sub-cent wins rounded to zero; `XEC` missing; `AED`/`QAR`/`EGP` symbol placement wrong.
 - Unsupported `lang` fell through to broken text.
+- Stake placeholders removed: Typekit (stylesheet in `app.html` and `WebFont.load` in `pixi-svelte` → one system font stack in `components-ui-html` `global.scss`, swap the bundled brand font in there), `LoaderStakeEngine` + gif, "Add Your Loader" text (`LoaderExample` → `Loader`), template favicon, `I18nTest` overlay, "ADD YOUR LOGO", and the external S3/twist-game URLs in `state-shared` (unused bet-mode art and sample `DEFAULT_GAME_RULE_META`).
 - HUD `payTable` label had no social variant; HUD replay labels (`PLAY`, `PLAYING`, `PLAY AGAIN`, `REAL COST`) were hardcoded → both go through `components-ui-html` `i18nDerived`.
 - STOP (button and space bar) was disabled during the last affordable spin because `ButtonBet` disabled itself whenever `isBetCostAvailable()` was false → it now only blocks a new bet while idle.

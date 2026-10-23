@@ -35,12 +35,10 @@
 		"@barvynkoa/particle-emitter": "0.0.1",
 		"@esotericsoftware/spine-core": "4.2.120",
 		"@esotericsoftware/spine-pixi-v8": "4.2.120",
-		"@types/webfontloader": "1.6.38",
 		"pixi-filters": "6.1.5",
 		"pixi.js": "8.22.0",
 		"svelte": "5.57.2",
-		"vite": "8.3.5",
-		"webfontloader": "1.6.28"
+		"vite": "8.3.5"
 	},
 	"exports": {
 		".": {

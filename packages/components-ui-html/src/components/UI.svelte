@@ -9,7 +9,7 @@
 
 	type Props = {
 		gameName: Snippet;
-		logo: Snippet;
+		logo?: Snippet;
 	};
 
 	const props: Props = $props();

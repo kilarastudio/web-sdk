@@ -24,7 +24,6 @@
 	import FreeSpinCounter from './FreeSpinCounter.svelte';
 	import FreeSpinOutro from './FreeSpinOutro.svelte';
 	import Transition from './Transition.svelte';
-	import I18nTest from './I18nTest.svelte';
 
 	const context = getContext();
 
@@ -72,8 +71,6 @@
 		{/if}
 		<FreeSpinOutro />
 		<Transition />
-
-		<I18nTest />
 	{/if}
 </App>
 
@@ -81,9 +78,6 @@
 	<UI>
 		{#snippet gameName()}
 			<UiGameName name="WAYS GAME" />
-		{/snippet}
-		{#snippet logo()}
-			ADD YOUR LOGO
 		{/snippet}
 	</UI>
 {/if}

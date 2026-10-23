@@ -26,7 +26,6 @@
 	import Transition from './Transition.svelte';
 	import ExpandingWilds from './ExpandingWilds.svelte';
 	import StickyBoard from './StickyBoard.svelte';
-	import I18nTest from './I18nTest.svelte';
 
 	const context = getContext();
 
@@ -76,8 +75,6 @@
 		{/if}
 		<FreeSpinOutro />
 		<Transition />
-
-		<I18nTest />
 	{/if}
 </App>
 
@@ -85,9 +82,6 @@
 	<UI>
 		{#snippet gameName()}
 			<UiGameName name="PRICE GAME" />
-		{/snippet}
-		{#snippet logo()}
-			ADD YOUR LOGO
 		{/snippet}
 	</UI>
 {/if}

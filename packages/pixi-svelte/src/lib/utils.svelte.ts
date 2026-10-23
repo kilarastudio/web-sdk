@@ -1,5 +1,3 @@
-import WebFont from 'webfontloader';
-
 import type { PixiPoint, Sizes } from './types';
 
 export const REM = 16;
@@ -58,26 +56,14 @@ export function detectWebGL() {
 	return -1;
 }
 
-export const preloadFont = () =>
-	new Promise<void>((resolve) => {
-		try {
-			WebFont.load({
-				typekit: {
-					id: 'aba0ebl',
-				},
-				active: () => {
-					resolve();
-				},
-				inactive: () => {
-					console.error('Web font load inactive');
-					resolve();
-				},
-			});
-		} catch (error) {
-			console.error(error);
-			resolve();
-		}
-	});
+// Wait for the @font-face fonts the game ships in its CSS before Pixi measures any text.
+export const preloadFont = async () => {
+	try {
+		await document.fonts.ready;
+	} catch (error) {
+		console.error(error);
+	}
+};
 
 export function propsSyncEffect<TProps extends object, TTarget>({
 	props,

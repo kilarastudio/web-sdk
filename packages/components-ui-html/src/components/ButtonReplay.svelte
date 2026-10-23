@@ -32,7 +32,7 @@
 		border: none;
 		background-color: #000000;
 		color: #ffffff;
-		font-family: 'proxima-nova', sans-serif;
+		font-family: inherit;
 		font-size: 25px;
 		font-weight: 600;
 		cursor: pointer;

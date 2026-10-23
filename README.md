@@ -150,9 +150,7 @@ build
   |-index.html
   |-_app
   |-assets
-  |-favicon.svg
   |-loader.gif
-  |-stake-engine-loader.gif
 ```
 - Now you are ready to upload a game!
 
@@ -1078,9 +1076,6 @@ The game is rendered in the Pixi canvas and the UI is rendered in HTML on top of
   <UI>
     {#snippet gameName()}
       <UiGameName name="LINES GAME" />
-    {/snippet}
-    {#snippet logo()}
-      ADD YOUR LOGO
     {/snippet}
   </UI>
 {/if}

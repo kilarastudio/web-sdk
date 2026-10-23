@@ -3,7 +3,7 @@
 
 	type Props = {
 		gameName: Snippet;
-		logo: Snippet;
+		logo?: Snippet;
 	};
 
 	const props: Props = $props();
@@ -11,7 +11,7 @@
 
 <header class="ui-header">
 	<div>{@render props.gameName()}</div>
-	<div>{@render props.logo()}</div>
+	<div>{@render props.logo?.()}</div>
 </header>
 
 <style lang="scss">
@@ -25,7 +25,6 @@
 		align-items: flex-start;
 		gap: 1rem;
 		color: #ffffff;
-		font-family: 'proxima-nova', sans-serif;
 		font-size: 1.5rem;
 		font-weight: 600;
 		line-height: 2rem;

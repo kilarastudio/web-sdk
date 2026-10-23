@@ -25,7 +25,6 @@
 		border-radius: calc(var(--ui-font-size) * 0.8);
 		background-color: #000000;
 		color: #ffffff;
-		font-family: 'proxima-nova', sans-serif;
 		font-size: var(--ui-font-size);
 		line-height: 1.1;
 		white-space: nowrap;
