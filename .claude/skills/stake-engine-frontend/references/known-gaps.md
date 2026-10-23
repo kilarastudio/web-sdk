@@ -6,7 +6,6 @@ Verified against this repo at commit `ba88c8d` (2026-10-23). The sample apps (`c
 
 | Gap | Where | Guideline | Fix |
 | --- | --- | --- | --- |
-| Viewport meta is `width=device-width` only | `apps/*/src/app.html` (and `packages/config-svelte/app.html`) | 223 double-tap zoom | `width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no`; consider `touch-action: none` on the game surface |
 | Sample art, symbols, spines, sounds, loading-screen art, `static/loader.gif` spinner, placeholder game names | `apps/*/static/assets`, `apps/*/static/loader.gif`, `Game.svelte` | Unique assets requirement | Replace all; the Kilara logo goes in the HUD's optional `logo` slot |
 | Replay labels hardcoded in English (`REAL COST`, `×`) | number-picker `Game.svelte` | 239/240 | Route through `i18nDerived` |
 | Game rules and paytable modals contain only "ADD YOUR GAME RULES" / "ADD YOUR PAY TABLE" | `packages/components-ui-html/src/components/ModalGameRules.svelte`, `ModalPayTable.svelte` | 24, 25, 26, 27, 29, 185, 235 | Write the full rules: RTP and max win per mode, symbol payouts, win formation, mode costs, free spins, every control, disclaimer |
@@ -41,6 +40,7 @@ Verified against this repo at commit `ba88c8d` (2026-10-23). The sample apps (`c
 - New sessions ignored `defaultBetLevel`.
 - Sub-cent wins rounded to zero; `XEC` missing; `AED`/`QAR`/`EGP` symbol placement wrong.
 - Unsupported `lang` fell through to broken text.
+- Viewport meta was `width=device-width` only (double-tap zoom) → `apps/*/src/app.html` and `config-svelte/app.html` set `initial-scale=1, maximum-scale=1, user-scalable=no`, and `body` has `touch-action: manipulation` because iOS Safari ignores `user-scalable=no`.
 - Stake placeholders removed: Typekit (stylesheet in `app.html` and `WebFont.load` in `pixi-svelte` → one system font stack in `components-ui-html` `global.scss`, swap the bundled brand font in there), `LoaderStakeEngine` + gif, "Add Your Loader" text (`LoaderExample` → `Loader`), template favicon, `I18nTest` overlay, "ADD YOUR LOGO", and the external S3/twist-game URLs in `state-shared` (unused bet-mode art and sample `DEFAULT_GAME_RULE_META`).
 - HUD `payTable` label had no social variant; HUD replay labels (`PLAY`, `PLAYING`, `PLAY AGAIN`, `REAL COST`) were hardcoded → both go through `components-ui-html` `i18nDerived`.
 - STOP (button and space bar) was disabled during the last affordable spin because `ButtonBet` disabled itself whenever `isBetCostAvailable()` was false → it now only blocks a new bet while idle.
