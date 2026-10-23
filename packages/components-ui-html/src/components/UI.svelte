@@ -32,9 +32,10 @@
 	.ui {
 		/*
 			Kilara HUD tokens (direction A), the same in every game. Clean, app-like: flat surfaces
-			without borders, one shadow level, and Kilau reserved for the primary action (spin), wins
-			and active toggles. Palette: Kilau #ffc53d, Malam #0e1014, Arang #1a1d24, Kertas #f3f4f6,
-			Kabut #8a92a0, Langit #7ab8ff; the other values are derived from them.
+			without borders, one shadow level, and Kilau reserved for the Kilau dot (logo, spin icon,
+			buy bonus), wins and active toggles; the spin button itself stays neutral. Palette: Kilau
+			#ffc53d, Malam #0e1014, Arang #1a1d24, Kertas #f3f4f6, Kabut #8a92a0, Langit #7ab8ff; the
+			other values are derived from them.
 		*/
 		--ui-accent: #ffc53d;
 		--ui-accent-contrast: #0e1014;

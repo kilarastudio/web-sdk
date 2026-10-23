@@ -1,7 +1,7 @@
 <script lang="ts" module>
 	// Phosphor icons (MIT, phosphoricons.com), bundled with the game: never load icons from a CDN.
-	// To switch to the Kilara icon set, change this map; the buttons only know the names.
-	import ArrowClockwise from 'phosphor-svelte/lib/ArrowClockwise';
+	// Spin is Kilara's own. To switch more to the Kilara icon set, change this map; the buttons only
+	// know the names.
 	import ArrowCounterClockwise from 'phosphor-svelte/lib/ArrowCounterClockwise';
 	import CaretDown from 'phosphor-svelte/lib/CaretDown';
 	import GearSix from 'phosphor-svelte/lib/GearSix';
@@ -18,8 +18,10 @@
 	import Table from 'phosphor-svelte/lib/Table';
 	import X from 'phosphor-svelte/lib/X';
 
+	import IconKilaraSpin from './IconKilaraSpin.svelte';
+
 	const ICONS = {
-		spin: ArrowClockwise,
+		spin: IconKilaraSpin,
 		stop: Stop,
 		autoSpin: Repeat,
 		turbo: Lightning,
