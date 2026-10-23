@@ -17,7 +17,7 @@
 		// an on/off switch: reports aria-pressed="false" when off as well
 		toggle?: boolean;
 		// icon: squircle icon button, spin/stop: the one oversized round bet button,
-		// feature: text capsule (buy bonus), row: icon and label in a menu list
+		// feature: round text badge (buy bonus), row: icon and label in a menu list
 		kind?: 'icon' | 'spin' | 'stop' | 'feature' | 'row';
 		children?: Snippet;
 	};
@@ -156,9 +156,17 @@
 
 	.spin {
 		--ui-button-hover-bg: var(--ui-accent);
+		--ui-icon-scale: 0.5;
 
 		background-color: var(--ui-accent);
 		color: var(--ui-accent-contrast);
+
+		/* heavier than Phosphor's bold: a stroke round the filled outline thickens it evenly */
+		.ui-button-icon :global(path) {
+			stroke: currentColor;
+			stroke-width: 10;
+			stroke-linejoin: round;
+		}
 
 		&.muted,
 		&:disabled {
@@ -184,20 +192,65 @@
 		}
 	}
 
+	/*
+		Buy bonus: a round badge in the dock's own surface with a Kilau ring (as thick as the stop
+		button's) and the Kilau dot from the Kilara wordmark. The dot sits near the top edge, out of
+		the text flow, so the two-line label keeps the whole centre. Smaller and darker than the
+		spin button, so the gold disc stays the one primary action.
+	*/
 	.feature {
-		width: var(--ui-feature-width, var(--size));
-		height: var(--ui-feature-height, var(--size));
-		padding: 0 1em;
-		border-radius: 999px;
+		--size: var(--ui-feature-size);
+		--ui-button-hover-bg: var(--ui-surface-raised);
+		--kilau: var(--ui-accent);
+
+		border-radius: 50%;
 		background-color: var(--ui-surface);
-		box-shadow: var(--ui-shadow);
-		font-size: var(--ui-feature-font-size, calc(var(--ui-font-size) * 0.72));
-		letter-spacing: 0.04em;
-		white-space: nowrap;
+		box-shadow:
+			inset 0 0 0 calc(var(--size) * 0.035) var(--kilau),
+			var(--ui-shadow);
+		font-size: calc(var(--size) * 0.18);
+		font-weight: 700;
+		line-height: 1.05;
+		letter-spacing: 0.03em;
+
+		&::before {
+			content: '';
+			position: absolute;
+			top: calc(var(--size) * 0.115);
+			left: 50%;
+			width: calc(var(--size) * 0.085);
+			height: calc(var(--size) * 0.085);
+			border-radius: 50%;
+			background-color: var(--kilau);
+			transform: translateX(-50%);
+		}
+
+		.ui-button-label {
+			max-width: calc(var(--size) * 0.82);
+			text-wrap: balance;
+		}
 
 		&.active {
+			--ui-button-hover-bg: var(--ui-activate);
+			--kilau: var(--ui-activate-contrast);
+
+			/* no ring on the filled state: a dark ring on a coloured disc is the look to avoid */
+			box-shadow: var(--ui-shadow);
 			background-color: var(--ui-activate);
 			color: var(--ui-activate-contrast);
+		}
+
+		&.muted,
+		&:disabled {
+			--kilau: var(--ui-text-disabled);
+
+			color: var(--ui-text-disabled);
+		}
+
+		@media (hover: hover) {
+			&:not(:disabled):hover {
+				transform: scale(1.03);
+			}
 		}
 	}
 

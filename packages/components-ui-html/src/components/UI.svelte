@@ -51,6 +51,8 @@
 		--ui-scrim: rgba(14, 16, 20, 0.5);
 		--ui-shadow: 0 12px 32px rgba(14, 16, 20, 0.4);
 		--ui-squircle: 32%;
+		/* dock and bet stepper corners as a share of their height, so the nested shapes match */
+		--ui-corner: 0.18;
 		--ui-text-shadow: 0 2px 8px rgba(14, 16, 20, 0.65);
 
 		position: fixed;

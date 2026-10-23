@@ -58,9 +58,10 @@
 </script>
 
 <!--
-	stage: 1080 × 1920. One centred column: win line, buy bonus, the spin button with autoplay and
-	turbo beside it, and the dock along the bottom (menu, balance, bet stepper). Everything above
-	the dock folds away with the drawer.
+	stage: 1080 × 1920. One centred column: win line, the spin button with autoplay and turbo beside
+	it, and the dock along the bottom (menu, balance, bet stepper). The buy bonus badge sits at the
+	left edge level with the spin button, opposite the drawer button. Everything above the dock
+	folds away with the drawer.
 -->
 <div class="layout">
 	<UiStage>
@@ -117,9 +118,7 @@
 		--ui-font-size: 42px;
 		--ui-button-size: 108px;
 		--ui-button-size-large: 236px;
-		--ui-feature-width: 260px;
-		--ui-feature-height: 92px;
-		--ui-feature-font-size: 28px;
+		--ui-feature-size: 168px;
 		--ui-label-shadow: var(--ui-text-shadow);
 		--bar-width: calc(100% - 48px);
 		--bar-height: 132px;
@@ -142,7 +141,6 @@
 	}
 
 	.spin-row,
-	.buy-bonus,
 	.win {
 		position: absolute;
 		left: 50%;
@@ -157,13 +155,15 @@
 	}
 
 	.buy-bonus {
-		bottom: calc(var(--spin-row-bottom) + var(--ui-button-size-large) + 32px);
+		position: absolute;
+		left: 40px;
+		bottom: calc(
+			var(--spin-row-bottom) + (var(--ui-button-size-large) - var(--ui-feature-size)) / 2
+		);
 	}
 
 	.win {
-		bottom: calc(
-			var(--spin-row-bottom) + var(--ui-button-size-large) + var(--ui-feature-height) + 56px
-		);
+		bottom: calc(var(--spin-row-bottom) + var(--ui-button-size-large) + 32px);
 	}
 
 	.balance {

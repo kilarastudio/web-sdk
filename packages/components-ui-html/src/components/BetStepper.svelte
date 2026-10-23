@@ -4,7 +4,10 @@
 	import ButtonIncrease from './ButtonIncrease.svelte';
 </script>
 
-<!-- − BET + in one capsule; the layout sizes it with --stepper-height -->
+<!--
+	− BET + in one field, its corners in the same proportion as the dock's (--ui-corner); the
+	layout sizes it with --stepper-height
+-->
 <div class="bet-stepper">
 	<ButtonDecrease />
 	<div class="value">
@@ -27,7 +30,7 @@
 		gap: 4px;
 		height: var(--stepper-height);
 		padding: 0 8px;
-		border-radius: 999px;
+		border-radius: calc(var(--stepper-height) * var(--ui-corner));
 		background-color: var(--ui-field);
 	}
 

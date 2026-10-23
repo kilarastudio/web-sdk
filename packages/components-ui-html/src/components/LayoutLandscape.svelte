@@ -12,9 +12,7 @@
 		--ui-font-size: 38px;
 		--ui-button-size: 100px;
 		--ui-button-size-large: 184px;
-		--ui-feature-width: 168px;
-		--ui-feature-height: 104px;
-		--ui-feature-font-size: 22px;
+		--ui-feature-size: 144px;
 		--bar-width: 1540px;
 		--bar-height: 128px;
 		--bar-bottom: 36px;

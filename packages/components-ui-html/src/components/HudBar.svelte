@@ -18,8 +18,8 @@
 <!--
 	The dock: money on the left (menu, balance, win), the spin button in the middle of the screen
 	sticking out of the dock, play controls on the right (bet stepper, autoplay, turbo). During free
-	spins the counter takes the stepper's place. Buy bonus is its own capsule left of the dock.
-	The layout sets the --bar-*, --stepper-height and --ui-feature-* sizes.
+	spins the counter takes the stepper's place. Buy bonus is its own round badge left of the
+	dock. The layout sets the --bar-*, --stepper-height and --ui-feature-size sizes.
 -->
 <UiStage>
 	<div class="buy-bonus">
@@ -100,7 +100,7 @@
 
 	.buy-bonus {
 		position: absolute;
-		left: calc(50% - var(--bar-width) / 2 - var(--ui-feature-width) - 20px);
-		bottom: calc(var(--bar-bottom) + (var(--bar-height) - var(--ui-feature-height)) / 2);
+		left: calc(50% - var(--bar-width) / 2 - var(--ui-feature-size) - 20px);
+		bottom: calc(var(--bar-bottom) + (var(--bar-height) - var(--ui-feature-size)) / 2);
 	}
 </style>

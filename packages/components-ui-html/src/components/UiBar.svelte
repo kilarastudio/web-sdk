@@ -11,8 +11,9 @@
 </script>
 
 <!--
-	The HUD dock: a floating capsule centred at the bottom of the stage. The layout sizes it with
-	--bar-width, --bar-height, --bar-bottom and --bar-padding.
+	The HUD dock: a floating rounded bar centred at the bottom of the stage, its corners a small
+	share of its height (--ui-corner) so the ends read as a bar rather than a pill. The layout
+	sizes it with --bar-width, --bar-height, --bar-bottom and --bar-padding.
 -->
 <div class="ui-bar" class:notch={props.notch}>
 	<div class="surface"></div>
@@ -35,7 +36,7 @@
 		width: var(--bar-width);
 		height: var(--bar-height);
 		padding: 0 var(--bar-padding);
-		border-radius: 999px;
+		border-radius: calc(var(--bar-height) * var(--ui-corner));
 		transform: translateX(-50%);
 	}
 
