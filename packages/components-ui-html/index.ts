@@ -1,6 +1,7 @@
 import UI from './src/components/UI.svelte';
 import UiGameName from './src/components/UiGameName.svelte';
 import UiLogo from './src/components/UiLogo.svelte';
+import StudioIntro from './src/components/StudioIntro.svelte';
 import Modals from './src/components/Modals.svelte';
 import GameVersion from './src/components/GameVersion.svelte';
 import GlobalStyle from './src/components/GlobalStyle.svelte';
@@ -10,4 +11,14 @@ import { i18nDerived } from './src/i18n/i18nDerived';
 
 export * from './src/types';
 
-export { messagesMap, i18nDerived, UI, UiGameName, UiLogo, Modals, GameVersion, GlobalStyle };
+export {
+	messagesMap,
+	i18nDerived,
+	UI,
+	UiGameName,
+	UiLogo,
+	StudioIntro,
+	Modals,
+	GameVersion,
+	GlobalStyle,
+};

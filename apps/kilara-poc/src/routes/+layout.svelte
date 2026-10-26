@@ -1,10 +1,10 @@
 <script lang="ts">
-	import { asset } from '$app/paths';
 	import { type Snippet } from 'svelte';
-	import { GlobalStyle } from 'components-ui-html';
-	import { Authenticate, Loader, LoadI18n } from 'components-shared';
+	import { GlobalStyle, StudioIntro } from 'components-ui-html';
+	import { Authenticate, LoadI18n } from 'components-shared';
 	import Game from '../components/Game.svelte';
 	import { setContext } from '../game/context';
+	import { stateApp } from '../game/stateApp';
 
 	import messagesMap from '../i18n/messagesMap';
 
@@ -12,7 +12,8 @@
 
 	const props: Props = $props();
 
-	const loaderUrl = asset('loader.gif');
+	// the preloaded assets (loader, progress bar) are in, so the loading screen can draw
+	const loadingScreenReady = $derived(Object.keys(stateApp.loadedAssets).length > 0);
 
 	setContext();
 </script>
@@ -25,7 +26,7 @@
 	</Authenticate>
 </GlobalStyle>
 
-<!-- Replace static/loader.gif with the studio loader. Never show a Stake Engine loader or logo. -->
-<Loader src={loaderUrl} />
+<!-- The Kilara Studio intro. Never show a Stake Engine loader or logo. -->
+<StudioIntro ready={loadingScreenReady} />
 
 {@render props.children()}
