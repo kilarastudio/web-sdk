@@ -8,6 +8,7 @@ import AnimatedSprite, { type Props as AnimatedSpriteProps } from './AnimatedSpr
 import SpriteSheet, { type Props as SpriteSheetProps } from './SpriteSheet.svelte';
 import Sprite, { type Props as SpriteProps } from './Sprite.svelte';
 import BaseSprite, { type Props as BaseSpriteProps } from './BaseSprite.svelte';
+import NineSliceSprite, { type Props as NineSliceSpriteProps } from './NineSliceSprite.svelte';
 import BaseSpineProvider, {
 	type Props as BaseSpineProviderProps,
 } from './BaseSpineProvider.svelte';
@@ -36,6 +37,7 @@ export {
 	SpriteSheet,
 	Sprite,
 	BaseSprite,
+	NineSliceSprite,
 	BaseSpineProvider,
 	SpineProvider,
 	SpineEventEmitterProvider,
@@ -58,6 +60,7 @@ export type {
 	SpriteSheetProps,
 	SpriteProps,
 	BaseSpriteProps,
+	NineSliceSpriteProps,
 	BaseSpineProviderProps,
 	SpineProviderProps,
 	SpineEventEmitterProviderProps,
