@@ -7,6 +7,13 @@
 	import ButtonSettings from './ButtonSettings.svelte';
 	import ButtonSoundSwitch from './ButtonSoundSwitch.svelte';
 	import ButtonMenuClose from './ButtonMenuClose.svelte';
+
+	type Props = {
+		// the layout's stage covers the canvas (UiStage fill), so --menu-x is measured from its edge
+		fill?: boolean;
+	};
+
+	const props: Props = $props();
 </script>
 
 <!--
@@ -21,7 +28,7 @@
 		onclick={() => (stateUi.menuOpen = false)}
 	></div>
 
-	<UiStage>
+	<UiStage fill={props.fill}>
 		<div class="ui-menu">
 			<nav class="ui-menu-card">
 				<ButtonPayTable />

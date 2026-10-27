@@ -35,7 +35,9 @@
 			without borders, one shadow level, and Kilau reserved for the Kilau dot (logo, spin icon,
 			buy bonus), wins and active toggles; the spin button itself stays neutral. Palette: Kilau
 			#ffc53d, Malam #0e1014, Arang #1a1d24, Kertas #f3f4f6, Kabut #8a92a0, Langit #7ab8ff; the
-			other values are derived from them.
+			other values are derived from them. The HUD's own surfaces are Malam, a near black without
+			Arang's blue cast, so they sit on warm and cool game art alike: see-through on the small
+			buttons, nearly solid under the spin, buy bonus and dock.
 		*/
 		--ui-accent: #ffc53d;
 		--ui-accent-contrast: #0e1014;
@@ -44,14 +46,14 @@
 		--ui-text: #f3f4f6;
 		--ui-text-muted: #8a92a0;
 		--ui-text-disabled: rgba(138, 146, 160, 0.5);
-		--ui-surface: rgba(26, 29, 36, 0.9);
-		--ui-surface-raised: rgba(35, 39, 48, 0.98);
+		--ui-surface: rgba(14, 16, 20, 0.84);
+		--ui-surface-raised: rgba(30, 32, 37, 0.97);
 		--ui-field: rgba(243, 244, 246, 0.07);
-		--ui-button-bg: rgba(26, 29, 36, 0.72);
+		--ui-button-bg: rgba(14, 16, 20, 0.62);
 		--ui-disabled-bg: rgba(243, 244, 246, 0.12);
 		--ui-scrim: rgba(14, 16, 20, 0.5);
 		--ui-shadow: 0 12px 32px rgba(14, 16, 20, 0.4);
-		--ui-squircle: 32%;
+		--ui-squircle: 22%;
 		/* dock and bet stepper corners as a share of their height, so the nested shapes match */
 		--ui-corner: 0.18;
 		--ui-text-shadow: 0 2px 8px rgba(14, 16, 20, 0.65);
