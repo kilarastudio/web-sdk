@@ -32,7 +32,7 @@ export const INITIAL_BOARD: RawSymbol[][] = [
 		{ name: 'H3' },
 		{ name: 'M', multiplier: 5 },
 		{ name: 'L3' },
-		{ name: 'W' },
+		{ name: 'H1' },
 		{ name: 'L2' },
 		{ name: 'L2' },
 	],
@@ -40,8 +40,8 @@ export const INITIAL_BOARD: RawSymbol[][] = [
 		{ name: 'L3' },
 		{ name: 'H4' },
 		{ name: 'M', multiplier: 7 },
-		{ name: 'L4' },
-		{ name: 'W' },
+		{ name: 'L3' },
+		{ name: 'H1' },
 		{ name: 'H1' },
 		{ name: 'H1' },
 	],
@@ -72,12 +72,59 @@ export const BOARD_SIZES = {
 	height: SYMBOL_SIZE * BOARD_DIMENSIONS.y,
 };
 
-// how far the frame and the panels above the board (tumble win, multiplier) reach past the
-// symbols; the panels are bigger and sit higher in the stacked layout
-export const BOARD_MARGINS = {
-	normal: { top: 82, bottom: 22 },
-	stacked: { top: 100, bottom: 22 },
+// The Kilara Mine board frame (kilara-mine-v2/board-frame.png), drawn as a nine-slice round the
+// board so its corners keep their size while its edges stretch. In source pixels
+// (frame-geometry.json): the slices cut from each side, and how much of each is visible frame
+// rather than clear padding.
+export const BOARD_FRAME = {
+	slices: { left: 152, top: 194, right: 155, bottom: 226 },
+	border: { left: 114, top: 119, right: 115, bottom: 121 },
+	// source pixels to game units
+	scale: 0.3,
+	// clear between the symbols and the frame's inner edge
+	padding: 6,
 };
+
+// how far the frame reaches past the symbols on each side
+export const BOARD_FRAME_REACH = {
+	left: BOARD_FRAME.padding + BOARD_FRAME.border.left * BOARD_FRAME.scale,
+	top: BOARD_FRAME.padding + BOARD_FRAME.border.top * BOARD_FRAME.scale,
+	right: BOARD_FRAME.padding + BOARD_FRAME.border.right * BOARD_FRAME.scale,
+	bottom: BOARD_FRAME.padding + BOARD_FRAME.border.bottom * BOARD_FRAME.scale,
+};
+export const BOARD_FRAME_SIDE = BOARD_FRAME_REACH.right;
+
+// the panels above the board (tumble win, multiplier) stand on the frame, over half its top edge
+export const PANELS_BOTTOM =
+	BOARD_FRAME_REACH.top - BOARD_FRAME.border.top * BOARD_FRAME.scale * 0.5;
+
+// how far the frame and the panels above the board reach past the symbols; the panels are bigger
+// in the stacked layout
+export const BOARD_MARGINS = {
+	normal: { top: 110, bottom: BOARD_FRAME_REACH.bottom },
+	stacked: { top: 134, bottom: BOARD_FRAME_REACH.bottom },
+};
+
+// what the board keeps clear, in CSS px, when it is scaled up to the room the HUD leaves: from
+// the side edges (or the HUD's side columns) and from the header and the controls
+export const BOARD_FIT = { edge: 10, gap: 8 };
+
+// The game's character: where the screen leaves room beside the frame it stands right of it, its
+// feet level with the frame's bottom; otherwise it stands right-aligned under the frame on the
+// bottom of the screen, behind the HUD's floating controls, or stays hidden where the room there
+// is too small to read it. Its height grows with the room, between these bounds, and stays below
+// the board's (500) so the reels keep the focus; width = height × ratio.
+export const CHARACTER_SIZES = {
+	ratio: 0.5,
+	// kept clear between the character and the edge of the screen
+	edge: 16,
+	side: { minHeight: 240, maxHeight: 400, gap: 24 },
+	bottom: { minHeight: 200, maxHeight: 400, gap: 8 },
+};
+
+// the Deep Glint logo with the miner on the loading screen, a little narrower than the board (600);
+// ratio is the trimmed art's width / height
+export const LOADING_LOGO = { width: 440, ratio: 1209 / 979 };
 
 export const BACKGROUND_RATIO = 2039 / 1000;
 export const PORTRAIT_BACKGROUND_RATIO = 1242 / 2208;
@@ -101,11 +148,6 @@ export const PORTRAIT_MAIN_SIZES = {
 export const HIGH_SYMBOLS = ['H1', 'H2', 'H3', 'H4', 'H5'];
 
 export const INITIAL_SYMBOL_STATE: SymbolState = 'static';
-
-const M_SIZE = 0.3;
-const HIGH_SYMBOL_SIZE = 0.9;
-const LOW_SYMBOL_SIZE = 0.9;
-const SPECIAL_SYMBOL_SIZE = 1;
 
 // Kilara reel motion: columns land one by one, 1.25 × 160 = 200 ms apart, and an anticipated
 // column waits (6.25 − 1.25) × 160 = 800 ms longer, so it lands about 1 s after the one before
@@ -167,384 +209,55 @@ const explosion = {
 	sizeRatios: { width: 1, height: 1 },
 };
 
-const h1Static = { type: 'sprite', assetKey: 'h1.webp', sizeRatios: { width: 1, height: 1 } };
-const h2Static = { type: 'sprite', assetKey: 'h2.webp', sizeRatios: { width: 1, height: 1 } };
-const h3Static = { type: 'sprite', assetKey: 'h3.webp', sizeRatios: { width: 1, height: 1 } };
-const h4Static = { type: 'sprite', assetKey: 'h4.webp', sizeRatios: { width: 1, height: 1 } };
-const h5Static = { type: 'sprite', assetKey: 'h5.webp', sizeRatios: { width: 1, height: 1 } };
+// Kilara symbols (kilara-mine-v3) are still static art: one sprite for every state but the
+// explosion, which a win beats in code (see winPulse) until the art has its own animations
+const SYMBOL_SPRITE_SIZE = 0.96;
 
-const l1Static = { type: 'sprite', assetKey: 'l1.webp', sizeRatios: { width: 1, height: 1 } };
-const l2Static = { type: 'sprite', assetKey: 'l2.webp', sizeRatios: { width: 1, height: 1 } };
-const l3Static = { type: 'sprite', assetKey: 'l3.webp', sizeRatios: { width: 1, height: 1 } };
-const l4Static = { type: 'sprite', assetKey: 'l4.webp', sizeRatios: { width: 1, height: 1 } };
+const kilaraSymbol = (assetKey: string) => {
+	const sprite = {
+		type: 'sprite',
+		assetKey,
+		sizeRatios: { width: SYMBOL_SPRITE_SIZE, height: SYMBOL_SPRITE_SIZE },
+	} as const;
 
-const sStatic = { type: 'sprite', assetKey: 's.png', sizeRatios: { width: 1.243, height: 1.243 } };
-const wStatic = { type: 'sprite', assetKey: 'w.png', sizeRatios: { width: 1.12, height: 1.12 } };
-
-const m2Static = {
-	type: 'sprite',
-	assetKey: 'm1_2x.png',
-	sizeRatios: { width: 0.88, height: 0.88 },
-};
-const m4Static = {
-	type: 'sprite',
-	assetKey: 'm1_4x.png',
-	sizeRatios: { width: 0.88, height: 0.88 },
-};
-const m5Static = { type: 'sprite', assetKey: 'm2_5x.png', sizeRatios: { width: 1, height: 1 } };
-const m7Static = { type: 'sprite', assetKey: 'm2_7x.png', sizeRatios: { width: 1, height: 1 } };
-const m10Static = { type: 'sprite', assetKey: 'm3_10x.png', sizeRatios: { width: 1, height: 1 } };
-
-const wSizeRatios = { width: 1.5 * 0.9, height: SPECIAL_SYMBOL_SIZE * 1.15 };
-const sSizeRatios = { width: 2.5, height: SPECIAL_SYMBOL_SIZE * 2.3 };
-
-const backgroundLowStatic = {
-	type: 'spine',
-	assetKey: 'M',
-	animationName: 'low_multiplier_static',
-	sizeRatios: { width: M_SIZE, height: M_SIZE },
-};
-const backgroundMidStatic = {
-	type: 'spine',
-	assetKey: 'M',
-	animationName: 'mid_multiplier_static',
-	sizeRatios: { width: M_SIZE, height: M_SIZE },
-};
-const backgroundHighStatic = {
-	type: 'spine',
-	assetKey: 'M',
-	animationName: 'high_multiplier_static',
-	sizeRatios: { width: M_SIZE, height: M_SIZE },
+	return {
+		explosion,
+		static: sprite,
+		spin: sprite,
+		land: sprite,
+		postWinStatic: sprite,
+		win: { ...sprite, pulse: true },
+	};
 };
 
-const backgroundLow = {
-	explosion,
-	win: {
-		type: 'spine',
-		assetKey: 'M',
-		animationName: 'low_multiplier_pay',
-		sizeRatios: { width: M_SIZE, height: M_SIZE },
-	},
-	postWinStatic: backgroundLowStatic,
-	static: backgroundLowStatic,
-	spin: {
-		type: 'spine',
-		assetKey: 'M',
-		animationName: 'low_multiplier_static',
-		sizeRatios: { width: M_SIZE, height: M_SIZE },
-	},
-	land: {
-		type: 'spine',
-		assetKey: 'M',
-		animationName: 'low_multiplier_land',
-		sizeRatios: { width: M_SIZE, height: M_SIZE },
-	},
-};
-
-const backgroundMid = {
-	explosion,
-	win: {
-		type: 'spine',
-		assetKey: 'M',
-		animationName: 'mid_multiplier_pay',
-		sizeRatios: { width: M_SIZE, height: M_SIZE },
-	},
-	postWinStatic: backgroundMidStatic,
-	static: backgroundMidStatic,
-	spin: {
-		type: 'spine',
-		assetKey: 'M',
-		animationName: 'mid_multiplier_static',
-		sizeRatios: { width: M_SIZE, height: M_SIZE },
-	},
-	land: {
-		type: 'spine',
-		assetKey: 'M',
-		animationName: 'mid_multiplier_land',
-		sizeRatios: { width: M_SIZE, height: M_SIZE },
-	},
-};
-
-const backgroundHigh = {
-	explosion,
-	win: {
-		type: 'spine',
-		assetKey: 'M',
-		animationName: 'high_multiplier_pay',
-		sizeRatios: { width: M_SIZE, height: M_SIZE },
-	},
-	postWinStatic: backgroundHighStatic,
-	static: backgroundHighStatic,
-	spin: {
-		type: 'spine',
-		assetKey: 'M',
-		animationName: 'high_multiplier_static',
-		sizeRatios: { width: M_SIZE, height: M_SIZE },
-	},
-	land: {
-		type: 'spine',
-		assetKey: 'M',
-		animationName: 'high_multiplier_land',
-		sizeRatios: { width: M_SIZE, height: M_SIZE },
-	},
-};
+// the multiplier is an empty token whose value the game draws on it, until the value has moved
+// off it (M_TAKEN)
+const multiplierLow = kilaraSymbol('symbolMultiplierLow');
+const multiplierMid = kilaraSymbol('symbolMultiplierMid');
+const multiplierHigh = kilaraSymbol('symbolMultiplierHigh');
 
 export const SYMBOL_INFO_MAP = {
-	H1: {
-		explosion,
-		win: {
-			type: 'spine',
-			assetKey: 'H1',
-			animationName: 'h1',
-			sizeRatios: { width: 0.5 * 1.15, height: HIGH_SYMBOL_SIZE * 0.57 },
-		},
-		postWinStatic: h1Static,
-		static: h1Static,
-		spin: h1Static,
-		land: h1Static,
-	},
-	H2: {
-		explosion,
-		win: {
-			type: 'spine',
-			assetKey: 'H2',
-			animationName: 'h2',
-			sizeRatios: { width: 0.5, height: HIGH_SYMBOL_SIZE * 0.57 },
-		},
-		postWinStatic: h2Static,
-		static: h2Static,
-		spin: h2Static,
-		land: h2Static,
-	},
-	H3: {
-		explosion,
-		win: {
-			type: 'spine',
-			assetKey: 'H3',
-			animationName: 'h3',
-			sizeRatios: { width: 0.5 * 0.9, height: HIGH_SYMBOL_SIZE * 0.53 },
-		},
-		postWinStatic: h3Static,
-		static: h3Static,
-		spin: h3Static,
-		land: h3Static,
-	},
-	H4: {
-		explosion,
-		win: {
-			type: 'spine',
-			assetKey: 'H4',
-			animationName: 'h4',
-			sizeRatios: { width: 0.5 * 0.9, height: HIGH_SYMBOL_SIZE * 0.53 },
-		},
-		postWinStatic: h4Static,
-		static: h4Static,
-		spin: h4Static,
-		land: h4Static,
-	},
-	H5: {
-		explosion,
-		win: {
-			type: 'spine',
-			assetKey: 'H5',
-			animationName: 'h5',
-			sizeRatios: { width: 0.5 * 0.9, height: HIGH_SYMBOL_SIZE * 0.53 },
-		},
-		postWinStatic: h5Static,
-		static: h5Static,
-		spin: h5Static,
-		land: h5Static,
-	},
-	L1: {
-		explosion,
-		win: {
-			type: 'spine',
-			assetKey: 'L1',
-			animationName: 'l1',
-			sizeRatios: { width: 0.5 * 0.75, height: LOW_SYMBOL_SIZE * 0.65 },
-		},
-		postWinStatic: l1Static,
-		static: l1Static,
-		spin: l1Static,
-		land: l1Static,
-	},
-	L2: {
-		explosion,
-		win: {
-			type: 'spine',
-			assetKey: 'L2',
-			animationName: 'l2',
-			sizeRatios: { width: 0.5 * 0.75, height: LOW_SYMBOL_SIZE * 0.65 },
-		},
-		postWinStatic: l2Static,
-		static: l2Static,
-		spin: l2Static,
-		land: l2Static,
-	},
-	L3: {
-		explosion,
-		win: {
-			type: 'spine',
-			assetKey: 'L3',
-			animationName: 'l3',
-			sizeRatios: { width: 0.5 * 0.75, height: LOW_SYMBOL_SIZE * 0.63 },
-		},
-		postWinStatic: l3Static,
-		static: l3Static,
-		spin: l3Static,
-		land: l3Static,
-	},
-	L4: {
-		explosion,
-		win: {
-			type: 'spine',
-			assetKey: 'L4',
-			animationName: 'l4',
-			sizeRatios: { width: 0.5 * 0.75, height: LOW_SYMBOL_SIZE * 0.63 },
-		},
-		postWinStatic: l4Static,
-		static: l4Static,
-		spin: l4Static,
-		land: l4Static,
-	},
-	W: {
-		explosion,
-		postWinStatic: {
-			type: 'sprite',
-			assetKey: 'explodedW.png',
-			sizeRatios: { width: 0.85, height: 0.85 },
-		},
-		static: wStatic,
-		spin: wStatic,
-		win: { type: 'spine', assetKey: 'W', animationName: 'wild_dynamite', sizeRatios: wSizeRatios },
-		land: {
-			type: 'spine',
-			assetKey: 'W',
-			animationName: 'wild_dynamite_land',
-			sizeRatios: wSizeRatios,
-		},
-	},
-	S: {
-		explosion,
-		postWinStatic: sStatic,
-		static: sStatic,
-		spin: {
-			type: 'spine',
-			assetKey: 'S',
-			animationName: 'scatter_spin',
-			sizeRatios: sSizeRatios,
-		},
-		win: { type: 'spine', assetKey: 'S', animationName: 'scatter_win', sizeRatios: sSizeRatios },
-		land: {
-			type: 'spine',
-			assetKey: 'S',
-			animationName: 'scatter_land',
-			sizeRatios: sSizeRatios,
-		},
-	},
-	M_2: {
-		explosion,
-		postWinStatic: m2Static,
-		static: m2Static,
-		spin: m2Static,
-		win: {
-			type: 'spine',
-			assetKey: 'M',
-			animationName: '2x',
-			sizeRatios: { width: M_SIZE, height: M_SIZE },
-		},
-		land: {
-			type: 'spine',
-			assetKey: 'M',
-			animationName: '2x_land',
-			sizeRatios: { width: M_SIZE, height: M_SIZE },
-		},
-	},
-	M_4: {
-		explosion,
-		postWinStatic: m4Static,
-		static: m4Static,
-		spin: m4Static,
-		win: {
-			type: 'spine',
-			assetKey: 'M',
-			animationName: '4x',
-			sizeRatios: { width: M_SIZE, height: M_SIZE },
-		},
-		land: {
-			type: 'spine',
-			assetKey: 'M',
-			animationName: '4x_land',
-			sizeRatios: { width: M_SIZE, height: M_SIZE },
-		},
-	},
-	M_5: {
-		explosion,
-		postWinStatic: m5Static,
-		static: m5Static,
-		spin: m5Static,
-		win: {
-			type: 'spine',
-			assetKey: 'M',
-			animationName: '5x',
-			sizeRatios: { width: M_SIZE, height: M_SIZE },
-		},
-		land: {
-			type: 'spine',
-			assetKey: 'M',
-			animationName: '5x_land',
-			sizeRatios: { width: M_SIZE, height: M_SIZE },
-		},
-	},
-	M_7: {
-		explosion,
-		postWinStatic: m7Static,
-		static: m7Static,
-		spin: m7Static,
-		win: {
-			type: 'spine',
-			assetKey: 'M',
-			animationName: '7x',
-			sizeRatios: { width: M_SIZE, height: M_SIZE },
-		},
-		land: {
-			type: 'spine',
-			assetKey: 'M',
-			animationName: '7x_land',
-			sizeRatios: { width: M_SIZE, height: M_SIZE },
-		},
-	},
-	M_10: {
-		explosion,
-		postWinStatic: m10Static,
-		static: m10Static,
-		spin: m10Static,
-		win: {
-			type: 'spine',
-			assetKey: 'M',
-			animationName: '10x',
-			sizeRatios: { width: M_SIZE, height: M_SIZE },
-		},
-		land: {
-			type: 'spine',
-			assetKey: 'M',
-			animationName: '10x_land',
-			sizeRatios: { width: M_SIZE, height: M_SIZE },
-		},
-	},
-	M_TAKEN_2: backgroundLow,
-	M_TAKEN_4: backgroundLow,
-	M_TAKEN_5: backgroundMid,
-	M_TAKEN_7: backgroundMid,
-	M_TAKEN_10: backgroundHigh,
-} as const;
-
-export const MULTIPLIER_BACKGROUND_INFO_MAP = {
-	M_2: backgroundLow,
-	M_4: backgroundLow,
-	M_5: backgroundMid,
-	M_7: backgroundMid,
-	M_10: backgroundHigh,
+	H1: kilaraSymbol('symbolH1'),
+	H2: kilaraSymbol('symbolH2'),
+	H3: kilaraSymbol('symbolH3'),
+	H4: kilaraSymbol('symbolH4'),
+	H5: kilaraSymbol('symbolH5'),
+	L1: kilaraSymbol('symbolL1'),
+	L2: kilaraSymbol('symbolL2'),
+	L3: kilaraSymbol('symbolL3'),
+	L4: kilaraSymbol('symbolL4'),
+	W: kilaraSymbol('symbolWild'),
+	S: kilaraSymbol('symbolScatter'),
+	M_2: multiplierLow,
+	M_4: multiplierLow,
+	M_5: multiplierMid,
+	M_7: multiplierMid,
+	M_10: multiplierHigh,
+	M_TAKEN_2: multiplierLow,
+	M_TAKEN_4: multiplierLow,
+	M_TAKEN_5: multiplierMid,
+	M_TAKEN_7: multiplierMid,
+	M_TAKEN_10: multiplierHigh,
 };
 
 export const SCATTER_LAND_SOUND_MAP = {

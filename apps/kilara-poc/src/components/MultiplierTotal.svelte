@@ -7,13 +7,15 @@
 </script>
 
 <script lang="ts">
-	import { BitmapText, SpineProvider, SpineSlot, SpineTrack } from 'pixi-svelte';
+	import { Container, SpineProvider, SpineSlot, SpineTrack } from 'pixi-svelte';
+	import { ResponsiveText } from 'components-pixi';
 	import { waitForResolve } from 'utils-shared/wait';
 	import { stateBetDerived } from 'state-shared';
 
 	import { getContext } from '../game/context';
 	import { SYMBOL_SIZE } from '../game/constants';
 	import BoardContainer from './BoardContainer.svelte';
+	import { gameTextStyle } from '../game/typography';
 
 	type Animation = 'explosion' | 'static';
 
@@ -36,16 +38,14 @@
 </script>
 
 {#snippet multiplierSnippet()}
-	<BitmapText
-		scale={3}
-		anchor={0.5}
-		text={`${totalMultiplier} X`}
-		style={{
-			fontFamily: 'gold',
-			fontSize: SYMBOL_SIZE,
-			letterSpacing: -5,
-		}}
-	/>
+	<Container scale={3}>
+		<ResponsiveText
+			anchor={0.5}
+			text={`${totalMultiplier}×`}
+			maxWidth={SYMBOL_SIZE * 3}
+			style={gameTextStyle({ fontSize: SYMBOL_SIZE, tone: 'value', onArt: true })}
+		/>
+	</Container>
 {/snippet}
 
 {#if show}

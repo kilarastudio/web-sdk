@@ -13,15 +13,16 @@
 	import { onMount } from 'svelte';
 	import { Tween } from 'svelte/motion';
 
-	import { BitmapText } from 'pixi-svelte';
+	import { Container } from 'pixi-svelte';
 	import { stateBetDerived } from 'state-shared';
 	import { SECOND } from 'constants-shared/time';
-	import { FadeContainer } from 'components-pixi';
+	import { FadeContainer, ResponsiveText } from 'components-pixi';
 	import { waitForTimeout } from 'utils-shared/wait';
 	import { bookEventAmountToCurrencyString } from 'utils-shared/amount';
 
 	import { SYMBOL_SIZE } from '../game/constants';
 	import { getContext } from '../game/context';
+	import { gameTextStyle } from '../game/typography';
 
 	type Props = { win: Win };
 
@@ -62,17 +63,18 @@
 		if (!show) props.win.oncomplete();
 	}}
 >
-	<BitmapText
+	<Container
 		x={SYMBOL_SIZE * (props.win.reel + 0.5)}
 		y={SYMBOL_SIZE * (props.win.row - 0.5) + y.current}
 		scale={scale.current}
-		text={showMultiplier
-			? `${bookEventAmountToCurrencyString(props.win.win)} X ${props.win.mult}`
-			: bookEventAmountToCurrencyString(props.win.result)}
-		anchor={0.5}
-		style={{
-			fontFamily: 'gold',
-			fontSize: SYMBOL_SIZE * 0.5,
-		}}
-	/>
+	>
+		<ResponsiveText
+			text={showMultiplier
+				? `${bookEventAmountToCurrencyString(props.win.win)} × ${props.win.mult}`
+				: bookEventAmountToCurrencyString(props.win.result)}
+			anchor={0.5}
+			maxWidth={SYMBOL_SIZE * 1.8}
+			style={gameTextStyle({ fontSize: SYMBOL_SIZE * 0.5, tone: 'value', onArt: true })}
+		/>
+	</Container>
 </FadeContainer>

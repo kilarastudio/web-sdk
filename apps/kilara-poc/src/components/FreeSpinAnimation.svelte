@@ -1,65 +1,56 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
-
-	import {
-		anchorToPivot,
-		Container,
-		SpineProvider,
-		SpineSlot,
-		SpineTrack,
-		type Sizes,
-	} from 'pixi-svelte';
+	import { ResponsiveText } from 'components-pixi';
 	import { MainContainer } from 'components-layout';
 
+	import Panel from './Panel.svelte';
+	import PopIn from './PopIn.svelte';
 	import { getContext } from '../game/context';
-	import { SYMBOL_SIZE, BOARD_DIMENSIONS } from '../game/constants';
+	import { BOARD_SIZES } from '../game/constants';
+	import { panelContentWidth, panelTextStyle } from '../game/panels';
 
+	// the free spins panel over the board: a label, the count or amount, and a caption
 	type Props = {
-		children: Snippet<[{ sizes: Sizes }]>;
+		key: 'panelFreeSpinsIntro' | 'panelFreeSpinsOutro';
+		label: string;
+		value: string;
+		caption: string;
 	};
 
 	const props: Props = $props();
-
-	type AnimationName = 'intro' | 'idle';
-
 	const context = getContext();
-	const BACKGROUND_RATIO = 920 / 720;
-	const BACKGROUND_WIDTH = SYMBOL_SIZE * BOARD_DIMENSIONS.x;
-	const BACKGROUND_SIZES = {
-		width: BACKGROUND_WIDTH,
-		height: BACKGROUND_WIDTH / BACKGROUND_RATIO,
-	};
-	const PANEL_SIZES = {
-		width: SYMBOL_SIZE * BOARD_DIMENSIONS.x,
-		height: SYMBOL_SIZE * BOARD_DIMENSIONS.x,
-	};
-
-	let animationName = $state<AnimationName>('intro');
+	// as wide as the board
+	const scale = $derived(BOARD_SIZES.width / panelContentWidth(props.key));
 </script>
 
 <MainContainer>
-	<Container
-		x={context.stateGameDerived.boardLayout().x}
-		y={context.stateGameDerived.boardLayout().y}
-		pivot={anchorToPivot({ anchor: 0.5, sizes: BACKGROUND_SIZES })}
-	>
-		<SpineProvider
-			key="fsIntro"
-			width={PANEL_SIZES.width}
-			x={PANEL_SIZES.width * 0.5}
-			y={PANEL_SIZES.height * 0.4}
-		>
-			<SpineTrack
-				trackIndex={0}
-				{animationName}
-				loop={animationName === 'idle'}
-				listener={{
-					complete: () => (animationName = 'idle'),
-				}}
-			/>
-			<SpineSlot slotName="slot_text_placeholder">
-				{@render props.children({ sizes: BACKGROUND_SIZES })}
-			</SpineSlot>
-		</SpineProvider>
-	</Container>
+	<PopIn x={context.stateGameDerived.boardLayout().x} y={context.stateGameDerived.boardLayout().y}>
+		<Panel key={props.key} {scale}>
+			{#snippet children({ face })}
+				<ResponsiveText
+					anchor={0.5}
+					x={face.x}
+					y={face.y - face.height * 0.35}
+					text={props.label}
+					style={panelTextStyle({ fontSize: face.height * 0.13, tone: 'label' })}
+					maxWidth={face.width}
+				/>
+				<ResponsiveText
+					anchor={0.5}
+					x={face.x}
+					y={face.y}
+					text={props.value}
+					style={panelTextStyle({ fontSize: face.height * 0.42, tone: 'value' })}
+					maxWidth={face.width}
+				/>
+				<ResponsiveText
+					anchor={0.5}
+					x={face.x}
+					y={face.y + face.height * 0.36}
+					text={props.caption}
+					style={panelTextStyle({ fontSize: face.height * 0.16, tone: 'label' })}
+					maxWidth={face.width}
+				/>
+			{/snippet}
+		</Panel>
+	</PopIn>
 </MainContainer>

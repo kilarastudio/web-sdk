@@ -1,66 +1,43 @@
 <script lang="ts">
-	import { Tween } from 'svelte/motion';
+	import { prefersReducedMotion, Tween } from 'svelte/motion';
+	import { cubicIn, cubicOut } from 'svelte/easing';
 
-	import { SpineProvider, SpineTrack, SpineSlot } from 'pixi-svelte';
-	import { ResponsiveBitmapText } from 'components-pixi';
+	import { Container } from 'pixi-svelte';
+	import { ResponsiveText } from 'components-pixi';
 	import { bookEventAmountToCurrencyString } from 'utils-shared/amount';
 
-	import { SYMBOL_SIZE } from '../game/constants';
+	import { panelTextStyle, type PanelFace } from '../game/panels';
 
 	type Props = {
-		width: number;
+		face: PanelFace;
 		amount: number;
 		animate: boolean;
 		oncomplete: () => void;
 	};
 
-	type AnimationName = 'idle' | 'explosion';
-
 	const props: Props = $props();
 	const amount = new Tween(0);
-	const animationName = $derived<AnimationName>(props.animate ? 'explosion' : 'idle');
+	// the round's total lands with a pop while it counts up
+	const pop = new Tween(1);
 
-	const normalUpdate = async () => {
-		await amount.set(props.amount);
+	const update = async ({ target, animate }: { target: number; animate: boolean }) => {
+		const popping = animate && !prefersReducedMotion.current;
+		if (popping) pop.set(1.14, { duration: 140, easing: cubicOut });
+		await amount.set(target);
+		if (popping) await pop.set(1, { duration: 200, easing: cubicIn });
 		props.oncomplete();
 	};
 
 	$effect(() => {
-		if (animationName === 'idle') normalUpdate();
+		update({ target: props.amount, animate: props.animate });
 	});
 </script>
 
-<SpineProvider key="tumble_win" width={props.width}>
-	<SpineTrack
-		trackIndex={0}
-		{animationName}
-		listener={{
-			complete: () => {
-				if (animationName === 'explosion') props.oncomplete();
-			},
-			event: (_, event) => {
-				if (event.data?.name === 'update_text') {
-					amount.set(props.amount);
-				}
-			},
-		}}
+<Container x={props.face.x} y={props.face.y} scale={pop.current}>
+	<ResponsiveText
+		anchor={0.5}
+		text={bookEventAmountToCurrencyString(amount.current)}
+		style={panelTextStyle({ fontSize: props.face.height * 0.9, tone: 'value' })}
+		maxWidth={props.face.width}
 	/>
-	<SpineSlot slotName="slot_win">
-		<ResponsiveBitmapText
-			anchor={0.5}
-			style={{
-				fontFamily: 'gold',
-				fontSize: 0.65 * SYMBOL_SIZE,
-			}}
-			text={bookEventAmountToCurrencyString(amount.current)}
-			maxWidth={props.width}
-		/>
-	</SpineSlot>
-	<!-- <SpineSlot slotName="slot_win_add">
-		<ResponsiveBitmapText
-			alpha={alphaAmount}
-			text={$formatAmount({ amount: $getRealWin($countUpAmount), numberingSystem: 'latn'})}
-			maxWidth={width}
-		/>
-	</SpineSlot> -->
-</SpineProvider>
+</Container>

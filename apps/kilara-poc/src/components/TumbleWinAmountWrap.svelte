@@ -5,8 +5,9 @@
 	import { FadeContainer } from 'components-pixi';
 
 	import { getContext } from '../game/context';
-	import { SYMBOL_SIZE } from '../game/constants';
+	import { PANELS_BOTTOM } from '../game/constants';
 	import BoardContainer from './BoardContainer.svelte';
+	import { TUMBLE_PANEL_SIZES } from './TumbleWinAmountFrame.svelte';
 
 	type Props = {
 		show: boolean;
@@ -15,24 +16,23 @@
 
 	const props: Props = $props();
 	const context = getContext();
+	const scale = $derived(context.stateLayoutDerived.isStacked() ? 1.28 : 1);
 
 	const desktopPosition = $derived({
 		x: context.stateGameDerived.boardLayout().width * 0.5,
-		y: -SYMBOL_SIZE * 0.8 * 0.58,
+		y: -PANELS_BOTTOM - TUMBLE_PANEL_SIZES.height * 0.5,
 	});
 
 	const portraitPosition = $derived({
 		x:
 			context.stateGameDerived.boardLayout().width *
 			(context.stateGame.gameType === 'basegame' ? 0.5 : 0.37),
-		y: -SYMBOL_SIZE * 0.8 * 0.68,
+		y: -PANELS_BOTTOM - TUMBLE_PANEL_SIZES.height * 0.5 * scale,
 	});
 
 	const position = $derived(
 		context.stateLayoutDerived.isStacked() ? portraitPosition : desktopPosition,
 	);
-
-	const scale = $derived(context.stateLayoutDerived.isStacked() ? 1.28 : 1);
 </script>
 
 <FadeContainer show={props.show}>

@@ -1,42 +1,43 @@
+<script lang="ts" module>
+	import { panelContentWidth, panelLayout } from '../game/panels';
+	import { SYMBOL_SIZE } from '../game/constants';
+
+	// The label uses a readable game-unit size rather than the thin source nameplate's face.
+	const PANEL_SCALE = (SYMBOL_SIZE * 3) / panelContentWidth('panelTumble');
+
+	export const TUMBLE_PANEL_SIZES = panelLayout({ key: 'panelTumble', scale: PANEL_SCALE }).sizes;
+</script>
+
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
-	import { BitmapText, Container, Sprite, type Sizes } from 'pixi-svelte';
+	import { ResponsiveText } from 'components-pixi';
 
-	import { SYMBOL_SIZE } from '../game/constants';
+	import Panel from './Panel.svelte';
+	import { getContext } from '../game/context';
+	import { panelTextStyle, type PanelFace } from '../game/panels';
 
 	type Props = {
-		children: Snippet<[{ frameSizes: Sizes }]>;
+		children: Snippet<[{ face: PanelFace }]>;
 	};
 
 	const props: Props = $props();
-	const TITLE_KEY = 'Frame_TumbleWin.png';
-	const TITLE_RATIO = 532 / 143;
-	const TITLE_HEIGHT = SYMBOL_SIZE * 0.28;
-	const TITLE_SIZES = {
-		width: TITLE_HEIGHT * TITLE_RATIO,
-		height: TITLE_HEIGHT,
-	};
-
-	const PANEL_KEY = 'Frame_Tumble.png';
-	const PANEL_RATIO = 1442 / 374;
-	const PANEL_HEIGHT = SYMBOL_SIZE * 0.8;
-	const PANEL_SIZES = {
-		width: PANEL_HEIGHT * PANEL_RATIO,
-		height: PANEL_HEIGHT,
-	};
+	const context = getContext();
 </script>
 
-<Sprite anchor={0.5} key={PANEL_KEY} {...PANEL_SIZES} />
+<Panel key="panelTumble" scale={PANEL_SCALE}>
+	{#snippet children({ face })}
+		{@render props.children({ face })}
+	{/snippet}
+</Panel>
 
-<Container y={-TITLE_HEIGHT * 1.2}>
-	<Sprite anchor={0.5} key={TITLE_KEY} {...TITLE_SIZES} />
-	<BitmapText
-		anchor={0.5}
-		y={-TITLE_HEIGHT * 0.025}
-		text="TUMBLE WIN"
-		style={{ fontFamily: 'gold', fontSize: TITLE_HEIGHT * 0.45 }}
-	/>
-</Container>
-
-{@render props.children({ frameSizes: PANEL_SIZES })}
+<ResponsiveText
+	anchor={0.5}
+	y={-TUMBLE_PANEL_SIZES.height / 2 - 20}
+	text={context.i18nDerived.tumbleWin()}
+	style={{
+		...panelTextStyle({ fontSize: 24, tone: 'label' }),
+		stroke: { color: 0x10171d, width: 4 },
+	}}
+	maxWidth={TUMBLE_PANEL_SIZES.width}
+/>

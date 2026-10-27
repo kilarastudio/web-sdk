@@ -11,6 +11,7 @@ import type { EmitterEventFreeSpinOutro } from '../components/FreeSpinOutro.svel
 import type { EmitterEventWin } from '../components/Win.svelte';
 import type { EmitterEventSound } from '../components/Sound.svelte';
 import type { EmitterEventTransition } from '../components/Transition.svelte';
+import type { EmitterEventCharacter } from '../components/Character.svelte';
 
 export type EmitterEventGame =
 	| EmitterEventBoard
@@ -25,4 +26,5 @@ export type EmitterEventGame =
 	| EmitterEventFreeSpinIntro
 	| EmitterEventFreeSpinOutro
 	| EmitterEventSound
-	| EmitterEventTransition;
+	| EmitterEventTransition
+	| EmitterEventCharacter;

@@ -1,82 +1,81 @@
 <script lang="ts" module>
 	export type EmitterEventBoardFrame =
-		| { type: 'boardFrameGlowShow' }
-		| { type: 'boardFrameGlowHide' };
+		{ type: 'boardFrameGlowShow' } | { type: 'boardFrameGlowHide' };
 </script>
 
 <script lang="ts">
-	import { Sprite, SpineProvider, SpineTrack } from 'pixi-svelte';
+	import { NineSliceSprite, Rectangle } from 'pixi-svelte';
+	import { FadeContainer } from 'components-pixi';
 
 	import { getContext } from '../game/context';
+	import { BOARD_FRAME } from '../game/constants';
 
 	const context = getContext();
-	const SPINE_SCALE = { width: 0.59, height: 0.62 };
-	const SPRITE_SCALE = { width: 1.07, height: 1 };
-	const BG_RATIO = 937 / 806;
-	const POSITION_ADJUSTMENT = 1.01;
+	// the symbols sit on a dark enamel backing, which runs a little under the frame
+	const BACKING = { color: 0x10171d, alpha: 0.92, overlap: 4 };
 
-	type AnimationName = 'reelhouse_glow_start' | 'reelhouse_glow_idle' | 'reelhouse_glow_exit';
+	const board = $derived(context.stateGameDerived.boardLayout());
+	// the opening round the symbols, its top left corner and sizes
+	const opening = $derived({
+		x: board.x - board.width * 0.5 - BOARD_FRAME.padding,
+		y: board.y - board.height * 0.5 - BOARD_FRAME.padding,
+		width: board.width + BOARD_FRAME.padding * 2,
+		height: board.height + BOARD_FRAME.padding * 2,
+	});
+	// the nine-slice is laid out in source pixels and scaled down as a whole, so its corners keep
+	// their proportions
+	const frame = $derived.by(() => {
+		const { slices, scale } = BOARD_FRAME;
 
-	let animationName = $state<AnimationName | undefined>(undefined);
-	let loop = $state(false);
+		return {
+			x: opening.x - slices.left * scale,
+			y: opening.y - slices.top * scale,
+			width: opening.width / scale + slices.left + slices.right,
+			height: opening.height / scale + slices.top + slices.bottom,
+			scale,
+			leftWidth: slices.left,
+			topHeight: slices.top,
+			rightWidth: slices.right,
+			bottomHeight: slices.bottom,
+		};
+	});
+
+	let showGlow = $state(false);
 
 	context.eventEmitter.subscribeOnMount({
-		boardFrameGlowShow: () => {
-			animationName = 'reelhouse_glow_start';
-			loop = false;
-		},
-		boardFrameGlowHide: () => {
-			if (animationName) animationName = 'reelhouse_glow_exit';
-		},
+		boardFrameGlowShow: () => (showGlow = true),
+		boardFrameGlowHide: () => (showGlow = false),
 	});
 </script>
 
-{#if animationName}
-	<SpineProvider
-		zIndex={-1}
-		key="reelhouse"
-		x={context.stateGameDerived.boardLayout().x * POSITION_ADJUSTMENT}
-		y={context.stateGameDerived.boardLayout().y * POSITION_ADJUSTMENT}
-		width={context.stateGameDerived.boardLayout().width * SPINE_SCALE.width}
-		height={context.stateGameDerived.boardLayout().height * SPINE_SCALE.height}
-	>
-		<SpineTrack
-			trackIndex={0}
-			{animationName}
-			{loop}
-			listener={{
-				complete: (entry) => {
-					if (entry.animation) {
-						if (entry.animation.name === 'reelhouse_glow_start') {
-							animationName = 'reelhouse_glow_idle';
-							loop = true;
-						}
-
-						if (entry.animation.name === 'reelhouse_glow_exit') {
-							animationName = undefined;
-							loop = false;
-						}
-					}
-				},
-			}}
+<FadeContainer show={showGlow} duration={400}>
+	{#each [{ width: 24, alpha: 0.06 }, { width: 14, alpha: 0.14 }, { width: 4, alpha: 0.65 }] as band}
+		<Rectangle
+			x={board.x}
+			y={board.y}
+			anchor={0.5}
+			width={board.width +
+				BOARD_FRAME.padding * 2 +
+				(BOARD_FRAME.border.left + BOARD_FRAME.border.right) * BOARD_FRAME.scale}
+			height={board.height +
+				BOARD_FRAME.padding * 2 +
+				(BOARD_FRAME.border.top + BOARD_FRAME.border.bottom) * BOARD_FRAME.scale}
+			borderRadius={8}
+			backgroundAlpha={0}
+			borderColor={0xffbf43}
+			borderWidth={band.width}
+			borderAlpha={band.alpha}
 		/>
-	</SpineProvider>
-{/if}
+	{/each}
+</FadeContainer>
 
-<Sprite
-	key="frame_bg.png"
-	anchor={0.5}
-	x={context.stateGameDerived.boardLayout().x * POSITION_ADJUSTMENT}
-	y={context.stateGameDerived.boardLayout().y * POSITION_ADJUSTMENT}
-	width={context.stateGameDerived.boardLayout().width * BG_RATIO * SPRITE_SCALE.width}
-	height={context.stateGameDerived.boardLayout().width * SPRITE_SCALE.height}
+<Rectangle
+	x={opening.x - BACKING.overlap}
+	y={opening.y - BACKING.overlap}
+	width={opening.width + BACKING.overlap * 2}
+	height={opening.height + BACKING.overlap * 2}
+	backgroundColor={BACKING.color}
+	backgroundAlpha={BACKING.alpha}
 />
 
-<Sprite
-	key="frame_edge.png"
-	anchor={0.5}
-	x={context.stateGameDerived.boardLayout().x * POSITION_ADJUSTMENT}
-	y={context.stateGameDerived.boardLayout().y * POSITION_ADJUSTMENT}
-	width={context.stateGameDerived.boardLayout().width * BG_RATIO * SPRITE_SCALE.width}
-	height={context.stateGameDerived.boardLayout().width * SPRITE_SCALE.height}
-/>
+<NineSliceSprite key="boardFrame" {...frame} />

@@ -1,9 +1,10 @@
 <script lang="ts">
-	import { SpineProvider, SpineTrack, Container, Sprite } from 'pixi-svelte';
+	import { Container, Sprite } from 'pixi-svelte';
 	import { FadeContainer, LoadingProgress } from 'components-pixi';
 	import { MainContainer } from 'components-layout';
 
 	import { getContext } from '../game/context';
+	import { LOADING_LOGO } from '../game/constants';
 	import TransitionAnimation from './TransitionAnimation.svelte';
 	import PressToContinue from './PressToContinue.svelte';
 
@@ -24,9 +25,13 @@
 			x={context.stateLayoutDerived.mainLayout().width * 0.5}
 			y={context.stateLayoutDerived.mainLayout().height * 0.5}
 		>
-			<SpineProvider key="loader" width={300}>
-				<SpineTrack trackIndex={0} animationName={'title_screen'} loop timeScale={3} />
-			</SpineProvider>
+			<Sprite
+				key="logoCharacter"
+				anchor={0.5}
+				y={(-LOADING_LOGO.width / LOADING_LOGO.ratio) * 0.12}
+				width={LOADING_LOGO.width}
+				height={LOADING_LOGO.width / LOADING_LOGO.ratio}
+			/>
 			{#if !context.stateApp.loaded}
 				<LoadingProgress y={250} width={1967 * 0.2} height={346 * 0.2}>
 					{#snippet background(sizes)}

@@ -18,6 +18,7 @@
 	import Background from './Background.svelte';
 	import LoadingScreen from './LoadingScreen.svelte';
 	import BoardFrame from './BoardFrame.svelte';
+	import Character from './Character.svelte';
 	import Board from './Board.svelte';
 	import Anticipations from './Anticipations.svelte';
 	import ClusterWinAmounts from './ClusterWinAmounts.svelte';
@@ -68,6 +69,10 @@
 		</MainContainer>
 
 		<MainContainer>
+			<Character />
+		</MainContainer>
+
+		<MainContainer>
 			<Board />
 			<Anticipations />
 			<TumbleWinAmount />
@@ -95,7 +100,7 @@
 {#if !context.stateLayout.showLoadingScreen}
 	<UI>
 		{#snippet gameName()}
-			<UiGameName name="KILARA POC" />
+			<UiGameName name="DEEP GLINT" />
 		{/snippet}
 	</UI>
 {/if}

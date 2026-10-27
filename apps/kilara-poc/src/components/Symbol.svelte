@@ -1,7 +1,12 @@
 <script lang="ts">
-	import SymbolSpine from './SymbolSpine.svelte';
+	import { ResponsiveText } from 'components-pixi';
+
 	import SymbolSprite from './SymbolSprite.svelte';
-	import { getSymbolBackgroundInfo, getSymbolInfo } from '../game/utils';
+	import SymbolSpineMain from './SymbolSpineMain.svelte';
+	import MultiplierValue from './MultiplierValue.svelte';
+	import { getSymbolInfo } from '../game/utils';
+	import { SYMBOL_SIZE } from '../game/constants';
+	import { panelTextStyle } from '../game/panels';
 	import type { SymbolState, RawSymbol } from '../game/types';
 	import { getContext } from '../game/context';
 
@@ -21,26 +26,27 @@
 </script>
 
 {#if isSprite}
-	<SymbolSprite {symbolInfo} x={props.x} y={props.y} oncomplete={props.oncomplete} />
+	<SymbolSprite {symbolInfo} x={props.x} y={props.y} oncomplete={props.oncomplete}>
+		<!-- the art leaves the multiplier's value and the scatter's name to the game -->
+		{#if props.rawSymbol.name === 'M' && props.rawSymbol.multiplier}
+			<MultiplierValue multiplier={props.rawSymbol.multiplier} />
+		{:else if props.rawSymbol.name === 'S'}
+			<ResponsiveText
+				anchor={0.5}
+				y={SYMBOL_SIZE * 0.33}
+				text={context.i18nDerived.scatter()}
+				style={panelTextStyle({ fontSize: SYMBOL_SIZE * 0.13, tone: 'label' })}
+				maxWidth={SYMBOL_SIZE * 0.9}
+			/>
+		{/if}
+	</SymbolSprite>
 {:else}
-	{@const symbolBackgroundInfo = getSymbolBackgroundInfo({
-		rawSymbol: props.rawSymbol,
-		state: props.state,
-	})}
-	<SymbolSpine
+	<!-- the explosion -->
+	<SymbolSpineMain
 		loop={props.loop}
 		{symbolInfo}
-		{symbolBackgroundInfo}
 		x={props.x}
 		y={props.y}
-		showWinFrame={props.state === 'win' && !['S', 'M'].includes(props.rawSymbol.name)}
-		listener={{
-			complete: props.oncomplete,
-			event: (_, event) => {
-				if (event.data?.name === 'wildExplode') {
-					context.eventEmitter?.broadcast({ type: 'soundOnce', name: 'sfx_wild_explode' });
-				}
-			},
-		}}
+		listener={{ complete: props.oncomplete }}
 	/>
 {/if}

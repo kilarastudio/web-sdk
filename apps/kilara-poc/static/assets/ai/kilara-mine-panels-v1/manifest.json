@@ -1,0 +1,402 @@
+{
+  "version": "kilara-mine-panels-v1",
+  "date": "2026-10-26",
+  "tool": "built-in image_gen",
+  "styleReference": "kilara-mine-v2",
+  "assets": [
+    {
+      "id": "tumble-main",
+      "file": "panel-tumble.png",
+      "group": "tumble",
+      "role": "amount-panel",
+      "width": 2171,
+      "height": 724,
+      "mode": "RGBA",
+      "bytes": 1130362,
+      "sha256": "7db9b11f4378f30f30fd501f5c72db98f3cc34b92c14dc99280175e7997a1c8b",
+      "transparent": true,
+      "contentBoundsAtAlpha128Px": [
+        53,
+        171,
+        2119,
+        567
+      ],
+      "faceBoundsAtCenterlinesPx": [
+        160,
+        269,
+        2013,
+        470
+      ],
+      "textSafeBoundsPx": [
+        308,
+        285,
+        1865,
+        454
+      ],
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "global-multiplier",
+      "file": "panel-global-multiplier.png",
+      "group": "multiplier",
+      "role": "counter-panel",
+      "width": 1254,
+      "height": 1254,
+      "mode": "RGBA",
+      "bytes": 1297558,
+      "sha256": "382040d8b8a6c9838b2c3c0e76ecbd3ed18ee13f07ca74e6ba70bae3241355aa",
+      "transparent": true,
+      "contentBoundsAtAlpha128Px": [
+        54,
+        165,
+        1201,
+        1085
+      ],
+      "faceBoundsAtCenterlinesPx": [
+        241,
+        286,
+        1015,
+        968
+      ],
+      "textSafeBoundsPx": [
+        303,
+        341,
+        953,
+        913
+      ],
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "free-spins-intro",
+      "file": "panel-free-spins-intro.png",
+      "group": "free-spins",
+      "role": "intro-panel",
+      "width": 1448,
+      "height": 1086,
+      "mode": "RGBA",
+      "bytes": 1431888,
+      "sha256": "745f29218d37d7c14d8d013b9b064464c36936ca778e39e3f8c07044ccd4ac6f",
+      "transparent": true,
+      "contentBoundsAtAlpha128Px": [
+        78,
+        110,
+        1372,
+        939
+      ],
+      "faceBoundsAtCenterlinesPx": [
+        170,
+        204,
+        1280,
+        835
+      ],
+      "textSafeBoundsPx": [
+        259,
+        254,
+        1191,
+        785
+      ],
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "celebration-big",
+      "file": "celebration-big.png",
+      "group": "celebration",
+      "role": "tier-panel",
+      "tier": "big",
+      "label": "BIG WIN",
+      "width": 1729,
+      "height": 910,
+      "mode": "RGBA",
+      "bytes": 1377978,
+      "sha256": "f4cf3b3f807a5927a5601e8e2a979fbbd45b53ced15a3d9075852635e131e9e4",
+      "transparent": true,
+      "contentBoundsAtAlpha128Px": [
+        48,
+        141,
+        1683,
+        755
+      ],
+      "faceBoundsAtCenterlinesPx": [
+        172,
+        267,
+        1556,
+        643
+      ],
+      "textSafeBoundsPx": [
+        283,
+        297,
+        1445,
+        613
+      ],
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "tumble-title",
+      "file": "title-tumble.png",
+      "group": "tumble",
+      "role": "title-plate",
+      "width": 2172,
+      "height": 724,
+      "mode": "RGBA",
+      "bytes": 800498,
+      "sha256": "2965b6b6a783c7ed18f5dccd843a15bcd489ca61b2aaa24b48a8b012e90cab84",
+      "transparent": true,
+      "contentBoundsAtAlpha128Px": [
+        72,
+        207,
+        2097,
+        497
+      ],
+      "faceBoundsAtCenterlinesPx": [
+        171,
+        281,
+        1998,
+        430
+      ],
+      "textSafeBoundsPx": [
+        317,
+        293,
+        1852,
+        418
+      ],
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "free-spins-outro",
+      "file": "panel-free-spins-outro.png",
+      "group": "free-spins",
+      "role": "outro-panel",
+      "width": 1448,
+      "height": 1086,
+      "mode": "RGBA",
+      "bytes": 1457121,
+      "sha256": "6c0df5e381904daa4076422f020a05d2d5da1cd62370fba46cde5febbd2307fb",
+      "transparent": true,
+      "contentBoundsAtAlpha128Px": [
+        76,
+        108,
+        1374,
+        977
+      ],
+      "faceBoundsAtCenterlinesPx": [
+        169,
+        212,
+        1281,
+        835
+      ],
+      "textSafeBoundsPx": [
+        258,
+        262,
+        1192,
+        785
+      ],
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "celebration-super",
+      "file": "celebration-super.png",
+      "group": "celebration",
+      "role": "tier-panel",
+      "tier": "superwin",
+      "label": "SUPER WIN",
+      "width": 1728,
+      "height": 910,
+      "mode": "RGBA",
+      "bytes": 1252454,
+      "sha256": "f2ade18584b6c744a493c0a93902351ef16140c5425271d5d5c096d06d2f34a8",
+      "transparent": true,
+      "contentBoundsAtAlpha128Px": [
+        37,
+        172,
+        1691,
+        742
+      ],
+      "faceBoundsAtCenterlinesPx": [
+        225,
+        300,
+        1500,
+        620
+      ],
+      "textSafeBoundsPx": [
+        327,
+        326,
+        1398,
+        594
+      ],
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "celebration-mega",
+      "file": "celebration-mega.png",
+      "group": "celebration",
+      "role": "tier-panel",
+      "tier": "mega",
+      "label": "MEGA WIN",
+      "width": 1728,
+      "height": 910,
+      "mode": "RGBA",
+      "bytes": 1341950,
+      "sha256": "ec9bbb6b1c73bc41fa5d8f060dcc9a144011f9b2af24137a51394cefac94fd98",
+      "transparent": true,
+      "contentBoundsAtAlpha128Px": [
+        34,
+        141,
+        1694,
+        766
+      ],
+      "faceBoundsAtCenterlinesPx": [
+        176,
+        269,
+        1549,
+        636
+      ],
+      "textSafeBoundsPx": [
+        286,
+        298,
+        1439,
+        607
+      ],
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "celebration-epic",
+      "file": "celebration-epic.png",
+      "group": "celebration",
+      "role": "tier-panel",
+      "tier": "epic",
+      "label": "EPIC WIN!",
+      "width": 1729,
+      "height": 910,
+      "mode": "RGBA",
+      "bytes": 1377715,
+      "sha256": "583845fa082750f7f5d44f9c5896e7a16de4906fde2badc64f9f93def155a4e3",
+      "transparent": true,
+      "contentBoundsAtAlpha128Px": [
+        46,
+        133,
+        1683,
+        755
+      ],
+      "faceBoundsAtCenterlinesPx": [
+        178,
+        266,
+        1548,
+        623
+      ],
+      "textSafeBoundsPx": [
+        288,
+        295,
+        1438,
+        594
+      ],
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    },
+    {
+      "id": "celebration-max",
+      "file": "celebration-max.png",
+      "group": "celebration",
+      "role": "tier-panel",
+      "tier": "max",
+      "label": "MAX WIN",
+      "width": 1728,
+      "height": 910,
+      "mode": "RGBA",
+      "bytes": 1330757,
+      "sha256": "ad66987dbbc527b10d4aa8802c67cf339869a5d93090b8d85c56224b02574046",
+      "transparent": true,
+      "contentBoundsAtAlpha128Px": [
+        28,
+        153,
+        1700,
+        730
+      ],
+      "faceBoundsAtCenterlinesPx": [
+        180,
+        288,
+        1545,
+        620
+      ],
+      "textSafeBoundsPx": [
+        289,
+        315,
+        1436,
+        593
+      ],
+      "anchor": {
+        "x": 0.5,
+        "y": 0.5
+      }
+    }
+  ],
+  "groups": {
+    "tumble": [
+      "tumble-main",
+      "tumble-title"
+    ],
+    "multiplier": [
+      "global-multiplier"
+    ],
+    "free-spins": [
+      "free-spins-intro",
+      "free-spins-outro"
+    ],
+    "celebration": [
+      "celebration-big",
+      "celebration-super",
+      "celebration-mega",
+      "celebration-epic",
+      "celebration-max"
+    ]
+  },
+  "notes": [
+    "All ten PNGs have genuinely transparent outer pixels and an opaque dark display face.",
+    "Headings, currency values, spin counts and multiplier values are runtime text, not painted into PNGs.",
+    "Text-safe rectangles are conservative centerline-derived estimates; validate against localized text and actual runtime layout.",
+    "Canvas padding varies. Preview uses metadata to crop display bounds through CSS while leaving original PNG files unchanged.",
+    "Standalone static asset pack and art preview. Existing game components and Spine rigs have not been replaced."
+  ],
+  "validation": {
+    "decodedPngs": 10,
+    "transparentOuterBackgrounds": 10,
+    "opaqueFaceCenters": 10,
+    "browserLoadedImagesFailed": 0,
+    "browserOverflowingFacesWithLongAmount": 0,
+    "counterPreviewSizesPx": [
+      64,
+      96,
+      128
+    ],
+    "freeSpinsGalleryWidthPx": 280,
+    "sampleAmounts": [
+      "125,00",
+      "1.234.567,89"
+    ]
+  }
+}

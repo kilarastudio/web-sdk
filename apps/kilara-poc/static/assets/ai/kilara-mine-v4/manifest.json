@@ -1,0 +1,583 @@
+{
+  "version": "kilara-mine-v4",
+  "encoding": "WebP",
+  "regularSymbols": [
+    "symbolH1",
+    "symbolH2",
+    "symbolH3",
+    "symbolH4",
+    "symbolL1",
+    "symbolL2",
+    "symbolL3"
+  ],
+  "totalBytes": 2286984,
+  "assets": [
+    {
+      "key": "symbolH1",
+      "file": "runtime/symbol-h1-gold-ore.webp",
+      "group": "symbol",
+      "width": 256,
+      "height": 256,
+      "bytes": 15828,
+      "sourceBytes": 903504,
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "upscaled": false,
+      "sha256": "60985ebe05a75bdd8a297283b8931e3879f52c204740bedbea3388350e8e5729",
+      "content": [
+        16,
+        28,
+        240,
+        228
+      ]
+    },
+    {
+      "key": "symbolH2",
+      "file": "runtime/symbol-h2-ruby-ore.webp",
+      "group": "symbol",
+      "width": 256,
+      "height": 256,
+      "bytes": 13808,
+      "sourceBytes": 1404488,
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "upscaled": false,
+      "sha256": "73d88bab49f2763f3e3279c8cb0255633ad2593e25fb6474da864f0dcc7c9a4d",
+      "content": [
+        16,
+        42,
+        240,
+        214
+      ]
+    },
+    {
+      "key": "symbolH3",
+      "file": "runtime/symbol-h3-emerald-ore.webp",
+      "group": "symbol",
+      "width": 256,
+      "height": 256,
+      "bytes": 18206,
+      "sourceBytes": 1506002,
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "upscaled": false,
+      "sha256": "31335c7a96f27cccc3b7bc7517234221b22469f5d231710a29547215aa9bb886",
+      "content": [
+        35,
+        16,
+        221,
+        240
+      ]
+    },
+    {
+      "key": "symbolH4",
+      "file": "runtime/symbol-h4-amethyst-ore.webp",
+      "group": "symbol",
+      "width": 256,
+      "height": 256,
+      "bytes": 16818,
+      "sourceBytes": 1377777,
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "upscaled": false,
+      "sha256": "5e2726ed65c0bd8ac547471a42e5752611cbb4ec1dd4fc091878fb0adb5561ff",
+      "content": [
+        21,
+        16,
+        234,
+        240
+      ]
+    },
+    {
+      "key": "symbolL1",
+      "file": "runtime/symbol-l1-k-copper.webp",
+      "group": "symbol",
+      "width": 256,
+      "height": 256,
+      "bytes": 17500,
+      "sourceBytes": 1497246,
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "upscaled": false,
+      "sha256": "b0d0ab4bd31111de5fffc91cf5acd9c0dce6b5b796b230de4abeb0bf8f5c66f0",
+      "content": [
+        16,
+        21,
+        240,
+        235
+      ]
+    },
+    {
+      "key": "symbolL2",
+      "file": "runtime/symbol-l2-q-steel.webp",
+      "group": "symbol",
+      "width": 256,
+      "height": 256,
+      "bytes": 15592,
+      "sourceBytes": 1393538,
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "upscaled": false,
+      "sha256": "9dd0e9bb4b26e9d7ffafac8a04238b8afc134dc9ffde200215ea1f49215944aa",
+      "content": [
+        28,
+        16,
+        227,
+        240
+      ]
+    },
+    {
+      "key": "symbolL3",
+      "file": "runtime/symbol-l3-j-tin.webp",
+      "group": "symbol",
+      "width": 256,
+      "height": 256,
+      "bytes": 11122,
+      "sourceBytes": 1186934,
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "upscaled": false,
+      "sha256": "bafd5842b8d49ef721417fda4c2d687d05e18948b1de43292db938df1c746660",
+      "content": [
+        29,
+        16,
+        227,
+        240
+      ]
+    },
+    {
+      "key": "symbolScatter",
+      "file": "runtime/symbol-scatter.webp",
+      "group": "symbol",
+      "width": 256,
+      "height": 256,
+      "bytes": 17932,
+      "sourceBytes": 1096443,
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "upscaled": false,
+      "sha256": "f3a1c2a854205f9af59a96b0c54fce4d1f591b861da5bdb227f7698807c4419b",
+      "content": [
+        16,
+        19,
+        240,
+        237
+      ]
+    },
+    {
+      "key": "symbolMultiplierLow",
+      "file": "runtime/symbol-multiplier-low.webp",
+      "group": "symbol",
+      "width": 256,
+      "height": 256,
+      "bytes": 17098,
+      "sourceBytes": 1437170,
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "upscaled": false,
+      "sha256": "2b5c1fc3d934864272d0e01438eb215fd5b1407b9e0b2aff90344700d97da5d1",
+      "content": [
+        16,
+        17,
+        240,
+        239
+      ]
+    },
+    {
+      "key": "symbolMultiplierMid",
+      "file": "runtime/symbol-multiplier-mid.webp",
+      "group": "symbol",
+      "width": 256,
+      "height": 256,
+      "bytes": 17550,
+      "sourceBytes": 1439397,
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "upscaled": false,
+      "sha256": "2d5eb7a87be647784228f4a63c55eba0fab4d31e4a0134b425848688ba75ea10",
+      "content": [
+        16,
+        17,
+        240,
+        238
+      ]
+    },
+    {
+      "key": "symbolMultiplierHigh",
+      "file": "runtime/symbol-multiplier-high.webp",
+      "group": "symbol",
+      "width": 256,
+      "height": 256,
+      "bytes": 16990,
+      "sourceBytes": 1416999,
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "upscaled": false,
+      "sha256": "3bd5a045b31f798fe83a524d346ce20e36976cd6a92d3d5b32c29c06d4e21aa9",
+      "content": [
+        16,
+        17,
+        240,
+        239
+      ]
+    },
+    {
+      "key": "panelTumble",
+      "file": "runtime/panel-tumble.webp",
+      "group": "panel",
+      "width": 2048,
+      "height": 682,
+      "bytes": 87372,
+      "sourceBytes": 1007305,
+      "sourceWidth": 2173,
+      "sourceHeight": 724,
+      "upscaled": false,
+      "sha256": "d1aafb7329407b04e60f056a073ccbb6f1bd6f766c7988027b2894e608cc85c9",
+      "content": [
+        47,
+        158,
+        2003,
+        536
+      ],
+      "text": [
+        288,
+        267,
+        1763,
+        428
+      ]
+    },
+    {
+      "key": "panelGlobalMultiplier",
+      "file": "runtime/panel-global-multiplier.webp",
+      "group": "panel",
+      "width": 2048,
+      "height": 2048,
+      "bytes": 160526,
+      "sourceBytes": 1181273,
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "upscaled": true,
+      "sha256": "30ba7986b8f97b8edf4f67c7764ed8da8a4f05b87d6921027f9f5d2c08b1d603",
+      "content": [
+        85,
+        267,
+        1966,
+        1777
+      ],
+      "text": [
+        493,
+        556,
+        1559,
+        1495
+      ]
+    },
+    {
+      "key": "panelFreeSpinsIntro",
+      "file": "runtime/panel-free-spins-intro.webp",
+      "group": "panel",
+      "width": 2048,
+      "height": 1536,
+      "bytes": 141262,
+      "sourceBytes": 1322477,
+      "sourceWidth": 1448,
+      "sourceHeight": 1086,
+      "upscaled": true,
+      "sha256": "bbf6b953dddba91aed4ea0fa7bf674d8147a5ce29e981838dfb5115b18b8da5b",
+      "content": [
+        107,
+        153,
+        1952,
+        1334
+      ],
+      "text": [
+        365,
+        358,
+        1694,
+        1115
+      ]
+    },
+    {
+      "key": "panelFreeSpinsOutro",
+      "file": "runtime/panel-free-spins-outro.webp",
+      "group": "panel",
+      "width": 2048,
+      "height": 1536,
+      "bytes": 155318,
+      "sourceBytes": 1435463,
+      "sourceWidth": 1448,
+      "sourceHeight": 1086,
+      "upscaled": true,
+      "sha256": "6679e56e5a95910d8c041f72e69e6a0386d2035541bcd1540210061443163588",
+      "content": [
+        107,
+        151,
+        1948,
+        1383
+      ],
+      "text": [
+        365,
+        369,
+        1690,
+        1111
+      ]
+    },
+    {
+      "key": "celebrationBig",
+      "file": "runtime/celebration-big.webp",
+      "group": "panel",
+      "width": 2048,
+      "height": 1079,
+      "bytes": 115734,
+      "sourceBytes": 1151434,
+      "sourceWidth": 1728,
+      "sourceHeight": 910,
+      "upscaled": true,
+      "sha256": "cbb09f0471dc7dde86127dba6ddfc86ce27088d3ead53c4d10d94aa9f568b438",
+      "content": [
+        56,
+        164,
+        1994,
+        900
+      ],
+      "text": [
+        335,
+        351,
+        1712,
+        730
+      ]
+    },
+    {
+      "key": "celebrationSuper",
+      "file": "runtime/celebration-super.webp",
+      "group": "panel",
+      "width": 2048,
+      "height": 1079,
+      "bytes": 135972,
+      "sourceBytes": 1105544,
+      "sourceWidth": 1727,
+      "sourceHeight": 910,
+      "upscaled": true,
+      "sha256": "2e7bde3c1b4795b0cd766b63e2c415cbb3866a41b5eba8d689ae83b8ac6f3d79",
+      "content": [
+        42,
+        198,
+        2008,
+        883
+      ],
+      "text": [
+        387,
+        383,
+        1660,
+        705
+      ]
+    },
+    {
+      "key": "celebrationMega",
+      "file": "runtime/celebration-mega.webp",
+      "group": "panel",
+      "width": 2048,
+      "height": 1079,
+      "bytes": 145306,
+      "sourceBytes": 1223564,
+      "sourceWidth": 1728,
+      "sourceHeight": 910,
+      "upscaled": true,
+      "sha256": "038c1387eb32d72c312bfea191b583f01554a221c9bf429d2c95ca3acf31c152",
+      "content": [
+        40,
+        164,
+        2010,
+        913
+      ],
+      "text": [
+        339,
+        352,
+        1707,
+        722
+      ]
+    },
+    {
+      "key": "celebrationEpic",
+      "file": "runtime/celebration-epic.webp",
+      "group": "panel",
+      "width": 2048,
+      "height": 1079,
+      "bytes": 158754,
+      "sourceBytes": 1322853,
+      "sourceWidth": 1728,
+      "sourceHeight": 910,
+      "upscaled": true,
+      "sha256": "25be3fbb7a89f01fe00eb79b0ad98b466b8b1fa7855505d61ce238573198d3de",
+      "content": [
+        51,
+        152,
+        2000,
+        902
+      ],
+      "text": [
+        339,
+        347,
+        1708,
+        708
+      ]
+    },
+    {
+      "key": "celebrationMax",
+      "file": "runtime/celebration-max.webp",
+      "group": "panel",
+      "width": 2048,
+      "height": 1079,
+      "bytes": 157072,
+      "sourceBytes": 1238497,
+      "sourceWidth": 1728,
+      "sourceHeight": 910,
+      "upscaled": true,
+      "sha256": "21679e4a747b535356cf194ed87e4912a0381fb0ed8b2cb0b11cfc6fe6719414",
+      "content": [
+        28,
+        174,
+        2026,
+        873
+      ],
+      "text": [
+        340,
+        370,
+        1711,
+        707
+      ]
+    },
+    {
+      "key": "backgroundBase",
+      "file": "runtime/background-base.webp",
+      "group": "background",
+      "width": 2560,
+      "height": 1440,
+      "bytes": 146134,
+      "sourceBytes": 1882949,
+      "sourceWidth": 1672,
+      "sourceHeight": 941,
+      "upscaled": true,
+      "sha256": "4b3e3ee447c09149381fdfc7210945ae75261c9260bafac4311197df49cd1f06",
+      "content": [
+        0,
+        0,
+        2560,
+        1440
+      ]
+    },
+    {
+      "key": "backgroundBonus",
+      "file": "runtime/background-bonus.webp",
+      "group": "background",
+      "width": 2560,
+      "height": 1440,
+      "bytes": 430282,
+      "sourceBytes": 2406349,
+      "sourceWidth": 1672,
+      "sourceHeight": 941,
+      "upscaled": true,
+      "sha256": "72de7400ad7be9344ec4d2d1a4212735b68a840b4a9581b51961e6ec303e3a3f",
+      "content": [
+        0,
+        0,
+        2560,
+        1440
+      ]
+    },
+    {
+      "key": "characterIdle",
+      "file": "runtime/character-idle.webp",
+      "group": "character",
+      "width": 616,
+      "height": 1200,
+      "bytes": 137050,
+      "sourceBytes": 1538557,
+      "sourceWidth": 887,
+      "sourceHeight": 1774,
+      "upscaled": false,
+      "sha256": "991d5b425ee700582853c266b5a8de7302d8505586ba931d3fee9f63a464e67d",
+      "content": [
+        22,
+        22,
+        597,
+        1182
+      ]
+    },
+    {
+      "key": "boardFrame",
+      "file": "runtime/board-frame.webp",
+      "group": "frame",
+      "width": 1374,
+      "height": 1145,
+      "bytes": 100502,
+      "sourceBytes": 663372,
+      "sourceWidth": 1374,
+      "sourceHeight": 1145,
+      "upscaled": false,
+      "sha256": "a66cd9a006fd13cb4b5ec33c27152b0c75466f004c8292fa0d99b1a9ed2ee9e8",
+      "content": [
+        36,
+        74,
+        1337,
+        1043
+      ]
+    },
+    {
+      "key": "symbolH5",
+      "file": "runtime/symbol-h5-lantern.webp",
+      "group": "legacy-story",
+      "width": 256,
+      "height": 256,
+      "bytes": 13626,
+      "sourceBytes": 1118435,
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "upscaled": false,
+      "sha256": "f67f985e3be50c0b7129c4a321f1c58e0fd1a5bda235db7adf988f8d346b6256",
+      "content": [
+        40,
+        23,
+        216,
+        235
+      ]
+    },
+    {
+      "key": "symbolL4",
+      "file": "runtime/symbol-l4-spade.webp",
+      "group": "legacy-story",
+      "width": 256,
+      "height": 256,
+      "bytes": 10354,
+      "sourceBytes": 990947,
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "upscaled": false,
+      "sha256": "a386f41748d7d733cb9be5175e8b7923906da3a8aeb7aba616b4a75eee759c8e",
+      "content": [
+        30,
+        22,
+        226,
+        238
+      ]
+    },
+    {
+      "key": "symbolWild",
+      "file": "runtime/symbol-wild.webp",
+      "group": "legacy-story",
+      "width": 256,
+      "height": 256,
+      "bytes": 13276,
+      "sourceBytes": 1173754,
+      "sourceWidth": 1254,
+      "sourceHeight": 1254,
+      "upscaled": false,
+      "sha256": "16ff6b2051b1a4c0ae31ee79aaee2dcf9ac460f96a038058f266c015022c2e78",
+      "content": [
+        15,
+        50,
+        240,
+        213
+      ]
+    }
+  ]
+}

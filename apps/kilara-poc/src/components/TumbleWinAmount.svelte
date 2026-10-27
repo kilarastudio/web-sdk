@@ -41,8 +41,8 @@
 
 <TumbleWinAmountWrap {show}>
 	<TumbleWinAmountFrame>
-		{#snippet children({ frameSizes })}
-			<TumbleWinAmountText {amount} {animate} {oncomplete} width={frameSizes.width} />
+		{#snippet children({ face })}
+			<TumbleWinAmountText {face} {amount} {animate} {oncomplete} />
 		{/snippet}
 	</TumbleWinAmountFrame>
 </TumbleWinAmountWrap>

@@ -1,7 +1,8 @@
 import _ from 'lodash';
 
 import { recordBookEvent, checkIsMultipleRevealEvents, type BookEventHandlerMap } from 'utils-book';
-import { stateBet, stateUi } from 'state-shared';
+import { stateBet, stateBetDerived, stateUi } from 'state-shared';
+import { BOOK_AMOUNT_MULTIPLIER } from 'constants-shared/bet';
 
 import { eventEmitter } from './eventEmitter';
 import { playBookEvent } from './utils';
@@ -18,13 +19,27 @@ const winLevelSoundsPlay = ({ winLevelData }: { winLevelData: WinLevelData }) =>
 	if (winLevelData?.sound?.bgm) {
 		eventEmitter.broadcast({ type: 'soundMusic', name: winLevelData.sound.bgm });
 	}
-	if (winLevelData?.type === 'big') {
-		eventEmitter.broadcast({ type: 'soundLoop', name: 'sfx_bigwin_coinloop' });
-	}
+};
+
+// the character only celebrates a win above what the round cost (a win at or below it is a loss
+// in disguise), and a big win the most
+const characterReactToWin = ({
+	amount,
+	winLevelData,
+}: {
+	amount: number;
+	winLevelData: WinLevelData;
+}) => {
+	const cost = (stateBetDerived.activeBetMode()?.costMultiplier ?? 1) * BOOK_AMOUNT_MULTIPLIER;
+	if (amount <= cost) return;
+
+	eventEmitter.broadcast({
+		type: 'characterReact',
+		reaction: winLevelData?.type === 'big' ? 'bigWin' : 'win',
+	});
 };
 
 const winLevelSoundsStop = () => {
-	eventEmitter.broadcast({ type: 'soundStop', name: 'sfx_bigwin_coinloop' });
 	if (stateBet.activeBetModeKey === 'SUPERSPIN' || stateGame.gameType === 'freegame') {
 		// check if SUPERSPIN, when finishing a bet.
 		eventEmitter.broadcast({ type: 'soundMusic', name: 'bgm_freespin' });
@@ -94,6 +109,7 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 	freeSpinTrigger: async (bookEvent: BookEventOfType<'freeSpinTrigger'>) => {
 		// animate scatters
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_scatter_win_v2' });
+		eventEmitter.broadcast({ type: 'characterReact', reaction: 'bonus' });
 		await animateSymbols({ positions: bookEvent.positions });
 		// show free spin intro
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_superfreespin' });
@@ -130,6 +146,7 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 	freeSpinRetrigger: async (bookEvent: BookEventOfType<'freeSpinRetrigger'>) => {
 		// animate scatters, then raise the total (the next updateFreeSpin carries the same total)
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_scatter_win_v2' });
+		eventEmitter.broadcast({ type: 'characterReact', reaction: 'bonus' });
 		await animateSymbols({ positions: bookEvent.positions });
 		stateUi.freeSpinCounterTotal = bookEvent.totalFs;
 	},
@@ -156,6 +173,7 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		eventEmitter.broadcast({ type: 'globalMultiplierHide' });
 		eventEmitter.broadcast({ type: 'freeSpinOutroShow' });
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_youwon_panel' });
+		characterReactToWin({ amount: bookEvent.amount, winLevelData });
 		winLevelSoundsPlay({ winLevelData });
 		await eventEmitter.broadcastAsync({
 			type: 'freeSpinOutroCountUp',
@@ -182,6 +200,8 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		eventEmitter.broadcast({ type: 'multiplierBoardShow' });
 		eventEmitter.broadcast({ type: 'multiplierBoardInit' });
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'tumble_win_4' });
+		// the character powers the multipliers as they gather
+		eventEmitter.broadcast({ type: 'characterReact', reaction: 'power' });
 		await eventEmitter.broadcastAsync({ type: 'multiplierBoardAnimate' });
 		eventEmitter.broadcast({ type: 'boardWithMovingMultiplierTexts' });
 		await eventEmitter.broadcastAsync({ type: 'multiplierBoardMove' });
@@ -227,6 +247,7 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		const winLevelData = winLevelMap[bookEvent.winLevel as WinLevel];
 
 		eventEmitter.broadcast({ type: 'winShow' });
+		characterReactToWin({ amount: bookEvent.amount, winLevelData });
 		winLevelSoundsPlay({ winLevelData });
 		await eventEmitter.broadcastAsync({
 			type: 'winUpdate',
