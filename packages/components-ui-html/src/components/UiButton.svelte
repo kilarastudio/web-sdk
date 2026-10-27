@@ -1,13 +1,12 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
-	import UiIcon, { type UiIconName, type UiIconWeight } from './UiIcon.svelte';
+	import UiIcon, { type UiIconName } from './UiIcon.svelte';
 
 	type Props = {
 		// shown as text, or as the accessible name and tooltip when the button only has an icon
 		label: string;
 		icon?: UiIconName;
-		iconWeight?: UiIconWeight;
 		iconRotation?: number;
 		onpress: () => void;
 		disabled?: boolean;
@@ -25,7 +24,6 @@
 	const {
 		label,
 		icon,
-		iconWeight,
 		iconRotation,
 		onpress,
 		disabled = false,
@@ -52,7 +50,7 @@
 >
 	{#if icon}
 		<span class="ui-button-icon">
-			<UiIcon name={icon} weight={iconWeight} rotation={iconRotation} />
+			<UiIcon name={icon} rotation={iconRotation} />
 		</span>
 	{/if}
 	{#if !iconOnly}
@@ -135,7 +133,7 @@
 	.stop {
 		--size: var(--ui-button-size-large);
 		/* the stop square, sized to sit optically level with the spin arrow's ring */
-		--ui-icon-scale: 0.5;
+		--ui-icon-scale: 0.6;
 		--ui-button-hover-bg: var(--ui-surface-raised);
 		--ring: var(--ui-text);
 
@@ -260,6 +258,7 @@
 	}
 
 	.ui-button-icon {
-		font-size: calc(var(--size) * var(--ui-icon-scale, 0.42));
+		/* the Kilara glyphs keep an 8/96 margin, so they need a larger share than Phosphor did */
+		font-size: calc(var(--size) * var(--ui-icon-scale, 0.56));
 	}
 </style>

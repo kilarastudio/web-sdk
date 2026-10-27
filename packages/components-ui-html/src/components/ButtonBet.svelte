@@ -22,7 +22,6 @@
 			kind={spin ? 'spin' : 'stop'}
 			label={spin ? i18nDerived.bet() : i18nDerived.stop()}
 			icon={spin ? 'spin' : 'stop'}
-			iconWeight={spin ? 'bold' : 'fill'}
 			muted={['spin_disabled', 'stop_disabled'].includes(key)}
 			{disabled}
 			{onpress}

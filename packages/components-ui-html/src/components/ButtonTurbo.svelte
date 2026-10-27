@@ -20,12 +20,4 @@
 	});
 </script>
 
-<UiButton
-	label={i18nDerived.turbo()}
-	icon="turbo"
-	iconWeight={active ? 'fill' : 'bold'}
-	{active}
-	toggle
-	{disabled}
-	{onpress}
-/>
+<UiButton label={i18nDerived.turbo()} icon="turbo" {active} toggle {disabled} {onpress} />

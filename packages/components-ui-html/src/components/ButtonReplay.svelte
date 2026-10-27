@@ -24,7 +24,7 @@
 </script>
 
 <button type="button" class="button-replay" {disabled} onclick={onpress}>
-	<UiIcon name={stateReplay.phase === 'finished' ? 'playAgain' : 'play'} weight="fill" />
+	<UiIcon name={stateReplay.phase === 'finished' ? 'playAgain' : 'play'} />
 	{label}
 </button>
 

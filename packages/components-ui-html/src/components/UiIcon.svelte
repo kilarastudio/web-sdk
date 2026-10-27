@@ -1,62 +1,29 @@
 <script lang="ts" module>
-	// Phosphor icons (MIT, phosphoricons.com), bundled with the game: never load icons from a CDN.
-	// Spin is Kilara's own. To switch more to the Kilara icon set, change this map; the buttons only
-	// know the names.
-	import ArrowCounterClockwise from 'phosphor-svelte/lib/ArrowCounterClockwise';
-	import CaretDown from 'phosphor-svelte/lib/CaretDown';
-	import GearSix from 'phosphor-svelte/lib/GearSix';
-	import Info from 'phosphor-svelte/lib/Info';
-	import Lightning from 'phosphor-svelte/lib/Lightning';
-	import List from 'phosphor-svelte/lib/List';
-	import Minus from 'phosphor-svelte/lib/Minus';
-	import Play from 'phosphor-svelte/lib/Play';
-	import Plus from 'phosphor-svelte/lib/Plus';
-	import Repeat from 'phosphor-svelte/lib/Repeat';
-	import SpeakerHigh from 'phosphor-svelte/lib/SpeakerHigh';
-	import SpeakerSlash from 'phosphor-svelte/lib/SpeakerSlash';
-	import Stop from 'phosphor-svelte/lib/Stop';
-	import Table from 'phosphor-svelte/lib/Table';
-	import X from 'phosphor-svelte/lib/X';
+	// Kilara's own icon set, bundled with the game: never load icons from a CDN. The buttons only
+	// know the names; the drawings live in kilaraIcons.ts.
+	import { KILARA_ICONS, type KilaraIconName } from './kilaraIcons';
 
-	import IconKilaraSpin from './IconKilaraSpin.svelte';
-
-	const ICONS = {
-		spin: IconKilaraSpin,
-		stop: Stop,
-		autoSpin: Repeat,
-		turbo: Lightning,
-		decrease: Minus,
-		increase: Plus,
-		menu: List,
-		close: X,
-		payTable: Table,
-		info: Info,
-		settings: GearSix,
-		soundOn: SpeakerHigh,
-		soundOff: SpeakerSlash,
-		drawer: CaretDown,
-		play: Play,
-		playAgain: ArrowCounterClockwise,
-	};
-
-	export type UiIconName = keyof typeof ICONS;
-	export type UiIconWeight = 'bold' | 'fill';
+	export type UiIconName = KilaraIconName;
 </script>
 
 <script lang="ts">
 	type Props = {
 		name: UiIconName;
-		weight?: UiIconWeight;
 		rotation?: number;
 	};
 
-	const { name, weight = 'bold', rotation = 0 }: Props = $props();
-	const Icon = $derived(ICONS[name]);
+	const { name, rotation = 0 }: Props = $props();
+	const icon = $derived(KILARA_ICONS[name]);
 </script>
 
 <!-- decorative: the button around it carries the (translated) label -->
 <span class="ui-icon" style:transform={rotation ? `rotate(${rotation}deg)` : undefined}>
-	<Icon {weight} size="100%" aria-hidden="true" focusable="false" />
+	<svg viewBox="0 0 96 96" aria-hidden="true" focusable="false">
+		<path fill="currentColor" d={icon.d} />
+		{#if icon.dot}
+			<path class="dot" d={icon.dot} />
+		{/if}
+	</svg>
 </span>
 
 <style lang="scss">
@@ -66,8 +33,15 @@
 		height: 1em;
 		flex-shrink: 0;
 
-		:global(svg) {
+		svg {
 			display: block;
+			width: 100%;
+			height: 100%;
 		}
+	}
+
+	/* the Kilau dot (spin): the accent unless the button greys it out through --ui-icon-dot */
+	.dot {
+		fill: var(--ui-icon-dot, var(--ui-accent));
 	}
 </style>
