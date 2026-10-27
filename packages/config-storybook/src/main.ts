@@ -8,6 +8,11 @@ const config: StorybookConfig = {
 		options: {},
 	},
 	staticDirs: ['../static'],
+	core: {
+		// Like config-vite: besides localhost and this machine's own IPs (e.g. its Tailscale IP),
+		// accept Tailscale MagicDNS names so other tailnet devices can open Storybook.
+		allowedHosts: ['.ts.net'],
+	},
 };
 
 export default config;
