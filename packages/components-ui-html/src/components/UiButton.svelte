@@ -35,6 +35,33 @@
 	}: Props = $props();
 
 	const iconOnly = $derived(!!icon && kind !== 'row');
+
+	// The press feedback lives in the content, never in the button itself: the spin arrow whips one
+	// turn the way it points, the buy bonus Kilau dot runs once around its ring.
+	let iconEl = $state<HTMLSpanElement>();
+	let orbitEl = $state<HTMLSpanElement>();
+	const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+	const playPress = () => {
+		if (reducedMotion()) return;
+		if (kind === 'spin') {
+			iconEl?.animate([{ rotate: '0deg' }, { rotate: '360deg' }], {
+				duration: 520,
+				easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
+			});
+		}
+		if (kind === 'feature') {
+			orbitEl?.animate([{ rotate: '0deg' }, { rotate: '360deg' }], {
+				duration: 640,
+				easing: 'cubic-bezier(0.45, 0, 0.2, 1)',
+			});
+		}
+	};
+
+	const onclick = () => {
+		playPress();
+		onpress();
+	};
 </script>
 
 <button
@@ -46,10 +73,15 @@
 	title={iconOnly ? label : undefined}
 	aria-pressed={toggle ? active : active || undefined}
 	{disabled}
-	onclick={onpress}
+	{onclick}
 >
+	{#if kind === 'feature'}
+		<span class="ui-button-orbit" bind:this={orbitEl} aria-hidden="true">
+			<span class="ui-button-kilau"></span>
+		</span>
+	{/if}
 	{#if icon}
-		<span class="ui-button-icon">
+		<span class="ui-button-icon" bind:this={iconEl}>
 			<UiIcon name={icon} rotation={iconRotation} />
 		</span>
 	{/if}
@@ -91,7 +123,6 @@
 		pointer-events: auto;
 		touch-action: manipulation;
 		transition:
-			transform 0.12s ease-out,
 			color 0.15s,
 			background-color 0.15s;
 
@@ -108,8 +139,10 @@
 			cursor: not-allowed;
 		}
 
-		&:not(:disabled):active {
-			transform: scale(0.95);
+		/* no scale on press: the icon dips instead */
+		&.icon:not(:disabled):active .ui-button-icon {
+			transform: translateY(calc(var(--size) * 0.04));
+			transition-duration: 0.06s;
 		}
 
 		&:focus-visible {
@@ -143,7 +176,6 @@
 			inset 0 0 0 calc(var(--size) * 0.035) var(--ring),
 			var(--ui-shadow);
 		transition:
-			transform 0.12s ease-out,
 			color 0.2s,
 			background-color 0.2s,
 			box-shadow 0.2s;
@@ -157,16 +189,31 @@
 			color: var(--ui-text-disabled);
 		}
 
-		@media (hover: hover) {
-			&:not(:disabled):hover {
-				transform: scale(1.03);
-			}
-		}
 	}
 
+	/*
+		Spin: the arrow leans a little into its turn on hover, winds back while held, and whips one
+		full turn on release (playPress). The Kilau dot sits at the centre, so it never moves.
+	*/
 	.spin {
 		/* the arrow's ring spans about half the button; above 0.64 its head crowds the ring */
 		--ui-icon-scale: 0.64;
+
+		.ui-button-icon {
+			transition: transform 0.36s cubic-bezier(0.34, 1.56, 0.64, 1);
+		}
+
+		@media (hover: hover) {
+			&:not(:disabled):hover .ui-button-icon {
+				transform: rotate(30deg);
+			}
+		}
+
+		&:not(:disabled):active .ui-button-icon {
+			transform: rotate(-20deg);
+			transition-duration: 0.12s;
+			transition-timing-function: ease-out;
+		}
 	}
 
 	/*
@@ -190,21 +237,17 @@
 		line-height: 1.05;
 		letter-spacing: 0.03em;
 
-		&::before {
-			content: '';
-			position: absolute;
-			top: calc(var(--size) * 0.115);
-			left: 50%;
-			width: calc(var(--size) * 0.085);
-			height: calc(var(--size) * 0.085);
-			border-radius: 50%;
-			background-color: var(--kilau);
-			transform: translateX(-50%);
-		}
-
 		.ui-button-label {
 			max-width: calc(var(--size) * 0.82);
 			text-wrap: balance;
+			transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
+		}
+
+		/* held: the label sinks a touch instead of the button shrinking */
+		&:not(:disabled):active .ui-button-label {
+			transform: translateY(calc(var(--size) * 0.035));
+			transition-duration: 0.08s;
+			transition-timing-function: ease-out;
 		}
 
 		&.active {
@@ -224,10 +267,39 @@
 			color: var(--ui-text-disabled);
 		}
 
+		/* hover: the Kilau dot runs once around the ring */
 		@media (hover: hover) {
-			&:not(:disabled):hover {
-				transform: scale(1.03);
+			&:not(:disabled):hover .ui-button-orbit {
+				animation: kilau-orbit 0.8s cubic-bezier(0.45, 0, 0.2, 1);
 			}
+		}
+	}
+
+	/* fills the badge and turns about its centre, carrying the dot along the inside of the ring */
+	.ui-button-orbit {
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+	}
+
+	.ui-button-kilau {
+		position: absolute;
+		top: calc(var(--size) * 0.115);
+		left: 50%;
+		width: calc(var(--size) * 0.085);
+		height: calc(var(--size) * 0.085);
+		border-radius: 50%;
+		background-color: var(--kilau);
+		transform: translateX(-50%);
+		transition: background-color 0.2s;
+	}
+
+	@keyframes kilau-orbit {
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
 		}
 	}
 
@@ -259,6 +331,20 @@
 
 	.ui-button-icon {
 		/* the Kilara glyphs keep an 8/96 margin, so they need a larger share than Phosphor did */
+		/* a box of its own, so the press and hover motions can transform it */
+		display: block;
 		font-size: calc(var(--size) * var(--ui-icon-scale, 0.56));
+		transition: transform 0.2s ease-out;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.ui-button .ui-button-icon,
+		.ui-button .ui-button-label {
+			transform: none !important;
+		}
+
+		.ui-button .ui-button-orbit {
+			animation: none !important;
+		}
 	}
 </style>

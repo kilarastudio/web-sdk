@@ -50,7 +50,7 @@
 		cursor: pointer;
 		pointer-events: auto;
 		touch-action: manipulation;
-		transition: transform 0.1s ease-out;
+		transition: background-color 0.1s ease-out;
 
 		&:disabled {
 			background-color: var(--ui-disabled-bg);
@@ -58,8 +58,9 @@
 			cursor: not-allowed;
 		}
 
+		/* no scale on press: the pill darkens a touch instead */
 		&:not(:disabled):active {
-			transform: scale(0.96);
+			background-color: color-mix(in srgb, var(--ui-accent) 85%, black);
 		}
 	}
 </style>
