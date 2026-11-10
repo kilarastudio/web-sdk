@@ -16,7 +16,7 @@
 		// an on/off switch: reports aria-pressed="false" when off as well
 		toggle?: boolean;
 		// icon: square icon button, spin/stop: the one oversized round bet button,
-		// feature: round text badge (buy bonus), row: icon and label in a menu list
+		// feature: square text badge (buy bonus), row: icon and label in a menu list
 		kind?: 'icon' | 'spin' | 'stop' | 'feature' | 'row';
 		children?: Snippet;
 	};
@@ -37,9 +37,9 @@
 	const iconOnly = $derived(!!icon && kind !== 'row');
 
 	// The press feedback lives in the content, never in the button itself: the spin arrow whips one
-	// turn the way it points, the buy bonus Kilau dot runs once around its ring.
+	// turn the way it points, the buy bonus Kilau dot runs once around its frame.
 	let iconEl = $state<HTMLSpanElement>();
-	let orbitEl = $state<HTMLSpanElement>();
+	let kilauEl = $state<HTMLSpanElement>();
 	const reducedMotion = () => window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 	const playPress = () => {
@@ -50,11 +50,11 @@
 				easing: 'cubic-bezier(0.2, 0.8, 0.2, 1)',
 			});
 		}
-		if (kind === 'feature') {
-			orbitEl?.animate([{ rotate: '0deg' }, { rotate: '360deg' }], {
-				duration: 640,
-				easing: 'cubic-bezier(0.45, 0, 0.2, 1)',
-			});
+		if (kind === 'feature' && kilauEl) {
+			// restart the CSS run, which follows the square frame
+			kilauEl.classList.remove('run');
+			void kilauEl.offsetWidth;
+			kilauEl.classList.add('run');
 		}
 	};
 
@@ -76,9 +76,12 @@
 	{onclick}
 >
 	{#if kind === 'feature'}
-		<span class="ui-button-orbit" bind:this={orbitEl} aria-hidden="true">
-			<span class="ui-button-kilau"></span>
-		</span>
+		<span
+			class="ui-button-kilau"
+			bind:this={kilauEl}
+			aria-hidden="true"
+			onanimationend={() => kilauEl?.classList.remove('run')}
+		></span>
 	{/if}
 	{#if icon}
 		<span class="ui-button-icon" bind:this={iconEl}>
@@ -187,7 +190,6 @@
 
 			color: var(--ui-text-disabled);
 		}
-
 	}
 
 	/*
@@ -216,17 +218,16 @@
 	}
 
 	/*
-		Buy bonus: a round badge in the dock's own surface with a Kilau ring (as thick as the spin
-		button's) and the Kilau dot from the Kilara wordmark. The dot sits near the top edge, out of
-		the text flow, so the two-line label keeps the whole centre. Smaller than the spin button,
-		which stays the one primary action.
+		Buy bonus: a square badge in the dock's own surface with a Kilau frame (as thick as the spin
+		button's ring) and the Kilau dot from the Kilara wordmark. The dot sits near the top edge, out
+		of the text flow, so the two-line label keeps the whole centre. Smaller than the spin button,
+		which stays the one primary action and the only round one.
 	*/
 	.feature {
 		--size: var(--ui-feature-size);
 		--ui-button-hover-bg: var(--ui-surface-raised);
 		--kilau: var(--ui-accent);
 
-		border-radius: 50%;
 		background-color: var(--ui-surface);
 		box-shadow:
 			inset 0 0 0 calc(var(--size) * 0.035) var(--kilau),
@@ -253,7 +254,7 @@
 			--ui-button-hover-bg: var(--ui-activate);
 			--kilau: var(--ui-activate-contrast);
 
-			/* no ring on the filled state: a dark ring on a coloured disc is the look to avoid */
+			/* no frame on the filled state: a dark frame on a coloured square is the look to avoid */
 			box-shadow: var(--ui-shadow);
 			background-color: var(--ui-activate);
 			color: var(--ui-activate-contrast);
@@ -266,39 +267,62 @@
 			color: var(--ui-text-disabled);
 		}
 
-		/* hover: the Kilau dot runs once around the ring */
+		/* hover: the Kilau dot runs once around the frame */
 		@media (hover: hover) {
-			&:not(:disabled):hover .ui-button-orbit {
-				animation: kilau-orbit 0.8s cubic-bezier(0.45, 0, 0.2, 1);
+			&:not(:disabled):hover .ui-button-kilau {
+				animation: kilau-frame 0.9s;
 			}
 		}
 	}
 
-	/* fills the badge and turns about its centre, carrying the dot along the inside of the ring */
-	.ui-button-orbit {
-		position: absolute;
-		inset: 0;
-		pointer-events: none;
-	}
-
+	/* a true circle, so it keeps its radius; it rests at the top centre, inside the frame */
 	.ui-button-kilau {
+		/* from the button centre to the middle of the dot's track */
+		--track: calc(var(--size) * 0.3425);
+
 		position: absolute;
 		top: calc(var(--size) * 0.115);
-		left: 50%;
+		left: calc(50% - var(--size) * 0.0425);
 		width: calc(var(--size) * 0.085);
 		height: calc(var(--size) * 0.085);
 		border-radius: 50%;
 		background-color: var(--kilau);
-		transform: translateX(-50%);
+		pointer-events: none;
 		transition: background-color 0.2s;
+
+		&:global(.run) {
+			animation: kilau-frame 0.9s;
+		}
 	}
 
-	@keyframes kilau-orbit {
-		from {
-			transform: rotate(0deg);
+	/*
+		Clockwise along the inside of the square frame, back to the top centre. The stops sit at
+		equal distances along the path (half a side, then whole sides), so the speed stays even;
+		the run eases in on the first stretch and out on the last.
+	*/
+	@keyframes kilau-frame {
+		0% {
+			translate: 0 0;
+			animation-timing-function: ease-in;
 		}
-		to {
-			transform: rotate(360deg);
+		12.5% {
+			translate: var(--track) 0;
+			animation-timing-function: linear;
+		}
+		37.5% {
+			translate: var(--track) calc(var(--track) * 2);
+			animation-timing-function: linear;
+		}
+		62.5% {
+			translate: calc(var(--track) * -1) calc(var(--track) * 2);
+			animation-timing-function: linear;
+		}
+		87.5% {
+			translate: calc(var(--track) * -1) 0;
+			animation-timing-function: ease-out;
+		}
+		100% {
+			translate: 0 0;
 		}
 	}
 
@@ -341,7 +365,7 @@
 			transform: none !important;
 		}
 
-		.ui-button .ui-button-orbit {
+		.ui-button .ui-button-kilau {
 			animation: none !important;
 		}
 	}

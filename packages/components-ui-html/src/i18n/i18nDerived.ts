@@ -1,5 +1,13 @@
 import { stateI18nDerived, stateUrlDerived } from 'state-shared';
 
+const translateSafe = (key: string) => {
+	try {
+		return stateI18nDerived.translate(key);
+	} catch {
+		return key;
+	}
+};
+
 export const i18nDerived = {
 	bet: () => (stateUrlDerived.social() ? 'SPIN' : stateI18nDerived.translate('BET')),
 	max: () => stateI18nDerived.translate('MAX'),
@@ -17,16 +25,42 @@ export const i18nDerived = {
 	startAutoplay: () => stateI18nDerived.translate('START AUTOPLAY'),
 	notification: () => stateI18nDerived.translate('NOTIFICATION'),
 	autoSpinsStopInfo: () => stateI18nDerived.translate('AUTO PLAY HAS STOPPED DUE TO'),
-	insufficientFunds: () => stateI18nDerived.translate('INSUFFICIENT FUNDS TO PLACE THIS BET. PLEASE ADD FUNDS TO YOUR ACCOUNT OR LOWER THE BET LEVEL.'),
+	insufficientFunds: () =>
+		stateI18nDerived.translate(
+			'INSUFFICIENT FUNDS TO PLACE THIS BET. PLEASE ADD FUNDS TO YOUR ACCOUNT OR LOWER THE BET LEVEL.',
+		),
 	lossLimitReached: () => stateI18nDerived.translate('LOSS LIMIT REACHED'),
 	singleWinLimitReached: () => stateI18nDerived.translate('SINGLE WIN LIMIT REACHED'),
 	settings: () => stateI18nDerived.translate('SETTINGS'),
+	// error messages: no restricted social words (bet, money, gamble), so one text serves both
+	// modes; an error can come before the language loads, so these fall back to the English key
+	errorBalanceTitle: () => translateSafe('BALANCE TOO LOW'),
+	errorBalanceBody: () =>
+		translateSafe('Your balance does not cover this round. Choose a lower amount or add funds.'),
+	errorLimitTitle: () => translateSafe('LIMIT REACHED'),
+	errorLimitBody: () => translateSafe('You have reached a play limit set on your account.'),
+	errorBusyTitle: () => translateSafe('ONE MOMENT'),
+	errorBusyBody: () =>
+		translateSafe('The server is busy right now. Wait a few seconds, then try again.'),
+	errorSessionTitle: () => translateSafe('SESSION ENDED'),
+	errorSessionBody: () =>
+		translateSafe('Your session is no longer valid. Reload the game to continue.'),
+	errorConnectionTitle: () => translateSafe('CONNECTION LOST'),
+	errorConnectionBody: () =>
+		translateSafe('The game could not reach the server. Check your connection and reload.'),
+	errorGeneralTitle: () => translateSafe('SOMETHING WENT WRONG'),
+	errorGeneralBody: () =>
+		translateSafe('The game ran into a problem. Reload the game to continue.'),
+	errorDetails: () => translateSafe('DETAILS'),
+	ok: () => translateSafe('OK'),
+	reload: () => translateSafe('RELOAD'),
 	// hud
 	audio: () => stateI18nDerived.translate('AUDIO'),
 	balance: () => stateI18nDerived.translate('BALANCE'),
 	win: () => stateI18nDerived.translate('WIN'),
 	stop: () => stateI18nDerived.translate('STOP'),
-	buyBonus: () => (stateUrlDerived.social() ? 'PLAY BONUS' : stateI18nDerived.translate('BUY BONUS')),
+	buyBonus: () =>
+		stateUrlDerived.social() ? 'PLAY BONUS' : stateI18nDerived.translate('BUY BONUS'),
 	disable: () => stateI18nDerived.translate('DISABLE'),
 	freeSpins: () => stateI18nDerived.translate('FREE SPINS'),
 	decrease: () => stateI18nDerived.translate('-'),

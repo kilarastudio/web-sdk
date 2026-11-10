@@ -3,6 +3,7 @@ import UiGameName from './src/components/UiGameName.svelte';
 import UiLogo from './src/components/UiLogo.svelte';
 import StudioIntro from './src/components/StudioIntro.svelte';
 import Modals from './src/components/Modals.svelte';
+import ModalError from './src/components/ModalError.svelte';
 import GameVersion from './src/components/GameVersion.svelte';
 import GlobalStyle from './src/components/GlobalStyle.svelte';
 
@@ -19,6 +20,7 @@ export {
 	UiLogo,
 	StudioIntro,
 	Modals,
+	ModalError,
 	GameVersion,
 	GlobalStyle,
 };

@@ -18,7 +18,7 @@ Saat pekerjaan mengubah tampilan atau animasi yang dapat diperiksa di Storybook,
 
 UI Kilara memakai sudut siku. Jangan memakai `border-radius` (CSS), `roundRect`, atau radius lain pada panel, dock, tombol ikon, field, menu, modal, kartu, scrollbar, maupun persegi Pixi.
 
-Satu-satunya pengecualian adalah bentuk lingkaran utuh, yaitu `border-radius: 50%` pada tombol bulat (spin/stop, buy bonus), titik Kilau, dan kenop switch, serta potongan atau gambar lingkaran seperti notch dock dan `Circle`. Bentuk pil (`999px`) tidak termasuk pengecualian.
+Satu-satunya pengecualian adalah bentuk lingkaran utuh, yaitu `border-radius: 50%` pada tombol bulat (hanya spin/stop; buy bonus kotak), titik Kilau, dan kenop switch, serta potongan atau gambar lingkaran seperti notch dock dan `Circle`. Bentuk pil (`999px`) tidak termasuk pengecualian.
 
 # Logo Kilara: dikunci
 
