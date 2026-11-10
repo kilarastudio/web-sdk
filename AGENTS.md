@@ -19,3 +19,11 @@ Saat pekerjaan mengubah tampilan atau animasi yang dapat diperiksa di Storybook,
 UI Kilara memakai sudut siku. Jangan memakai `border-radius` (CSS), `roundRect`, atau radius lain pada panel, dock, tombol ikon, field, menu, modal, kartu, scrollbar, maupun persegi Pixi.
 
 Satu-satunya pengecualian adalah bentuk lingkaran utuh, yaitu `border-radius: 50%` pada tombol bulat (spin/stop, buy bonus), titik Kilau, dan kenop switch, serta potongan atau gambar lingkaran seperti notch dock dan `Circle`. Bentuk pil (`999px`) tidak termasuk pengecualian.
+
+# Logo Kilara: dikunci
+
+Logo "Tegas" sudah final (dikunci 10 November 2026). Jangan menggambar ulang, mengganti font, mengubah warna, atau menambah efek (kilap, glow, gradien) tanpa permintaan eksplisit dari pengguna.
+
+- Bentuk logo ada di `packages/components-ui-html/src/components/kilaraLogo.ts`. File ini dibuat oleh `brand/logo/source/kilara_logo.py` di workspace stake-engine. Jangan mengedit `kilaraLogo.ts` dengan tangan; ubah generatornya, lalu jalankan ulang.
+- `UiLogo` (HUD) dan `StudioIntro` (intro studio) memakai data yang sama.
+- Animasi intro: huruf naik dari garis dasar, titik Kilau jatuh dan memantul, lalu STUDIO muncul. Tanpa kilap atau cahaya.
