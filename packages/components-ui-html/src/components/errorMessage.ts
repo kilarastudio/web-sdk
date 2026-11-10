@@ -1,4 +1,5 @@
 import { i18nDerived } from '../i18n/i18nDerived';
+import type { KilaraIconName } from './kilaraIcons';
 
 /*
 	Turns whatever reached stateModal.modal.error (an RGS error body, a thrown Error, a plain
@@ -12,6 +13,8 @@ export type ErrorMessage = {
 	body: string;
 	/** true: closing the message is enough; false: the game needs a reload */
 	recoverable: boolean;
+	/** the emblem drawing, from the Kilara icon set */
+	icon: KilaraIconName;
 	/** the code and raw message, for support */
 	code: string;
 	detail: string;
@@ -51,6 +54,7 @@ export const errorMessage = (error: any): ErrorMessage => {
 		return {
 			...base,
 			title: i18nDerived.errorBalanceTitle(),
+			icon: 'alertBalance',
 			body: i18nDerived.errorBalanceBody(),
 			recoverable: true,
 		};
@@ -60,6 +64,7 @@ export const errorMessage = (error: any): ErrorMessage => {
 		return {
 			...base,
 			title: i18nDerived.errorLimitTitle(),
+			icon: 'alertLimit',
 			body: i18nDerived.errorLimitBody(),
 			recoverable: true,
 		};
@@ -69,6 +74,7 @@ export const errorMessage = (error: any): ErrorMessage => {
 		return {
 			...base,
 			title: i18nDerived.errorBusyTitle(),
+			icon: 'alertBusy',
 			body: i18nDerived.errorBusyBody(),
 			recoverable: true,
 		};
@@ -78,6 +84,7 @@ export const errorMessage = (error: any): ErrorMessage => {
 		return {
 			...base,
 			title: i18nDerived.errorSessionTitle(),
+			icon: 'alertSession',
 			body: i18nDerived.errorSessionBody(),
 			recoverable: false,
 		};
@@ -87,6 +94,7 @@ export const errorMessage = (error: any): ErrorMessage => {
 		return {
 			...base,
 			title: i18nDerived.errorConnectionTitle(),
+			icon: 'alertConnection',
 			body: i18nDerived.errorConnectionBody(),
 			recoverable: false,
 		};
@@ -95,6 +103,7 @@ export const errorMessage = (error: any): ErrorMessage => {
 	return {
 		...base,
 		title: i18nDerived.errorGeneralTitle(),
+		icon: 'alertGeneral',
 		body: i18nDerived.errorGeneralBody(),
 		recoverable: false,
 	};
