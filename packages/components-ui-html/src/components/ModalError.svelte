@@ -1,15 +1,16 @@
 <!--
-	Error message in the Kilara HUD style: a flat, square card on a Malam scrim, no borders or glow.
-	The Kilau dot beside the title goes out (gold to grey) as the card lands, the one bit of motion.
-	It says what happened in plain words and offers one action: OK when the game can carry on
-	(balance, limits, a busy server), RELOAD when it cannot (session, connection, anything unknown).
-	The code and raw message sit folded under DETAILS for support.
+	Error message, game style rather than web style: a centred panel that pops in, a Kilau emblem
+	(the square buy bonus frame) whose dot drops in and bounces like the studio intro, a big title,
+	and one chunky button that presses down on its lip. The dot stays gold when the game can carry
+	on (OK: balance, limits, a busy server) and goes out to grey when it cannot (RELOAD: session,
+	connection, anything unknown). The error code sits small under the button for support.
 
 	It can show before the HUD exists (during the studio intro or loading screen), so it carries its
 	own copy of the HUD tokens and font instead of relying on UI.svelte.
 -->
 <script lang="ts">
-	import { fly, fade } from 'svelte/transition';
+	import { fade, scale } from 'svelte/transition';
+	import { backOut } from 'svelte/easing';
 
 	import { zIndex } from 'constants-shared/zIndex';
 	import { stateModal } from 'state-shared';
@@ -47,46 +48,40 @@
 {#if message}
 	<div class="error-modal" style:z-index={zIndex.dialog} transition:fade={{ duration: 200 }}>
 		<div
-			class="card"
+			class="panel"
+			class:fatal={!message.recoverable}
 			role="alertdialog"
 			aria-modal="true"
 			aria-labelledby="{id}-title"
 			aria-describedby="{id}-body"
-			in:fly={{ y: 12, duration: 320, opacity: 0 }}
+			in:scale={{ start: 0.82, duration: 420, easing: backOut, opacity: 0 }}
 		>
-			<h2 class="title" id="{id}-title">
-				<span class="dot" aria-hidden="true"></span>
-				{message.title}
-			</h2>
+			<div class="emblem" aria-hidden="true">
+				<span class="dot"></span>
+			</div>
+
+			<h2 class="title" id="{id}-title">{message.title}</h2>
 			<p class="body" id="{id}-body">{message.body}</p>
 
-			{#if message.code || message.detail}
-				<details class="details">
-					<summary>{i18nDerived.errorDetails()}</summary>
-					<p class="code">
-						{#if message.code}<b>{message.code}</b>{/if}
-						{#if message.detail}<span>{message.detail}</span>{/if}
-					</p>
-				</details>
-			{/if}
-
 			<button type="button" class="action" use:focus onclick={act}>
-				{message.recoverable ? i18nDerived.ok() : i18nDerived.reload()}
+				<span>{message.recoverable ? i18nDerived.ok() : i18nDerived.reload()}</span>
 			</button>
+
+			{#if message.code}
+				<p class="code" title={message.detail}>{message.code}</p>
+			{/if}
 		</div>
 	</div>
 {/if}
 
 <style lang="scss">
 	.error-modal {
-		/* the HUD tokens from UI.svelte, so the card matches it before the HUD mounts */
+		/* the HUD tokens from UI.svelte, so the panel matches it before the HUD mounts */
 		--ui-accent: #ffc53d;
 		--ui-text: #f3f4f6;
 		--ui-text-muted: #8a92a0;
 		--ui-surface-raised: rgba(30, 32, 37, 0.97);
-		--ui-field: rgba(243, 244, 246, 0.07);
 		--ui-shadow: 0 12px 32px rgba(14, 16, 20, 0.4);
-		--ease: cubic-bezier(0.16, 1, 0.3, 1);
 
 		position: fixed;
 		inset: 0;
@@ -94,153 +89,206 @@
 		align-items: center;
 		justify-content: center;
 		padding: 16px;
-		background-color: rgba(14, 16, 20, 0.72);
+		background-color: rgba(14, 16, 20, 0.78);
 		color: var(--ui-text);
 		font-family: var(--font-family);
 		/* px, not rem: Modals shrinks the root font to 50% on narrow screens */
 		font-size: 15px;
+		text-align: center;
 		-webkit-tap-highlight-color: transparent;
-		user-select: text;
 	}
 
-	.card {
+	.panel {
+		--kilau: var(--ui-accent);
+
 		box-sizing: border-box;
 		display: flex;
 		flex-direction: column;
-		gap: 12px;
-		width: min(100%, 400px);
+		align-items: center;
+		width: min(100%, 360px);
 		max-height: 100%;
-		padding: 24px;
+		padding: 32px 24px 20px;
 		overflow-y: auto;
 		background-color: var(--ui-surface-raised);
 		box-shadow: var(--ui-shadow);
 	}
 
-	.title {
+	/* the buy bonus frame: square, with a Kilau edge, and the Kilau dot in the middle */
+	.emblem {
+		position: relative;
 		display: flex;
 		align-items: center;
-		gap: 10px;
-		margin: 0;
-		font-size: 17px;
-		font-weight: 700;
-		line-height: 1.2;
-		letter-spacing: 0.04em;
-		text-transform: uppercase;
+		justify-content: center;
+		width: 76px;
+		height: 76px;
+		margin-bottom: 20px;
+		background-color: rgba(14, 16, 20, 0.6);
+		box-shadow: inset 0 0 0 4px var(--kilau);
+		animation: frame-in 360ms 120ms cubic-bezier(0.34, 1.56, 0.64, 1) both;
 	}
 
-	/* the Kilau dot, a true circle: it lights up once, then goes out */
+	/* a true circle */
 	.dot {
-		flex-shrink: 0;
-		width: 10px;
-		height: 10px;
+		width: 24px;
+		height: 24px;
 		border-radius: 50%;
-		background-color: var(--ui-text-muted);
-		animation: go-out 900ms 160ms both;
+		background-color: var(--kilau);
+		transform-origin: 50% 100%;
+		animation: drop 900ms 300ms both;
+	}
+
+	/* fatal: the dot lands, then the light goes out, frame and all */
+	.fatal {
+		.emblem {
+			animation:
+				frame-in 360ms 120ms cubic-bezier(0.34, 1.56, 0.64, 1) both,
+				frame-out 500ms 1150ms ease-out both;
+		}
+
+		.dot {
+			animation:
+				drop 900ms 300ms both,
+				go-out 500ms 1150ms ease-out both;
+		}
+	}
+
+	@keyframes frame-in {
+		from {
+			scale: 0.6;
+			opacity: 0;
+		}
+	}
+
+	/* the studio intro bounce, shorter: fall, squash, one hop, settle */
+	@keyframes drop {
+		0% {
+			opacity: 0;
+			transform: translateY(-64px) scale(0.92, 1.08);
+			animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+		}
+		12% {
+			opacity: 1;
+		}
+		45% {
+			transform: translateY(0) scale(1.25, 0.75);
+			animation-timing-function: cubic-bezier(0, 0.55, 0.45, 1);
+		}
+		68% {
+			transform: translateY(-14px) scale(0.96, 1.04);
+			animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+		}
+		86% {
+			transform: translateY(0) scale(1.1, 0.9);
+			animation-timing-function: ease-out;
+		}
+		100% {
+			opacity: 1;
+			transform: none;
+		}
 	}
 
 	@keyframes go-out {
-		0% {
-			background-color: var(--ui-accent);
-			scale: 1.3;
-		}
-		35% {
-			background-color: var(--ui-accent);
-			scale: 1;
-		}
-		100% {
+		to {
 			background-color: var(--ui-text-muted);
-			scale: 1;
 		}
+	}
+
+	@keyframes frame-out {
+		to {
+			box-shadow: inset 0 0 0 4px var(--ui-text-muted);
+		}
+	}
+
+	.title {
+		margin: 0 0 10px;
+		font-size: 26px;
+		font-weight: 800;
+		line-height: 1.1;
+		letter-spacing: 0.03em;
+		text-transform: uppercase;
+		text-wrap: balance;
+		text-shadow: 0 2px 0 rgba(14, 16, 20, 0.6);
 	}
 
 	.body {
-		margin: 0;
+		max-width: 280px;
+		margin: 0 0 24px;
 		color: var(--ui-text-muted);
 		line-height: 1.5;
+		text-wrap: pretty;
 	}
 
-	.details {
-		summary {
-			display: inline-block;
-			padding: 2px 0;
-			color: var(--ui-text-muted);
-			font-size: 11px;
-			font-weight: 600;
-			letter-spacing: 0.08em;
-			cursor: pointer;
-			list-style: none;
-
-			&::-webkit-details-marker {
-				display: none;
-			}
-
-			&::after {
-				content: ' +';
-			}
-		}
-
-		&[open] summary::after {
-			content: ' −';
-		}
-	}
-
-	.code {
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
-		max-height: 96px;
-		margin: 8px 0 0;
-		padding: 10px 12px;
-		overflow-y: auto;
-		background-color: var(--ui-field);
-		color: var(--ui-text-muted);
-		font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-		font-size: 12px;
-		line-height: 1.45;
-		overflow-wrap: anywhere;
-
-		b {
-			color: var(--ui-text);
-			font-weight: 600;
-		}
-	}
-
-	/* the one action: a solid Kertas bar, square like every HUD control */
+	/*
+		The chunky game button: a Kertas face on a darker lip. Pressing pushes the face down onto
+		the lip instead of shrinking the button.
+	*/
 	.action {
-		height: 48px;
-		margin-top: 8px;
-		padding: 0 16px;
+		--lip: 5px;
+
+		width: 100%;
+		height: calc(56px + var(--lip));
+		padding: 0 0 var(--lip);
 		border: none;
-		background-color: var(--ui-text);
-		color: #0e1014;
-		font-family: inherit;
-		font-size: 14px;
-		font-weight: 700;
-		letter-spacing: 0.08em;
-		text-transform: uppercase;
+		background: none;
 		cursor: pointer;
 		touch-action: manipulation;
-		transition: background-color 0.15s;
+
+		span {
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			height: 56px;
+			background-color: var(--ui-text);
+			box-shadow: 0 var(--lip) 0 #9aa1ad;
+			color: #0e1014;
+			font-family: inherit;
+			font-size: 18px;
+			font-weight: 800;
+			letter-spacing: 0.1em;
+			text-transform: uppercase;
+			transition:
+				transform 0.08s ease-out,
+				box-shadow 0.08s ease-out,
+				background-color 0.15s;
+		}
 
 		@media (hover: hover) {
-			&:hover {
+			&:hover span {
 				background-color: #ffffff;
 			}
 		}
 
-		&:active {
-			background-color: #d9dbe0;
+		&:active span {
+			transform: translateY(calc(var(--lip) - 1px));
+			box-shadow: 0 1px 0 #9aa1ad;
 		}
 
 		&:focus-visible {
 			outline: 2px solid var(--ui-text);
-			outline-offset: 3px;
+			outline-offset: 4px;
 		}
 	}
 
+	.code {
+		margin: 14px 0 0;
+		color: var(--ui-text-muted);
+		font-size: 11px;
+		font-weight: 600;
+		letter-spacing: 0.1em;
+		opacity: 0.7;
+		user-select: text;
+	}
+
 	@media (prefers-reduced-motion: reduce) {
-		.dot {
+		.emblem,
+		.dot,
+		.fatal .emblem,
+		.fatal .dot {
 			animation: none;
+		}
+
+		.fatal {
+			--kilau: var(--ui-text-muted);
 		}
 	}
 </style>

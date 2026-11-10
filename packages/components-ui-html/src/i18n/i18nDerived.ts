@@ -51,7 +51,6 @@ export const i18nDerived = {
 	errorGeneralTitle: () => translateSafe('SOMETHING WENT WRONG'),
 	errorGeneralBody: () =>
 		translateSafe('The game ran into a problem. Reload the game to continue.'),
-	errorDetails: () => translateSafe('DETAILS'),
 	ok: () => translateSafe('OK'),
 	reload: () => translateSafe('RELOAD'),
 	// hud
