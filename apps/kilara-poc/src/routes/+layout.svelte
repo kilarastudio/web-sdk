@@ -12,8 +12,11 @@
 
 	const props: Props = $props();
 
-	// the preloaded assets (loader, progress bar) are in, so the loading screen can draw
-	const loadingScreenReady = $derived(Object.keys(stateApp.loadedAssets).length > 0);
+	// the preloaded assets are in (or every asset has loaded, when none is preloaded), so the
+	// loading screen can draw
+	const loadingScreenReady = $derived(
+		stateApp.loaded || Object.keys(stateApp.loadedAssets).length > 0,
+	);
 
 	setContext();
 </script>

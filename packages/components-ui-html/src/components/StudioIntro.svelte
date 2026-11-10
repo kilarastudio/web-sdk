@@ -1,8 +1,9 @@
 <!--
 	Kilara Studio intro: the studio splash every Kilara game opens with, ahead of the game's own
-	loading screen. kilara rises out of its baseline letter by letter, the Kilau dot lights once
-	over the i, and "studio" follows. It runs while the first assets load, then holds until the
-	game is ready, so it never adds waiting time of its own. An error modal ends it early.
+	loading screen. kilara rises out of its baseline letter by letter, the Kilau dot drops onto the
+	i and lands, a slanted streak of Kilau light runs through the letters, and STUDIO follows. It
+	runs while the first assets load, then holds until the game is ready, so it never adds waiting
+	time of its own. An error modal ends it early.
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
@@ -11,7 +12,14 @@
 	import { stateModal } from 'state-shared';
 	import { zIndex } from 'constants-shared/zIndex';
 
-	import { LOCKUP_VIEWBOX, KILARA_LETTERS, KILAU_DOT, STUDIO } from './kilaraLogo';
+	import {
+		LOCKUP_VIEWBOX,
+		WORDMARK_BASELINE,
+		KILARA_LETTERS,
+		KILARA_PATH,
+		KILAU_DOT,
+		STUDIO,
+	} from './kilaraLogo';
 
 	type Props = {
 		/** true once the game can show its own loading screen; the intro holds until then */
@@ -20,12 +28,17 @@
 	};
 
 	const props: Props = $props();
-	const clipId = $props.id();
+	const id = $props.id();
 
-	// the motion settles at about 1.5 s; the rest of the minimum is time to read the logo
-	const MIN_DURATION = 2300;
-	const LETTER_START = 200;
-	const LETTER_STAGGER = 55;
+	// the motion settles at about 2.1 s; the rest of the minimum is time to read the logo
+	const MIN_DURATION = 2600;
+	const LETTER_START = 180;
+	const LETTER_STAGGER = 50;
+
+	const [, , WIDTH] = LOCKUP_VIEWBOX.split(' ').map(Number);
+	// a band of light as steep as the slanted terminals, starting left of the word
+	const STREAK_WIDTH = 46;
+	const STREAK = `M${-STREAK_WIDTH - 60} ${WORDMARK_BASELINE + 20}L-60 ${WORDMARK_BASELINE + 20}L10 -20L${-STREAK_WIDTH + 10} -20Z`;
 
 	let minElapsed = $state(false);
 	let ended = $state(false);
@@ -51,19 +64,36 @@
 		aria-label="Kilara Studio"
 		out:fade={{ duration: 400 }}
 	>
-		<svg viewBox={LOCKUP_VIEWBOX} aria-hidden="true">
+		<svg
+			viewBox={LOCKUP_VIEWBOX}
+			aria-hidden="true"
+			style:--rise="{WORDMARK_BASELINE + 8}px"
+			style:--travel="{WIDTH + 160}px"
+		>
 			<defs>
 				<!-- the letters rise from below their baseline, so nothing shows under it -->
-				<clipPath id={clipId}>
-					<rect x="-20" y="-80" width="300" height="157" />
+				<clipPath id="{id}-base">
+					<rect x="-60" y="-400" width={WIDTH + 120} height={WORDMARK_BASELINE + 400} />
 				</clipPath>
+				<!-- the streak only lights the letters -->
+				<mask id="{id}-ink">
+					<path d={KILARA_PATH} fill="#fff" />
+				</mask>
+				<linearGradient id="{id}-glint" x1="0" x2="1">
+					<stop offset="0" style="stop-color: var(--intro-light); stop-opacity: 0" />
+					<stop offset="0.5" style="stop-color: var(--intro-light)" />
+					<stop offset="1" style="stop-color: var(--intro-light); stop-opacity: 0" />
+				</linearGradient>
 			</defs>
 
 			<g class="lockup">
-				<g clip-path="url(#{clipId})">
+				<g clip-path="url(#{id}-base)">
 					{#each KILARA_LETTERS as d, index}
 						<path class="letter" {d} style:--delay="{LETTER_START + index * LETTER_STAGGER}ms" />
 					{/each}
+				</g>
+				<g mask="url(#{id}-ink)">
+					<path class="streak" d={STREAK} fill="url(#{id}-glint)" />
 				</g>
 				<circle class="halo" cx={KILAU_DOT.cx} cy={KILAU_DOT.cy} r={KILAU_DOT.r} />
 				<circle class="dot" cx={KILAU_DOT.cx} cy={KILAU_DOT.cy} r={KILAU_DOT.r} />
@@ -93,85 +123,117 @@
 	}
 
 	svg {
-		/* the lockup is 7.4 : 1, so this keeps it between about 30 and 57 px tall */
-		width: min(64vw, 420px);
+		/* the lockup is about 1.8 : 1, so this keeps it between about 90 and 160 px tall */
+		width: min(46vw, 290px);
+		min-width: 160px;
 		overflow: visible;
 	}
 
 	.lockup,
+	.letter,
 	.dot,
 	.halo,
+	.streak,
 	.studio {
 		transform-box: fill-box;
 		transform-origin: center;
 	}
 
 	.lockup {
-		animation: push 2400ms var(--intro-ease) both;
+		animation: push 2600ms var(--intro-ease) both;
 	}
 
 	.letter {
 		fill: var(--intro-ink);
-		animation: rise 560ms var(--intro-ease) var(--delay) both;
+		animation: rise 620ms var(--intro-ease) var(--delay) both;
 	}
 
+	/* the dot falls in from above, then lands with a short squash; the squash has no backwards
+	   fill, so it does not show while the dot is still falling */
 	.dot {
 		fill: var(--intro-light);
-		animation: ignite 380ms ease-out 600ms both;
+		animation:
+			drop 420ms cubic-bezier(0.5, 0, 0.75, 0) 620ms both,
+			land 260ms var(--intro-ease) 1040ms;
 	}
 
-	/* no fill mode: it stays hidden while it waits for the dot, and after it has spread */
+	/* no fill mode: it stays hidden while it waits for the landing, and after it has spread */
 	.halo {
 		fill: var(--intro-light);
 		opacity: 0;
-		animation: halo 800ms ease-out 640ms;
+		animation: halo 900ms ease-out 1040ms;
+	}
+
+	.streak {
+		opacity: 0;
+		animation: streak 760ms cubic-bezier(0.55, 0, 0.2, 1) 1060ms;
 	}
 
 	.studio {
 		fill: var(--intro-sub);
-		animation: follow 520ms var(--intro-ease) 900ms both;
+		animation: follow 600ms var(--intro-ease) 1500ms both;
 	}
 
 	@keyframes push {
 		from {
-			transform: scale(0.96);
+			transform: scale(0.95);
 		}
 	}
 
 	@keyframes rise {
 		from {
-			transform: translateY(84px);
+			transform: translateY(var(--rise));
 		}
 	}
 
-	/* the dot lights once: a small overshoot, then a single halo that spreads and fades */
-	@keyframes ignite {
-		0% {
-			transform: scale(0);
+	@keyframes drop {
+		from {
+			opacity: 0;
+			transform: translateY(-140px);
 		}
-		60% {
-			transform: scale(1.12);
+		30% {
+			opacity: 1;
 		}
-		100% {
-			transform: scale(1);
+		to {
+			transform: translateY(0);
+		}
+	}
+
+	@keyframes land {
+		from {
+			transform: scale(1.18, 0.82);
 		}
 	}
 
 	@keyframes halo {
 		from {
-			opacity: 0.45;
+			opacity: 0.5;
 			transform: scale(1);
 		}
 		to {
 			opacity: 0;
-			transform: scale(3.6);
+			transform: scale(4);
+		}
+	}
+
+	@keyframes streak {
+		0% {
+			opacity: 1;
+			transform: translateX(0);
+		}
+		85% {
+			opacity: 1;
+		}
+		100% {
+			opacity: 0;
+			transform: translateX(var(--travel));
 		}
 	}
 
 	@keyframes follow {
 		from {
 			opacity: 0;
-			transform: translateX(-14px);
+			transform: translateY(10px);
 		}
 	}
 
@@ -181,7 +243,7 @@
 		}
 	}
 
-	/* same timing, no movement: the lockup fades in whole and the dot does not flash */
+	/* same timing, no movement: the lockup fades in whole, no drop, streak or halo */
 	@media (prefers-reduced-motion: reduce) {
 		.lockup {
 			animation: none;
@@ -193,7 +255,8 @@
 			animation: appear 300ms ease-out 200ms both;
 		}
 
-		.halo {
+		.halo,
+		.streak {
 			display: none;
 		}
 	}
