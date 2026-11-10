@@ -2,7 +2,7 @@
 	Error message, game style rather than web style: a centred panel that pops in, a large alert
 	icon of its own (wallet, gauge, hourglass, broken key, struck signal, warning), unframed, whose
 	Kilau dot drops in and bounces like the studio intro, a big title,
-	and one chunky button that presses down on its lip. The dot stays gold when the game can carry
+	and one big flat button whose label dips when pressed. The dot stays gold when the game can carry
 	on (OK: balance, limits, a busy server) and goes out to grey when it cannot (RELOAD: session,
 	connection, anything unknown). The error code sits small under the button for support.
 
@@ -228,48 +228,42 @@
 	}
 
 	/*
-		The chunky game button: a Kertas face on a darker lip. Pressing pushes the face down onto
-		the lip instead of shrinking the button.
+		The one action: a big flat Kertas bar, no lip or shadow. Like the HUD buttons, the press
+		shows in the content: the label dips while the face darkens a step.
 	*/
 	.action {
-		--lip: 5px;
-
 		width: 100%;
-		height: calc(56px + var(--lip));
-		padding: 0 0 var(--lip);
+		height: 56px;
+		padding: 0;
 		border: none;
-		background: none;
+		background-color: var(--ui-text);
+		color: #0e1014;
+		font-family: inherit;
+		font-size: 18px;
+		font-weight: 800;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
 		cursor: pointer;
 		touch-action: manipulation;
+		transition: background-color 0.15s;
 
 		span {
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			height: 56px;
-			background-color: var(--ui-text);
-			box-shadow: 0 var(--lip) 0 #9aa1ad;
-			color: #0e1014;
-			font-family: inherit;
-			font-size: 18px;
-			font-weight: 800;
-			letter-spacing: 0.1em;
-			text-transform: uppercase;
-			transition:
-				transform 0.08s ease-out,
-				box-shadow 0.08s ease-out,
-				background-color 0.15s;
+			display: block;
+			transition: transform 0.08s ease-out;
 		}
 
 		@media (hover: hover) {
-			&:hover span {
+			&:hover {
 				background-color: #ffffff;
 			}
 		}
 
-		&:active span {
-			transform: translateY(calc(var(--lip) - 1px));
-			box-shadow: 0 1px 0 #9aa1ad;
+		&:active {
+			background-color: #d9dbe0;
+
+			span {
+				transform: translateY(2px);
+			}
 		}
 
 		&:focus-visible {
