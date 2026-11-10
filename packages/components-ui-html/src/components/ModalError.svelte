@@ -89,7 +89,8 @@
 		--ui-accent: #ffc53d;
 		--ui-text: #f3f4f6;
 		--ui-text-muted: #8a92a0;
-		--ui-surface-raised: rgba(30, 32, 37, 0.97);
+		--ui-surface: rgba(14, 16, 20, 0.84);
+		--ui-scrim: rgba(14, 16, 20, 0.5);
 		--ui-shadow: 0 12px 32px rgba(14, 16, 20, 0.4);
 
 		position: fixed;
@@ -98,7 +99,7 @@
 		align-items: center;
 		justify-content: center;
 		padding: 16px;
-		background-color: rgba(14, 16, 20, 0.78);
+		background-color: var(--ui-scrim);
 		color: var(--ui-text);
 		font-family: var(--font-family);
 		/* px, not rem: Modals shrinks the root font to 50% on narrow screens */
@@ -118,7 +119,8 @@
 		max-height: 100%;
 		padding: 32px 24px 20px;
 		overflow-y: auto;
-		background-color: var(--ui-surface-raised);
+		/* the same fill as the action dock (UiBar) */
+		background-color: var(--ui-surface);
 		box-shadow: var(--ui-shadow);
 	}
 
