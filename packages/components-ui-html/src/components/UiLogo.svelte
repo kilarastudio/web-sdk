@@ -15,10 +15,10 @@
 	.ui-logo {
 		display: block;
 		/*
-			the height includes the dot, which rises well above the letters; 1.9em keeps the
-			x-height where the previous wordmark had it, and below 19px the dot stops reading as a light
+			the height includes the dot, which rises above the letters; 1.75em keeps the x-height
+			where the previous wordmark had it, and below 17px the dot stops reading as a light
 		*/
-		height: max(19px, 1.9em);
+		height: max(17px, 1.75em);
 		width: auto;
 		filter: drop-shadow(var(--ui-text-shadow));
 	}

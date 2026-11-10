@@ -1,7 +1,7 @@
 <!--
 	Kilara Studio intro: the studio splash every Kilara game opens with, ahead of the game's own
 	loading screen. kilara rises out of its baseline letter by letter, the Kilau dot drops onto the
-	i and lands, a slanted streak of Kilau light runs through the letters, and STUDIO follows. It
+	i and lands, and STUDIO follows. No shine or glow: the motion ends with the dot. It
 	runs while the first assets load, then holds until the game is ready, so it never adds waiting
 	time of its own. An error modal ends it early.
 -->
@@ -16,7 +16,6 @@
 		LOCKUP_VIEWBOX,
 		WORDMARK_BASELINE,
 		KILARA_LETTERS,
-		KILARA_PATH,
 		KILAU_DOT,
 		STUDIO,
 	} from './kilaraLogo';
@@ -30,15 +29,12 @@
 	const props: Props = $props();
 	const id = $props.id();
 
-	// the motion settles at about 2.1 s; the rest of the minimum is time to read the logo
-	const MIN_DURATION = 2600;
+	// the motion settles at about 1.7 s; the rest of the minimum is time to read the logo
+	const MIN_DURATION = 2300;
 	const LETTER_START = 180;
 	const LETTER_STAGGER = 50;
 
 	const [, , WIDTH] = LOCKUP_VIEWBOX.split(' ').map(Number);
-	// a band of light as steep as the slanted terminals, starting left of the word
-	const STREAK_WIDTH = 46;
-	const STREAK = `M${-STREAK_WIDTH - 60} ${WORDMARK_BASELINE + 20}L-60 ${WORDMARK_BASELINE + 20}L10 -20L${-STREAK_WIDTH + 10} -20Z`;
 
 	let minElapsed = $state(false);
 	let ended = $state(false);
@@ -68,22 +64,12 @@
 			viewBox={LOCKUP_VIEWBOX}
 			aria-hidden="true"
 			style:--rise="{WORDMARK_BASELINE + 8}px"
-			style:--travel="{WIDTH + 160}px"
 		>
 			<defs>
 				<!-- the letters rise from below their baseline, so nothing shows under it -->
 				<clipPath id="{id}-base">
 					<rect x="-60" y="-400" width={WIDTH + 120} height={WORDMARK_BASELINE + 400} />
 				</clipPath>
-				<!-- the streak only lights the letters -->
-				<mask id="{id}-ink">
-					<path d={KILARA_PATH} fill="#fff" />
-				</mask>
-				<linearGradient id="{id}-glint" x1="0" x2="1">
-					<stop offset="0" style="stop-color: var(--intro-light); stop-opacity: 0" />
-					<stop offset="0.5" style="stop-color: var(--intro-light)" />
-					<stop offset="1" style="stop-color: var(--intro-light); stop-opacity: 0" />
-				</linearGradient>
 			</defs>
 
 			<g class="lockup">
@@ -92,10 +78,6 @@
 						<path class="letter" {d} style:--delay="{LETTER_START + index * LETTER_STAGGER}ms" />
 					{/each}
 				</g>
-				<g mask="url(#{id}-ink)">
-					<path class="streak" d={STREAK} fill="url(#{id}-glint)" />
-				</g>
-				<circle class="halo" cx={KILAU_DOT.cx} cy={KILAU_DOT.cy} r={KILAU_DOT.r} />
 				<circle class="dot" cx={KILAU_DOT.cx} cy={KILAU_DOT.cy} r={KILAU_DOT.r} />
 				<path class="studio" d={STUDIO} />
 			</g>
@@ -132,15 +114,13 @@
 	.lockup,
 	.letter,
 	.dot,
-	.halo,
-	.streak,
 	.studio {
 		transform-box: fill-box;
 		transform-origin: center;
 	}
 
 	.lockup {
-		animation: push 2600ms var(--intro-ease) both;
+		animation: push 2200ms var(--intro-ease) both;
 	}
 
 	.letter {
@@ -157,21 +137,9 @@
 			land 260ms var(--intro-ease) 1040ms;
 	}
 
-	/* no fill mode: it stays hidden while it waits for the landing, and after it has spread */
-	.halo {
-		fill: var(--intro-light);
-		opacity: 0;
-		animation: halo 900ms ease-out 1040ms;
-	}
-
-	.streak {
-		opacity: 0;
-		animation: streak 760ms cubic-bezier(0.55, 0, 0.2, 1) 1060ms;
-	}
-
 	.studio {
 		fill: var(--intro-sub);
-		animation: follow 600ms var(--intro-ease) 1500ms both;
+		animation: follow 600ms var(--intro-ease) 1100ms both;
 	}
 
 	@keyframes push {
@@ -205,31 +173,6 @@
 		}
 	}
 
-	@keyframes halo {
-		from {
-			opacity: 0.5;
-			transform: scale(1);
-		}
-		to {
-			opacity: 0;
-			transform: scale(4);
-		}
-	}
-
-	@keyframes streak {
-		0% {
-			opacity: 1;
-			transform: translateX(0);
-		}
-		85% {
-			opacity: 1;
-		}
-		100% {
-			opacity: 0;
-			transform: translateX(var(--travel));
-		}
-	}
-
 	@keyframes follow {
 		from {
 			opacity: 0;
@@ -243,7 +186,7 @@
 		}
 	}
 
-	/* same timing, no movement: the lockup fades in whole, no drop, streak or halo */
+	/* same timing, no movement: the lockup fades in whole and the dot does not drop */
 	@media (prefers-reduced-motion: reduce) {
 		.lockup {
 			animation: none;
@@ -253,11 +196,6 @@
 		.dot,
 		.studio {
 			animation: appear 300ms ease-out 200ms both;
-		}
-
-		.halo,
-		.streak {
-			display: none;
 		}
 	}
 </style>
