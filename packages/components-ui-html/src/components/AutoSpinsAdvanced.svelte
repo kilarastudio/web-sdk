@@ -37,7 +37,7 @@
 
 {#if open}
 	<div
-		style="border: 2px solid white; border-radius: 10px;"
+		style="border: 2px solid white;"
 		transition:slide={{ duration: SLIDE_DURATION }}
 	>
 		<AutoSpinsLossLimit />

@@ -11,8 +11,7 @@
 </script>
 
 <!--
-	The HUD dock: a floating rounded bar centred at the bottom of the stage, its corners a small
-	share of its height (--ui-corner) so the ends read as a bar rather than a pill. The layout
+	The HUD dock: a floating square-cornered bar centred at the bottom of the stage. The layout
 	sizes it with --bar-width, --bar-height, --bar-bottom and --bar-padding.
 -->
 <div class="ui-bar" class:notch={props.notch}>
@@ -22,16 +21,9 @@
 
 <style lang="scss">
 	.ui-bar {
-		/*
-			icon buttons sit flat in the dock and light up on hover, their corners concentric with
-			the dock's: its radius minus the gap between button and dock edge
-		*/
+		/* icon buttons sit flat in the dock and light up on hover */
 		--ui-button-bg: transparent;
 		--ui-button-hover-bg: var(--ui-field);
-		--ui-squircle: max(
-			4px,
-			calc(var(--bar-height) * var(--ui-corner) - (var(--bar-height) - var(--ui-button-size)) / 2)
-		);
 
 		position: absolute;
 		left: 50%;
@@ -43,7 +35,6 @@
 		width: var(--bar-width);
 		height: var(--bar-height);
 		padding: 0 var(--bar-padding);
-		border-radius: calc(var(--bar-height) * var(--ui-corner));
 		transform: translateX(-50%);
 	}
 
@@ -55,14 +46,12 @@
 		position: absolute;
 		inset: 0;
 		z-index: -1;
-		border-radius: inherit;
 		filter: drop-shadow(var(--ui-shadow));
 
 		&::before {
 			content: '';
 			position: absolute;
 			inset: 0;
-			border-radius: inherit;
 			background-color: var(--ui-surface);
 		}
 	}

@@ -31,7 +31,6 @@
 	.error-text {
 		max-height: 100px;
 		max-width: 480px;
-		border-radius: 8px;
 		border: 1px solid red;
 		white-space: normal;
 		padding: 1rem;

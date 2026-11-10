@@ -54,7 +54,6 @@
 					anchor={0.5}
 					width={56}
 					height={30}
-					borderRadius={10}
 					backgroundColor={0x4fd1c5}
 				/>
 				<GameText

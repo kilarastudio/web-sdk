@@ -6,10 +6,9 @@
 
 	export type Props = Omit<BaseProps, 'pivot' | 'draw'> & {
 		anchor?: PixiPoint;
-		// draw
-		width: Parameters<PIXI.Graphics['roundRect']>[2];
-		height: Parameters<PIXI.Graphics['roundRect']>[3];
-		borderRadius?: Parameters<PIXI.Graphics['roundRect']>[4];
+		// draw: always square corners, Kilara UI uses no border radius except on circles
+		width: Parameters<PIXI.Graphics['rect']>[2];
+		height: Parameters<PIXI.Graphics['rect']>[3];
 		backgroundColor?: PIXI.FillStyle['color'];
 		backgroundAlpha?: PIXI.FillStyle['alpha'];
 		borderColor?: PIXI.StrokeStyle['color'];
@@ -26,7 +25,6 @@
 		anchor,
 		width,
 		height,
-		borderRadius,
 		backgroundColor,
 		backgroundAlpha,
 		borderColor,
@@ -40,7 +38,7 @@
 	{...graphicsProps}
 	pivot={anchorToPivot({ anchor, sizes: { width: width, height: height } })}
 	draw={(graphics) => {
-		graphics.roundRect(0, 0, width, height, borderRadius ?? 0);
+		graphics.rect(0, 0, width, height);
 		graphics.fill({
 			color: backgroundColor ?? 0x000000,
 			alpha: backgroundAlpha ?? 1,

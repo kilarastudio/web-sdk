@@ -19,7 +19,6 @@
 			borderWidth: 2,
 			backgroundColor: 0x522000,
 			borderColor: 0x1dc000,
-			borderRadius: 0.5,
 			x: 50,
 			y: 50,
 			zIndex: 1,
@@ -54,7 +53,6 @@
 	updateDynamicSizes();
 
 	const sharedStyle = {
-		borderRadius: 10,
 		backgroundColor: 0x000000,
 		backgroundAlpha: 0.8,
 		borderColor: 0xffffff,

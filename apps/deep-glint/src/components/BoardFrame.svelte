@@ -60,7 +60,6 @@
 			height={board.height +
 				BOARD_FRAME.padding * 2 +
 				(BOARD_FRAME.border.top + BOARD_FRAME.border.bottom) * BOARD_FRAME.scale}
-			borderRadius={8}
 			backgroundAlpha={0}
 			borderColor={0xffbf43}
 			borderWidth={band.width}

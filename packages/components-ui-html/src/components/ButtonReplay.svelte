@@ -39,7 +39,6 @@
 		height: 84px;
 		padding: 0 1.1em;
 		border: none;
-		border-radius: 999px;
 		background-color: var(--ui-accent);
 		color: var(--ui-accent-contrast);
 		font-family: inherit;

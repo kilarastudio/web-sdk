@@ -15,7 +15,7 @@
 		active?: boolean;
 		// an on/off switch: reports aria-pressed="false" when off as well
 		toggle?: boolean;
-		// icon: squircle icon button, spin/stop: the one oversized round bet button,
+		// icon: square icon button, spin/stop: the one oversized round bet button,
 		// feature: round text badge (buy bonus), row: icon and label in a menu list
 		kind?: 'icon' | 'spin' | 'stop' | 'feature' | 'row';
 		children?: Snippet;
@@ -110,7 +110,6 @@
 		height: var(--size);
 		padding: 0;
 		border: none;
-		border-radius: var(--ui-squircle);
 		background-color: var(--ui-button-bg);
 		color: var(--ui-text);
 		font-family: inherit;
@@ -309,7 +308,6 @@
 		width: 100%;
 		height: var(--ui-row-height);
 		padding: 0 0.75em;
-		border-radius: calc(var(--ui-row-height) * 0.3);
 		background-color: transparent;
 		font-size: calc(var(--ui-font-size) * 0.72);
 		letter-spacing: 0.04em;

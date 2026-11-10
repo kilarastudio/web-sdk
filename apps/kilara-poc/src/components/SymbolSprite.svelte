@@ -56,7 +56,6 @@
 			y={SYMBOL_SIZE * 0.26}
 			width={SYMBOL_SIZE * 0.075}
 			height={SYMBOL_SIZE * 0.09}
-			borderRadius={SYMBOL_SIZE * 0.012}
 			backgroundColor={0xffefbe}
 			borderColor={0x17202e}
 			borderWidth={SYMBOL_SIZE * 0.012}

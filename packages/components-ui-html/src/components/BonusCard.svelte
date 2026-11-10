@@ -27,7 +27,6 @@
 		display: flex;
 		justify-content: space-between;
 
-		border-radius: 10px;
 		background: rgba(0, 0, 0, 0.5);
 		text-align: left;
 		min-width: 155px;

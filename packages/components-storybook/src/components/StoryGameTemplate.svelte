@@ -79,7 +79,6 @@
 		display: inline-block;
 		cursor: pointer;
 		background-color: green;
-		border-radius: 5px;
 		padding: 5px;
 		color: white;
 		font-size: 16px;

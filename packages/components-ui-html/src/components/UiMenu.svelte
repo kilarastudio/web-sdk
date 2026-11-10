@@ -72,7 +72,6 @@
 		gap: 2px;
 		min-width: calc(var(--ui-font-size) * 9.5);
 		padding: 10px;
-		border-radius: calc(var(--ui-row-height) * 0.42);
 		background-color: var(--ui-surface-raised);
 		box-shadow: var(--ui-shadow);
 	}

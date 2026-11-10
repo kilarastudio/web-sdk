@@ -36,7 +36,6 @@
 		width: 2.1em;
 		height: 1.2em;
 		margin-left: auto;
-		border-radius: 999px;
 		background-color: var(--ui-disabled-bg);
 		transition: background-color 0.2s;
 

@@ -82,7 +82,7 @@
 
 			<Graphics
 				draw={(graphics) => {
-					graphics.roundRect(50, 440, 100, 100, 16);
+					graphics.rect(50, 440, 100, 100);
 					graphics.fill({ color: 0x650a5a, alpha: 0.25 });
 					graphics.stroke({ width: 2, color: 0xff00ff, alpha: 1 });
 				}}
