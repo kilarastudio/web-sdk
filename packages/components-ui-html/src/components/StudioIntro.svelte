@@ -1,7 +1,7 @@
 <!--
 	Kilara Studio intro: the studio splash every Kilara game opens with, ahead of the game's own
 	loading screen. kilara rises out of its baseline letter by letter, the Kilau dot drops onto the
-	i and lands, and STUDIO follows. No shine or glow: the motion ends with the dot. It
+	i and bounces twice before it settles, and STUDIO follows. No shine or glow: the motion ends with the dot. It
 	runs while the first assets load, then holds until the game is ready, so it never adds waiting
 	time of its own. An error modal ends it early.
 -->
@@ -128,18 +128,17 @@
 		animation: rise 620ms var(--intro-ease) var(--delay) both;
 	}
 
-	/* the dot falls in from above, then lands with a short squash; the squash has no backwards
-	   fill, so it does not show while the dot is still falling */
+	/* the dot falls in from above and bounces; it squashes from its bottom edge, so each impact
+	   stays on its resting spot */
 	.dot {
 		fill: var(--intro-light);
-		animation:
-			drop 420ms cubic-bezier(0.5, 0, 0.75, 0) 620ms both,
-			land 260ms var(--intro-ease) 1040ms;
+		transform-origin: 50% 100%;
+		animation: bounce 1000ms 620ms both;
 	}
 
 	.studio {
 		fill: var(--intro-sub);
-		animation: follow 600ms var(--intro-ease) 1100ms both;
+		animation: follow 600ms var(--intro-ease) 1300ms both;
 	}
 
 	@keyframes push {
@@ -154,22 +153,42 @@
 		}
 	}
 
-	@keyframes drop {
-		from {
+	/*
+		Falls (ease-in), squashes on the hit, rises a third of the way back (ease-out), falls again,
+		then a small hop and a last light squash. Each segment's easing sits on its start keyframe.
+	*/
+	@keyframes bounce {
+		0% {
 			opacity: 0;
-			transform: translateY(-140px);
+			transform: translateY(-140px) scale(0.92, 1.08);
+			animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
 		}
-		30% {
+		10% {
 			opacity: 1;
 		}
-		to {
-			transform: translateY(0);
+		40% {
+			transform: translateY(0) scale(1.22, 0.78);
+			animation-timing-function: cubic-bezier(0, 0.55, 0.45, 1);
 		}
-	}
-
-	@keyframes land {
-		from {
-			transform: scale(1.18, 0.82);
+		60% {
+			transform: translateY(-34px) scale(0.96, 1.04);
+			animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+		}
+		76% {
+			transform: translateY(0) scale(1.12, 0.88);
+			animation-timing-function: cubic-bezier(0, 0.55, 0.45, 1);
+		}
+		86% {
+			transform: translateY(-9px) scale(1);
+			animation-timing-function: cubic-bezier(0.55, 0, 1, 0.45);
+		}
+		94% {
+			transform: translateY(0) scale(1.05, 0.95);
+			animation-timing-function: ease-out;
+		}
+		100% {
+			opacity: 1;
+			transform: translateY(0) scale(1);
 		}
 	}
 
