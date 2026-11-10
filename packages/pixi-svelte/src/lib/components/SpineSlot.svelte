@@ -31,7 +31,7 @@
 			});
 		}
 
-		spine.addSlotObject(props.slotName, slotContainer);
+		if (spine.skeleton.findSlot(props.slotName)) spine.addSlotObject(props.slotName, slotContainer);
 	});
 
 	createContextParent(slotContainer);

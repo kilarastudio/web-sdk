@@ -33,5 +33,5 @@
 </script>
 
 {#if texture === PIXI.Texture.EMPTY}
-	{console.error(`NineSliceSprite: key "${key}" is not found in the loadedAssets`)}
+	{console.warn(`NineSliceSprite: key "${key}" is not found in the loadedAssets`)}
 {/if}

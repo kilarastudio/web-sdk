@@ -20,26 +20,37 @@
 	const spine = getContextSpine();
 
 	let track = $state(spine.state.tracks[props.trackIndex]);
+	let missing = $state(false);
 
 	$effect(() => {
 		if (props.trackIndex !== track?.trackIndex || props.animationName !== track?.animation?.name) {
 			if (track) spine.state.setEmptyAnimation(track.trackIndex, 0);
-			try {
+			const animations = spine.state.data.skeletonData.animations;
+			if (spine.state.data.skeletonData.findAnimation(props.animationName)) {
+				missing = false;
 				track = spine.state.setAnimation(props.trackIndex, props.animationName, props.loop);
-			} catch (error) {
-				console.error(error);
-				const animations = spine?.state?.data?.skeletonData?.animations;
-				if (animations) {
-					console.log(
-						'Available animation names:',
+			} else {
+				// a missing animation plays as an empty one that completes on the next update,
+				// so listeners waiting for "complete" still fire
+				if (animations.length > 0) {
+					console.warn(
+						`SpineTrack: animation "${props.animationName}" not found. Available:`,
 						animations.map((animation) => animation.name),
 					);
 				}
+				missing = true;
+				track = spine.state.setEmptyAnimation(props.trackIndex, 0);
 			}
 		}
 	});
 
 	propsSyncEffect({ props, target: () => track, ignore: ['trackIndex', 'animationName'] });
+
+	// a looping empty animation would report "complete" every frame
+	$effect(() => {
+		props.loop;
+		if (missing && track) track.loop = false;
+	});
 
 	onDestroy(() => {
 		spine.state.setEmptyAnimation(props.trackIndex, 0);

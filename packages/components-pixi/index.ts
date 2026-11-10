@@ -6,6 +6,7 @@ import ResponsiveBitmapText from './src/components/ResponsiveBitmapText.svelte';
 import ResponsiveText from './src/components/ResponsiveText.svelte';
 import Button, { type Props as ButtonProps } from './src/components/Button.svelte';
 import Amount, { type Props as AmountProps } from './src/components/Amount.svelte';
+import Skeleton, { type Props as SkeletonProps } from './src/components/Skeleton.svelte';
 
 export {
 	EnablePixiExtension,
@@ -16,6 +17,9 @@ export {
 	ResponsiveText,
 	Amount,
 	Button,
+	Skeleton,
 };
 
-export type { ButtonProps, AmountProps };
+export * from './src/skeleton/skeleton';
+
+export type { ButtonProps, AmountProps, SkeletonProps };

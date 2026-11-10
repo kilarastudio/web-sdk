@@ -91,7 +91,7 @@
 		</div>
 
 		<!-- the win line follows the drawer down until it rests above the footer -->
-		<div class="slide" style:transform="translateY({Math.min(drawerTween.current, 400)}px)">
+		<div class="slide" style:transform="translateY(min({drawerTween.current}px, var(--win-drop)))">
 			<div class="win">
 				<LabelWin stacked hideZero />
 			</div>
@@ -134,6 +134,10 @@
 		--footer-bottom: 28px;
 		--spin-row-bottom: calc(var(--footer-bottom) + var(--ui-button-size) + 40px);
 		--win-bottom: calc(var(--spin-row-bottom) + var(--ui-button-size-large) + 32px);
+		/* with the drawer folded the win line rests 24px above the footer, clear of its labels */
+		--win-drop: calc(
+			var(--win-bottom) - var(--footer-bottom) - var(--ui-button-size) - 24px
+		);
 		/* the menu opens over the menu button, the first item in the footer */
 		--menu-x: calc(var(--edge) + var(--ui-button-size) / 2);
 		--menu-bottom: var(--footer-bottom);

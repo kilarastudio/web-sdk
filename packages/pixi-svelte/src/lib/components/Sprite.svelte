@@ -21,8 +21,11 @@
 	);
 </script>
 
-{#if texture === PIXI.Texture.EMPTY || debug}
-	{console.error(`Sprite: key "${key}" is not found in the loadedAssets`)}
+{#if texture === PIXI.Texture.EMPTY}
+	{console.warn(`Sprite: key "${key}" is not found in the loadedAssets`)}
+{/if}
+
+{#if debug}
 	{console.log('loadedAssets', $state.snapshot(context.stateApp).loadedAssets)}
 {/if}
 

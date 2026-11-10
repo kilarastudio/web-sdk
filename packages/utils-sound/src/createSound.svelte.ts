@@ -23,7 +23,29 @@ function createSound<TSoundName extends string>() {
 		once: Player<TSoundName, PlayOnce>;
 	};
 
-	const load = (loadedAudioValue: LoadedAudio<TSoundName>) => {
+	// a game with no audio asset gets players that accept every call and play nothing
+	const createSilentPlayer = () =>
+		({
+			play: () => {},
+			stop: () => {},
+			fade: async () => {},
+			volume: () => {},
+			rate: () => {},
+			howl: undefined,
+			debug: () => {},
+		}) as unknown as Player<TSoundName, never>;
+
+	const load = (loadedAudioValue: LoadedAudio<TSoundName> | undefined) => {
+		if (!loadedAudioValue?.src) {
+			console.warn('Sound: no audio asset is loaded, every sound is silent');
+			players = {
+				music: createSilentPlayer() as typeof players.music,
+				loop: createSilentPlayer() as typeof players.loop,
+				once: createSilentPlayer() as typeof players.once,
+			};
+			return { destroy: () => {} };
+		}
+
 		// loadedAudio
 		loadedAudio = loadedAudioValue;
 
