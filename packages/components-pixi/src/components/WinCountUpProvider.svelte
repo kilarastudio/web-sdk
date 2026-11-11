@@ -7,6 +7,8 @@
 	type Props = {
 		amount: number;
 		duration: number;
+		// how the amount climbs over the duration; linear when not given
+		easing?: (t: number) => number;
 		oncomplete: () => void;
 		children: Snippet<
 			[
@@ -26,7 +28,11 @@
 
 	let countUpCompleted = $state(false);
 
-	const countUp = () => countUpAmount.set(props.amount, { duration: props.duration });
+	const countUp = () =>
+		countUpAmount.set(props.amount, {
+			duration: props.duration,
+			...(props.easing ? { easing: props.easing } : {}),
+		});
 	const resetCountUp = () => countUpAmount.set(props.amount, { duration: 0 });
 	const finishCountUp = () => interruptible.interrupt();
 	const startCountUp = async () => {

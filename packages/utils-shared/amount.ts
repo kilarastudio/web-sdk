@@ -46,3 +46,20 @@ export const bookEventAmountToCurrencyString = (bookEventAmount: number) => {
 	const normalisedAmount = bookEventAmountToNormalisedAmount(bookEventAmount);
 	return numberToWinCurrencyString(normalisedAmount);
 };
+
+// A win amount on its way up to its target, for a count-up: whole display units (cents) while
+// it climbs, rounded down so it never shows more than the win, and the exact win, sub-cent
+// digits included, once it has arrived.
+export const bookEventAmountToCountUpCurrencyString = (
+	bookEventAmount: number,
+	targetBookEventAmount: number,
+) => {
+	if (bookEventAmount === targetBookEventAmount)
+		return bookEventAmountToCurrencyString(bookEventAmount);
+
+	const decimals = CURRENCY_META[stateBet.currency]?.decimals ?? 2;
+	const unit = 10 ** decimals;
+	const normalisedAmount = bookEventAmountToNormalisedAmount(bookEventAmount);
+
+	return numberToCurrencyString(Math.floor(normalisedAmount * unit + 1e-6) / unit);
+};
