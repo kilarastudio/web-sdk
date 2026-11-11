@@ -1,0 +1,55 @@
+{
+  "scale": 4,
+  "cell": {
+    "width": 800,
+    "height": 800
+  },
+  "figure": {
+    "left": 164,
+    "top": 164,
+    "right": 636,
+    "bottom": 800
+  },
+  "animations": {
+    "idle": {
+      "frames": 6,
+      "fps": 5,
+      "loop": true
+    },
+    "anticipation": {
+      "frames": 4,
+      "fps": 6,
+      "loop": true
+    },
+    "power": {
+      "frames": 6,
+      "fps": 8,
+      "loop": false
+    },
+    "win": {
+      "frames": 6,
+      "fps": 8,
+      "loop": false
+    },
+    "bigWin": {
+      "frames": 4,
+      "fps": 6,
+      "loop": true
+    },
+    "bonus": {
+      "frames": 6,
+      "fps": 8,
+      "loop": false
+    },
+    "puff": {
+      "frames": 6,
+      "fps": 8,
+      "loop": false
+    },
+    "flap": {
+      "frames": 6,
+      "fps": 8,
+      "loop": false
+    }
+  }
+}
