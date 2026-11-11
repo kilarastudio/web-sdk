@@ -13,6 +13,9 @@
 
 	type Props = {
 		version: Snippet;
+		// what the game's paytable and rules modals show, above the version
+		payTable?: Snippet;
+		gameRules?: Snippet;
 	};
 
 	const props: Props = $props();
@@ -25,18 +28,11 @@
 <ModalAutoSpin />
 <ModalAutoSpinMessage />
 <ModalPayTable>
+	{@render props.payTable?.()}
 	{@render props.version()}
 </ModalPayTable>
 <ModalGameRules>
+	{@render props.gameRules?.()}
 	{@render props.version()}
 </ModalGameRules>
 <ModalSettings />
-
-<style lang="scss">
-	:global(html) {
-		font-size: 16px; /* you can chose any size here 16 is default */
-		@media screen and (max-width: 500px) {
-			font-size: 50%;
-		}
-	}
-</style>

@@ -1,0 +1,19 @@
+/*
+	Kilara UI tokens, the same in every game, for anything drawn outside the HUD's own element
+	(the menus). They repeat UI.svelte's values: Kilau #ffc53d, Malam #0e1014, Kertas #f3f4f6,
+	Kabut #8a92a0, Langit #7ab8ff.
+*/
+:root {
+	--ui-accent: #ffc53d;
+	--ui-accent-contrast: #0e1014;
+	--ui-activate: #7ab8ff;
+	--ui-text: #f3f4f6;
+	--ui-text-muted: #8a92a0;
+	--ui-text-disabled: rgba(138, 146, 160, 0.5);
+	--ui-surface: rgba(14, 16, 20, 0.84);
+	--ui-surface-raised: rgba(30, 32, 37, 0.97);
+	--ui-field: rgba(243, 244, 246, 0.07);
+	--ui-field-hover: rgba(243, 244, 246, 0.12);
+	--ui-scrim: rgba(14, 16, 20, 0.5);
+	--ui-shadow: 0 12px 32px rgba(14, 16, 20, 0.4);
+}

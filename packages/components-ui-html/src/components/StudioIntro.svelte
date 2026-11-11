@@ -60,11 +60,7 @@
 		aria-label="Kilara Studio"
 		out:fade={{ duration: 400 }}
 	>
-		<svg
-			viewBox={LOCKUP_VIEWBOX}
-			aria-hidden="true"
-			style:--rise="{WORDMARK_BASELINE + 8}px"
-		>
+		<svg viewBox={LOCKUP_VIEWBOX} aria-hidden="true" style:--rise="{WORDMARK_BASELINE + 8}px">
 			<defs>
 				<!-- the letters rise from below their baseline, so nothing shows under it -->
 				<clipPath id="{id}-base">

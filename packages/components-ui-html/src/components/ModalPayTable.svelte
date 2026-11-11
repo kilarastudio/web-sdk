@@ -1,12 +1,11 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
-	import { Popup } from 'components-shared';
 	import { zIndex } from 'constants-shared/zIndex';
 	import { stateModal } from 'state-shared';
 
-	import BaseContent from './BaseContent.svelte';
-	import BaseScrollable from './BaseScrollable.svelte';
+	import UiSheet from './UiSheet.svelte';
+	import { i18nDerived } from '../i18n/i18nDerived';
 
 	type Props = {
 		children: Snippet;
@@ -16,12 +15,12 @@
 </script>
 
 {#if stateModal.modal?.name === 'payTable'}
-	<Popup zIndex={zIndex.modal} onclose={() => (stateModal.modal = null)}>
-		<BaseContent maxWidth="100%">
-			<BaseScrollable type="column">
-				<span>ADD YOUR PAY TABLE</span>
-				{@render props.children()}
-			</BaseScrollable>
-		</BaseContent>
-	</Popup>
+	<UiSheet
+		title={i18nDerived.payTable()}
+		size="large"
+		zIndex={zIndex.modal}
+		onclose={() => (stateModal.modal = null)}
+	>
+		{@render props.children()}
+	</UiSheet>
 {/if}

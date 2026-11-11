@@ -1,5 +1,6 @@
 export type EmitterEventModal =
 	| { type: 'soundPressGeneral' }
+	| { type: 'soundBetMode'; betModeKey: string }
 	| { type: 'buyBonusConfirm' }
 	| { type: 'bet' }
 	| { type: 'autoBet' };

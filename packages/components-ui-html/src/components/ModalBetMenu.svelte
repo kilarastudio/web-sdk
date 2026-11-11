@@ -1,42 +1,63 @@
 <script lang="ts">
-	import { Button, Popup } from 'components-shared';
 	import { zIndex } from 'constants-shared/zIndex';
-	import { stateModal } from 'state-shared';
+	import { stateBet, stateConfig, stateModal } from 'state-shared';
+	import { getContextEventEmitter } from 'utils-event-emitter';
+	import { numberToCurrencyString } from 'utils-shared/amount';
 
-	import BaseIcon from './BaseIcon.svelte';
-	import BaseTitle from './BaseTitle.svelte';
-	import BaseContent from './BaseContent.svelte';
-	import BaseScrollable from './BaseScrollable.svelte';
-	import BaseButtonWrap from './BaseButtonWrap.svelte';
-	import BaseButtonContent from './BaseButtonContent.svelte';
-	import BetMenuAmountToggle from './BetMenuAmountToggle.svelte';
-	import BetMenuAmountGrid from './BetMenuAmountGrid.svelte';
+	import UiSheet from './UiSheet.svelte';
+	import UiSheetSection from './UiSheetSection.svelte';
+	import UiChoiceGrid from './UiChoiceGrid.svelte';
+	import UiStepper from './UiStepper.svelte';
+	import UiAction from './UiAction.svelte';
 	import { i18nDerived } from '../i18n/i18nDerived';
+	import type { EmitterEventModal } from '../types';
 
-	const confirm = () => {
-		stateModal.modal = null;
+	const { eventEmitter } = getContextEventEmitter<EmitterEventModal>();
+
+	// short enough for a chip: 1.50, 2.5K, 1.2M
+	const compact = (value: number) => {
+		if (value === stateConfig.betMenuOptions.at(-1)) return i18nDerived.max();
+		if (value > 999999) return `${(value / 1000000).toFixed(2)}M`;
+		if (value > 999) return `${(value / 1000).toFixed(2)}K`;
+
+		return value.toFixed(2);
+	};
+
+	const choose = (value: number) => {
+		stateBet.betAmount = value;
+		eventEmitter.broadcast({ type: 'soundPressGeneral' });
 	};
 </script>
 
+<!-- the bet: step through the levels, or pick one straight from the list the server allows -->
 {#if stateModal.modal?.name === 'betAmountMenu'}
-	<Popup zIndex={zIndex.modal} onclose={() => (stateModal.modal = null)}>
-		<BaseContent maxWidth="100%">
-			<BaseTitle>
-				{i18nDerived.betMenu()}
-			</BaseTitle>
-			<BaseScrollable type="column">
-				<span>{i18nDerived.selectYourBet()}</span>
-				<BetMenuAmountToggle />
-				<BetMenuAmountGrid />
-			</BaseScrollable>
-			<BaseButtonWrap type="full-width">
-				<Button data-test="confirm-button" onclick={confirm}>
-					<BaseIcon width="100%" height="3rem" />
-					<BaseButtonContent>
-						<span style="font-size: 1rem;">{i18nDerived.confirm()}</span>
-					</BaseButtonContent>
-				</Button>
-			</BaseButtonWrap>
-		</BaseContent>
-	</Popup>
+	<UiSheet
+		title={i18nDerived.betMenu()}
+		size="medium"
+		zIndex={zIndex.modal}
+		onclose={() => (stateModal.modal = null)}
+	>
+		<UiStepper
+			value={stateBet.betAmount}
+			options={stateConfig.betAmountOptions}
+			format={numberToCurrencyString}
+			onchange={choose}
+		/>
+
+		<UiSheetSection label={i18nDerived.selectYourBet()}>
+			<UiChoiceGrid
+				value={stateBet.betAmount}
+				options={stateConfig.betMenuOptions}
+				format={compact}
+				min={84}
+				onchange={choose}
+			/>
+		</UiSheetSection>
+
+		{#snippet footer()}
+			<UiAction block data-test="confirm-button" onpress={() => (stateModal.modal = null)}>
+				{i18nDerived.confirm()}
+			</UiAction>
+		{/snippet}
+	</UiSheet>
 {/if}
