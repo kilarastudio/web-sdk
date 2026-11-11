@@ -5,6 +5,8 @@ export type BetModeData = {
 	mode: string;
 	costMultiplier: number;
 	type: 'default' | 'activate' | 'buy';
+	// the URL of a picture for the mode's card (a file the game ships, never a remote one)
+	image?: string;
 	parent: string;
 	children: string;
 	text: {
