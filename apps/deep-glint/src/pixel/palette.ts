@@ -1,0 +1,56 @@
+// Endesga 64 (lospec.com/palette-list/endesga-64). Every pixel the game draws by code is one of
+// these colours; a pixel canvas stores their indices.
+export const PALETTE = [
+	0xff0040, 0x131313, 0x1b1b1b, 0x272727, 0x3d3d3d, 0x5d5d5d, 0x858585, 0xb4b4b4, 0xffffff,
+	0xc7cfdd, 0x92a1b9, 0x657392, 0x424c6e, 0x2a2f4e, 0x1a1932, 0x0e071b, 0x1c121c, 0x391f21,
+	0x5d2c28, 0x8a4836, 0xbf6f4a, 0xe69c69, 0xf6ca9f, 0xf9e6cf, 0xedab50, 0xe07438, 0xc64524,
+	0x8e251d, 0xff5000, 0xed7614, 0xffa214, 0xffc825, 0xffeb57, 0xd3fc7e, 0x99e65f, 0x5ac54f,
+	0x33984b, 0x1e6f50, 0x134c4c, 0x0c2e44, 0x00396d, 0x0069aa, 0x0098dc, 0x00cdf9, 0x0cf1ff,
+	0x94fdff, 0xfdd2ed, 0xf389f5, 0xdb3ffd, 0x7a09fa, 0x3003d9, 0x0c0293, 0x03193f, 0x3b1443,
+	0x622461, 0x93388f, 0xca52c9, 0xc85086, 0xf68187, 0xf5555d, 0xea323c, 0xc42430, 0x891e2b,
+	0x571c27,
+] as const;
+
+export const CLEAR = -1;
+
+// the index of a palette colour, by its hex value
+export const color = (hex: number) => {
+	const index = (PALETTE as readonly number[]).indexOf(hex);
+	if (index < 0) throw new Error(`0x${hex.toString(16)} is not an Endesga 64 colour`);
+	return index;
+};
+
+const ramp = (...hexes: number[]) => hexes.map(color);
+
+// Colour ramps, dark to light. Shading steps along a ramp instead of mixing colours.
+export const RAMPS = {
+	red: ramp(0x571c27, 0x891e2b, 0xc42430, 0xea323c, 0xf5555d, 0xf68187, 0xfdd2ed),
+	gold: ramp(0x5d2c28, 0x8a4836, 0xed7614, 0xffa214, 0xffc825, 0xffeb57, 0xf9e6cf),
+	fire: ramp(0x571c27, 0x8e251d, 0xc64524, 0xff5000, 0xffa214, 0xffeb57, 0xffffff),
+	green: ramp(0x134c4c, 0x1e6f50, 0x33984b, 0x5ac54f, 0x99e65f, 0xd3fc7e, 0xffffff),
+	blue: ramp(0x03193f, 0x00396d, 0x0069aa, 0x0098dc, 0x00cdf9, 0x0cf1ff, 0x94fdff),
+	violet: ramp(0x0c0293, 0x3003d9, 0x7a09fa, 0xdb3ffd, 0xf389f5, 0xfdd2ed, 0xffffff),
+	pink: ramp(0x3b1443, 0x622461, 0x93388f, 0xca52c9, 0xf389f5, 0xfdd2ed, 0xffffff),
+	steel: ramp(0x1a1932, 0x2a2f4e, 0x424c6e, 0x657392, 0x92a1b9, 0xc7cfdd, 0xffffff),
+	stone: ramp(0x131313, 0x272727, 0x3d3d3d, 0x5d5d5d, 0x858585, 0xb4b4b4, 0xffffff),
+	wood: ramp(0x1c121c, 0x391f21, 0x5d2c28, 0x8a4836, 0xbf6f4a, 0xe69c69, 0xf6ca9f),
+} as const;
+
+export type RampName = keyof typeof RAMPS;
+
+export const INK = color(0x0e071b);
+export const WHITE = color(0xffffff);
+
+// one step lighter and darker for every palette colour, along the first ramp that holds it
+const step = (direction: 1 | -1) =>
+	PALETTE.map((_, index) => {
+		for (const ramp of Object.values(RAMPS)) {
+			const at = ramp.indexOf(index);
+			if (at < 0) continue;
+			return ramp[Math.max(0, Math.min(ramp.length - 1, at + direction))];
+		}
+		return index;
+	});
+
+export const LIGHTER = step(1);
+export const DARKER = step(-1);
