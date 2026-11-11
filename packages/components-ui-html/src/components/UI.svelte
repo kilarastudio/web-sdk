@@ -54,6 +54,16 @@
 		--ui-scrim: rgba(14, 16, 20, 0.5);
 		--ui-shadow: 0 12px 32px rgba(14, 16, 20, 0.4);
 		--ui-text-shadow: 0 2px 8px rgba(14, 16, 20, 0.65);
+		/*
+			Text that sits straight on the game's art (the header, and the labels of the layouts
+			without a dock) has to read on any picture, bright or dark: it is lighter than Kabut, has
+			a tight dark edge under the soft shadow, and stands on a scrim, a fade to Malam from the
+			screen's edge.
+		*/
+		--ui-text-on-art: #cdd2da;
+		--ui-text-shadow-on-art: 0 1px 2px rgba(14, 16, 20, 0.9), 0 2px 10px rgba(14, 16, 20, 0.7);
+		--ui-scrim-edge: rgba(14, 16, 20, 0.8);
+		--ui-scrim-mid: rgba(14, 16, 20, 0.5);
 
 		position: fixed;
 		inset: 0;

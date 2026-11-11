@@ -32,6 +32,8 @@
 		insetBottom="calc(var(--footer-bottom) + var(--ui-button-size))"
 		insetSide="calc(var(--edge) + var(--ui-button-size-large))"
 	>
+		<div class="scrim"></div>
+
 		<div class="column buy-bonus">
 			<ButtonBuyBonus />
 		</div>
@@ -80,7 +82,8 @@
 		--ui-button-size: 112px;
 		--ui-button-size-large: 220px;
 		--ui-feature-size: 168px;
-		--ui-label-shadow: var(--ui-text-shadow);
+		--ui-label-shadow: var(--ui-text-shadow-on-art);
+		--ui-label-name-color: var(--ui-text-on-art);
 		--edge: 40px;
 		--footer-bottom: 28px;
 		/* the menu opens over the menu button, the first item in the footer */
@@ -90,6 +93,16 @@
 
 		position: absolute;
 		inset: 0;
+	}
+
+	/* the footer's labels stand on the game's art, so the bottom of the screen fades to dark */
+	.scrim {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: calc((var(--footer-bottom) + var(--ui-button-size)) * 1.7);
+		background: linear-gradient(to top, var(--ui-scrim-edge), var(--ui-scrim-mid) 55%, transparent);
 	}
 
 	/* a column as wide as the spin button, centred on the stage's height */

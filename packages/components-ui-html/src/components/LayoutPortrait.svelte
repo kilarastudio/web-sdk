@@ -69,6 +69,8 @@
 -->
 <div class="layout">
 	<UiStage fill insetBottom="calc(var(--win-bottom) + var(--ui-font-size) * 1.9)">
+		<div class="scrim"></div>
+
 		<!-- slides out of the screen when the drawer folds -->
 		<div
 			class="slide"
@@ -129,15 +131,14 @@
 		--ui-button-size: 108px;
 		--ui-button-size-large: 236px;
 		--ui-feature-size: 168px;
-		--ui-label-shadow: var(--ui-text-shadow);
+		--ui-label-shadow: var(--ui-text-shadow-on-art);
+		--ui-label-name-color: var(--ui-text-on-art);
 		--edge: 40px;
 		--footer-bottom: 28px;
 		--spin-row-bottom: calc(var(--footer-bottom) + var(--ui-button-size) + 40px);
 		--win-bottom: calc(var(--spin-row-bottom) + var(--ui-button-size-large) + 32px);
 		/* with the drawer folded the win line rests 24px above the footer, clear of its labels */
-		--win-drop: calc(
-			var(--win-bottom) - var(--footer-bottom) - var(--ui-button-size) - 24px
-		);
+		--win-drop: calc(var(--win-bottom) - var(--footer-bottom) - var(--ui-button-size) - 24px);
 		/* the menu opens over the menu button, the first item in the footer */
 		--menu-x: calc(var(--edge) + var(--ui-button-size) / 2);
 		--menu-bottom: var(--footer-bottom);
@@ -145,6 +146,27 @@
 
 		position: absolute;
 		inset: 0;
+	}
+
+	/*
+		The labels stand on the game's art, so the bottom of the screen fades to dark under them:
+		darkest behind the footer, still there behind the win line where it rests with the drawer
+		folded, and gone by the top of the spin button.
+	*/
+	.scrim {
+		--footer-top: calc(var(--footer-bottom) + var(--ui-button-size));
+
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		height: calc(var(--spin-row-bottom) + var(--ui-button-size-large));
+		background: linear-gradient(
+			to top,
+			var(--ui-scrim-edge),
+			var(--ui-scrim-mid) calc(var(--footer-top) + var(--ui-font-size) * 2.4),
+			transparent
+		);
 	}
 
 	.slide {

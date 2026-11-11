@@ -34,7 +34,12 @@
 
 	<!-- stage: the standard size of the current layout type, e.g. 1920 × 1080 -->
 	<div class="layout" class:portrait>
-		<UiStage>
+		<!-- the board keeps clear of the bar, and of the play button above it in portrait -->
+		<UiStage
+			insetBottom={portrait
+				? 'calc(var(--bar-bottom) + var(--bar-height) + 32px + var(--ui-button-size))'
+				: 'calc(var(--bar-bottom) + var(--bar-height))'}
+		>
 			{#if portrait}
 				<div class="play-above">
 					<ButtonReplay />

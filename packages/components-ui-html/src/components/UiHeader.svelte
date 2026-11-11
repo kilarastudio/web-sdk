@@ -38,14 +38,29 @@
 		align-items: baseline;
 		gap: 1rem;
 		padding: 0.5em 0.9em;
-		color: var(--ui-text-muted);
+		color: var(--ui-text-on-art);
 		font-size: clamp(10px, 1.8vmin, 15px);
 		font-weight: 600;
 		letter-spacing: 0.06em;
 		line-height: 1.4;
 		text-transform: uppercase;
-		text-shadow: var(--ui-text-shadow);
+		text-shadow: var(--ui-text-shadow-on-art);
 		white-space: nowrap;
 		pointer-events: none;
+		isolation: isolate;
+
+		/* the scrim: dark behind the text, gone a little below it */
+		&::before {
+			content: '';
+			position: absolute;
+			inset: 0 0 -140% 0;
+			z-index: -1;
+			background: linear-gradient(
+				to bottom,
+				var(--ui-scrim-edge),
+				var(--ui-scrim-mid) 42%,
+				transparent
+			);
+		}
 	}
 </style>

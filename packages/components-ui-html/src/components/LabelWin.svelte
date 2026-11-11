@@ -1,8 +1,9 @@
 <script lang="ts">
 	import { Tween } from 'svelte/motion';
+	import { cubicOut } from 'svelte/easing';
 
 	import { stateBet } from 'state-shared';
-	import { bookEventAmountToCurrencyString } from 'utils-shared/amount';
+	import { bookEventAmountToCountUpCurrencyString } from 'utils-shared/amount';
 
 	import UiLabel from './UiLabel.svelte';
 	import { i18nDerived } from '../i18n/i18nDerived';
@@ -14,9 +15,18 @@
 	};
 
 	const props: Props = $props();
-	const winBookEventAmountTween = new Tween(stateBet.winBookEventAmount);
+	// the amount races up to a new win and slows into it
+	const winBookEventAmountTween = new Tween(stateBet.winBookEventAmount, {
+		duration: 500,
+		easing: cubicOut,
+	});
 	const label = $derived(i18nDerived.win());
-	const value = $derived(bookEventAmountToCurrencyString(winBookEventAmountTween.current));
+	const value = $derived(
+		bookEventAmountToCountUpCurrencyString(
+			winBookEventAmountTween.current,
+			stateBet.winBookEventAmount,
+		),
+	);
 	const hasWin = $derived(stateBet.winBookEventAmount > 0);
 	const hidden = $derived(props.hideZero && !hasWin);
 

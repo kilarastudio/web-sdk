@@ -34,7 +34,7 @@
 	}
 
 	.name {
-		color: var(--ui-text-muted);
+		color: var(--ui-label-name-color, var(--ui-text-muted));
 		font-size: 0.55em;
 		font-weight: 500;
 		letter-spacing: 0.08em;
