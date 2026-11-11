@@ -5,8 +5,6 @@ Runtime animasi cutout milik Kilara. Dibuat 30 Oktober 2026 setelah diputuskan b
 - `skeleton.ts`: data, sampling, pose, matriks, validasi, dan `AnimationState`. Tidak bergantung pada Pixi atau Svelte, jadi bisa dijalankan skrip Node.
 - `../components/Skeleton.svelte`: menggambar skeleton di Pixi, satu `Sprite` per slot.
 
-Pemakaian: Glint (`apps/deep-glint/scripts/glint-skeleton.mjs`) dan karakter penambang (`apps/deep-glint/scripts/character-skeleton.mjs`, dikonversi dari rig v1) di DEEP GLINT.
-
 ## Format v1
 
 Satu file JSON. Sumbu y ke bawah, rotasi dalam derajat searah jarum jam, waktu dalam detik.
