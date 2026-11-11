@@ -1,4 +1,4 @@
-import { backOut } from 'svelte/easing';
+import { backOut, linear } from 'svelte/easing';
 import { Tween } from 'svelte/motion';
 
 import { stateBet } from 'state-shared';
@@ -111,7 +111,10 @@ export function createReelForCascading<TRawSymbol extends object, TSymbolState e
 
 			await waitForTimeout(delay);
 			reelSymbol.symbolState = 'spin' as TSymbolState;
-			await reelSymbol.symbolY.set(newSymbolY, { duration });
+			await reelSymbol.symbolY.set(newSymbolY, {
+				duration,
+				easing: reelState.spinOptions().symbolFallOutEasing ?? linear,
+			});
 		});
 
 		reelState.motion = 'hanging';
@@ -154,22 +157,25 @@ export function createReelForCascading<TRawSymbol extends object, TSymbolState e
 				(reelLengthInBoard - reelSymbol.symbolIndexOfBoard);
 			const bounceDistance =
 				reelOptions.symbolHeight * reelState.spinOptions().symbolFallInBounceSizeMulti;
-			const bounceDuration = bounceDistance / reelState.spinOptions().symbolFallInBounceSpeed;
 			const landDuration = (distance - bounceDistance) / reelState.spinOptions().symbolFallInSpeed;
 
 			await reelSymbol.symbolY.set(newSymbolY - bounceDistance, {
 				duration: landDuration,
 				delay,
+				easing: reelState.spinOptions().symbolFallInEasing ?? linear,
 			});
 			reelSymbol.symbolState = 'land' as TSymbolState;
 			reelOptions.onSymbolLand({ rawSymbol: reelSymbol.rawSymbol });
 			if (reelSymbol.symbolIndexOfBoard === reelLengthInBoard - 1) {
 				onSpinFinishing();
 			}
-			await reelSymbol.symbolY.set(newSymbolY, {
-				duration: bounceDuration,
-				easing: reelState.spinOptions().symbolFallInBounceEasing ?? backOut,
-			});
+			// no bounce distance: the fall has already reached its place
+			if (bounceDistance > 0) {
+				await reelSymbol.symbolY.set(newSymbolY, {
+					duration: bounceDistance / reelState.spinOptions().symbolFallInBounceSpeed,
+					easing: reelState.spinOptions().symbolFallInBounceEasing ?? backOut,
+				});
+			}
 		});
 
 		reelState.motion = 'stopped';

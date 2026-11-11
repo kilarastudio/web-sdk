@@ -27,6 +27,10 @@ export type CascadingReelSpinOptions = {
 	symbolFallInBounceSizeMulti: number;
 	// easing of the last stretch into place, backOut when not given
 	symbolFallInBounceEasing?: (t: number) => number;
+	// easing of the fall into place and of the fall out of the board, linear when not given. With
+	// symbolFallInBounceSizeMulti 0 the fall runs all the way into place on this easing alone.
+	symbolFallInEasing?: (t: number) => number;
+	symbolFallOutEasing?: (t: number) => number;
 	symbolFallOutSpeed: number;
 	symbolFallOutInterval: number;
 	// reel
