@@ -3,15 +3,22 @@ import _ from 'lodash';
 import { recordBookEvent, checkIsMultipleRevealEvents, type BookEventHandlerMap } from 'utils-book';
 import { stateBet, stateBetDerived, stateUi } from 'state-shared';
 import { BOOK_AMOUNT_MULTIPLIER } from 'constants-shared/bet';
+import { waitForTimeout } from 'utils-shared/wait';
 
 import { eventEmitter } from './eventEmitter';
 import { playBookEvent } from './utils';
 import { winLevelMap, type WinLevel, type WinLevelData } from './winLevelMap';
+import { winLevelSoundsPlay, winLevelSoundsStop } from './winSounds';
 import { stateGame, stateGameDerived, emptyGlint } from './stateGame.svelte';
 import type { BookEvent, BookEventOfType, BookEventContext } from './typesBookEvent';
 import type { Position } from './types';
 import { glintChanges } from './glint';
+import { impact, shake } from './impact.svelte';
 import type { GlintApplySpot } from '../components/GlintSpots.svelte';
+
+// how many wins the current spin's tumbles have paid so far, for the rising win sound
+const WIN_STEPS = 5;
+let winStep = 0;
 
 let awaitingFirstFreeSpinGlint = false;
 const updateGlint = async (glint: number[][]) => {
@@ -23,8 +30,19 @@ const updateGlint = async (glint: number[][]) => {
 	awaitingFirstFreeSpinGlint = false;
 	const spots = glintChanges(stateGame.glint, glint);
 	stateGame.glint = glint;
-	if (superStart) await eventEmitter.broadcastAsync({ type: 'glintSuperShow' });
-	else if (spots.length) await eventEmitter.broadcastAsync({ type: 'glintAnimateShow', spots });
+	if (superStart) {
+		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_dragon_strike' });
+		await eventEmitter.broadcastAsync({ type: 'glintSuperShow' });
+	} else if (spots.length) {
+		// one sound for the strongest change of the step
+		const name = spots.some(({ animation }) => animation === 'tier_up' || animation === 'double')
+			? 'sfx_glint_double'
+			: spots.some(({ animation }) => animation === 'light')
+				? 'sfx_glint_light'
+				: 'sfx_glint_prime';
+		eventEmitter.broadcast({ type: 'soundOnce', name, forcePlay: true });
+		await eventEmitter.broadcastAsync({ type: 'glintAnimateShow', spots });
+	}
 };
 
 const resetGlint = async () => {
@@ -53,16 +71,6 @@ const appliedSpots = (wins: BookEventOfType<'winInfo'>['wins']): GlintApplySpot[
 			: [];
 	});
 
-const winLevelSoundsPlay = ({ winLevelData }: { winLevelData: WinLevelData }) => {
-	if (winLevelData?.alias === 'max') eventEmitter.broadcastAsync({ type: 'uiHide' });
-	if (winLevelData?.sound?.sfx) {
-		eventEmitter.broadcast({ type: 'soundOnce', name: winLevelData.sound.sfx });
-	}
-	if (winLevelData?.sound?.bgm) {
-		eventEmitter.broadcast({ type: 'soundMusic', name: winLevelData.sound.bgm });
-	}
-};
-
 // the character only celebrates a win above what the round cost (a win at or below it is a loss
 // in disguise), and a big win the most
 const characterReactToWin = ({
@@ -81,14 +89,14 @@ const characterReactToWin = ({
 	});
 };
 
-const winLevelSoundsStop = () => {
-	if (stateBet.activeBetModeKey === 'SUPERSPIN' || stateGame.gameType === 'freegame') {
-		// check if SUPERSPIN, when finishing a bet.
-		eventEmitter.broadcast({ type: 'soundMusic', name: 'bgm_freespin' });
-	} else {
-		eventEmitter.broadcast({ type: 'soundMusic', name: 'bgm_main' });
-	}
-	eventEmitter.broadcastAsync({ type: 'uiShow' });
+// How the dragon takes each win of a spin's tumbles: a nod at the first, a snort of smoke at the
+// second, a beat of its wing at the third, its roar from the fourth. Until the tumbles have paid
+// more than the bet it only nods: a win below the bet is not one to celebrate.
+const STEP_REACTIONS = ['nod', 'puff', 'flap', 'win'] as const;
+const characterReactToStep = ({ step, earned }: { step: number; earned: number }) => {
+	const level = earned > BOOK_AMOUNT_MULTIPLIER ? Math.min(STEP_REACTIONS.length, step) : 1;
+
+	eventEmitter.broadcast({ type: 'characterReact', reaction: STEP_REACTIONS[level - 1] });
 };
 
 const animateSymbols = async ({ positions }: { positions: Position[] }) => {
@@ -102,6 +110,8 @@ const animateSymbols = async ({ positions }: { positions: Position[] }) => {
 export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContext> = {
 	reveal: async (bookEvent: BookEventOfType<'reveal'>, { bookEvents }: BookEventContext) => {
 		eventEmitter.broadcast({ type: 'tumbleWinAmountReset' });
+		winStep = 0;
+		impact.step = 0;
 		const isBonusGame = checkIsMultipleRevealEvents({ bookEvents });
 		if (isBonusGame) {
 			eventEmitter.broadcast({ type: 'stopButtonEnable' });
@@ -114,11 +124,40 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		await stateGameDerived.enhancedBoard.spin({ revealEvent: bookEvent });
 		eventEmitter.broadcast({ type: 'soundScatterCounterClear' });
 	},
-	winInfo: async (bookEvent: BookEventOfType<'winInfo'>) => {
+	winInfo: async (bookEvent: BookEventOfType<'winInfo'>, { bookEvents }: BookEventContext) => {
 		const applied = appliedSpots(bookEvent.wins);
+		const positions = _.flatten(bookEvent.wins.map((win) => win.positions));
+		// each win of a spin's tumbles hits harder than the one before: a higher note, a stronger
+		// shake, more coins, pieces thrown further, and more from the dragon
+		winStep = Math.min(WIN_STEPS, winStep + 1);
+		impact.step = winStep;
+		// what the spin's tumbles will have paid once this win is in
+		const tumbleWin = bookEvents.find(
+			(next): next is BookEventOfType<'updateTumbleWin'> =>
+				next.type === 'updateTumbleWin' && next.index > bookEvent.index,
+		);
+
 		const promise1 = async () => {
-			eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_winlevel_small' });
-			await animateSymbols({ positions: _.flatten(bookEvent.wins.map((win) => win.positions)) });
+			eventEmitter.broadcast({
+				type: 'soundOnce',
+				name: `sfx_win_step_${winStep as 1 | 2 | 3 | 4 | 5}`,
+				forcePlay: true,
+			});
+			shake(Math.min(3, winStep));
+			characterReactToStep({ step: winStep, earned: tumbleWin?.amount ?? 0 });
+			await animateSymbols({ positions });
+		};
+
+		// the coins carry the win to the tumble win panel, which counts up as they land
+		const promise3 = async () => {
+			if (!tumbleWin) return;
+			eventEmitter.broadcast({ type: 'tumbleWinAmountShow' });
+			await eventEmitter.broadcastAsync({ type: 'winCoinsFly', positions, step: winStep });
+			eventEmitter.broadcast({
+				type: 'tumbleWinAmountUpdate',
+				amount: tumbleWin.amount,
+				animate: true,
+			});
 		};
 
 		const promise2 = async () => {
@@ -144,6 +183,7 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		await Promise.all([
 			promise1(),
 			promise2(),
+			promise3(),
 			...(applied.length
 				? [
 						eventEmitter.broadcastAsync({ type: 'glintApplyFly', spots: applied }),
@@ -167,7 +207,7 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 			eventEmitter.broadcast({
 				type: 'tumbleWinAmountUpdate',
 				amount: bookEvent.amount,
-				animate: false,
+				animate: true,
 			});
 		}
 	},
@@ -182,15 +222,21 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		// show free spin intro
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_superfreespin' });
 		await eventEmitter.broadcastAsync({ type: 'uiHide' });
-		await eventEmitter.broadcastAsync({ type: 'transition' });
-		eventEmitter.broadcast({ type: 'freeSpinIntroShow' });
+		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_transition' });
+		// the hall changes to the boss fight behind the wipe
+		await eventEmitter.broadcastAsync({
+			type: 'transition',
+			oncovered: () => {
+				stateGame.gameType = 'freegame';
+				eventEmitter.broadcast({ type: 'freeSpinIntroShow' });
+			},
+		});
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'jng_intro_fs' });
 		eventEmitter.broadcast({ type: 'soundMusic', name: 'bgm_freespin' });
 		await eventEmitter.broadcastAsync({
 			type: 'freeSpinIntroUpdate',
 			totalFreeSpins: bookEvent.totalFs,
 		});
-		stateGame.gameType = 'freegame';
 		awaitingFirstFreeSpinGlint = true;
 		eventEmitter.broadcast({ type: 'freeSpinIntroHide' });
 		eventEmitter.broadcast({ type: 'boardFrameGlowShow' });
@@ -224,14 +270,15 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 	glintStrike: async (bookEvent: BookEventOfType<'glintStrike'>) => {
 		// Only the initial updateGlint can be the SUPER board initialization.
 		awaitingFirstFreeSpinGlint = false;
+		// the dragon rears and breathes; its fire flies to the struck spots, and they light as it lands
 		eventEmitter.broadcast({ type: 'characterReact', reaction: 'power' });
-		await Promise.all([
-			updateGlint(bookEvent.glint),
-			eventEmitter.broadcastAsync({
-				type: 'glintStrikeShow',
-				spots: bookEvent.spots.map((spot) => ({ ...spot, row: spot.row - 1 })),
-			}),
-		]);
+		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_dragon_strike' });
+		await eventEmitter.broadcastAsync({
+			type: 'glintStrikeShow',
+			spots: bookEvent.spots.map((spot) => ({ ...spot, row: spot.row - 1 })),
+		});
+		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_fireball_hit' });
+		await updateGlint(bookEvent.glint);
 	},
 	freeSpinEnd: async (bookEvent: BookEventOfType<'freeSpinEnd'>) => {
 		const winLevelData = winLevelMap[bookEvent.winLevel as WinLevel];
@@ -240,9 +287,10 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		stateGame.gameType = 'basegame';
 		eventEmitter.broadcast({ type: 'boardFrameGlowHide' });
 		eventEmitter.broadcast({ type: 'freeSpinOutroShow' });
+		// the panel has its own fanfare
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_youwon_panel' });
 		characterReactToWin({ amount: bookEvent.amount, winLevelData });
-		winLevelSoundsPlay({ winLevelData });
+		winLevelSoundsPlay({ winLevelData, fanfare: false });
 		await eventEmitter.broadcastAsync({
 			type: 'freeSpinOutroCountUp',
 			amount: bookEvent.amount,
@@ -253,6 +301,7 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		stateUi.freeSpinCounterShow = false;
 		await resetGlint();
 		eventEmitter.broadcast({ type: 'tumbleWinAmountHide' });
+		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_transition' });
 		await eventEmitter.broadcastAsync({ type: 'transition' });
 		await eventEmitter.broadcastAsync({ type: 'uiShow' });
 		await eventEmitter.broadcastAsync({ type: 'drawerUnfold' });
@@ -263,12 +312,15 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		eventEmitter.broadcast({ type: 'tumbleBoardShow' });
 		eventEmitter.broadcast({ type: 'tumbleBoardInit', addingBoard: bookEvent.newSymbols });
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_multiplier_explosion_b' });
+		// the pieces fly as the white pop ends
+		void waitForTimeout(70 / stateBetDerived.timeScale()).then(() => shake(Math.min(3, winStep)));
 		await eventEmitter.broadcastAsync({
 			type: 'tumbleBoardExplode',
 			explodingPositions: bookEvent.explodingSymbols,
 		});
 		eventEmitter.broadcast({ type: 'tumbleBoardRemoveExploded' });
 		await eventEmitter.broadcastAsync({ type: 'tumbleBoardSlideDown' });
+		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_tumble_land', forcePlay: true });
 		eventEmitter.broadcast({
 			type: 'boardSettle',
 			board: stateGameDerived

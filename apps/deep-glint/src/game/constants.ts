@@ -72,31 +72,26 @@ export const BOARD_SIZES = {
 	height: SYMBOL_SIZE * BOARD_DIMENSIONS.y,
 };
 
-// The Kilara Mine board frame (kilara-mine-v2/board-frame.png), drawn as a nine-slice round the
-// board so its corners keep their size while its edges stretch. In source pixels
-// (frame-geometry.json): the slices cut from each side, and how much of each is visible frame
-// rather than clear padding.
-export const BOARD_FRAME = {
-	slices: { left: 152, top: 194, right: 155, bottom: 226 },
-	border: { left: 114, top: 119, right: 115, bottom: 121 },
-	// source pixels to game units
-	scale: 0.3,
-	// clear between the symbols and the frame's inner edge
-	padding: 6,
-};
+// One art pixel is 2.5 game units everywhere: a reel cell is 40 art pixels across. Code-drawn
+// textures and the processed image art all keep this density, so the whole screen sits on one
+// pixel grid.
+export const ART_PIXEL = SYMBOL_SIZE / 40;
+
+// The stone frame round the board (src/pixel/ui.ts boardFrame), drawn whole at the board's size;
+// border is its thickness in game units.
+export const BOARD_FRAME = { border: 14 * ART_PIXEL };
 
 // how far the frame reaches past the symbols on each side
 export const BOARD_FRAME_REACH = {
-	left: BOARD_FRAME.padding + BOARD_FRAME.border.left * BOARD_FRAME.scale,
-	top: BOARD_FRAME.padding + BOARD_FRAME.border.top * BOARD_FRAME.scale,
-	right: BOARD_FRAME.padding + BOARD_FRAME.border.right * BOARD_FRAME.scale,
-	bottom: BOARD_FRAME.padding + BOARD_FRAME.border.bottom * BOARD_FRAME.scale,
+	left: BOARD_FRAME.border,
+	top: BOARD_FRAME.border,
+	right: BOARD_FRAME.border,
+	bottom: BOARD_FRAME.border,
 };
 export const BOARD_FRAME_SIDE = BOARD_FRAME_REACH.right;
 
-// the panels above the board (tumble win, multiplier) stand on the frame, over half its top edge
-export const PANELS_BOTTOM =
-	BOARD_FRAME_REACH.top - BOARD_FRAME.border.top * BOARD_FRAME.scale * 0.5;
+// the panels above the board (tumble win) stand on the frame, over half its top edge
+export const PANELS_BOTTOM = BOARD_FRAME_REACH.top * 0.5;
 
 // how far the frame and the panels above the board reach past the symbols; the panels are bigger
 // in the stacked layout
@@ -115,17 +110,17 @@ export const BOARD_FIT = { edge: 10, gap: 8 };
 // is too small to read it. Its height grows with the room, between these bounds, and stays below
 // the board's (500) so the reels keep the focus; width = height × ratio.
 export const CHARACTER_SIZES = {
-	// width / height of the idle drawing in the character skeleton (826 × 1517)
-	ratio: 0.54,
+	// width / height of the dragon's idle figure (static/assets/character/character.json)
+	ratio: 472 / 636,
 	// kept clear between the character and the edge of the screen
 	edge: 16,
 	side: { minHeight: 240, maxHeight: 400, gap: 24 },
 	bottom: { minHeight: 200, maxHeight: 400, gap: 8 },
 };
 
-// the Deep Glint logo with the miner on the loading screen, a little narrower than the board (600);
-// ratio is the trimmed art's width / height
-export const LOADING_LOGO = { width: 440, ratio: 1209 / 979 };
+// the title logo on the loading and welcome screens (static/assets/ui/logo.png), a little
+// narrower than the board (600); ratio is its width / height
+export const LOADING_LOGO = { width: 480, ratio: 192 / 135 };
 
 export const BACKGROUND_RATIO = 2039 / 1000;
 export const PORTRAIT_BACKGROUND_RATIO = 1242 / 2208;
@@ -159,39 +154,52 @@ const SPIN_OPTIONS_SHARED = {
 	reelFallOutDelay: 145,
 };
 
-// a short, firm settle: the last 25 px into place in 125 ms
+// A symbol's whole way into place is one curve, so its speed never jumps: it leaves from rest,
+// gathers speed, and is already slowing as it arrives; it runs a hair past its place (about 1%
+// of the way, 8 px on a full drop) and eases back. Nothing bounces and nothing bends. The same
+// curve brings the symbols of a tumble down.
+export const settleEasing = (t: number) => {
+	const over = 0.6;
+	const u = t ** 1.7 - 1;
+
+	return 1 + (over + 1) * u ** 3 + over * u ** 2;
+};
+// leaving the board starts nearly from rest
+const fallOutEasing = (t: number) => t * (0.25 + 0.75 * t);
+
+// 650 px into place in about 380 ms, each symbol 44 ms behind the one under it, so a column pours
+// in rather than dropping as a block
 export const SPIN_OPTIONS_DEFAULT = {
 	...SPIN_OPTIONS_SHARED,
-	symbolFallInSpeed: 3.5,
-	symbolFallInInterval: 30,
+	symbolFallInSpeed: 1.7,
+	symbolFallInInterval: 44,
 	symbolFallInBounceSpeed: 0.2,
-	symbolFallInBounceSizeMulti: 0.25,
-	symbolFallOutSpeed: 3.5,
-	symbolFallOutInterval: 20,
+	symbolFallInBounceSizeMulti: 0,
+	symbolFallInEasing: settleEasing,
+	symbolFallOutSpeed: 2.8,
+	symbolFallOutInterval: 24,
+	symbolFallOutEasing: fallOutEasing,
 };
 
 export const SPIN_OPTIONS_FAST = {
 	...SPIN_OPTIONS_SHARED,
-	symbolFallInSpeed: 7,
+	symbolFallInSpeed: 4,
 	symbolFallInInterval: 0,
 	symbolFallInBounceSpeed: 0.3,
-	symbolFallInBounceSizeMulti: 0.12,
-	symbolFallOutSpeed: 7,
+	symbolFallInBounceSizeMulti: 0,
+	symbolFallInEasing: settleEasing,
+	symbolFallOutSpeed: 6,
 	symbolFallOutInterval: 0,
+	symbolFallOutEasing: fallOutEasing,
 };
 
-// prefers-reduced-motion: the same distances and timings, eased into place without the overshoot
+// prefers-reduced-motion: the same distances and timings, eased into place without running past it
 export const SPIN_OPTIONS_REDUCED_MOTION = {
-	symbolFallInBounceEasing: cubicOut,
+	symbolFallInEasing: cubicOut,
 };
 
-// a back-out whose overshoot is about 4% of the distance instead of backOut's 10%
-export const settleOut = (t: number) => {
-	const overshoot = 1;
-	const u = t - 1;
-
-	return u * u * ((overshoot + 1) * u + overshoot) + 1;
-};
+// a win amount races up and slows into its final value, so the last digits can be read
+export const countUpEasing = (t: number) => 1 - (1 - t) ** 2.4;
 
 export const MOTION_BLUR_VELOCITY = 31;
 
@@ -203,32 +211,25 @@ export const zIndexes = {
 	},
 };
 
-const explosion = {
-	type: 'spine',
-	assetKey: 'explosion',
-	animationName: 'explosion',
-	sizeRatios: { width: 1, height: 1 },
-};
-
-// Kilara symbols (kilara-mine-v3) are still static art: one sprite for every state but the
-// explosion, which a win beats in code (see winPulse) until the art has its own animations
-const SYMBOL_SPRITE_SIZE = 0.96;
+// Symbols are drawn by code (src/pixel/symbols.ts) and animated by code as solid objects: one
+// smooth curve into place, a win act of their own (SymbolSprite, game/symbolActs.ts), and an
+// explosion that breaks the symbol into its own pixels.
+const explosion = { type: 'explosion', assetKey: '', sizeRatios: { width: 1, height: 1 } } as const;
 
 const kilaraSymbol = (assetKey: string) => {
-	const sprite = {
-		type: 'sprite',
-		assetKey,
-		sizeRatios: { width: SYMBOL_SPRITE_SIZE, height: SYMBOL_SPRITE_SIZE },
-	} as const;
+	const sprite = { type: 'sprite', assetKey, sizeRatios: { width: 1, height: 1 } } as const;
+
+	// at rest on the board a symbol may stir now and then (motion 'rest'); falling, it does not
+	const resting = { ...sprite, motion: 'rest' } as const;
 
 	return {
-		explosion,
-		static: sprite,
+		explosion: { ...explosion, assetKey },
+		static: resting,
 		spin: sprite,
-		land: sprite,
-		postWinStatic: sprite,
-		win: { ...sprite, pulse: true },
-	};
+		land: { ...sprite, motion: 'land' },
+		postWinStatic: resting,
+		win: { ...sprite, motion: 'win' },
+	} as const;
 };
 
 // the multiplier is an empty token whose value the game draws on it, until the value has moved

@@ -1,5 +1,5 @@
 import type { TextProps } from 'pixi-svelte';
-import { GAME_FONT_CHARACTERS, GAME_FONT_FAMILIES } from './gameFont.generated';
+import { GAME_FONT_CHARACTERS, GAME_FONT_FAMILIES } from './gameFont';
 
 const characters = new Set([...GAME_FONT_CHARACTERS, '\n']);
 export const supportsGameFont = (text: unknown) =>

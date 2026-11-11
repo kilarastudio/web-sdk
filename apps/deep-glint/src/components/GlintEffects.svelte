@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Tween, prefersReducedMotion } from 'svelte/motion';
+	import { cubicInOut } from 'svelte/easing';
 	import { Container, Rectangle } from 'pixi-svelte';
 	import { stateBetDerived } from 'state-shared';
 	import { getContext } from '../game/context';
@@ -20,7 +21,10 @@
 		glintApplyFly: async ({ spots }) => {
 			flights = spots;
 			flightProgress.set(0, { duration: 0 });
-			await flightProgress.set(1, { duration: 500 / stateBetDerived.timeScale() });
+			await flightProgress.set(1, {
+				duration: 500 / stateBetDerived.timeScale(),
+				easing: cubicInOut,
+			});
 			flights = [];
 		},
 		glintSuperShow: async () => {

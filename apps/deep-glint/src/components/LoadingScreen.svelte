@@ -4,9 +4,11 @@
 	import { MainContainer } from 'components-layout';
 
 	import { getContext } from '../game/context';
-	import { LOADING_LOGO } from '../game/constants';
+	import { ART_PIXEL, LOADING_LOGO } from '../game/constants';
+	import { sound } from '../game/sound';
 	import TransitionAnimation from './TransitionAnimation.svelte';
 	import PressToContinue from './PressToContinue.svelte';
+	import WelcomeScreen from './WelcomeScreen.svelte';
 
 	type Props = {
 		onloaded: () => void;
@@ -15,46 +17,56 @@
 	const props: Props = $props();
 	const context = getContext();
 
-	let loadingType = $state<'start' | 'transition'>('start');
+	// The game opens in three steps: the logo over a loading bar, then the welcome screen with the
+	// game's features, then a screen wipe into the game once the player presses.
+	let pressed = $state(false);
+	const stage = $derived(pressed ? 'transition' : context.stateApp.loaded ? 'welcome' : 'loading');
+	// the bar is 120 × 12 art pixels
+	const BAR = { width: 120 * ART_PIXEL, height: 12 * ART_PIXEL };
+
+	const start = () => {
+		// the press is the player's first gesture, which is what lets the browser play sound
+		sound.players.once.play({ name: 'sfx_welcome_start' });
+		pressed = true;
+	};
 </script>
 
 <!-- logo and loading progress -->
-<FadeContainer show={loadingType === 'start'}>
+<FadeContainer show={stage === 'loading'}>
 	<MainContainer>
 		<Container
 			x={context.stateLayoutDerived.mainLayout().width * 0.5}
 			y={context.stateLayoutDerived.mainLayout().height * 0.5}
 		>
 			<Sprite
-				key="logoCharacter"
+				key="logo"
 				anchor={0.5}
-				y={(-LOADING_LOGO.width / LOADING_LOGO.ratio) * 0.12}
+				y={-40}
 				width={LOADING_LOGO.width}
 				height={LOADING_LOGO.width / LOADING_LOGO.ratio}
 			/>
-			{#if !context.stateApp.loaded}
-				<LoadingProgress y={250} width={1967 * 0.2} height={346 * 0.2}>
-					{#snippet background(sizes)}
-						<Sprite key="progressBarBackground.png" {...sizes} />
-					{/snippet}
-					{#snippet progress(sizes)}
-						<Sprite key="progressBar.png" {...sizes} />
-					{/snippet}
-					{#snippet frame(sizes)}
-						<Sprite key="progressBarFrame.png" {...sizes} />
-					{/snippet}
-				</LoadingProgress>
-			{/if}
+			<LoadingProgress y={140} {...BAR}>
+				{#snippet background(sizes)}
+					<Sprite key="loadingTrough" {...sizes} />
+				{/snippet}
+				{#snippet progress(sizes)}
+					<Sprite key="loadingFill" {...sizes} />
+				{/snippet}
+				{#snippet frame()}{/snippet}
+			</LoadingProgress>
 		</Container>
 	</MainContainer>
 </FadeContainer>
 
-<!-- press to continue -->
-<FadeContainer show={loadingType === 'start' && context.stateApp.loaded}>
-	<PressToContinue onpress={() => (loadingType = 'transition')} />
+<!-- the welcome screen: features, and press to start -->
+<FadeContainer show={stage === 'welcome'}>
+	<WelcomeScreen />
+	{#if stage === 'welcome'}
+		<PressToContinue text={context.i18nDerived.pressToStart()} onpress={start} />
+	{/if}
 </FadeContainer>
 
-<!-- transition between the loading screen and the game -->
-<FadeContainer show={loadingType === 'transition'}>
-	<TransitionAnimation oncomplete={props.onloaded} />
-</FadeContainer>
+<!-- the wipe between the welcome screen and the game -->
+{#if stage === 'transition'}
+	<TransitionAnimation mode="cover" oncomplete={props.onloaded} />
+{/if}

@@ -18,7 +18,9 @@
 	import { onDestroy } from 'svelte';
 	import { cubicOut } from 'svelte/easing';
 
-	import { Container, Circle } from 'pixi-svelte';
+	import * as PIXI from 'pixi.js';
+
+	import { BaseSprite, Container } from 'pixi-svelte';
 	import { stateBetDerived } from 'state-shared';
 	import { SECOND } from 'constants-shared/time';
 	import { waitForTimeout } from 'utils-shared/wait';
@@ -28,7 +30,8 @@
 	import GlintPrimed from './GlintPrimed.svelte';
 	import { getContext } from '../game/context';
 	import { SYMBOL_SIZE } from '../game/constants';
-	import { GLINT_TIERS, glintTier } from '../game/glint';
+	import { CHARACTER_FIRE_DELAY, CHARACTER_MOUTH } from '../game/character';
+	import { animate, frameAt } from '../game/motion';
 
 	type Props = { layer: 'under' | 'over' };
 
@@ -43,8 +46,47 @@
 	const resetOpacity = new Tween(1);
 	const superProgress = new Tween(1);
 	let superActive = $state(false);
+	// A Glint Strike: fireballs leave the dragon's mouth, arc to the struck spots and burst there.
 	let struck: GlintStrikeSpot[] = $state([]);
-	const strikePulse = new Tween(0);
+	let flight = $state(0);
+	let impact = $state(-1);
+	const FLIGHT = { duration: 380, arc: 46, size: { width: 60, height: 35 } };
+	const IMPACT = { duration: 380, size: SYMBOL_SIZE * 1.5 };
+
+	const frames = (key: string) => (context.stateApp.loadedAssets[key] ?? []) as PIXI.Texture[];
+	// the dragon's mouth in the board's own units, or off the board's top right where there is
+	// no room to show the dragon
+	const mouth = $derived.by(() => {
+		const board = context.stateGameDerived.boardLayout();
+		const character = context.stateGameDerived.characterLayout();
+		if (character.placement === 'hidden') return { x: board.width + 80, y: -60 };
+
+		return {
+			x:
+				character.x -
+				character.width / 2 +
+				character.width * CHARACTER_MOUTH.x -
+				(board.x - board.width / 2),
+			y:
+				character.y -
+				character.height +
+				character.height * CHARACTER_MOUTH.y -
+				(board.y - board.height / 2),
+		};
+	});
+	const fireball = (spot: GlintStrikeSpot) => {
+		const target = { x: (spot.reel + 0.5) * SYMBOL_SIZE, y: (spot.row + 0.5) * SYMBOL_SIZE };
+		// held on eight steps along the arc
+		const at = frameAt(flight, 8) / 7;
+		const textures = frames('fireball');
+
+		return {
+			texture: textures[Math.floor(flight * 12) % Math.max(1, textures.length)],
+			x: mouth.x + (target.x - mouth.x) * at,
+			y: mouth.y + (target.y - mouth.y) * at - Math.sin(Math.PI * at) * FLIGHT.arc,
+			rotation: Math.atan2(target.y - mouth.y, target.x - mouth.x),
+		};
+	};
 	const spotAlpha = (reel: number) =>
 		resetOpacity.current *
 		(superActive
@@ -56,14 +98,24 @@
 	context.eventEmitter.subscribeOnMount({
 		glintStrikeShow: async ({ spots }) => {
 			if (props.layer !== 'over') return;
+			const timeScale = stateBetDerived.timeScale();
+			if (prefersReducedMotion.current) {
+				await waitForTimeout((SECOND * 0.4) / timeScale);
+
+				return;
+			}
+			// the dragon rears first; the fire leaves on its roar
+			await waitForTimeout(CHARACTER_FIRE_DELAY / timeScale);
+			impact = -1;
+			flight = 0;
 			struck = spots;
-			strikePulse.set(0, { duration: 0 });
-			await strikePulse.set(1, {
-				duration: (SECOND * 0.6) / stateBetDerived.timeScale(),
-				easing: cubicOut,
+			await animate(FLIGHT.duration, (progress) => (flight = progress));
+			// the bursts play out while the spots light
+			impact = 0;
+			void animate(IMPACT.duration, (progress) => (impact = progress)).then(() => {
+				struck = [];
+				impact = -1;
 			});
-			await waitForTimeout((SECOND * 0.3) / stateBetDerived.timeScale());
-			struck = [];
 		},
 		glintAnimateShow: async ({ spots }) => {
 			// Superseding an in-flight transition resolves it before replacing it.
@@ -141,16 +193,31 @@
 	{/each}
 	{#if props.layer === 'over'}
 		{#each struck as spot}
-			<Circle
-				x={(spot.reel + 0.5) * SYMBOL_SIZE}
-				y={(spot.row + 0.5) * SYMBOL_SIZE}
-				anchor={0.5}
-				diameter={SYMBOL_SIZE * (0.4 + 0.8 * strikePulse.current)}
-				backgroundAlpha={0}
-				borderColor={GLINT_TIERS[glintTier(spot.value)].color}
-				borderWidth={6}
-				borderAlpha={1 - strikePulse.current * 0.7}
-			/>
+			{#if impact < 0}
+				{@const ball = fireball(spot)}
+				{#if ball.texture}
+					<BaseSprite
+						texture={ball.texture}
+						anchor={{ x: 0.75, y: 0.5 }}
+						x={ball.x}
+						y={ball.y}
+						rotation={ball.rotation}
+						{...FLIGHT.size}
+					/>
+				{/if}
+			{:else}
+				{@const burst = frames('burst')}
+				{#if burst.length}
+					<BaseSprite
+						texture={burst[frameAt(impact, burst.length)]}
+						anchor={0.5}
+						x={(spot.reel + 0.5) * SYMBOL_SIZE}
+						y={(spot.row + 0.5) * SYMBOL_SIZE}
+						width={IMPACT.size}
+						height={IMPACT.size}
+					/>
+				{/if}
+			{/if}
 		{/each}
 	{/if}
 </BoardContainer>

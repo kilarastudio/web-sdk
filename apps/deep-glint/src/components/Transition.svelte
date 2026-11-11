@@ -1,5 +1,6 @@
 <script lang="ts" module>
-	export type EmitterEventTransition = { type: 'transition' };
+	// oncovered runs while the screen is dark, to change the scene behind the wipe
+	export type EmitterEventTransition = { type: 'transition'; oncovered?: () => void };
 </script>
 
 <script lang="ts">
@@ -12,9 +13,11 @@
 
 	let transitioning = $state(false);
 	let oncomplete = $state(() => {});
+	let oncovered = $state<() => void>();
 
 	context.eventEmitter.subscribeOnMount({
-		transition: async () => {
+		transition: async (emitterEvent) => {
+			oncovered = emitterEvent.oncovered;
 			transitioning = true;
 			await waitForResolve((resolve) => (oncomplete = resolve));
 		},
@@ -23,6 +26,7 @@
 
 {#if transitioning}
 	<TransitionAnimation
+		{oncovered}
 		oncomplete={() => {
 			oncomplete();
 			transitioning = false;

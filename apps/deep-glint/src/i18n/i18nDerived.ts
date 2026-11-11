@@ -4,6 +4,18 @@ import { i18nDerived as i18nDerivedUiHtml } from 'components-ui-html';
 export const i18nDerived = {
 	...i18nDerivedUiHtml,
 	pressToContinue: () => stateI18nDerived.translate('Press anywhere to continue'),
+	pressToStart: () => stateI18nDerived.translate('Press anywhere to start'),
+	// welcome screen
+	welcomeMaxWin: (multiplier: string) => `${stateI18nDerived.translate('WIN UP TO')} ${multiplier}`,
+	welcomeSpotsTitle: () => stateI18nDerived.translate('GLINT SPOTS'),
+	welcomeSpotsText: () =>
+		stateI18nDerived.translate('Wins light the floor. Every hit doubles a spot, up to ×256.'),
+	welcomeStrikeTitle: () => stateI18nDerived.translate('GLINT STRIKE'),
+	welcomeStrikeText: () =>
+		stateI18nDerived.translate('The dragon breathes fire and lights 3 to 6 spots.'),
+	welcomeFreeSpinsTitle: () => stateI18nDerived.translate('FREE SPINS'),
+	welcomeFreeSpinsText: () =>
+		stateI18nDerived.translate('4 or more SCATTERS wake the dragon. Spots stay lit all feature.'),
 	// panels
 	tumbleWin: () => stateI18nDerived.translate('TUMBLE WIN'),
 	youWon: () => stateI18nDerived.translate('YOU WON'),

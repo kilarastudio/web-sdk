@@ -8,6 +8,8 @@
 	import { gameTextStyle } from '../game/typography';
 
 	type Props = {
+		// what the prompt says; "press anywhere to continue" unless given
+		text?: string;
 		onpress: () => void;
 	};
 
@@ -25,7 +27,7 @@
 <!-- sits on top of the HUD's controls, so they never cover it -->
 <MainContainer alignVertical="bottom">
 	<GameText
-		text={context.i18nDerived.pressToContinue()}
+		text={props.text ?? context.i18nDerived.pressToContinue()}
 		{maxWidth}
 		anchor={{ x: 0.5, y: 1 }}
 		x={layout.width * 0.5}

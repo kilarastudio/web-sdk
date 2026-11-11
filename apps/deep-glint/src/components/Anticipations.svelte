@@ -3,12 +3,17 @@
 	import { SECOND } from 'constants-shared/time';
 
 	import { getContext } from '../game/context';
+	import { setAnticipating } from '../game/anticipation.svelte';
 	import Anticipation from './Anticipation.svelte';
 
 	const context = getContext();
 	const hasAnticipation = $derived(
 		context.stateGame.board.some((reel) => reel.reelState.anticipating),
 	);
+
+	$effect(() => {
+		setAnticipating(hasAnticipation);
+	});
 </script>
 
 {#if hasAnticipation}

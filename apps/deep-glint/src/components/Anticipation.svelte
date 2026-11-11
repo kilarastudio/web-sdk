@@ -1,10 +1,13 @@
 <script lang="ts">
-	import { SpineProvider, SpineTrack } from 'pixi-svelte';
-	import { stateBetDerived } from 'state-shared';
+	import { prefersReducedMotion } from 'svelte/motion';
+
+	import { Sprite } from 'pixi-svelte';
 
 	import { getContext } from '../game/context';
 	import type { Reel } from '../game/stateGame.svelte';
-	import { REEL_PADDING, SYMBOL_SIZE } from '../game/constants';
+	import { BOARD_DIMENSIONS, SYMBOL_SIZE } from '../game/constants';
+	import { animate } from '../game/motion';
+	import { pixelClock } from '../game/pixelClock.svelte';
 
 	type Props = {
 		reel: Reel;
@@ -14,40 +17,31 @@
 	const props: Props = $props();
 	const context = getContext();
 
-	type AnimationName = 'anticipation_intro' | 'anticipation_loop' | 'anticipation_out';
+	// A column waiting on a scatter burns: a dithered band of fire down its cells that throbs on
+	// the pixel clock, and dies down once the column has landed.
+	const THROB = [0.5, 0.65, 0.8, 1, 0.8, 0.65];
+	const board = $derived(context.stateGameDerived.boardLayout());
+	let fade = $state(1);
+	let leaving = false;
 
-	let animationName = $state<AnimationName>('anticipation_intro');
+	const throb = $derived(
+		prefersReducedMotion.current ? 0.8 : THROB[pixelClock.frame % THROB.length],
+	);
 
 	$effect(() => {
-		if (props.reel.reelState.motion === 'stopped') {
-			animationName = 'anticipation_out';
-		}
+		if (props.reel.reelState.motion !== 'stopped' || leaving) return;
+		leaving = true;
+		animate(200, (progress) => (fade = 1 - progress)).then(props.oncomplete);
 	});
 </script>
 
-<SpineProvider
-	key="anticipation"
-	width={SYMBOL_SIZE * 0.56}
-	x={context.stateGameDerived.boardLayout().x -
-		context.stateGameDerived.boardLayout().width * 0.5 +
-		(props.reel.reelIndex + REEL_PADDING) * SYMBOL_SIZE}
-	y={context.stateGameDerived.boardLayout().y - SYMBOL_SIZE * 0.06}
->
-	<SpineTrack
-		trackIndex={0}
-		{animationName}
-		loop={animationName === 'anticipation_loop'}
-		timeScale={stateBetDerived.timeScale()}
-		listener={{
-			complete: () => {
-				if (animationName === 'anticipation_intro') {
-					animationName = 'anticipation_loop';
-				}
-
-				if (animationName === 'anticipation_out') {
-					props.oncomplete();
-				}
-			},
-		}}
+{#each Array(BOARD_DIMENSIONS.y) as _, row}
+	<Sprite
+		key="anticipationBeam"
+		x={board.x - board.width * 0.5 + props.reel.reelIndex * SYMBOL_SIZE}
+		y={board.y - board.height * 0.5 + row * SYMBOL_SIZE}
+		width={SYMBOL_SIZE}
+		height={SYMBOL_SIZE}
+		alpha={throb * fade}
 	/>
-</SpineProvider>
+{/each}

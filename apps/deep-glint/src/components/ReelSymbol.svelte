@@ -19,7 +19,7 @@
 	x={getSymbolX(props.reelIndex)}
 	y={props.reelSymbol.symbolY.current}
 	animating={props.reelSymbol.symbolState === 'win' ||
-		(symbolInfo.type === 'spine' && props.reelSymbol.symbolState === 'land')}
+		(symbolInfo.type === 'explosion' && props.reelSymbol.symbolState === 'land')}
 >
 	<Symbol
 		state={props.reelSymbol.symbolState}

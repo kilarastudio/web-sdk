@@ -1,3 +1,4 @@
+import { asset } from '$app/paths';
 import type { BetModeMeta, BetModeData } from 'state-shared';
 
 import config from './config';
@@ -13,6 +14,7 @@ const activate = (
 	mode: key,
 	costMultiplier: config.betModes[mode].cost,
 	type: 'activate',
+	image: asset(`assets/ui/mode-${mode}.png`),
 	parent: '',
 	children: '',
 	text: {
@@ -37,6 +39,7 @@ const buy = (
 	mode: key,
 	costMultiplier: config.betModes[mode].cost,
 	type: 'buy',
+	image: asset(`assets/ui/mode-${mode}.png`),
 	parent: '',
 	children: '',
 	text: {

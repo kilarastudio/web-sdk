@@ -22,6 +22,8 @@
 	import Board from './Board.svelte';
 	import Anticipations from './Anticipations.svelte';
 	import ClusterWinAmounts from './ClusterWinAmounts.svelte';
+	import BoardContainer from './BoardContainer.svelte';
+	import WinCoins from './WinCoins.svelte';
 	import TumbleBoard from './TumbleBoard.svelte';
 	import TumbleWinAmount from './TumbleWinAmount.svelte';
 	import GlintSpots from './GlintSpots.svelte';
@@ -30,10 +32,18 @@
 	import FreeSpinIntro from './FreeSpinIntro.svelte';
 	import FreeSpinOutro from './FreeSpinOutro.svelte';
 	import Transition from './Transition.svelte';
+	import GeneratedArt from './GeneratedArt.svelte';
+	import BoardSparkles from './BoardSparkles.svelte';
+	import PayTable from './PayTable.svelte';
+	import GameRules from './GameRules.svelte';
+	import TransitionAnimation from './TransitionAnimation.svelte';
 
 	const context = getContext();
 
 	stateMeta.betModeMeta = betModeMeta;
+
+	// the wipe that closed the welcome screen opens on the game
+	let entering = $state(false);
 
 	onMount(() => (context.stateLayout.showLoadingScreen = true));
 
@@ -45,6 +55,7 @@
 </script>
 
 <App>
+	<GeneratedArt />
 	<EnableSound />
 	<EnableHotkey />
 	<EnableGameActor />
@@ -53,7 +64,12 @@
 	<Background />
 
 	{#if context.stateLayout.showLoadingScreen}
-		<LoadingScreen onloaded={() => (context.stateLayout.showLoadingScreen = false)} />
+		<LoadingScreen
+			onloaded={() => {
+				context.stateLayout.showLoadingScreen = false;
+				entering = true;
+			}}
+		/>
 	{:else}
 		<ResumeBet />
 		<!--
@@ -74,6 +90,7 @@
 		<MainContainer>
 			<GlintSpots layer="under" />
 			<Board />
+			<BoardSparkles />
 			<Anticipations />
 			<TumbleWinAmount />
 		</MainContainer>
@@ -84,24 +101,36 @@
 			<GlintSpots layer="over" />
 			<GlintEffects />
 			<ClusterWinAmounts />
+			<BoardContainer>
+				<WinCoins />
+			</BoardContainer>
 		</MainContainer>
 
 		<Win />
 		<FreeSpinIntro />
 		<FreeSpinOutro />
 		<Transition />
+		{#if entering}
+			<TransitionAnimation mode="uncover" oncomplete={() => (entering = false)} />
+		{/if}
 	{/if}
 </App>
 
 {#if !context.stateLayout.showLoadingScreen}
 	<UI>
 		{#snippet gameName()}
-			<UiGameName name="DEEP GLINT" />
+			<UiGameName name="DRAGON'S GLINT" />
 		{/snippet}
 	</UI>
 {/if}
 
 <Modals>
+	{#snippet payTable()}
+		<PayTable />
+	{/snippet}
+	{#snippet gameRules()}
+		<GameRules />
+	{/snippet}
 	{#snippet version()}
 		<GameVersion version="0.0.0" />
 	{/snippet}

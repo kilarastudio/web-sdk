@@ -15,9 +15,10 @@
 
 <script lang="ts">
 	import { Container, Text } from 'pixi-svelte';
-	import { StoryPixiApp } from 'components-storybook';
+	import { StoryLocale, StoryPixiApp } from 'components-storybook';
 
 	import Symbol from '../components/Symbol.svelte';
+	import GeneratedArt from '../components/GeneratedArt.svelte';
 	import { SYMBOL_STATES } from '../game/types';
 	import assets from '../game/assets';
 
@@ -26,58 +27,57 @@
 	const SYMBOLS_LEFT = [
 		{ name: 'S' },
 		{ name: 'W' },
-		{ name: 'M', multiplier: 2 },
-		{ name: 'M', multiplier: 4 },
-		{ name: 'M', multiplier: 5 },
-		{ name: 'M', multiplier: 7 },
-		{ name: 'M', multiplier: 10 },
-	];
-
-	const SYMBOLS_RIGHT = [
 		{ name: 'H1' },
 		{ name: 'H2' },
 		{ name: 'H3' },
+	];
+	const SYMBOLS_RIGHT = [
 		{ name: 'H4' },
-		{ name: 'H5' },
-		{ name: 'L2' },
 		{ name: 'L1' },
-		{ name: 'L4' },
+		{ name: 'L2' },
 		{ name: 'L3' },
+		{ name: 'L4' },
 	];
 </script>
 
 <Story name="component">
 	{#snippet template(args)}
-		<StoryPixiApp {assets}>
-			<Symbol {...args} oncomplete={() => console.log('complete')} />
-		</StoryPixiApp>
+		<StoryLocale lang="en">
+			<StoryPixiApp {assets}>
+				<GeneratedArt />
+				<Symbol {...args} oncomplete={() => console.log('complete')} />
+			</StoryPixiApp>
+		</StoryLocale>
 	{/snippet}
 </Story>
 
 <Story name="symbols">
 	{#snippet template()}
-		<StoryPixiApp {assets}>
-			<Container scale={0.5}>
-				{#each SYMBOLS_LEFT as symbol, rowIndex}
-					{#each SYMBOL_STATES as state, columnIndex}
-						{@const x = (columnIndex + 1) * BASE}
-						{@const y = (rowIndex + 1) * BASE}
-						<Text {x} y={y - 100} anchor={{ x: 0.5, y: 0 }} text={`${symbol.name}: ${state}`} />
-						<Symbol {x} {y} rawSymbol={symbol} {state} loop />
+		<StoryLocale lang="en">
+			<StoryPixiApp {assets}>
+				<GeneratedArt />
+				<Container scale={0.5}>
+					{#each SYMBOLS_LEFT as symbol, rowIndex}
+						{#each SYMBOL_STATES as state, columnIndex}
+							{@const x = (columnIndex + 1) * BASE}
+							{@const y = (rowIndex + 1) * BASE}
+							<Text {x} y={y - 100} anchor={{ x: 0.5, y: 0 }} text={`${symbol.name}: ${state}`} />
+							<Symbol {x} {y} rawSymbol={symbol} {state} />
+						{/each}
 					{/each}
-				{/each}
-			</Container>
+				</Container>
 
-			<Container scale={0.5} x={550}>
-				{#each SYMBOLS_RIGHT as symbol, rowIndex}
-					{#each SYMBOL_STATES as state, columnIndex}
-						{@const x = (columnIndex + 1) * BASE}
-						{@const y = (rowIndex + 1) * BASE}
-						<Text {x} y={y - 100} anchor={{ x: 0.5, y: 0 }} text={`${symbol.name}: ${state}`} />
-						<Symbol {x} {y} rawSymbol={symbol} {state} loop />
+				<Container scale={0.5} x={550}>
+					{#each SYMBOLS_RIGHT as symbol, rowIndex}
+						{#each SYMBOL_STATES as state, columnIndex}
+							{@const x = (columnIndex + 1) * BASE}
+							{@const y = (rowIndex + 1) * BASE}
+							<Text {x} y={y - 100} anchor={{ x: 0.5, y: 0 }} text={`${symbol.name}: ${state}`} />
+							<Symbol {x} {y} rawSymbol={symbol} {state} />
+						{/each}
 					{/each}
-				{/each}
-			</Container>
-		</StoryPixiApp>
+				</Container>
+			</StoryPixiApp>
+		</StoryLocale>
 	{/snippet}
 </Story>

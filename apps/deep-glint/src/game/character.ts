@@ -1,25 +1,26 @@
-import type { SkeletonData } from 'components-pixi';
-
-// No rig yet: an empty skeleton draws nothing and its one-shot animations complete at once.
-export const characterSkeleton: SkeletonData = {
-	format: 'kilara-skeleton',
-	version: 1,
-	name: 'character',
-	bounds: { x: 0, y: 0, width: 1, height: 1 },
-	bones: [],
-	slots: [],
-	skins: { default: {} },
-	animations: {},
-};
-
-// idle and anticipation loop; bigWin loops until the celebration ends; the rest play once
-export const CHARACTER_LOOPS = {
-	idle: true,
-	anticipation: true,
-	power: false,
-	win: false,
-	bigWin: true,
-	bonus: false,
+// The dragon: frame strips made with an image model and locked to the game's palette and pixel
+// grid (static/assets/character). These numbers mirror character.json beside the strips; sizes
+// are in strip pixels.
+export const CHARACTER = {
+	cell: { width: 800, height: 800 },
+	// the opaque box of idle frame 0 inside a cell
+	figure: { left: 164, top: 164, right: 636, bottom: 800 },
+	animations: {
+		idle: { frames: 6, fps: 5, loop: true },
+		anticipation: { frames: 4, fps: 6, loop: true },
+		power: { frames: 6, fps: 8, loop: false },
+		win: { frames: 6, fps: 8, loop: false },
+		bigWin: { frames: 4, fps: 6, loop: true },
+		bonus: { frames: 6, fps: 8, loop: false },
+		// a pleased snort of smoke, and one beat of the wing: its answers to a run of wins
+		puff: { frames: 6, fps: 8, loop: false },
+		flap: { frames: 6, fps: 8, loop: false },
+	},
 } as const;
-// rig v1 blends poses over 0.14 s
-export const CHARACTER_MIX = 0.14;
+
+export type CharacterAnimation = keyof typeof CHARACTER.animations;
+
+// where the fire leaves the dragon's mouth, as fractions of the figure's box from its top left
+export const CHARACTER_MOUTH = { x: 0.06, y: 0.26 };
+// how far into the power animation the fire leaves, in ms
+export const CHARACTER_FIRE_DELAY = 380;

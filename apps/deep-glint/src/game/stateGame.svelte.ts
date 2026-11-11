@@ -32,13 +32,6 @@ const onSymbolLand = ({ rawSymbol }: { rawSymbol: RawSymbol }) => {
 			name: SCATTER_LAND_SOUND_MAP[scatterLandIndex()],
 		});
 	}
-
-	if (rawSymbol.name === 'M') {
-		eventEmitter.broadcast({
-			type: 'soundOnce',
-			name: 'sfx_multiplier_landing',
-		});
-	}
 };
 
 const board = _.range(BOARD_DIMENSIONS.x).map((reelIndex) => {

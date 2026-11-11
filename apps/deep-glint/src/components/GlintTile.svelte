@@ -1,19 +1,21 @@
 <script lang="ts">
 	import { onMount, onDestroy, untrack } from 'svelte';
 	import { Tween, prefersReducedMotion } from 'svelte/motion';
-	import { cubicOut } from 'svelte/easing';
+	import { linear } from 'svelte/easing';
+
 	import { Container, Sprite } from 'pixi-svelte';
-	import { Skeleton } from 'components-pixi';
 	import { stateBetDerived } from 'state-shared';
+
 	import { SYMBOL_SIZE } from '../game/constants';
 	import {
 		GLINT_ANIMATION_MS,
 		GLINT_TIERS,
 		glintTier,
 		glintMultiplierLayout,
-		glintSkeleton,
 		type GlintAnimation,
 	} from '../game/glint';
+	import { frameAt } from '../game/motion';
+	import { pixelClock } from '../game/pixelClock.svelte';
 	import { gameTextStyle } from '../game/typography';
 	import GameText from './GameText.svelte';
 
@@ -24,7 +26,9 @@
 		previousValue?: number;
 		oncomplete?: () => void;
 	};
+
 	const props: Props = $props();
+
 	// Each event has a keyed component instance. Completion of its one-shot must
 	// never be tied to the perpetual ×256 loop that may follow it.
 	const animation = untrack(() => props.animation);
@@ -33,86 +37,107 @@
 	const progress = new Tween(animation ? 0 : 1);
 	let playing = $state(Boolean(animation));
 	let completed = false;
+
 	const tier = $derived(glintTier(props.value));
 	const layout = $derived(glintMultiplierLayout(props.value));
 	const reduced = $derived(prefersReducedMotion.current);
+
+	// The tile's motion is five held poses: how big the tile is, how solid, and how strong the
+	// flash over it. Lighting a spot fades it in under a flash; a doubling beats; a new tier
+	// lands from larger with the brightest flash.
+	const POSES = {
+		prime: { size: [1, 1, 1, 1, 1], alpha: [1, 1, 1, 1, 1], flash: [0, 0, 0, 0, 0] },
+		light: {
+			size: [1.3, 1.2, 1.1, 1.04, 1],
+			alpha: [0.4, 0.7, 1, 1, 1],
+			flash: [0.9, 0.6, 0.3, 0, 0],
+		},
+		double: {
+			size: [1.12, 1.16, 1.1, 1.04, 1],
+			alpha: [1, 1, 1, 1, 1],
+			flash: [0.7, 0.45, 0.2, 0, 0],
+		},
+		tier_up: {
+			size: [1.4, 1.3, 1.18, 1.06, 1],
+			alpha: [0.6, 0.8, 1, 1, 1],
+			flash: [1, 0.8, 0.5, 0.2, 0],
+		},
+		apply: {
+			size: [1.08, 1.12, 1.06, 1.02, 1],
+			alpha: [1, 1, 1, 1, 1],
+			flash: [0.5, 0.3, 0.1, 0, 0],
+		},
+	} as const;
+	// ×256 never rests: its flash breathes on the pixel clock
+	const MAX_BREATH = [0, 0.12, 0.24, 0.36, 0.24, 0.12];
+
+	const pose = $derived(frameAt(progress.current, 5));
+	const moving = $derived(playing && animation && !reduced ? POSES[animation] : undefined);
+	const tileSize = $derived(SYMBOL_SIZE * (moving ? moving.size[pose] : 1));
+	const tileAlpha = $derived(moving ? moving.alpha[pose] : 1);
+	const flashAlpha = $derived(
+		moving
+			? moving.flash[pose]
+			: props.value === 256 && !reduced
+				? MAX_BREATH[pixelClock.frame % MAX_BREATH.length]
+				: 0,
+	);
+
 	const finish = () => {
 		if (completed) return;
 		completed = true;
 		playing = false;
 		props.oncomplete?.();
 	};
+
 	const multiplierScale = $derived(
 		!playing || reduced
 			? 1
 			: animation === 'light'
-				? 0.94 + 0.06 * progress.current
-				: 1 + 0.12 * Math.sin(Math.PI * progress.current),
+				? [1.4, 1.25, 1.1, 1.04, 1][pose]
+				: [1.2, 1.3, 1.16, 1.06, 1][pose],
 	);
+
 	onMount(() => {
 		if (!animation) return;
 		void progress
-			.set(1, { duration: GLINT_ANIMATION_MS[animation] / timeScale, easing: cubicOut })
-			.then(() => {
-				// Also finish from the duration clock if a motion-preference change
-				// unmounted the skeleton mid-transition. Both paths are idempotent.
-				finish();
-			});
+			.set(1, { duration: GLINT_ANIMATION_MS[animation] / timeScale, easing: linear })
+			.then(finish);
 	});
 	onDestroy(finish);
 </script>
 
 {#if props.layer === 'under'}
-	{#if playing && animation && !reduced}
-		{#if animation === 'tier_up' && previousValue >= 2}
-			<Sprite
-				key={GLINT_TIERS[glintTier(previousValue)].tile}
-				anchor={0.5}
-				width={SYMBOL_SIZE * 0.94}
-				height={SYMBOL_SIZE * 0.94}
-				alpha={1 - progress.current}
-			/>
-		{/if}
-		<Skeleton
-			data={glintSkeleton}
-			skin={GLINT_TIERS[tier].skin}
-			{animation}
-			{timeScale}
-			width={SYMBOL_SIZE * 0.94}
-			oncomplete={finish}
-		/>
-	{:else if props.value === 256 && !reduced}
-		<Skeleton
-			data={glintSkeleton}
-			skin={GLINT_TIERS[tier].skin}
-			animation="max_loop"
-			loop
-			timeScale={stateBetDerived.timeScale()}
-			width={SYMBOL_SIZE * 0.94}
-		/>
-	{:else}
+	{#if moving && animation === 'tier_up' && previousValue >= 2}
 		<Sprite
-			key={GLINT_TIERS[tier].tile}
+			key={GLINT_TIERS[glintTier(previousValue)].tile}
 			anchor={0.5}
-			width={SYMBOL_SIZE * 0.94}
-			height={SYMBOL_SIZE * 0.94}
-			alpha={playing && animation === 'light' ? progress.current : 1}
+			width={SYMBOL_SIZE}
+			height={SYMBOL_SIZE}
+			alpha={1 - progress.current}
+		/>
+	{/if}
+	<Sprite
+		key={GLINT_TIERS[tier].tile}
+		anchor={0.5}
+		width={tileSize}
+		height={tileSize}
+		alpha={tileAlpha}
+	/>
+	{#if flashAlpha > 0}
+		<Sprite
+			key="glintFlash"
+			anchor={0.5}
+			width={tileSize}
+			height={tileSize}
+			alpha={flashAlpha}
+			tint={GLINT_TIERS[tier].flash}
 		/>
 	{/if}
 {:else}
 	<Container x={layout.x} y={layout.y} scale={multiplierScale}>
-		{#if playing && animation !== 'light' && animation !== 'apply' && previousValue >= 2}
-			<GameText
-				anchor={0.5}
-				alpha={1 - progress.current}
-				text={`×${previousValue}`}
-				maxWidth={layout.maxWidth}
-				style={gameTextStyle({ fontSize: layout.fontSize, tone: 'value' })}
-			/>
-		{/if}
 		<GameText
 			anchor={0.5}
-			alpha={playing && animation !== 'apply' ? progress.current : 1}
 			text={`×${props.value}`}
 			maxWidth={layout.maxWidth}
 			style={gameTextStyle({ fontSize: layout.fontSize, tone: 'value' })}

@@ -9,14 +9,17 @@
 
 <script lang="ts">
 	import { FadeContainer, WinCountUpProvider } from 'components-pixi';
-	import { bookEventAmountToCurrencyString } from 'utils-shared/amount';
+	import { bookEventAmountToCountUpCurrencyString } from 'utils-shared/amount';
 	import { waitForResolve } from 'utils-shared/wait';
 	import { CanvasSizeRectangle } from 'components-layout';
 	import { OnMount } from 'components-shared';
 
 	import { getContext } from '../game/context';
+	import { countUpEasing } from '../game/constants';
+	import { winCountUpSoundsEnd } from '../game/winSounds';
 	import FreeSpinAnimation from './FreeSpinAnimation.svelte';
 	import PressToContinue from './PressToContinue.svelte';
+	import CoinShower from './CoinShower.svelte';
 
 	const context = getContext();
 
@@ -24,7 +27,6 @@
 	let amount = $state(0);
 	let winLevelData = $state<WinLevelData>();
 	let oncomplete = $state(() => {});
-	let onCountUpComplete = $state(() => {});
 
 	context.eventEmitter.subscribeOnMount({
 		freeSpinOutroShow: () => (show = true),
@@ -40,17 +42,26 @@
 <FadeContainer {show}>
 	{#if winLevelData}
 		{@const duration = winLevelData.presentDuration}
-		<WinCountUpProvider {amount} {duration} oncomplete={() => onCountUpComplete()}>
+		<WinCountUpProvider
+			{amount}
+			{duration}
+			easing={winLevelData.type === 'big' ? undefined : countUpEasing}
+			oncomplete={() => winCountUpSoundsEnd({ winLevelData })}
+		>
 			{#snippet children({ countUpAmount, startCountUp, finishCountUp, countUpCompleted })}
 				<OnMount onmount={() => startCountUp()} />
 
 				<CanvasSizeRectangle backgroundColor={0x000000} backgroundAlpha={0.5} />
+				{#if winLevelData.type === 'big'}
+					<CoinShower />
+				{/if}
 
 				<FreeSpinAnimation
 					key="panelFreeSpinsOutro"
 					label={context.i18nDerived.totalWin()}
-					value={bookEventAmountToCurrencyString(countUpAmount)}
+					value={bookEventAmountToCountUpCurrencyString(countUpAmount, amount)}
 					caption={context.i18nDerived.freeSpinsComplete()}
+					completed={countUpCompleted}
 				/>
 
 				<PressToContinue onpress={() => (countUpCompleted ? oncomplete() : finishCountUp())} />

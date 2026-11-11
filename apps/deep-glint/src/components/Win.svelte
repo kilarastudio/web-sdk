@@ -12,15 +12,18 @@
 	import { FadeContainer, WinCountUpProvider } from 'components-pixi';
 	import GameText from './GameText.svelte';
 	import { waitForResolve, waitForTimeout } from 'utils-shared/wait';
-	import { bookEventAmountToCurrencyString } from 'utils-shared/amount';
+	import { bookEventAmountToCountUpCurrencyString } from 'utils-shared/amount';
 	import { CanvasSizeRectangle, MainContainer } from 'components-layout';
 	import { OnMount } from 'components-shared';
 
 	import WinAnimation from './WinAnimation.svelte';
 	import PressToContinue from './PressToContinue.svelte';
-	import { SYMBOL_SIZE } from '../game/constants';
+	import CoinShower from './CoinShower.svelte';
+	import WinPunch from './WinPunch.svelte';
+	import { SYMBOL_SIZE, countUpEasing } from '../game/constants';
 	import { getContext } from '../game/context';
 	import { gameTextStyle } from '../game/typography';
+	import { winCountUpSoundsEnd } from '../game/winSounds';
 
 	const context = getContext();
 
@@ -28,7 +31,6 @@
 	let amount = $state(0);
 	let winLevelData = $state<WinLevelData>();
 	let oncomplete = $state(() => {});
-	const onCountUpComplete = $state(() => {});
 
 	context.eventEmitter.subscribeOnMount({
 		winShow: () => (show = true),
@@ -45,16 +47,24 @@
 	{#if winLevelData}
 		{@const isBigWin = winLevelData.type === 'big'}
 		{@const duration = winLevelData.presentDuration}
-		<WinCountUpProvider {amount} {duration} oncomplete={() => onCountUpComplete()}>
+		<!-- a normal win races up and eases into its amount; a big win climbs steadily -->
+		<WinCountUpProvider
+			{amount}
+			{duration}
+			easing={isBigWin ? undefined : countUpEasing}
+			oncomplete={() => winCountUpSoundsEnd({ winLevelData })}
+		>
 			{#snippet children({ countUpAmount, startCountUp, finishCountUp, countUpCompleted })}
 				{#if isBigWin}
 					<CanvasSizeRectangle backgroundColor={0x000000} backgroundAlpha={0.5} />
+					<CoinShower />
 				{/if}
 
 				<OnMount
 					onmount={async () => {
 						await startCountUp();
-						await waitForTimeout(300);
+						// long enough for the amount's final swell
+						await waitForTimeout(500);
 						oncomplete();
 					}}
 				/>
@@ -68,15 +78,18 @@
 							<WinAnimation
 								panel={winLevelData.panel}
 								title={context.i18nDerived.winLevel(winLevelData.text)}
-								amount={bookEventAmountToCurrencyString(countUpAmount)}
+								amount={bookEventAmountToCountUpCurrencyString(countUpAmount, amount)}
+								completed={countUpCompleted}
 							/>
 						{:else}
-							<GameText
-								anchor={0.5}
-								maxWidth={context.stateGameDerived.boardLayout().width * 0.9}
-								text={bookEventAmountToCurrencyString(countUpAmount)}
-								style={gameTextStyle({ fontSize: SYMBOL_SIZE, tone: 'value', onArt: true })}
-							/>
+							<WinPunch appear completed={countUpCompleted}>
+								<GameText
+									anchor={0.5}
+									maxWidth={context.stateGameDerived.boardLayout().width * 0.9}
+									text={bookEventAmountToCountUpCurrencyString(countUpAmount, amount)}
+									style={gameTextStyle({ fontSize: SYMBOL_SIZE, tone: 'value', onArt: true })}
+								/>
+							</WinPunch>
 						{/if}
 					</Container>
 				</MainContainer>

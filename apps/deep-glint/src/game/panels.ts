@@ -1,51 +1,43 @@
-import { ART_PANELS } from './art.generated';
+import { ART_PIXEL } from './constants';
 
 export { gameTextStyle as panelTextStyle } from './typography';
 
-// The Kilara Mine panel art (static/assets/ai/kilara-mine-v4), in source pixels from the
-// pack's manifest.json. The padding round each PNG differs, so a panel is laid out by its visible
-// object (content) and its text goes in the face's text-safe box. The art carries no text.
-type Bounds = readonly [left: number, top: number, right: number, bottom: number];
+// Panels are one nine-slice drawn by code (src/pixel/ui.ts panel): a night-blue face inside a
+// gold rule. Sizes are in art pixels, so every panel keeps the game's pixel density at scale 1.
+const PANEL_PIXELS = {
+	panelTumble: [120, 26],
+	panelFreeSpinsIntro: [240, 150],
+	panelFreeSpinsOutro: [240, 150],
+	celebrationBig: [300, 120],
+	celebrationSuper: [300, 120],
+	celebrationMega: [300, 120],
+	celebrationEpic: [300, 120],
+	celebrationMax: [300, 120],
+	welcomeCard: [150, 140],
+	welcomeRow: [300, 100],
+} as const;
 
-type PanelArt = {
-	size: readonly [width: number, height: number];
-	content: Bounds;
-	text: Bounds;
-};
+// the face keeps clear of the rule and its corner studs, in art pixels
+const FACE_INSET = 9;
 
-export const PANELS = ART_PANELS satisfies Record<string, PanelArt>;
-
-export type PanelKey = keyof typeof PANELS;
-
+export type PanelKey = keyof typeof PANEL_PIXELS;
 export type PanelFace = { x: number; y: number; width: number; height: number };
 
-// the visible panel's width in source pixels, to turn a wanted width into a scale
-export const panelContentWidth = (key: PanelKey) => {
-	const { content } = PANELS[key];
-	return content[2] - content[0];
-};
+// the panel's width in game units at scale 1, to turn a wanted width into a scale
+export const panelContentWidth = (key: PanelKey) => PANEL_PIXELS[key][0] * ART_PIXEL;
 
-// at a scale of source pixels to game units, the sprite centred on the visible panel, that
-// panel's sizes, and the face's text box (x, y being its middle) relative to the panel's middle
+// at a scale, the panel's sizes and the face's text box (x, y being its middle) relative to the
+// panel's middle, all in game units
 export const panelLayout = ({ key, scale }: { key: PanelKey; scale: number }) => {
-	const { size, content, text } = PANELS[key];
-	const middle = { x: (content[0] + content[2]) / 2, y: (content[1] + content[3]) / 2 };
+	const [width, height] = PANEL_PIXELS[key];
 
 	return {
-		sprite: {
-			anchor: { x: middle.x / size[0], y: middle.y / size[1] },
-			width: size[0] * scale,
-			height: size[1] * scale,
-		},
-		sizes: {
-			width: (content[2] - content[0]) * scale,
-			height: (content[3] - content[1]) * scale,
-		},
+		sizes: { width: width * ART_PIXEL * scale, height: height * ART_PIXEL * scale },
 		face: {
-			x: ((text[0] + text[2]) / 2 - middle.x) * scale,
-			y: ((text[1] + text[3]) / 2 - middle.y) * scale,
-			width: (text[2] - text[0]) * scale,
-			height: (text[3] - text[1]) * scale,
+			x: 0,
+			y: 0,
+			width: (width - FACE_INSET * 2) * ART_PIXEL * scale,
+			height: (height - FACE_INSET * 2) * ART_PIXEL * scale,
 		} satisfies PanelFace,
 	};
 };

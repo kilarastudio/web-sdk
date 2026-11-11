@@ -3,6 +3,7 @@
 
 	import Panel from './Panel.svelte';
 	import PopIn from './PopIn.svelte';
+	import WinPunch from './WinPunch.svelte';
 	import { BOARD_SIZES, BOARD_FIT } from '../game/constants';
 	import { panelContentWidth, panelTextStyle } from '../game/panels';
 	import { getContext } from '../game/context';
@@ -16,6 +17,8 @@
 			| 'celebrationMax';
 		title: string;
 		amount: string;
+		// the count has reached the full amount
+		completed: boolean;
 	};
 
 	const props: Props = $props();
@@ -42,14 +45,14 @@
 				style={panelTextStyle({ fontSize: face.height * 0.26, tone: 'label' })}
 				maxWidth={face.width}
 			/>
-			<GameText
-				anchor={0.5}
-				x={face.x}
-				y={face.y + face.height * 0.16}
-				text={props.amount}
-				style={panelTextStyle({ fontSize: face.height * 0.46, tone: 'value' })}
-				maxWidth={face.width}
-			/>
+			<WinPunch x={face.x} y={face.y + face.height * 0.16} completed={props.completed}>
+				<GameText
+					anchor={0.5}
+					text={props.amount}
+					style={panelTextStyle({ fontSize: face.height * 0.46, tone: 'value' })}
+					maxWidth={face.width}
+				/>
+			</WinPunch>
 		{/snippet}
 	</Panel>
 </PopIn>

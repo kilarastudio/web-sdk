@@ -4,41 +4,67 @@
 	import { SECOND } from 'constants-shared/time';
 
 	import { getContext } from '../game/context';
-	import { BACKGROUND_ART } from '../game/art.generated';
+	import { TORCHES } from '../game/torches';
+	import Torches from './Torches.svelte';
 
-	// The base and gold-chamber scenes cover the canvas, including portrait crops.
-	const BACKGROUND_SIZES = BACKGROUND_ART;
+	// The dragon's hall, in a wide and a tall composition (576 × 324 and 324 × 576 art pixels).
+	// Its torches are painted without their flames, which burn over the picture (Torches).
+	// Each covers the canvas; the tall one is used where the screen is taller than it is wide.
+	const SIZES = {
+		Landscape: { width: 576, height: 324 },
+		Portrait: { width: 324, height: 576 },
+	};
 
 	const context = getContext();
+	const canvas = $derived(context.stateLayoutDerived.canvasSizes());
+	const shape = $derived(canvas.width >= canvas.height ? 'Landscape' : 'Portrait');
 	const backgroundProps = $derived.by(() => {
-		const canvas = context.stateLayoutDerived.canvasSizes();
-		const scale = Math.max(
-			canvas.width / BACKGROUND_SIZES.width,
-			canvas.height / BACKGROUND_SIZES.height,
-		);
+		const sizes = SIZES[shape];
+		const scale = Math.max(canvas.width / sizes.width, canvas.height / sizes.height);
 
 		return {
 			anchor: 0.5,
 			x: canvas.width * 0.5,
 			y: canvas.height * 0.5,
-			width: BACKGROUND_SIZES.width * scale,
-			height: BACKGROUND_SIZES.height * scale,
+			width: sizes.width * scale,
+			height: sizes.height * scale,
 		};
 	});
+	// the torches' flames are drawn over the picture, in its own art pixels
+	const flameProps = $derived.by(() => {
+		const sizes = SIZES[shape];
+		const scale = Math.max(canvas.width / sizes.width, canvas.height / sizes.height);
+
+		return {
+			scale,
+			origin: {
+				x: canvas.width * 0.5 - sizes.width * scale * 0.5,
+				y: canvas.height * 0.5 - sizes.height * scale * 0.5,
+			},
+		};
+	});
+	const baseKey = $derived(`backgroundBase${shape}`);
+	const bonusKey = $derived(`backgroundBonus${shape}`);
 	const showBaseBackground = $derived(context.stateGame.gameType === 'basegame');
 	const showFeatureBackground = $derived(context.stateGame.gameType === 'freegame');
 </script>
 
-<Rectangle {...context.stateLayoutDerived.canvasSizes()} backgroundColor={0x000000} zIndex={-3} />
+<Rectangle {...canvas} backgroundColor={0x0e071b} zIndex={-3} />
 
-{#if context.stateApp.loadedAssets.backgroundBase}
+{#if context.stateApp.loadedAssets[baseKey]}
 	<FadeContainer show={showBaseBackground} duration={SECOND} zIndex={-2}>
-		<Sprite key="backgroundBase" {...backgroundProps} />
+		{#key baseKey}
+			<Sprite key={baseKey} {...backgroundProps} />
+		{/key}
+		<Torches torches={TORCHES[shape].base} {...flameProps} />
 	</FadeContainer>
 {/if}
 
-{#if context.stateApp.loadedAssets.backgroundBonus}
+{#if context.stateApp.loadedAssets[bonusKey]}
 	<FadeContainer show={showFeatureBackground} duration={SECOND} zIndex={-1}>
-		<Sprite key="backgroundBonus" {...backgroundProps} />
+		{#key bonusKey}
+			<Sprite key={bonusKey} {...backgroundProps} />
+		{/key}
+		<Torches torches={TORCHES[shape].bonus} {...flameProps} />
 	</FadeContainer>
 {/if}

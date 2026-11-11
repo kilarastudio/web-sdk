@@ -20,16 +20,24 @@
 	import { cubicOut } from 'svelte/easing';
 
 	import { BoardContext } from 'components-shared';
+	import { stateBetDerived } from 'state-shared';
 	import { waitForResolve } from 'utils-shared/wait';
 
 	import TumbleBoardBase from './TumbleBoardBase.svelte';
 	import BoardContainer from './BoardContainer.svelte';
 	import BoardMask from './BoardMask.svelte';
 	import { getSymbolY } from '../game/utils';
-	import { settleOut } from '../game/constants';
+	import { SYMBOL_SIZE, settleEasing } from '../game/constants';
 	import { getContext } from '../game/context';
 
 	const context = getContext();
+
+	// Symbols above a gap come down on the reels' own curve (settleEasing): from rest, gathering
+	// speed, slowing into place. A longer drop takes longer, by the square root of its distance,
+	// as a fall does: one cell about 230 ms, five about 420 ms. Columns start a moment apart.
+	const TUMBLE_FALL = { base: 110, perRootCell: 140, columnDelay: 22 };
+	const fallDuration = (distance: number) =>
+		TUMBLE_FALL.base + TUMBLE_FALL.perRootCell * Math.sqrt(distance / SYMBOL_SIZE);
 
 	let show = $state(false);
 
@@ -100,17 +108,20 @@
 			});
 		},
 		tumbleBoardSlideDown: async () => {
+			const timeScale = stateBetDerived.timeScale();
 			const getPromises = () =>
 				_.flatten(
-					context.stateGameDerived.tumbleBoardCombined().map((tumbleReel) => {
+					context.stateGameDerived.tumbleBoardCombined().map((tumbleReel, reelIndex) => {
 						return tumbleReel.map(async (tumbleSymbol, symbolIndex) => {
 							const targetY = getSymbolY(symbolIndex - 1); // Refer to initTumbleBoardBase
-							if (targetY !== tumbleSymbol.symbolY.current) {
-								const bounceDuration = 200;
+							const distance = targetY - tumbleSymbol.symbolY.current;
+							if (distance !== 0) {
+								const duration = fallDuration(distance);
 
 								await tumbleSymbol.symbolY.set(targetY, {
-									duration: bounceDuration,
-									easing: prefersReducedMotion.current ? cubicOut : settleOut,
+									duration: duration / timeScale,
+									delay: (TUMBLE_FALL.columnDelay * reelIndex) / timeScale,
+									easing: prefersReducedMotion.current ? cubicOut : settleEasing,
 								});
 
 								if (symbolIndex > 0 && symbolIndex < tumbleReel.length - 1) {

@@ -4,6 +4,7 @@
 
 	import Panel from './Panel.svelte';
 	import PopIn from './PopIn.svelte';
+	import WinPunch from './WinPunch.svelte';
 	import { getContext } from '../game/context';
 	import { BOARD_SIZES } from '../game/constants';
 	import { panelContentWidth, panelTextStyle } from '../game/panels';
@@ -14,6 +15,8 @@
 		label: string;
 		value: string;
 		caption: string;
+		// the value is a count that has reached its full amount
+		completed?: boolean;
 	};
 
 	const props: Props = $props();
@@ -34,14 +37,14 @@
 					style={panelTextStyle({ fontSize: face.height * 0.13, tone: 'label' })}
 					maxWidth={face.width}
 				/>
-				<GameText
-					anchor={0.5}
-					x={face.x}
-					y={face.y}
-					text={props.value}
-					style={panelTextStyle({ fontSize: face.height * 0.42, tone: 'value' })}
-					maxWidth={face.width}
-				/>
+				<WinPunch x={face.x} y={face.y} completed={props.completed ?? false}>
+					<GameText
+						anchor={0.5}
+						text={props.value}
+						style={panelTextStyle({ fontSize: face.height * 0.42, tone: 'value' })}
+						maxWidth={face.width}
+					/>
+				</WinPunch>
 				<GameText
 					anchor={0.5}
 					x={face.x}

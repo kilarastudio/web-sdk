@@ -1,17 +1,4 @@
-import type { SkeletonData } from 'components-pixi';
 import { SYMBOL_SIZE } from './constants';
-
-// No rig yet: an empty skeleton draws nothing and its one-shot animations complete at once.
-export const glintSkeleton: SkeletonData = {
-	format: 'kilara-skeleton',
-	version: 1,
-	name: 'glint',
-	bounds: { x: 0, y: 0, width: 1, height: 1 },
-	bones: [],
-	slots: [],
-	skins: { default: {} },
-	animations: {},
-};
 
 export const GLINT_LIGHT_DURATION_MS = 400;
 export const GLINT_ANIMATION_MS = {
@@ -21,11 +8,13 @@ export const GLINT_ANIMATION_MS = {
 	double: 350,
 	tier_up: 500,
 } as const;
+// The four tiers follow RPG rarity colours (rare blue, epic violet, legendary orange, mythic red),
+// so a brighter tier reads as a rarer one at a glance. Tiles are drawn by src/pixel/ui.ts.
 export const GLINT_TIERS = {
-	1: { tile: 'glintTile1', skin: 't1', color: 0x4fd1c5 },
-	2: { tile: 'glintTile2', skin: 't2', color: 0xffc53d },
-	3: { tile: 'glintTile3', skin: 't3', color: 0xff8a3d },
-	4: { tile: 'glintTile4', skin: 't4', color: 0xff4fa3 },
+	1: { tile: 'glintTile1', color: 0x00cdf9, flash: 0x94fdff },
+	2: { tile: 'glintTile2', color: 0xdb3ffd, flash: 0xfdd2ed },
+	3: { tile: 'glintTile3', color: 0xffa214, flash: 0xffeb57 },
+	4: { tile: 'glintTile4', color: 0xff0040, flash: 0xffffff },
 } as const;
 export type GlintTier = keyof typeof GLINT_TIERS;
 export type GlintAnimation = keyof typeof GLINT_ANIMATION_MS;

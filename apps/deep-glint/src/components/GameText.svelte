@@ -5,7 +5,11 @@
 
 	type Props = Omit<BitmapTextProps, 'scale' | 'onresize'> & { maxWidth?: number };
 	const { maxWidth, ...textProps }: Props = $props();
-	const supported = $derived(supportsGameFont(textProps.text));
+	// the pixel font needs room for its outline: below about 22 units its counters fill in, so
+	// small print uses the fallback font
+	const supported = $derived(
+		supportsGameFont(textProps.text) && Number(textProps.style?.fontSize ?? 0) >= 22,
+	);
 	// Decoration is baked into the atlas. Retain canvas-only paint for fallback.
 	const bitmapStyle = $derived({ ...textProps.style, stroke: undefined, dropShadow: false });
 </script>

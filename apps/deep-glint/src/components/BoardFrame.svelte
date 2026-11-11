@@ -4,43 +4,35 @@
 </script>
 
 <script lang="ts">
-	import { NineSliceSprite, Rectangle } from 'pixi-svelte';
+	import { Rectangle, Sprite } from 'pixi-svelte';
 	import { FadeContainer } from 'components-pixi';
 
 	import { getContext } from '../game/context';
-	import { BOARD_FRAME } from '../game/constants';
+	import { ART_PIXEL, BOARD_FRAME } from '../game/constants';
+	import { pixelClock } from '../game/pixelClock.svelte';
+	import { impact } from '../game/impact.svelte';
 
 	const context = getContext();
-	// the symbols sit on a dark enamel backing, which runs a little under the frame
-	const BACKING = { color: 0x10171d, alpha: 0.92, overlap: 4 };
 
 	const board = $derived(context.stateGameDerived.boardLayout());
-	// the opening round the symbols, its top left corner and sizes
-	const opening = $derived({
-		x: board.x - board.width * 0.5 - BOARD_FRAME.padding,
-		y: board.y - board.height * 0.5 - BOARD_FRAME.padding,
-		width: board.width + BOARD_FRAME.padding * 2,
-		height: board.height + BOARD_FRAME.padding * 2,
+	// the flagstones the symbols land on, and the stone frame round them, both drawn by code
+	// the floor and the frame shake with the board
+	const floor = $derived({
+		x: board.x - board.width * 0.5 + impact.x,
+		y: board.y - board.height * 0.5 + impact.y,
+		width: board.width,
+		height: board.height,
 	});
-	// the nine-slice is laid out in source pixels and scaled down as a whole, so its corners keep
-	// their proportions
-	const frame = $derived.by(() => {
-		const { slices, scale } = BOARD_FRAME;
-
-		return {
-			x: opening.x - slices.left * scale,
-			y: opening.y - slices.top * scale,
-			width: opening.width / scale + slices.left + slices.right,
-			height: opening.height / scale + slices.top + slices.bottom,
-			scale,
-			leftWidth: slices.left,
-			topHeight: slices.top,
-			rightWidth: slices.right,
-			bottomHeight: slices.bottom,
-		};
+	const frame = $derived({
+		x: floor.x - BOARD_FRAME.border,
+		y: floor.y - BOARD_FRAME.border,
+		width: floor.width + BOARD_FRAME.border * 2,
+		height: floor.height + BOARD_FRAME.border * 2,
 	});
 
 	let showGlow = $state(false);
+	// during free spins the frame burns: three bands of fire that breathe on the pixel clock
+	const breath = $derived([0.7, 0.8, 0.9, 1, 0.9, 0.8][pixelClock.frame % 6]);
 
 	context.eventEmitter.subscribeOnMount({
 		boardFrameGlowShow: () => (showGlow = true),
@@ -49,32 +41,17 @@
 </script>
 
 <FadeContainer show={showGlow} duration={400}>
-	{#each [{ width: 24, alpha: 0.06 }, { width: 14, alpha: 0.14 }, { width: 4, alpha: 0.65 }] as band}
+	{#each [{ reach: 5, color: 0x8e251d, alpha: 0.5 }, { reach: 3, color: 0xff5000, alpha: 0.75 }, { reach: 1, color: 0xffa214, alpha: 1 }] as band}
 		<Rectangle
-			x={board.x}
-			y={board.y}
-			anchor={0.5}
-			width={board.width +
-				BOARD_FRAME.padding * 2 +
-				(BOARD_FRAME.border.left + BOARD_FRAME.border.right) * BOARD_FRAME.scale}
-			height={board.height +
-				BOARD_FRAME.padding * 2 +
-				(BOARD_FRAME.border.top + BOARD_FRAME.border.bottom) * BOARD_FRAME.scale}
-			backgroundAlpha={0}
-			borderColor={0xffbf43}
-			borderWidth={band.width}
-			borderAlpha={band.alpha}
+			x={frame.x - band.reach * ART_PIXEL}
+			y={frame.y - band.reach * ART_PIXEL}
+			width={frame.width + band.reach * ART_PIXEL * 2}
+			height={frame.height + band.reach * ART_PIXEL * 2}
+			backgroundColor={band.color}
+			backgroundAlpha={band.alpha * breath}
 		/>
 	{/each}
 </FadeContainer>
 
-<Rectangle
-	x={opening.x - BACKING.overlap}
-	y={opening.y - BACKING.overlap}
-	width={opening.width + BACKING.overlap * 2}
-	height={opening.height + BACKING.overlap * 2}
-	backgroundColor={BACKING.color}
-	backgroundAlpha={BACKING.alpha}
-/>
-
-<NineSliceSprite key="boardFrame" {...frame} />
+<Sprite key="boardFloor" {...floor} />
+<Sprite key="boardFrame" {...frame} />
