@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { Rectangle, Sprite } from 'pixi-svelte';
 	import { FadeContainer } from 'components-pixi';
-	import { SECOND } from 'constants-shared/time';
 
 	import { getContext } from '../game/context';
 	import { TORCHES } from '../game/torches';
@@ -10,6 +9,8 @@
 	// The dragon's hall, in a wide and a tall composition (576 × 324 and 324 × 576 art pixels).
 	// Its torches are painted without their flames, which burn over the picture (Torches).
 	// Each covers the canvas; the tall one is used where the screen is taller than it is wide.
+	// The halls change at once: only the fire wall changes them, while its smoke covers the screen,
+	// and a slower fade would still be running as the smoke lifts.
 	const SIZES = {
 		Landscape: { width: 576, height: 324 },
 		Portrait: { width: 324, height: 576 },
@@ -52,7 +53,7 @@
 <Rectangle {...canvas} backgroundColor={0x0e071b} zIndex={-3} />
 
 {#if context.stateApp.loadedAssets[baseKey]}
-	<FadeContainer show={showBaseBackground} duration={SECOND} zIndex={-2}>
+	<FadeContainer show={showBaseBackground} duration={0} zIndex={-2}>
 		{#key baseKey}
 			<Sprite key={baseKey} {...backgroundProps} />
 		{/key}
@@ -61,7 +62,7 @@
 {/if}
 
 {#if context.stateApp.loadedAssets[bonusKey]}
-	<FadeContainer show={showFeatureBackground} duration={SECOND} zIndex={-1}>
+	<FadeContainer show={showFeatureBackground} duration={0} zIndex={-1}>
 		{#key bonusKey}
 			<Sprite key={bonusKey} {...backgroundProps} />
 		{/key}

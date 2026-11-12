@@ -39,7 +39,12 @@
 			.join(' · ');
 
 	const close = () => (stateModal.modal = null);
-	const choose = (mode: string) => {
+	const choose = (mode: string, multiplier: number) => {
+		// a mode the balance cannot cover says why instead of opening its confirmation ([222])
+		if (!affordable(multiplier)) {
+			stateModal.modal = { name: 'error', error: { error: 'ERR_IPB' } };
+			return;
+		}
 		stateBonus.selectedBetModeKey = mode;
 		eventEmitter.broadcast({ type: 'buyBonusConfirm' });
 		eventEmitter.broadcast({ type: 'soundPressGeneral' });
@@ -92,8 +97,8 @@
 					type="button"
 					class="card {mode.type}"
 					style:--order={index}
-					disabled={!affordable(mode.costMultiplier)}
-					onclick={() => choose(mode.mode)}
+					class:unaffordable={!affordable(mode.costMultiplier)}
+					onclick={() => choose(mode.mode, mode.costMultiplier)}
 				>
 					{#if mode.image}
 						<img src={mode.image} alt="" draggable="false" />
@@ -247,7 +252,7 @@
 		transition: background-color 0.15s;
 
 		@media (hover: hover) {
-			&:hover:not(:disabled) {
+			&:hover:not(.unaffordable) {
 				background-color: rgba(30, 32, 37, 0.92);
 
 				.action {
@@ -256,7 +261,7 @@
 			}
 		}
 
-		&:active:not(:disabled) .action span {
+		&:active:not(.unaffordable) .action span {
 			transform: translateY(2px);
 		}
 
@@ -265,7 +270,7 @@
 			outline-offset: 3px;
 		}
 
-		&:disabled {
+		&.unaffordable {
 			cursor: not-allowed;
 
 			img {
@@ -371,7 +376,7 @@
 		--kind-hover: #9ccbff;
 	}
 
-	.card:not(:disabled) {
+	.card:not(.unaffordable) {
 		.cost {
 			color: var(--kind);
 		}

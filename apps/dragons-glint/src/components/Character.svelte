@@ -31,6 +31,8 @@
 	} from '../game/character';
 	import { animate } from '../game/motion';
 	import { shake } from '../game/impact.svelte';
+	import { SMOKE_WISP } from '../pixel/ui';
+	import { TORCHES, TORCH_FRAME_MS, torchLight } from '../game/torches';
 	import CharacterParticles, {
 		type ParticleBurst,
 		type ParticleKind,
@@ -194,6 +196,113 @@
 			}, BIG_WIN_HOLD);
 	};
 
+	// At rest the dragon breathes: the strip's head rises two pixels and settles (frames 0, 1, 2,
+	// 1), slowly, a breath every few seconds. Resting between breaths it now and then blinks
+	// (frame 5), and some breaths out leave a wisp of smoke from its nostrils. Which breaths blink
+	// and which smoke follow fixed patterns of different lengths, so the two rarely line up.
+	const BREATH = [
+		{ frame: 0, ms: 1300 },
+		{ frame: 1, ms: 350 },
+		{ frame: 2, ms: 1250 },
+		{ frame: 1, ms: 400 },
+	];
+	// each breath holds its rest and its full chest a little longer or shorter than the last, by
+	// up to these many ms, so the breathing never ticks like a clock
+	const BREATH_VARY = [420, 0, 360, 0];
+	const BLINK = { at: 450, ms: 140, frame: 5, every: [1, 4, 6, 9, 11] };
+	const SMOKE = { breathOut: 3, every: [0, 1, 3, 4, 6, 7], cycle: 9, frameMs: 70 };
+	// the nostril in idle frame 0, in strip pixels, and how far each frame raises the head
+	const NOSTRIL = { x: 230, y: 290 };
+	const HEAD_RISE = [0, 4, 8, 4, 0, 0];
+
+	const breathSteps = () =>
+		BREATH.map(({ frame, ms }, step) => ({
+			frame,
+			ms: ms + Math.round((Math.random() - 0.5) * BREATH_VARY[step]),
+		}));
+
+	// where the dragon is in its breathing at a time since it settled: each breath's length is
+	// drawn once, as the walk reaches it, and the walk resumes from the breath it was last in
+	let walked = { breath: 0, start: 0, steps: breathSteps() };
+	const idleAt = (elapsed: number) => {
+		if (elapsed < walked.start) walked = { breath: 0, start: 0, steps: breathSteps() };
+		for (;;) {
+			const length = walked.steps.reduce((sum, step) => sum + step.ms, 0);
+			if (elapsed < walked.start + length) break;
+			walked = {
+				breath: walked.breath + 1,
+				start: walked.start + length,
+				steps: breathSteps(),
+			};
+		}
+		const { breath } = walked;
+		let into = elapsed - walked.start;
+		for (const [step, { frame, ms }] of walked.steps.entries()) {
+			if (into < ms) {
+				const blinking =
+					step === 0 &&
+					BLINK.every.includes(breath % 13) &&
+					into >= BLINK.at &&
+					into < BLINK.at + BLINK.ms;
+
+				return { breath, step, frame: blinking ? BLINK.frame : frame };
+			}
+			into -= ms;
+		}
+
+		return { breath, step: 0, frame: 0 };
+	};
+
+	// The dragon sits under a torch and catches its light: a warm wash over its body that flickers
+	// with that flame, frame by frame, as the wall beside it does.
+	const FIRELIGHT = { tint: 0xffa214, alpha: 0.18, flicker: 1 };
+	const canvas = $derived(context.stateLayoutDerived.canvasSizes());
+	const nearTorch = $derived(
+		TORCHES[canvas.width >= canvas.height ? 'Landscape' : 'Portrait'][
+			context.stateGame.gameType === 'freegame' ? 'bonus' : 'base'
+		],
+	);
+	let torchStep = $state(0);
+	const firelight = $derived.by(() => {
+		if (prefersReducedMotion.current) return FIRELIGHT.alpha;
+		const index = nearTorch.length - 1;
+		const light = torchLight(nearTorch[index], torchStep, index);
+
+		return Math.max(0, FIRELIGHT.alpha * (1 + (light - 1) * FIRELIGHT.flicker));
+	});
+
+	// wisps of smoke, where they left the nostril (layout units) and when
+	let wisps = $state<{ id: number; x: number; y: number; start: number; frame: number }[]>([]);
+	let wispId = 0;
+	let lastBreathStep = '';
+
+	const breatheOut = (now: number, rise: number) => {
+		const { x, y } = layout;
+		const left = x - ((figure.left + figure.right) / 2) * scale;
+		const top = y - figure.bottom * scale;
+		wisps = [
+			...wisps,
+			{
+				id: ++wispId,
+				x: left + NOSTRIL.x * scale,
+				y: top + (NOSTRIL.y - rise) * scale,
+				start: now,
+				frame: 0,
+			},
+		];
+	};
+
+	const wispsAt = (now: number) => {
+		const next = wisps
+			.map((wisp) => ({ ...wisp, frame: Math.floor((now - wisp.start) / SMOKE.frameMs) }))
+			.filter((wisp) => wisp.frame < SMOKE_WISP.frames);
+		if (
+			next.length !== wisps.length ||
+			next.some((wisp, index) => wisp.frame !== wisps[index].frame)
+		)
+			wisps = next;
+	};
+
 	onMount(() => {
 		let request = 0;
 		const tick = (now: number) => {
@@ -201,6 +310,21 @@
 			if (playing !== pose) {
 				playing = pose;
 				poseStart = now;
+			}
+			if (wisps.length) wispsAt(now);
+			const step = Math.floor(now / TORCH_FRAME_MS);
+			if (step !== torchStep) torchStep = step;
+			if (pose === 'idle') {
+				const at = idleAt(now - poseStart);
+				frame = at.frame;
+				const key = `${at.breath}:${at.step}`;
+				if (key !== lastBreathStep) {
+					lastBreathStep = key;
+					const smoking = SMOKE.every.includes(at.breath % SMOKE.cycle);
+					if (at.step === SMOKE.breathOut && smoking && !prefersReducedMotion.current)
+						breatheOut(now, HEAD_RISE[at.frame]);
+				}
+				return;
 			}
 			const { frames, fps, loop } = CHARACTER.animations[pose];
 			const at = Math.floor(((now - poseStart) / 1000) * fps * stateBetDerived.timeScale());
@@ -230,12 +354,28 @@
 		}}
 	/>
 	<!-- the figure's box centred on the layout box, the hoard on its feet line -->
-	<BaseSprite
-		{texture}
-		x={layout.x + body.x - ((figure.left + figure.right) / 2) * scale * body.wide}
-		y={layout.y + body.y - figure.bottom * scale * body.tall}
-		width={cell.width * scale * body.wide}
-		height={cell.height * scale * body.tall}
-	/>
+	{#each [false, true] as lit}
+		<BaseSprite
+			{texture}
+			x={layout.x + body.x - ((figure.left + figure.right) / 2) * scale * body.wide}
+			y={layout.y + body.y - figure.bottom * scale * body.tall}
+			width={cell.width * scale * body.wide}
+			height={cell.height * scale * body.tall}
+			{...lit ? { tint: FIRELIGHT.tint, alpha: firelight, blendMode: 'add' as const } : {}}
+		/>
+	{/each}
+	{#each wisps as wisp (wisp.id)}
+		{@const run = (context.stateApp.loadedAssets.smokeWisp ?? []) as PIXI.Texture[]}
+		{#if run[wisp.frame]}
+			<BaseSprite
+				texture={run[wisp.frame]}
+				anchor={{ x: (SMOKE_WISP.foot + 0.5) / SMOKE_WISP.width, y: 1 }}
+				x={wisp.x}
+				y={wisp.y}
+				width={SMOKE_WISP.width * 4 * scale}
+				height={SMOKE_WISP.height * 4 * scale}
+			/>
+		{/if}
+	{/each}
 	<CharacterParticles bind:this={particles} />
 {/if}

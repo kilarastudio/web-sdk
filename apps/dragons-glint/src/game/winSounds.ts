@@ -39,13 +39,14 @@ export const winCountUpSoundsEnd = ({ winLevelData }: { winLevelData?: WinLevelD
 	});
 };
 
-// the win's presentation is over: back to the music of the game it belongs to
-export const winLevelSoundsStop = () => {
+// the win's presentation is over: back to the music of the game it belongs to, or of the game
+// play goes back to (the free spins total, which hands back to the base game)
+export const winLevelSoundsStop = ({ music }: { music?: 'bgm_main' } = {}) => {
 	eventEmitter.broadcast({ type: 'soundStop', name: 'sfx_bigwin_coinloop' });
 	eventEmitter.broadcast({ type: 'soundStop', name: 'sfx_win_countup' });
 	eventEmitter.broadcast({
 		type: 'soundMusic',
-		name: stateGame.gameType === 'freegame' ? 'bgm_freespin' : 'bgm_main',
+		name: music ?? (stateGame.gameType === 'freegame' ? 'bgm_freespin' : 'bgm_main'),
 	});
 	eventEmitter.broadcastAsync({ type: 'uiShow' });
 };

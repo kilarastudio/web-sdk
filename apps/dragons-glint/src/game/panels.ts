@@ -19,6 +19,7 @@ const PANEL_PIXELS = {
 // the face keeps clear of the rule and its corner studs, in art pixels
 const FACE_INSET: Partial<Record<keyof typeof PANEL_PIXELS, number>> = {
 	celebration: WIN_PANEL_BORDER + 1,
+	panelFreeSpinsIntro: WIN_PANEL_BORDER + 1,
 	panelFreeSpinsOutro: WIN_PANEL_BORDER + 1,
 };
 

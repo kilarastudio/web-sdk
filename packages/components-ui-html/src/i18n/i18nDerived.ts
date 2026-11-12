@@ -11,8 +11,12 @@ const translateSafe = (key: string) => {
 export const i18nDerived = {
 	bet: () => (stateUrlDerived.social() ? 'SPIN' : stateI18nDerived.translate('BET')),
 	max: () => stateI18nDerived.translate('MAX'),
-	betMenu: () => stateI18nDerived.translate('BET MENU'),
-	selectYourBet: () => stateI18nDerived.translate('SELECT YOUR BET'),
+	betMenu: () =>
+		stateUrlDerived.social() ? 'PLAY AMOUNT' : stateI18nDerived.translate('BET MENU'),
+	selectYourBet: () =>
+		stateUrlDerived.social()
+			? 'SELECT YOUR PLAY AMOUNT'
+			: stateI18nDerived.translate('SELECT YOUR BET'),
 	confirm: () => stateI18nDerived.translate('CONFIRM'),
 	masterVolume: () => stateI18nDerived.translate('MASTER VOLUME'),
 	musicVolume: () => stateI18nDerived.translate('MUSIC VOLUME'),
@@ -25,9 +29,10 @@ export const i18nDerived = {
 	startAutoplay: () => stateI18nDerived.translate('START AUTOPLAY'),
 	notification: () => stateI18nDerived.translate('NOTIFICATION'),
 	autoSpinsStopInfo: () => stateI18nDerived.translate('AUTO PLAY HAS STOPPED DUE TO'),
+	// no restricted social words (bet, funds), so one text serves both modes
 	insufficientFunds: () =>
 		stateI18nDerived.translate(
-			'INSUFFICIENT FUNDS TO PLACE THIS BET. PLEASE ADD FUNDS TO YOUR ACCOUNT OR LOWER THE BET LEVEL.',
+			'YOUR BALANCE DOES NOT COVER THE NEXT ROUND. LOWER THE AMOUNT OR ADD TO YOUR BALANCE.',
 		),
 	lossLimitReached: () => stateI18nDerived.translate('LOSS LIMIT REACHED'),
 	singleWinLimitReached: () => stateI18nDerived.translate('SINGLE WIN LIMIT REACHED'),
@@ -36,7 +41,7 @@ export const i18nDerived = {
 	// modes; an error can come before the language loads, so these fall back to the English key
 	errorBalanceTitle: () => translateSafe('BALANCE TOO LOW'),
 	errorBalanceBody: () =>
-		translateSafe('Your balance does not cover this round. Choose a lower amount or add funds.'),
+		translateSafe('Your balance does not cover this round. Choose a lower amount or add to your balance.'),
 	errorLimitTitle: () => translateSafe('LIMIT REACHED'),
 	errorLimitBody: () => translateSafe('You have reached a play limit set on your account.'),
 	errorBusyTitle: () => translateSafe('ONE MOMENT'),

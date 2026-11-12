@@ -41,7 +41,7 @@
 				)} ×${GLINT_CAP.toLocaleString('en-US')}.`,
 				translate('A symbol win is multiplied by the highest lit spot under its symbols.'),
 				translate(
-					'A win is paid with the spots as they are when it lands. Only then do the spots under its symbols grow.',
+					'A win counts the spots as they are when it lands. Only then do the spots under its symbols grow.',
 				),
 				translate(
 					'Spots reset at the start of every base game round, and stay lit for the whole of FREE SPINS.',
@@ -79,7 +79,7 @@
 		[i18nDerived.bet(), translate('Plays one round. Press SPACE to do the same.')],
 		[
 			'− / +',
-			`${translate('Lower or raise the')} ${amount}. ${translate('Every win scales with it.')}`,
+			`${translate('Lower or raise the')} ${amount}. ${translate('Every win scales with it. Press the amount itself to pick it from a list.')}`,
 		],
 		[
 			i18nDerived.autoSpin(),

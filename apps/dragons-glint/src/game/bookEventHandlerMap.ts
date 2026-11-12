@@ -49,11 +49,15 @@ const updateGlint = async (glint: number[][]) => {
 	}
 };
 
-const resetGlint = async () => {
+const clearGlint = () => {
 	awaitingFirstFreeSpinGlint = false;
+	stateGame.glint = emptyGlint();
+};
+
+const resetGlint = async () => {
 	if (stateGame.glint.some((column) => column.some((value) => value > 0)))
 		await eventEmitter.broadcastAsync({ type: 'glintResetShow' });
-	stateGame.glint = emptyGlint();
+	clearGlint();
 };
 
 const appliedSpots = (wins: BookEventOfType<'winInfo'>['wins']): GlintApplySpot[] =>
@@ -241,11 +245,10 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		// the hall changes to the boss fight behind the wipe
 		await eventEmitter.broadcastAsync({
 			type: 'transition',
-			oncovered: () => {
-				stateGame.gameType = 'freegame';
-				eventEmitter.broadcast({ type: 'freeSpinIntroShow', totalFreeSpins: bookEvent.totalFs });
-			},
+			oncovered: () => (stateGame.gameType = 'freegame'),
 		});
+		// the intro slams in once the smoke has lifted
+		eventEmitter.broadcast({ type: 'freeSpinIntroShow', totalFreeSpins: bookEvent.totalFs });
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'jng_intro_fs' });
 		eventEmitter.broadcast({ type: 'soundMusic', name: 'bgm_freespin' });
 		await eventEmitter.broadcastAsync({
@@ -298,9 +301,10 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 	freeSpinEnd: async (bookEvent: BookEventOfType<'freeSpinEnd'>) => {
 		const winLevelData = roundWinLevelData(bookEvent);
 
+		// the total is celebrated in the boss hall; the hall, board and panels change back to base
+		// behind the fire wall, as they changed on the way in
 		await eventEmitter.broadcastAsync({ type: 'uiHide' });
-		stateGame.gameType = 'basegame';
-		eventEmitter.broadcast({ type: 'boardFrameGlowHide' });
+		eventEmitter.broadcast({ type: 'tumbleWinAmountHide' });
 		eventEmitter.broadcast({ type: 'freeSpinOutroShow' });
 		// the panel has its own fanfare
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_youwon_panel' });
@@ -312,13 +316,18 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 			cost: roundCost(),
 			winLevelData,
 		});
-		winLevelSoundsStop();
-		eventEmitter.broadcast({ type: 'freeSpinOutroHide' });
-		stateUi.freeSpinCounterShow = false;
-		await resetGlint();
-		eventEmitter.broadcast({ type: 'tumbleWinAmountHide' });
+		winLevelSoundsStop({ music: 'bgm_main' });
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_transition' });
-		await eventEmitter.broadcastAsync({ type: 'transition' });
+		await eventEmitter.broadcastAsync({
+			type: 'transition',
+			oncovered: () => {
+				eventEmitter.broadcast({ type: 'freeSpinOutroHide' });
+				eventEmitter.broadcast({ type: 'boardFrameGlowHide' });
+				stateGame.gameType = 'basegame';
+				stateUi.freeSpinCounterShow = false;
+				clearGlint();
+			},
+		});
 		await eventEmitter.broadcastAsync({ type: 'uiShow' });
 		await eventEmitter.broadcastAsync({ type: 'drawerUnfold' });
 		eventEmitter.broadcast({ type: 'drawerButtonHide' });

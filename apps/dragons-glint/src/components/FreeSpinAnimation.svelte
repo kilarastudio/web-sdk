@@ -2,7 +2,9 @@
 	import GameText from './GameText.svelte';
 	import { MainContainer } from 'components-layout';
 
-	import Panel from './Panel.svelte';
+	import { Container } from 'pixi-svelte';
+
+	import IntroPanel from './IntroPanel.svelte';
 	import PopIn from './PopIn.svelte';
 	import WinAnimation from './WinAnimation.svelte';
 	import WinPunch from './WinPunch.svelte';
@@ -11,8 +13,9 @@
 	import { panelContentWidth, panelTextStyle, type PanelFace } from '../game/panels';
 	import type { BigWinLevelData } from '../game/winLevelMap';
 
-	// the free spins panel over the board: a label, the count or amount, and a caption. The total
-	// at the end stands in the frame of the level its count has reached, like a big win.
+	// the free spins panel over the board: a label, the count or amount, and a caption. The intro
+	// slams in with its own burning frame; the total at the end stands in the frame of the level
+	// its count has reached, like a big win.
 	type Props = {
 		key: 'panelFreeSpinsIntro' | 'panelFreeSpinsOutro';
 		label: string;
@@ -71,15 +74,15 @@
 			</WinAnimation>
 		</PopIn>
 	{:else}
-		<PopIn
+		<Container
 			x={context.stateGameDerived.boardLayout().x}
 			y={context.stateGameDerived.boardLayout().y}
 		>
-			<Panel key={props.key} {scale}>
+			<IntroPanel {scale}>
 				{#snippet children({ face })}
 					{@render body({ face })}
 				{/snippet}
-			</Panel>
-		</PopIn>
+			</IntroPanel>
+		</Container>
 	{/if}
 </MainContainer>

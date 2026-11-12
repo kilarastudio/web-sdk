@@ -38,8 +38,14 @@ themes judged as a player would. The display name is Dragon's Glint; the math an
 - The dragon answers a run of tumble wins in four steps: a nod, a snort of smoke, a beat of its
   wing, a roar. Its body is moved by code over its frames (hop, lunge, landing), with smoke and
   embers from its mouth. The dragon may squash; the symbols may not.
-- The torches' flames are a small heat simulation drawn in colour bands, 24 looping frames,
-  with a wavering glow. The painted flames were erased from the backgrounds.
+- The torches' flames are a small heat simulation drawn in colour bands, 24 looping frames.
+  The painted flames were erased from the backgrounds. Each torch lights the wall round it with
+  a pool of light in four bands that swells and dims with how far its flame's tongues reach,
+  carried on a slow draught so it never repeats with the flame's loop; dark soot, burned the same
+  way, climbs behind each flame. The dragon catches the nearest torch's flicker.
+- At rest the dragon breathes: its head rises two pixels and settles, about a breath every three
+  seconds, each a little longer or shorter than the last. Now and then it blinks, and most breaths
+  out leave a puff of smoke from its nostril, drawn with the same heat simulation in greys.
 - In free spins the board frame burns with the same simulated fire, along its top and up its
   sides, outside the stone only; the floor and the symbols are never covered.
 - Big wins are measured against the round's cost and climb in levels: BIG 10×, SUPER 30×,
@@ -47,8 +53,14 @@ themes judged as a player would. The display name is Dragon's Glint; the math an
   turns to a richer material (stone, gold bar, gem-set gold, red dragon scales, gold dragon scales
   on fire), a jolt, a burst of coins from behind the panel, its own music. The free spins total
   climbs the same way. Coins always fly under the amounts.
-- The screen change is a wall of the dragon's fire sweeping up the screen with dark smoke behind
-  it; the scene changes while it is dark, and the smoke lifts away, a charred edge last.
+- The screen change is a wall of the dragon's fire sweeping up the screen, its embers cooling
+  through dull reds into dark rolling smoke; it slows as it covers but never stops, the scene
+  changes while the smoke covers the screen (hall, board and panels at once, both ways), and the
+  smoke lifts away, a charred edge last. Leaving free spins, the total is celebrated in the boss
+  hall first.
+- The free spins intro lands after the smoke has lifted: it drops in, hits with a jolt and a thud,
+  its fire catches, the scatter's eye on its crest snaps open, and the dragon rears. Its frame is
+  its own: the dragon's scales charred black with embers in them, gold trim, iron studs.
 
 ## Sound
 

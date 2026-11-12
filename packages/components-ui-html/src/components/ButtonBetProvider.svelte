@@ -5,7 +5,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
-	import { stateBet, stateBetDerived } from 'state-shared';
+	import { stateBet, stateBetDerived, stateModal } from 'state-shared';
 
 	import { getContext } from '../context';
 
@@ -41,7 +41,9 @@
 		context.eventEmitter.broadcast({ type: 'soundPressBet' });
 
 		if (context.stateXstateDerived.isIdle()) {
-			bet();
+			// a round the balance cannot cover never reaches the server: say why instead ([222])
+			if (stateBetDerived.isBetCostAvailable()) bet();
+			else stateModal.modal = { name: 'error', error: { error: 'ERR_IPB' } };
 		} else {
 			stop();
 		}

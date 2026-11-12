@@ -11,7 +11,6 @@
 		if (stateConfig.jurisdiction.disabledAutoplay && !stateBetDerived.hasAutoBetCounter()) return true;
 		if (stateBet.isSpaceHold) return true;
 		if (!context.stateXstateDerived.isIdle() && !stateBetDerived.hasAutoBetCounter()) return true;
-		if (!stateBetDerived.isBetCostAvailable()) return true;
 		return false;
 	});
 	const counterFontSize = $derived.by(() => {
@@ -22,7 +21,11 @@
 	});
 
 	const stopAutoSpin = () => (stateBet.autoSpinsCounter = 0);
-	const openModal = () => (stateModal.modal = { name: 'autoSpin' });
+	// autoplay the balance cannot cover says why instead of staying dark ([222])
+	const openModal = () =>
+		(stateModal.modal = stateBetDerived.isBetCostAvailable()
+			? { name: 'autoSpin' }
+			: { name: 'error', error: { error: 'ERR_IPB' } });
 	const onpress = () => {
 		context.eventEmitter.broadcast({ type: 'soundPressGeneral' });
 		stateBetDerived.hasAutoBetCounter() ? stopAutoSpin() : openModal();

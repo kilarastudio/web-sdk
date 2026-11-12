@@ -366,6 +366,73 @@ export const winPanel = (tier: WinPanelTier, width: number, height: number) => {
 	return canvas;
 };
 
+// The free spins intro: the door to the dragon's lair. A band of the dragon's scales charred black
+// with embers glowing in their middles, a gold trim, iron corner studs each holding an ember, round
+// the same dark face as EPIC's. It burns (fireAround) and wears the scatter's eye as a crest, both
+// drawn beside it, so it reads as the bonus and as none of the big win levels.
+const EMBER_SCALES = [
+	color(0x0e071b),
+	color(0x1c121c),
+	color(0x5d2c28),
+	color(0xc64524),
+	color(0xff5000),
+	color(0xffa214),
+] as const;
+
+export const introPanel = (width: number, height: number) => {
+	const canvas = new PixelCanvas(width, height);
+	const g = RAMPS.gold;
+	const border = WIN_PANEL_BORDER;
+
+	canvas.rect(0, 0, width, height, INK);
+	canvas.rect(border, border, width - border * 2, height - border * 2, color(0x1c121c));
+	canvas.rect(border, border, width - border * 2, 1, RAMPS.wood[1]);
+	canvas.rect(border, border, 1, height - border * 2, RAMPS.wood[1]);
+
+	for (let y = 1; y < height - 1; y++)
+		for (let x = 1; x < width - 1; x++) {
+			const depth = Math.min(x, y, width - 1 - x, height - 1 - y) - 1;
+			if (depth >= BAND) continue;
+			const vertical = Math.min(x, width - 1 - x) - 1 === depth;
+			canvas.set(x, y, scale(vertical ? y : x, depth, EMBER_SCALES));
+		}
+
+	const ring = (inset: number, c: number) => {
+		canvas.rect(inset, inset, width - inset * 2, 1, c);
+		canvas.rect(inset, height - 1 - inset, width - inset * 2, 1, c);
+		canvas.rect(inset, inset, 1, height - inset * 2, c);
+		canvas.rect(width - 1 - inset, inset, 1, height - inset * 2, c);
+	};
+	ring(BAND + 1, INK);
+	ring(BAND + 2, g[4]);
+	ring(BAND + 3, g[2]);
+	ring(border - 1, INK);
+
+	const plate = 18;
+	for (const [px, py] of [
+		[0, 0],
+		[width - plate, 0],
+		[0, height - plate],
+		[width - plate, height - plate],
+	] as const) {
+		const iron = RAMPS.steel;
+		canvas.rect(px, py, plate, plate, INK);
+		canvas.rect(px + 1, py + 1, plate - 2, plate - 2, iron[2]);
+		canvas.rect(px + 1, py + 1, plate - 2, 1, iron[4]);
+		canvas.rect(px + 1, py + 1, 1, plate - 2, iron[4]);
+		canvas.rect(px + 1, py + plate - 3, plate - 2, 2, iron[1]);
+		canvas.rect(px + plate - 3, py + 1, 2, plate - 2, iron[1]);
+		const cx = px + plate / 2 - 0.5;
+		const cy = py + plate / 2 - 0.5;
+		canvas.ellipse(cx, cy, 4.5, 4.5, INK);
+		canvas.ellipse(cx, cy, 3.5, 3.5, RAMPS.fire[3]);
+		canvas.paint((x, y, c) => c === RAMPS.fire[3] && x + y < cx + cy - 1, RAMPS.fire[4]);
+		canvas.set(cx - 1, cy - 1, RAMPS.fire[5]);
+	}
+
+	return canvas;
+};
+
 export const GLINT_TIER_RAMPS = [
 	[color(0x00396d), color(0x0098dc), color(0x0cf1ff), color(0x94fdff)],
 	[color(0x3003d9), color(0x7a09fa), color(0xdb3ffd), color(0xfdd2ed)],
@@ -500,19 +567,30 @@ const driftingAir = (
 	};
 };
 
-const drawHeat = (heat: Float32Array[], width: number, height: number) => {
+const drawHeat = (
+	heat: Float32Array[],
+	width: number,
+	height: number,
+	bands: [number, number][] = FLAME_BANDS,
+) => {
 	const canvas = new PixelCanvas(width, height);
 	for (let rise = 0; rise < height; rise++)
 		for (let x = 0; x < width; x++) {
-			const band = FLAME_BANDS.find(([floor]) => heat[rise][x] >= floor);
+			const band = bands.find(([floor]) => heat[rise][x] >= floor);
 			if (band) canvas.set(x, height - 1 - rise, band[1]);
 		}
 
 	return canvas;
 };
 
-// turbulence: how uneven the air is, 0 a still candle flame, 1 a roaring one
-export const flameFrames = (width: number, height: number, turbulence = 0.42) => {
+// turbulence: how uneven the air is, 0 a still candle flame, 1 a roaring one. bands: the colours
+// the heat is drawn in, the flame's own unless given (a torch's soot uses the same burning).
+export const flameFrames = (
+	width: number,
+	height: number,
+	turbulence = 0.42,
+	bands: [number, number][] = FLAME_BANDS,
+) => {
 	const next = random(width * 131 + height);
 	// how many cells the heat climbs between frames: a tall flame climbs faster
 	const climb = Math.max(2, Math.round(height / 20));
@@ -550,9 +628,20 @@ export const flameFrames = (width: number, height: number, turbulence = 0.42) =>
 	return Array.from({ length: FLAME_FRAMES }, () => {
 		for (let steps = 0; steps < climb; steps++) step(time++);
 
-		return drawHeat(heat, width, height);
+		return drawHeat(heat, width, height, bands);
 	});
 };
+
+// The soot over a torch: the same burning as its flame, rougher and taller, drawn in dark greys,
+// so a column of smoke climbs behind each flame, tearing and thinning, and never sways.
+const SOOT_BANDS: [number, number][] = [
+	[0.5, color(0x3d3d3d)],
+	[0.22, color(0x272727)],
+];
+
+// as wide as the flame and half again as tall, its foot burning down inside the flame
+export const sootFrames = (width: number, height: number) =>
+	flameFrames(width, Math.round(height * 1.5), 0.9, SOOT_BANDS);
 
 // Fire along an edge, as a loop of frames: the same heat as a torch flame, fed along the whole
 // foot (the bottom edge of the canvas) and burning up to `depth` cells from it. `lean` tips the
@@ -662,9 +751,18 @@ export const fireAroundFrames = (width: number, height: number) => {
 
 // The screen change: a wall of the dragon's fire that sweeps up the screen, with the dark of its
 // smoke behind it, and a charred edge where the smoke ends. The front is a loop of frames of a
-// run of flames that tiles side by side, over a band of embers that cools into the smoke; the
-// tail is one ragged, smouldering edge that tiles the same way. Sizes in art pixels.
-export const FIRE_WALL = { length: 160, flames: 40, embers: 12, tail: 10 };
+// run of flames that tiles side by side, over a band of embers that cools through dull reds into
+// the smoke; the smoke itself rolls in dark banks; the tail is one ragged, smouldering edge that
+// tiles the same way. Sizes in art pixels.
+export const FIRE_WALL = { length: 160, flames: 40, embers: 24, smoke: 160, tail: 10 };
+
+// below the flames' own bands: the embers cooling, then soot
+const COOLING_BANDS: [number, number][] = [
+	...FLAME_BANDS,
+	[0.07, RAMPS.fire[1]],
+	[0.035, RAMPS.fire[0]],
+	[0.015, color(0x391f21)],
+];
 
 export const fireWallFrames = () => {
 	const { length, flames, embers } = FIRE_WALL;
@@ -673,8 +771,8 @@ export const fireWallFrames = () => {
 	const glow = new PixelCanvas(length, embers);
 	for (let y = 0; y < embers; y++)
 		for (let x = 0; x < length; x++) {
-			const heat = (1 - y / embers) ** 1.4 + 0.5 * (air(x, y * 5) - 0.5);
-			glow.set(x, y, FLAME_BANDS.find(([floor]) => heat >= floor)?.[1] ?? INK);
+			const heat = (1 - y / embers) ** 2.2 + 0.4 * (air(x, y * 3) - 0.5);
+			glow.set(x, y, COOLING_BANDS.find(([floor]) => heat >= floor)?.[1] ?? INK);
 		}
 
 	return edgeFireFrames({ length, depth: flames, wrap: true, seed: 9 }).map((front) => {
@@ -684,6 +782,21 @@ export const fireWallFrames = () => {
 
 		return canvas;
 	});
+};
+
+// the smoke behind the wall: dark banks rolling in it, a square that tiles both ways
+export const fireWallSmoke = () => {
+	const { length, smoke } = FIRE_WALL;
+	const air = driftingAir(random(23), length, smoke, 16, true);
+	const fine = driftingAir(random(29), length, smoke / 2, 8, true);
+	const canvas = new PixelCanvas(length, smoke);
+	for (let y = 0; y < smoke; y++)
+		for (let x = 0; x < length; x++) {
+			const bank = air(x, y) * 0.75 + fine(x, y) * 0.25;
+			canvas.set(x, y, bank > 0.7 ? DUSK : bank > 0.56 ? NIGHT : INK);
+		}
+
+	return canvas;
 };
 
 export const fireWallTail = () => {
@@ -710,13 +823,85 @@ export const fireWallTail = () => {
 	return canvas;
 };
 
-// the light a flame throws on the wall: a plain disc, drawn white for the game to tint and to add
-// to the picture behind it, a wide faint one under a smaller brighter one
-export const flameGlow = (size = 48) => {
+// The light a flame throws on the wall and the stone round it: a pool in four bands of grey, each
+// a step brighter toward the middle, drawn for the game to tint warm and add to the picture behind
+// it. Its size and strength follow the flame's heat (flameLight), so the walls flicker with it.
+export const flameGlow = (size = 97) => {
 	const canvas = new PixelCanvas(size, size);
-	canvas.ellipse((size - 1) / 2, (size - 1) / 2, size / 2 - 0.5, size / 2 - 0.5, WHITE);
+	const middle = (size - 1) / 2;
+	for (const [reach, grey] of [
+		[1, 0x272727],
+		[0.76, 0x3d3d3d],
+		[0.52, 0x5d5d5d],
+		[0.3, 0x858585],
+	] as const)
+		canvas.ellipse(middle, middle, middle * reach + 0.5, middle * reach + 0.5, color(grey));
 
 	return canvas;
+};
+
+// how much light each frame of a flame gives, as a fraction of the loop's average: how much of
+// it reaches into its upper half, where the tongues rise and break away. The foot burns steadily;
+// the tongues are what make a torch's light flicker.
+export const flameLight = (frames: PixelCanvas[]) => {
+	const reach = frames.map((frame) => {
+		let count = 0;
+		for (let y = 0; y < frame.height / 2; y++)
+			for (let x = 0; x < frame.width; x++) if (frame.get(x, y) !== CLEAR) count++;
+		return count;
+	});
+	const mean = reach.reduce((a, b) => a + b, 0) / Math.max(1, reach.length);
+
+	return reach.map((count) => count / Math.max(1, mean));
+};
+
+// A wisp of smoke from the dragon's nostrils, as a run of frames: the same heat as the flames, fed
+// in one short breath at the foot and then not at all, so a puff climbs, drifts forward (left,
+// where the dragon faces), tears on the uneven air, thins and is gone. Drawn in the smoke's greys.
+export const SMOKE_WISP = { width: 22, height: 56, frames: 22, foot: 16 };
+
+const SMOKE_BANDS: [number, number][] = [
+	[0.5, color(0xc7cfdd)],
+	[0.3, color(0x92a1b9)],
+	[0.14, color(0x657392)],
+];
+
+export const smokeWispFrames = () => {
+	const { width, height, frames, foot } = SMOKE_WISP;
+	const air = driftingAir(random(53), width, 48, 4);
+	const loss = 0.3 / height;
+	let heat = Array.from({ length: height }, () => new Float32Array(width));
+	const step = (time: number, feeding: boolean) => {
+		const out = Array.from({ length: height }, () => new Float32Array(width));
+		for (let x = 0; x < width; x++)
+			out[0][x] = feeding ? Math.min(1, Math.max(0, 1.4 - Math.abs(x - foot) / 2.2)) : 0;
+		for (let rise = 1; rise < height; rise++) {
+			const under = heat[rise - 1];
+			for (let x = 0; x < width; x++) {
+				const drawn = (under[x - 1] ?? 0) * 0.1 + under[x] * 0.62 + (under[x + 1] ?? 0) * 0.28;
+				// it thins as it climbs, and the uneven air tears it apart on the way
+				const thinning = 1 + (4 * rise) / height;
+				out[rise][x] = Math.max(
+					0,
+					drawn - loss * thinning * (1 + 3.4 * (air(x, rise - time) - 0.5)),
+				);
+			}
+		}
+		heat = out;
+	};
+
+	let time = 0;
+	return Array.from({ length: frames }, (_, frame) => {
+		for (let steps = 0; steps < 2; steps++) step(time++, frame < 5);
+		const canvas = new PixelCanvas(width, height);
+		for (let rise = 0; rise < height; rise++)
+			for (let x = 0; x < width; x++) {
+				const band = SMOKE_BANDS.find(([floor]) => heat[rise][x] >= floor);
+				if (band) canvas.set(x, height - 1 - rise, band[1]);
+			}
+
+		return canvas;
+	});
 };
 
 // the arc a sword leaves in the air: a quarter ring swept from straight up round to the right,

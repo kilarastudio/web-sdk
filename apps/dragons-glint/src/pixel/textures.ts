@@ -51,6 +51,9 @@ const flash = (canvas: PixelCanvas) =>
 
 export type GeneratedArt = Record<string, PIXI.Texture | PIXI.Texture[]>;
 
+// how much light each frame of a torch flame gives, keyed like the flame (ui.flameLight)
+export const FLAME_LIGHT = new Map<string, number[]>();
+
 // Every texture the game draws by code, keyed like a loaded asset.
 export const generateArt = ({
 	columns,
@@ -75,9 +78,14 @@ export const generateArt = ({
 	for (const [key, frames] of Object.entries(SYMBOL_FRAME_RUNS())) art[key] = frames.map(toTexture);
 	art.slash = ui.slashFrames().map(toTexture);
 
-	for (const [width, height] of flames)
-		art[`flame${width}x${height}`] = ui.flameFrames(width, height).map(toTexture);
+	for (const [width, height] of flames) {
+		const run = ui.flameFrames(width, height);
+		art[`flame${width}x${height}`] = run.map(toTexture);
+		FLAME_LIGHT.set(`flame${width}x${height}`, ui.flameLight(run));
+		art[`soot${width}x${height}`] = ui.sootFrames(width, height).map(toTexture);
+	}
 	art.flameGlow = toTexture(ui.flameGlow());
+	art.smokeWisp = ui.smokeWispFrames().map(toTexture);
 
 	art.boardFloor = toTexture(ui.boardFloor(columns, rows));
 	art.boardFrame = toTexture(ui.boardFrame(columns, rows));
@@ -97,6 +105,7 @@ export const generateArt = ({
 	art.burst = ui.burstFrames().map(toTexture);
 	art.pixel = toTexture(ui.pixel());
 	art.fireWall = ui.fireWallFrames().map(toTexture);
+	art.fireWallSmoke = toTexture(ui.fireWallSmoke());
 	art.fireWallTail = toTexture(ui.fireWallTail());
 	art.anticipationBeam = toTexture(ui.anticipationBeam());
 	const { trough, fill } = ui.loadingBar(120);
@@ -125,3 +134,7 @@ export const fireAround = (width: number, height: number) =>
 // a big win panel of this tier, this many art pixels across and down
 export const winPanelTexture = (tier: ui.WinPanelTier, width: number, height: number) =>
 	once(`winPanel${tier}:${width}x${height}`, () => toTexture(ui.winPanel(tier, width, height)));
+
+// the free spins intro panel, this many art pixels across and down
+export const introPanelTexture = (width: number, height: number) =>
+	once(`introPanel:${width}x${height}`, () => toTexture(ui.introPanel(width, height)));
