@@ -1,9 +1,10 @@
 import { eventEmitter } from './eventEmitter';
 import { stateGame } from './stateGame.svelte';
-import type { WinLevelData } from './winLevelMap';
+import type { BigWinLevelData, WinLevelData } from './winLevelMap';
 
 // The sounds of a win being counted up: a fanfare for a good win, and a tally that ticks for as
-// long as the amount climbs. A big win has its own music and a rain of coins instead.
+// long as the amount climbs. A big win has a loop of coins instead, and each of its levels brings
+// its own music in as it lands (winLevelSoundsLand).
 export const winLevelSoundsPlay = ({
 	winLevelData,
 	fanfare = true,
@@ -12,9 +13,6 @@ export const winLevelSoundsPlay = ({
 	fanfare?: boolean;
 }) => {
 	if (winLevelData?.alias === 'max') eventEmitter.broadcastAsync({ type: 'uiHide' });
-	if (winLevelData?.sound?.bgm) {
-		eventEmitter.broadcast({ type: 'soundMusic', name: winLevelData.sound.bgm });
-	}
 	if (winLevelData?.type === 'big') {
 		eventEmitter.broadcast({ type: 'soundLoop', name: 'sfx_bigwin_coinloop' });
 	} else if (winLevelData?.presentDuration) {
@@ -22,6 +20,12 @@ export const winLevelSoundsPlay = ({
 			eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_win_medium', forcePlay: true });
 		eventEmitter.broadcast({ type: 'soundLoop', name: 'sfx_win_countup' });
 	}
+};
+
+// a big win's level lands: its hit, and its music from then on
+export const winLevelSoundsLand = (winLevelData: BigWinLevelData) => {
+	eventEmitter.broadcast({ type: 'soundOnce', name: winLevelData.sound.sfx, forcePlay: true });
+	eventEmitter.broadcast({ type: 'soundMusic', name: winLevelData.sound.bgm });
 };
 
 // the moment the amount is all there: the tally stops on a coin hit, a big win on its final chord

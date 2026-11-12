@@ -8,8 +8,13 @@ export const GLINT_ANIMATION_MS = {
 	double: 350,
 	tier_up: 500,
 } as const;
+// What the math sets (math-sdk/games/dragons_glint/game_config.py): a lit spot doubles up to the cap,
+// and SUPER and HOARD start free spins with every spot lit at these values.
+export const GLINT_CAP = 4096;
+export const MODE_START_GLINT = { super: 4, hoard: 8 } as const;
 // The four tiers follow RPG rarity colours (rare blue, epic violet, legendary orange, mythic red),
-// so a brighter tier reads as a rarer one at a glance. Tiles are drawn by src/pixel/ui.ts.
+// so a brighter tier reads as a rarer one at a glance. Tiles are drawn by src/pixel/ui.ts. The
+// twelve values from ×2 to ×4,096 are shared three per tier: ×2–×8, ×16–×64, ×128–×512, ×1,024+.
 export const GLINT_TIERS = {
 	1: { tile: 'glintTile1', color: 0x00cdf9, flash: 0x94fdff },
 	2: { tile: 'glintTile2', color: 0xdb3ffd, flash: 0xfdd2ed },
@@ -19,12 +24,13 @@ export const GLINT_TIERS = {
 export type GlintTier = keyof typeof GLINT_TIERS;
 export type GlintAnimation = keyof typeof GLINT_ANIMATION_MS;
 export const glintTier = (value: number): GlintTier =>
-	value >= 128 ? 4 : value >= 32 ? 3 : value >= 8 ? 2 : 1;
+	value >= 1024 ? 4 : value >= 128 ? 3 : value >= 16 ? 2 : 1;
 
-// Expand leftward for longer values, keeping the same right edge and font size.
-// Tier 1 retains the approved placement; ×128/×256 use the top edge of the tile.
+// Expand leftward for longer values, keeping the same right edge and font size, until a value is
+// wider than its room and shrinks to fit. ×1,024 to ×4,096 get the tile's whole top edge.
 export const glintMultiplierLayout = (value: number) => {
-	const maxWidth = SYMBOL_SIZE * (value >= 100 ? 0.74 : value >= 10 ? 0.6 : 0.42);
+	const maxWidth =
+		SYMBOL_SIZE * (value >= 1000 ? 0.88 : value >= 100 ? 0.74 : value >= 10 ? 0.6 : 0.42);
 	return {
 		x: SYMBOL_SIZE * 0.44 - maxWidth / 2,
 		y: -SYMBOL_SIZE * 0.32,

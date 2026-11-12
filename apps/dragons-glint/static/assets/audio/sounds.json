@@ -295,7 +295,7 @@
 			"volume": 0.55
 		},
 		"sfx_glint_light": {
-			"volume": 0.75
+			"volume": 1.0
 		},
 		"sfx_glint_double": {
 			"volume": 0.7

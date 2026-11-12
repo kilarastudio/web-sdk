@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { stateBet, stateBetDerived, stateModal } from 'state-shared';
+	import { stateBet, stateBetDerived, stateConfig, stateModal } from 'state-shared';
 
 	import UiButton from './UiButton.svelte';
 	import { getContext } from '../context';
@@ -8,6 +8,7 @@
 	const context = getContext();
 	const active = $derived(stateBetDerived.hasAutoBetCounter());
 	const disabled = $derived.by(() => {
+		if (stateConfig.jurisdiction.disabledAutoplay && !stateBetDerived.hasAutoBetCounter()) return true;
 		if (stateBet.isSpaceHold) return true;
 		if (!context.stateXstateDerived.isIdle() && !stateBetDerived.hasAutoBetCounter()) return true;
 		if (!stateBetDerived.isBetCostAvailable()) return true;

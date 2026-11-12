@@ -46,7 +46,7 @@
 		try {
 			stateGame.glint = emptyGlint();
 			await tick();
-			for (const value of [1, 2, 4, 8, 16, 32, 64, 128, 256]) {
+			for (const value of [1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096]) {
 				const glint = emptyGlint();
 				[1, 2, 3, 4].forEach((reel) => (glint[reel][2] = value));
 				await playBookEvent({ index: 0, type: 'updateGlint', glint }, { bookEvents: [] });
@@ -183,7 +183,7 @@
 		data: { turbo: false, spots: center },
 		action: async () => {
 			const glint = emptyGlint();
-			[1, 2, 4, 8, 32, 256].forEach((value, reel) => (glint[reel][2] = value));
+			[1, 2, 16, 128, 1024, 4096].forEach((value, reel) => (glint[reel][2] = value));
 			stateGame.glint = glint;
 			await tick();
 		},
@@ -212,7 +212,7 @@
 		skipLoadingScreen: true,
 		data: { turbo: false, spots: center },
 		action: async () => {
-			const values = [2, 4, 8, 16, 32, 64, 128, 256];
+			const values = [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096];
 			stateGame.glint = emptyGlint().map((column, reel) =>
 				column.map((_, row) => values[(row * 6 + reel) % values.length]),
 			);
@@ -245,7 +245,7 @@
 		skipLoadingScreen: true,
 		data: { turbo: false, spots: center },
 		action: async () => {
-			stateGame.glint = emptyGlint().map((column) => column.map(() => 256));
+			stateGame.glint = emptyGlint().map((column) => column.map(() => 4096));
 			await tick();
 		},
 	})}

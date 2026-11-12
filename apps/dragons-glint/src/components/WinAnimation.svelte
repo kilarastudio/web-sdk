@@ -1,58 +1,91 @@
 <script lang="ts">
-	import GameText from './GameText.svelte';
+	import type { Snippet } from 'svelte';
+	import { onMount, untrack } from 'svelte';
+	import { prefersReducedMotion, Tween } from 'svelte/motion';
+	import { backOut, cubicOut } from 'svelte/easing';
 
-	import Panel from './Panel.svelte';
-	import PopIn from './PopIn.svelte';
-	import WinPunch from './WinPunch.svelte';
-	import { BOARD_SIZES, BOARD_FIT } from '../game/constants';
-	import { panelContentWidth, panelTextStyle } from '../game/panels';
-	import { getContext } from '../game/context';
+	import { BaseSprite, Container } from 'pixi-svelte';
 
+	import CoinBurst from './CoinBurst.svelte';
+	import FireAround from './FireAround.svelte';
+	import { panelLayout, type PanelFace } from '../game/panels';
+	import { impact, shake } from '../game/impact.svelte';
+	import { winLevelSoundsLand } from '../game/winSounds';
+	import type { BigWinLevelData } from '../game/winLevelMap';
+	import { fireAround, winPanelTexture } from '../pixel/textures';
+
+	// The panel of a big win, in the frame of the level the count has reached. Each level lands as
+	// an event: the frame turns to the new material with a punch, the screen jolts harder than the
+	// last time, coins burst from behind the panel, more for each level, and the level's sound and
+	// music come in. MAX WIN's frame burns. Without a level (a free spins total too small to
+	// celebrate) it is the stone frame, standing still.
 	type Props = {
-		panel:
-			| 'celebrationBig'
-			| 'celebrationSuper'
-			| 'celebrationMega'
-			| 'celebrationEpic'
-			| 'celebrationMax';
-		title: string;
-		amount: string;
-		// the count has reached the full amount
-		completed: boolean;
+		level?: BigWinLevelData;
+		// the levels the count will land on, in order (winClimb)
+		levels?: BigWinLevelData[];
+		panel: 'celebration' | 'panelFreeSpinsOutro';
+		// 1 keeps the game's pixel density
+		scale: number;
+		children: Snippet<[{ face: PanelFace }]>;
 	};
 
 	const props: Props = $props();
-	const context = getContext();
-	// every tier at one scale, so a higher tier only adds to the same frame; a little wider than
-	// the board, unless the board already fills the screen's width (portrait)
-	const scale = $derived.by(() => {
-		const { scale } = context.stateLayoutDerived.mainLayout();
-		const screenWidth =
-			(context.stateLayoutDerived.canvasSizes().width - BOARD_FIT.edge * 2) / scale;
+	const layout = $derived(panelLayout({ key: props.panel, scale: props.scale }));
+	const tier = $derived(props.level?.tier ?? { art: 1 as const, coins: 0, shake: 0 });
+	const texture = $derived(winPanelTexture(tier.art, layout.pixels.width, layout.pixels.height));
+	const fire = $derived(
+		tier.art === 5 ? fireAround(layout.pixels.width, layout.pixels.height) : undefined,
+	);
 
-		return Math.min(BOARD_SIZES.width * 1.25, screenWidth) / panelContentWidth('celebrationBig');
+	const still = prefersReducedMotion.current;
+	const punch = new Tween(still ? 1 : 0.9);
+
+	onMount(() => {
+		punch.set(1, { duration: 320, easing: backOut });
+	});
+
+	// the frame of the next level is drawn while this one stands, so its landing never waits on it
+	const prepare = (level: BigWinLevelData | undefined) => {
+		if (!level) return;
+		const { width, height } = layout.pixels;
+		winPanelTexture(level.tier.art, width, height);
+		if (level.tier.art === 5) fireAround(width, height);
+	};
+
+	let landed = 0;
+	$effect(() => {
+		const level = props.level;
+		if (!level || level.level === landed) return;
+		const first = landed === 0;
+		landed = level.level;
+		untrack(() => {
+			const upcoming = props.levels?.find((next) => next.level > level.level);
+			setTimeout(() => prepare(upcoming), 600);
+			winLevelSoundsLand(level);
+			shake(level.tier.shake, 260 + level.tier.shake * 60);
+			if (first || still) return;
+			punch
+				.set(1.18, { duration: 90, easing: cubicOut })
+				.then(() => punch.set(1, { duration: 300, easing: backOut }));
+		});
 	});
 </script>
 
-<PopIn>
-	<Panel key={props.panel} {scale}>
-		{#snippet children({ face })}
-			<GameText
-				anchor={0.5}
-				x={face.x}
-				y={face.y - face.height * 0.24}
-				text={props.title}
-				style={panelTextStyle({ fontSize: face.height * 0.26, tone: 'label' })}
-				maxWidth={face.width}
+<Container x={impact.x} y={impact.y}>
+	{#if props.level}
+		<CoinBurst level={props.level.level} count={tier.coins} width={layout.sizes.width} />
+	{/if}
+	<Container scale={punch.current}>
+		{#if fire}
+			<FireAround
+				x={-layout.sizes.width / 2}
+				y={-layout.sizes.height / 2}
+				width={layout.sizes.width}
+				height={layout.sizes.height}
+				frames={fire}
 			/>
-			<WinPunch x={face.x} y={face.y + face.height * 0.16} completed={props.completed}>
-				<GameText
-					anchor={0.5}
-					text={props.amount}
-					style={panelTextStyle({ fontSize: face.height * 0.46, tone: 'value' })}
-					maxWidth={face.width}
-				/>
-			</WinPunch>
-		{/snippet}
-	</Panel>
-</PopIn>
+		{/if}
+		<BaseSprite {texture} anchor={0.5} width={layout.sizes.width} height={layout.sizes.height} />
+		{@render props.children({ face: layout.face })}
+	</Container>
+</Container>

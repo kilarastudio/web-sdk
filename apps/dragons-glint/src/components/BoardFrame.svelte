@@ -4,13 +4,15 @@
 </script>
 
 <script lang="ts">
-	import { Rectangle, Sprite } from 'pixi-svelte';
+	import * as PIXI from 'pixi.js';
+
+	import { Sprite } from 'pixi-svelte';
 	import { FadeContainer } from 'components-pixi';
 
 	import { getContext } from '../game/context';
-	import { ART_PIXEL, BOARD_FRAME } from '../game/constants';
-	import { pixelClock } from '../game/pixelClock.svelte';
+	import { BOARD_FRAME } from '../game/constants';
 	import { impact } from '../game/impact.svelte';
+	import FireAround from './FireAround.svelte';
 
 	const context = getContext();
 
@@ -30,27 +32,24 @@
 		height: floor.height + BOARD_FRAME.border * 2,
 	});
 
-	let showGlow = $state(false);
-	// during free spins the frame burns: three bands of fire that breathe on the pixel clock
-	const breath = $derived([0.7, 0.8, 0.9, 1, 0.9, 0.8][pixelClock.frame % 6]);
+	// during free spins the frame burns
+	const frames = (key: string) => (context.stateApp.loadedAssets[key] ?? []) as PIXI.Texture[];
+	const fire = $derived({
+		top: frames('boardFireTop'),
+		left: frames('boardFireLeft'),
+		right: frames('boardFireRight'),
+	});
+
+	let burning = $state(false);
 
 	context.eventEmitter.subscribeOnMount({
-		boardFrameGlowShow: () => (showGlow = true),
-		boardFrameGlowHide: () => (showGlow = false),
+		boardFrameGlowShow: () => (burning = true),
+		boardFrameGlowHide: () => (burning = false),
 	});
 </script>
 
-<FadeContainer show={showGlow} duration={400}>
-	{#each [{ reach: 5, color: 0x8e251d, alpha: 0.5 }, { reach: 3, color: 0xff5000, alpha: 0.75 }, { reach: 1, color: 0xffa214, alpha: 1 }] as band}
-		<Rectangle
-			x={frame.x - band.reach * ART_PIXEL}
-			y={frame.y - band.reach * ART_PIXEL}
-			width={frame.width + band.reach * ART_PIXEL * 2}
-			height={frame.height + band.reach * ART_PIXEL * 2}
-			backgroundColor={band.color}
-			backgroundAlpha={band.alpha * breath}
-		/>
-	{/each}
+<FadeContainer show={burning} duration={400}>
+	<FireAround {...frame} frames={fire} />
 </FadeContainer>
 
 <Sprite key="boardFloor" {...floor} />

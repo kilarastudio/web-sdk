@@ -40,6 +40,15 @@ themes judged as a player would. The display name is Dragon's Glint; the math an
   embers from its mouth. The dragon may squash; the symbols may not.
 - The torches' flames are a small heat simulation drawn in colour bands, 24 looping frames,
   with a wavering glow. The painted flames were erased from the backgrounds.
+- In free spins the board frame burns with the same simulated fire, along its top and up its
+  sides, outside the stone only; the floor and the symbols are never covered.
+- Big wins are measured against the round's cost and climb in levels: BIG 10×, SUPER 30×,
+  MEGA 150×, EPIC 1,000×, and MAX at the max win. Each level lands as an event: the panel's frame
+  turns to a richer material (stone, gold bar, gem-set gold, red dragon scales, gold dragon scales
+  on fire), a jolt, a burst of coins from behind the panel, its own music. The free spins total
+  climbs the same way. Coins always fly under the amounts.
+- The screen change is a wall of the dragon's fire sweeping up the screen with dark smoke behind
+  it; the scene changes while it is dark, and the smoke lifts away, a charred edge last.
 
 ## Sound
 

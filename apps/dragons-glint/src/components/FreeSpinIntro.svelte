@@ -1,6 +1,7 @@
 <script lang="ts" module>
 	export type EmitterEventFreeSpinIntro =
-		| { type: 'freeSpinIntroShow' }
+		// the count is known as the intro is shown, so it never shows 0 while the screen uncovers
+		| { type: 'freeSpinIntroShow'; totalFreeSpins?: number }
 		| { type: 'freeSpinIntroHide' }
 		| { type: 'freeSpinIntroUpdate'; totalFreeSpins: number };
 </script>
@@ -21,7 +22,10 @@
 	let oncomplete = $state(() => {});
 
 	context.eventEmitter.subscribeOnMount({
-		freeSpinIntroShow: () => (show = true),
+		freeSpinIntroShow: (emitterEvent) => {
+			if (emitterEvent.totalFreeSpins) freeSpinsFromEvent = emitterEvent.totalFreeSpins;
+			show = true;
+		},
 		freeSpinIntroHide: () => (show = false),
 		freeSpinIntroUpdate: async (emitterEvent) => {
 			// if (emitterEvent.extraSpins) {

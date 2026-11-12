@@ -7,7 +7,8 @@ import { waitForTimeout } from 'utils-shared/wait';
 
 import { eventEmitter } from './eventEmitter';
 import { playBookEvent } from './utils';
-import { winLevelMap, type WinLevel, type WinLevelData } from './winLevelMap';
+import { winLevelFor, type WinLevelData } from './winLevelMap';
+import config from './config';
 import { winLevelSoundsPlay, winLevelSoundsStop } from './winSounds';
 import { stateGame, stateGameDerived, emptyGlint } from './stateGame.svelte';
 import type { BookEvent, BookEventOfType, BookEventContext } from './typesBookEvent';
@@ -22,11 +23,14 @@ let winStep = 0;
 
 let awaitingFirstFreeSpinGlint = false;
 const updateGlint = async (glint: number[][]) => {
+	// SUPER and HOARD open free spins with all 30 spots lit at one value (×4 or ×8)
+	const startValue = glint[0]?.[0] ?? 0;
 	const superStart =
 		awaitingFirstFreeSpinGlint &&
 		stateGame.gameType === 'freegame' &&
+		startValue >= 2 &&
 		glint.length === 6 &&
-		glint.every((column) => column.length === 5 && column.every((value) => value === 2));
+		glint.every((column) => column.length === 5 && column.every((value) => value === startValue));
 	awaitingFirstFreeSpinGlint = false;
 	const spots = glintChanges(stateGame.glint, glint);
 	stateGame.glint = glint;
@@ -71,8 +75,18 @@ const appliedSpots = (wins: BookEventOfType<'winInfo'>['wins']): GlintApplySpot[
 			: [];
 	});
 
-// the character only celebrates a win above what the round cost (a win at or below it is a loss
-// in disguise), and a big win the most
+// what the round cost, in book amounts: the base bet times the mode's cost (3x in ANTE, 100x for BONUS)
+const roundCost = () =>
+	(stateBetDerived.activeBetMode()?.costMultiplier ?? 1) * BOOK_AMOUNT_MULTIPLIER;
+
+// The math picks a win's level from the base bet, so an ANTE spin or a bought round would get a
+// fanfare or a BIG WIN panel while paying back less than it cost. The game picks the level from
+// what the round cost instead: a win at or below it is a loss in disguise, with no celebration.
+const MAX_WIN = config.betModes.base.max_win * BOOK_AMOUNT_MULTIPLIER;
+const roundWinLevelData = ({ amount }: { amount: number }) =>
+	winLevelFor({ amount, cost: roundCost(), maxWin: MAX_WIN });
+
+// the character only celebrates a win above what the round cost, and a big win the most
 const characterReactToWin = ({
 	amount,
 	winLevelData,
@@ -80,8 +94,7 @@ const characterReactToWin = ({
 	amount: number;
 	winLevelData: WinLevelData;
 }) => {
-	const cost = (stateBetDerived.activeBetMode()?.costMultiplier ?? 1) * BOOK_AMOUNT_MULTIPLIER;
-	if (amount <= cost) return;
+	if (amount <= roundCost()) return;
 
 	eventEmitter.broadcast({
 		type: 'characterReact',
@@ -91,10 +104,12 @@ const characterReactToWin = ({
 
 // How the dragon takes each win of a spin's tumbles: a nod at the first, a snort of smoke at the
 // second, a beat of its wing at the third, its roar from the fourth. Until the tumbles have paid
-// more than the bet it only nods: a win below the bet is not one to celebrate.
+// more than the spin cost it only nods: a win below the cost is not one to celebrate. A base game
+// spin costs the round's cost (3x the bet in ANTE); a free spin is measured against the base bet.
 const STEP_REACTIONS = ['nod', 'puff', 'flap', 'win'] as const;
 const characterReactToStep = ({ step, earned }: { step: number; earned: number }) => {
-	const level = earned > BOOK_AMOUNT_MULTIPLIER ? Math.min(STEP_REACTIONS.length, step) : 1;
+	const cost = stateGame.gameType === 'freegame' ? BOOK_AMOUNT_MULTIPLIER : roundCost();
+	const level = earned > cost ? Math.min(STEP_REACTIONS.length, step) : 1;
 
 	eventEmitter.broadcast({ type: 'characterReact', reaction: STEP_REACTIONS[level - 1] });
 };
@@ -228,7 +243,7 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 			type: 'transition',
 			oncovered: () => {
 				stateGame.gameType = 'freegame';
-				eventEmitter.broadcast({ type: 'freeSpinIntroShow' });
+				eventEmitter.broadcast({ type: 'freeSpinIntroShow', totalFreeSpins: bookEvent.totalFs });
 			},
 		});
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'jng_intro_fs' });
@@ -268,7 +283,7 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		await updateGlint(bookEvent.glint);
 	},
 	glintStrike: async (bookEvent: BookEventOfType<'glintStrike'>) => {
-		// Only the initial updateGlint can be the SUPER board initialization.
+		// Only the initial updateGlint can be the SUPER or HOARD board initialization.
 		awaitingFirstFreeSpinGlint = false;
 		// the dragon rears and breathes; its fire flies to the struck spots, and they light as it lands
 		eventEmitter.broadcast({ type: 'characterReact', reaction: 'power' });
@@ -281,7 +296,7 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		await updateGlint(bookEvent.glint);
 	},
 	freeSpinEnd: async (bookEvent: BookEventOfType<'freeSpinEnd'>) => {
-		const winLevelData = winLevelMap[bookEvent.winLevel as WinLevel];
+		const winLevelData = roundWinLevelData(bookEvent);
 
 		await eventEmitter.broadcastAsync({ type: 'uiHide' });
 		stateGame.gameType = 'basegame';
@@ -294,6 +309,7 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		await eventEmitter.broadcastAsync({
 			type: 'freeSpinOutroCountUp',
 			amount: bookEvent.amount,
+			cost: roundCost(),
 			winLevelData,
 		});
 		winLevelSoundsStop();
@@ -332,7 +348,7 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		eventEmitter.broadcast({ type: 'boardShow' });
 	},
 	setWin: async (bookEvent: BookEventOfType<'setWin'>) => {
-		const winLevelData = winLevelMap[bookEvent.winLevel as WinLevel];
+		const winLevelData = roundWinLevelData(bookEvent);
 
 		eventEmitter.broadcast({ type: 'winShow' });
 		characterReactToWin({ amount: bookEvent.amount, winLevelData });
@@ -340,6 +356,7 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		await eventEmitter.broadcastAsync({
 			type: 'winUpdate',
 			amount: bookEvent.amount,
+			cost: roundCost(),
 			winLevelData,
 		});
 		winLevelSoundsStop();

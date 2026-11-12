@@ -5,10 +5,11 @@
 	import { EnableHotkey } from 'components-shared';
 	import { MainContainer } from 'components-layout';
 	import { App } from 'pixi-svelte';
-	import { stateMeta, stateModal } from 'state-shared';
+	import { stateMeta, stateModal, stateUrlDerived } from 'state-shared';
 
 	import { UI, UiGameName, GameVersion, Modals } from 'components-ui-html';
 
+	import { version as gameVersion } from '../../package.json';
 	import { getContext } from '../game/context';
 	import { betModeMeta } from '../game/betModeMeta';
 	import EnableSound from './EnableSound.svelte';
@@ -39,7 +40,7 @@
 
 	const context = getContext();
 
-	stateMeta.betModeMeta = betModeMeta;
+	stateMeta.betModeMeta = betModeMeta(stateUrlDerived.social());
 
 	// the wipe that closed the welcome screen opens on the game
 	let entering = $state(false);
@@ -90,7 +91,6 @@
 			<GlintSpots layer="under" />
 			<Board />
 			<Anticipations />
-			<TumbleWinAmount />
 		</MainContainer>
 
 		<MainContainer>
@@ -98,10 +98,12 @@
 			<!-- <TumbleAnticipations /> -->
 			<GlintSpots layer="over" />
 			<GlintEffects />
-			<ClusterWinAmounts />
+			<!-- the coins fly under every amount: the cluster amounts and the tumble win they pay into -->
 			<BoardContainer>
 				<WinCoins />
 			</BoardContainer>
+			<ClusterWinAmounts />
+			<TumbleWinAmount />
 		</MainContainer>
 
 		<Win />
@@ -130,6 +132,6 @@
 		<GameRules />
 	{/snippet}
 	{#snippet version()}
-		<GameVersion version="0.0.0" />
+		<GameVersion version={gameVersion} />
 	{/snippet}
 </Modals>

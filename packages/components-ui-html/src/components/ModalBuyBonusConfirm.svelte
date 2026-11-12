@@ -51,6 +51,17 @@
 			<p>{mode.text.dialog}</p>
 		</div>
 
+		{#if mode.rtp !== undefined || mode.maxWin !== undefined}
+			<dl class="facts">
+				{#if mode.rtp !== undefined}
+					<div><dt>RTP</dt><dd>{(mode.rtp * 100).toFixed(2)}%</dd></div>
+				{/if}
+				{#if mode.maxWin !== undefined}
+					<div><dt>MAX WIN</dt><dd>{mode.maxWin.toLocaleString('en-US')}×</dd></div>
+				{/if}
+			</dl>
+		{/if}
+
 		<div class="cost">
 			<span class="label">{i18nDerived.realCost()}</span>
 			<span class="amount">{numberToCurrencyString(cost)}</span>
@@ -87,6 +98,31 @@
 		line-height: 1.45;
 		text-wrap: pretty;
 		white-space: pre-line;
+	}
+
+	.facts {
+		display: flex;
+		gap: 1.6em;
+		margin: 0;
+
+		div {
+			display: flex;
+			gap: 0.5em;
+			align-items: baseline;
+		}
+
+		dt {
+			color: var(--ui-text-muted);
+			font-size: 0.75em;
+			font-weight: 600;
+			letter-spacing: 0.1em;
+		}
+
+		dd {
+			margin: 0;
+			font-weight: 700;
+			font-variant-numeric: tabular-nums;
+		}
 	}
 
 	.cost {

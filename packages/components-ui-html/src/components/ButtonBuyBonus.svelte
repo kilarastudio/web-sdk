@@ -1,12 +1,14 @@
 <script lang="ts">
-	import { stateModal, stateBet, stateBetDerived } from 'state-shared';
+	import { stateModal, stateBet, stateBetDerived, stateConfig } from 'state-shared';
 
 	import UiButton from './UiButton.svelte';
 	import { getContext } from '../context';
 	import { i18nDerived } from '../i18n/i18nDerived';
 
 	const { stateXstateDerived, eventEmitter } = getContext();
-	const disabled = $derived(!stateXstateDerived.isIdle());
+	const disabled = $derived(
+		!stateXstateDerived.isIdle() || stateConfig.jurisdiction.disabledBuyFeature,
+	);
 	const active = $derived(stateBetDerived.activeBetMode()?.type === 'activate');
 
 	const openModal = () => (stateModal.modal = { name: 'buyBonus' });

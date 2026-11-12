@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { OnHotkey } from 'components-shared';
-	import { stateBetDerived } from 'state-shared';
+	import { stateBetDerived, stateConfig } from 'state-shared';
 
 	import UiButton from './UiButton.svelte';
 	import ButtonBetProvider from './ButtonBetProvider.svelte';
@@ -16,7 +16,11 @@
 
 <ButtonBetProvider>
 	{#snippet children({ key, onpress })}
-		<OnHotkey hotkey="Space" {disabled} {onpress} />
+		<OnHotkey
+			hotkey="Space"
+			disabled={disabled || stateConfig.jurisdiction.disabledSpacebar}
+			{onpress}
+		/>
 		{@const spin = ['spin_default', 'spin_disabled'].includes(key)}
 		<UiButton
 			kind={spin ? 'spin' : 'stop'}

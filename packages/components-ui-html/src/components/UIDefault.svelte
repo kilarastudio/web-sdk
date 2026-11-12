@@ -2,6 +2,7 @@
 	import type { Snippet } from 'svelte';
 
 	import { EnableSpaceHold } from 'components-shared';
+	import { stateConfig } from 'state-shared';
 
 	import UiFadeContainer from './UiFadeContainer.svelte';
 	import UiHeader from './UiHeader.svelte';
@@ -29,7 +30,9 @@
 	const LayoutComponent = $derived(LAYOUT_COMPONENT_MAP[context.stateLayoutDerived.layoutType()]);
 </script>
 
-<EnableSpaceHold />
+{#if !stateConfig.jurisdiction.disabledSpacebar}
+	<EnableSpaceHold />
+{/if}
 
 <UiFadeContainer>
 	<UiHeader gameName={props.gameName} logo={props.logo} />

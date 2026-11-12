@@ -8,8 +8,8 @@ export const i18nDerived = {
 	// welcome screen
 	welcomeMaxWin: (multiplier: string) => `${stateI18nDerived.translate('WIN UP TO')} ${multiplier}`,
 	welcomeSpotsTitle: () => stateI18nDerived.translate('GLINT SPOTS'),
-	welcomeSpotsText: () =>
-		stateI18nDerived.translate('Wins light the floor. Every hit doubles a spot, up to ×256.'),
+	welcomeSpotsText: (cap: string) =>
+		`${stateI18nDerived.translate('Wins light the floor. A spot lights at ×2 on its second hit and doubles on every hit after, up to')} ${cap}.`,
 	welcomeStrikeTitle: () => stateI18nDerived.translate('GLINT STRIKE'),
 	welcomeStrikeText: () =>
 		stateI18nDerived.translate('The dragon breathes fire and lights 3 to 6 spots.'),

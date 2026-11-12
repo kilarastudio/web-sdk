@@ -31,8 +31,8 @@
 			text="DRAGON'S GLINT"
 			style={gameTextStyle({ fontSize: 38, tone: 'value' })}
 		/>
-		{#each [2, 4, 8, 16, 32, 64, 128, 256] as value, index}
-			<Container x={135 + (index % 4) * 220} y={190 + Math.floor(index / 4) * 240} scale={1.8}>
+		{#each [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096] as value, index}
+			<Container x={110 + (index % 6) * 156} y={200 + Math.floor(index / 6) * 230} scale={1.4}>
 				<GlintTile layer="under" {value} />
 				<GlintTile layer="over" {value} />
 			</Container>

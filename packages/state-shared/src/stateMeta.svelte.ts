@@ -2,6 +2,8 @@ import { DEFAULT_BET_MODE_META } from './constants';
 
 export type BetModeData = {
 	maxWin?: number;
+	// the mode's theoretical return, 0-1, shown with its max win wherever the mode is offered
+	rtp?: number;
 	mode: string;
 	costMultiplier: number;
 	type: 'default' | 'activate' | 'buy';

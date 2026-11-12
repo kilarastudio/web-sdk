@@ -81,6 +81,13 @@ export const generateArt = ({
 
 	art.boardFloor = toTexture(ui.boardFloor(columns, rows));
 	art.boardFrame = toTexture(ui.boardFrame(columns, rows));
+	const fire = fireAround(
+		ui.FRAME.border * 2 + columns * ui.CELL,
+		ui.FRAME.border * 2 + rows * ui.CELL,
+	);
+	art.boardFireTop = fire.top;
+	art.boardFireLeft = fire.left;
+	art.boardFireRight = fire.right;
 	art.panel = toTexture(ui.panel());
 	for (const tier of [1, 2, 3, 4] as const) art[`glintTile${tier}`] = toTexture(ui.glintTile(tier));
 	art.glintPrimed = toTexture(ui.glintPrimed());
@@ -89,6 +96,8 @@ export const generateArt = ({
 	art.fireball = ui.fireballFrames().map(toTexture);
 	art.burst = ui.burstFrames().map(toTexture);
 	art.pixel = toTexture(ui.pixel());
+	art.fireWall = ui.fireWallFrames().map(toTexture);
+	art.fireWallTail = toTexture(ui.fireWallTail());
 	art.anticipationBeam = toTexture(ui.anticipationBeam());
 	const { trough, fill } = ui.loadingBar(120);
 	art.loadingTrough = toTexture(trough);
@@ -96,3 +105,23 @@ export const generateArt = ({
 
 	return art;
 };
+
+// Art drawn the first time it is asked for, once: what only some rounds ever show.
+const drawn = new Map<string, unknown>();
+const once = <T>(key: string, draw: () => T) => {
+	if (!drawn.has(key)) drawn.set(key, draw());
+
+	return drawn.get(key) as T;
+};
+
+// the fire round a rectangle of this many art pixels, as loops of frames
+export const fireAround = (width: number, height: number) =>
+	once(`fire${width}x${height}`, () => {
+		const { top, left, right } = ui.fireAroundFrames(width, height);
+
+		return { top: top.map(toTexture), left: left.map(toTexture), right: right.map(toTexture) };
+	});
+
+// a big win panel of this tier, this many art pixels across and down
+export const winPanelTexture = (tier: ui.WinPanelTier, width: number, height: number) =>
+	once(`winPanel${tier}:${width}x${height}`, () => toTexture(ui.winPanel(tier, width, height)));

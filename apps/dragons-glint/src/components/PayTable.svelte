@@ -12,7 +12,7 @@
 	const translate = stateI18nDerived.translate;
 	const social = stateUrlDerived.social();
 
-	// the counts where the win changes, as "8", "9–10", "11–13", "14+"
+	// the counts where the win changes, as "8–9", "10–11", "12+"
 	const rows = (symbol: (typeof SYMBOLS)[number]) => {
 		const steps: { from: number; value: number }[] = [];
 		for (const entry of config.symbols[symbol].paytable ?? []) {
@@ -59,7 +59,7 @@
 	<UiPayCard pixelated image={picture('symbolScatter')}>
 		<p>
 			<strong>{translate('SCATTER')}</strong>: {translate(
-				'4, 5 or 6+ anywhere start 12, 14 or 17 FREE SPINS.',
+				'4, 5 or 6+ anywhere start 10, 12 or 15 FREE SPINS.',
 			)}
 		</p>
 		<p>{translate('3 or more during FREE SPINS add 5.')}</p>

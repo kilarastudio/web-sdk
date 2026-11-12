@@ -1,3 +1,8 @@
+/* a canvas is inline by default and leaves a line gap under it that makes the page scroll */
+canvas {
+	display: block;
+}
+
 body {
 	font-family: var(--font-family);
 	cursor: default;

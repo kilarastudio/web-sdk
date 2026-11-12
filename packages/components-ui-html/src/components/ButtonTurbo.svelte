@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { stateBet, stateBetDerived } from 'state-shared';
+	import { stateBet, stateBetDerived, stateConfig } from 'state-shared';
 
 	import UiButton from './UiButton.svelte';
 	import { getContext } from '../context';
@@ -7,7 +7,8 @@
 
 	const context = getContext();
 	const active = $derived(stateBet.isTurbo);
-	const disabled = $derived(stateBet.isSpaceHold);
+	// the operator's jurisdiction can switch turbo off
+	const disabled = $derived(stateBet.isSpaceHold || stateConfig.jurisdiction.disabledTurbo);
 
 	const onpress = () => {
 		context.eventEmitter.broadcast({ type: 'soundPressGeneral' });

@@ -117,20 +117,20 @@
 />
 
 <Story
-	name="updateGlobalMult"
+	name="updateGlint"
 	args={templateArgs({
 		skipLoadingScreen: true,
-		data: events.updateGlobalMult,
+		data: events.updateGlint,
 		action: async (data) => await playBookEvent(data, { bookEvents: [] }),
 	})}
 	{template}
 />
 
 <Story
-	name="boardMultiplierInfo"
+	name="glintStrike"
 	args={templateArgs({
 		skipLoadingScreen: true,
-		data: events.boardMultiplierInfo,
+		data: events.glintStrike,
 		action: async (data) => await playBookEvent(data, { bookEvents: [] }),
 	})}
 	{template}

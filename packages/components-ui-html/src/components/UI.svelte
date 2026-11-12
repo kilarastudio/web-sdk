@@ -49,7 +49,7 @@
 		--ui-surface: rgba(14, 16, 20, 0.84);
 		--ui-surface-raised: rgba(30, 32, 37, 0.97);
 		--ui-field: rgba(243, 244, 246, 0.07);
-		--ui-button-bg: rgba(14, 16, 20, 0.62);
+		--ui-button-bg: var(--ui-surface);
 		--ui-disabled-bg: rgba(243, 244, 246, 0.12);
 		--ui-scrim: rgba(14, 16, 20, 0.5);
 		--ui-shadow: 0 12px 32px rgba(14, 16, 20, 0.4);

@@ -3,6 +3,7 @@
 
 	import { getContext } from '../game/context';
 	import config from '../game/config';
+	import { GLINT_CAP } from '../game/glint';
 	import { LOADING_LOGO, SYMBOL_SIZE } from '../game/constants';
 	import { panelLayout, panelTextStyle } from '../game/panels';
 	import GameText from './GameText.svelte';
@@ -37,7 +38,7 @@
 		{
 			art: 'spots' as const,
 			title: context.i18nDerived.welcomeSpotsTitle(),
-			text: context.i18nDerived.welcomeSpotsText(),
+			text: context.i18nDerived.welcomeSpotsText(`×${GLINT_CAP.toLocaleString('en-US')}`),
 		},
 		{
 			art: 'modeBoost' as const,
@@ -95,8 +96,8 @@
 
 {#snippet picture(art: 'spots' | 'modeBoost' | 'modeBonus', size: number)}
 	{#if art === 'spots'}
-		<!-- three lit spots, rare to mythic, with what they multiply by -->
-		{#each [{ tile: 'glintTile1', value: '×2' }, { tile: 'glintTile3', value: '×32' }, { tile: 'glintTile4', value: '×256' }] as spot, index}
+		<!-- three lit spots, rare to mythic, with what they multiply by (the last at the cap) -->
+		{#each [{ tile: 'glintTile1', value: '×2' }, { tile: 'glintTile3', value: '×256' }, { tile: 'glintTile4', value: `×${GLINT_CAP}` }] as spot, index}
 			<Container x={(index - 1) * size * 0.34} y={(index - 1) * -size * 0.16}>
 				<Sprite key={spot.tile} anchor={0.5} width={size * 0.42} height={size * 0.42} />
 				<GameText

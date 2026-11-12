@@ -9,6 +9,7 @@
 	import { SYMBOL_SIZE } from '../game/constants';
 	import {
 		GLINT_ANIMATION_MS,
+		GLINT_CAP,
 		GLINT_TIERS,
 		glintTier,
 		glintMultiplierLayout,
@@ -30,7 +31,7 @@
 	const props: Props = $props();
 
 	// Each event has a keyed component instance. Completion of its one-shot must
-	// never be tied to the perpetual ×256 loop that may follow it.
+	// never be tied to the perpetual loop of a spot at the cap (×4,096) that may follow it.
 	const animation = untrack(() => props.animation);
 	const previousValue = untrack(() => props.previousValue ?? 0);
 	const timeScale = stateBetDerived.timeScale();
@@ -68,7 +69,7 @@
 			flash: [0.5, 0.3, 0.1, 0, 0],
 		},
 	} as const;
-	// ×256 never rests: its flash breathes on the pixel clock
+	// a spot at the cap never rests: its flash breathes on the pixel clock
 	const MAX_BREATH = [0, 0.12, 0.24, 0.36, 0.24, 0.12];
 
 	const pose = $derived(frameAt(progress.current, 5));
@@ -78,7 +79,7 @@
 	const flashAlpha = $derived(
 		moving
 			? moving.flash[pose]
-			: props.value === 256 && !reduced
+			: props.value === GLINT_CAP && !reduced
 				? MAX_BREATH[pixelClock.frame % MAX_BREATH.length]
 				: 0,
 	);

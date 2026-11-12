@@ -3,6 +3,7 @@
 
 	import { zIndex } from 'constants-shared/zIndex';
 	import { stateBet, stateConfig, stateModal, stateMetaDerived } from 'state-shared';
+	import type { BetModeData } from 'state-shared';
 	import { getContextEventEmitter } from 'utils-event-emitter';
 	import { numberToCurrencyString } from 'utils-shared/amount';
 
@@ -27,6 +28,15 @@
 	const cost = (multiplier: number) => stateBet.betAmount * multiplier;
 	const affordable = (multiplier: number) =>
 		stateBet.betAmount > 0 && cost(multiplier) <= stateBet.balanceAmount;
+
+	// what Stake requires next to every mode: its return and its top prize
+	const modeFacts = (mode: BetModeData) =>
+		[
+			mode.rtp !== undefined && `RTP ${(mode.rtp * 100).toFixed(2)}%`,
+			mode.maxWin !== undefined && `MAX WIN ${mode.maxWin.toLocaleString('en-US')}×`,
+		]
+			.filter(Boolean)
+			.join(' · ');
 
 	const close = () => (stateModal.modal = null);
 	const choose = (mode: string) => {
@@ -91,6 +101,9 @@
 					<span class="title">{mode.text.title}</span>
 					{#if mode.text.description}
 						<span class="description">{mode.text.description}</span>
+					{/if}
+					{#if mode.rtp !== undefined || mode.maxWin !== undefined}
+						<span class="facts">{modeFacts(mode)}</span>
 					{/if}
 					<span class="cost">
 						<span class="amount">{numberToCurrencyString(cost(mode.costMultiplier))}</span>
@@ -297,6 +310,14 @@
 		white-space: pre-line;
 	}
 
+	.facts {
+		color: var(--ui-text-muted);
+		font-size: 0.72em;
+		font-weight: 600;
+		letter-spacing: 0.06em;
+		white-space: nowrap;
+	}
+
 	.cost {
 		display: flex;
 		align-items: baseline;
@@ -379,11 +400,67 @@
 		}
 	}
 
-	/* taller than wide: the cards stand two by two */
+	/*
+		Taller than wide: one card per row, the picture on the left, what the mode does in the middle
+		and its price and call to action on the right, so every mode fits on a phone without scrolling.
+	*/
 	@media (max-aspect-ratio: 1/1) {
 		.bonus-scene {
-			--u: clamp(9px, min(2.9vw, 1.5vh) + 2px, 18px);
-			--columns: 2;
+			--u: clamp(9px, min(3.1vw, 1.45vh) + 2px, 18px);
+			--columns: 1;
+		}
+
+		.cards {
+			width: min(100%, calc(var(--u) * 34));
+		}
+
+		.card {
+			display: grid;
+			grid-template-columns: auto minmax(0, 1fr) 8em;
+			grid-template-areas:
+				'img title cost'
+				'img description action'
+				'img facts action';
+			align-items: center;
+			column-gap: 0.9em;
+			row-gap: 0.25em;
+			padding: 0.7em 0.8em;
+			text-align: left;
+		}
+
+		img {
+			grid-area: img;
+			width: 5.2em;
+		}
+
+		.title {
+			grid-area: title;
+			font-size: 1.3em;
+		}
+
+		.description {
+			grid-area: description;
+			align-self: start;
+			text-wrap: pretty;
+		}
+
+		.facts {
+			grid-area: facts;
+			align-self: start;
+			white-space: normal;
+		}
+
+		.cost {
+			grid-area: cost;
+			justify-content: flex-end;
+			margin: 0;
+		}
+
+		.action {
+			grid-area: action;
+			align-self: stretch;
+			height: auto;
+			min-height: 2.6em;
 		}
 	}
 
@@ -406,6 +483,11 @@
 
 		img {
 			width: min(40%, 6em);
+		}
+
+		.facts {
+			font-size: 0.66em;
+			white-space: normal;
 		}
 
 		.description {

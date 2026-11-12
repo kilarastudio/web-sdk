@@ -4,7 +4,12 @@
 	export type EmitterEventFreeSpinOutro =
 		| { type: 'freeSpinOutroShow' }
 		| { type: 'freeSpinOutroHide' }
-		| { type: 'freeSpinOutroCountUp'; amount: number; winLevelData: WinLevelData };
+		| {
+				type: 'freeSpinOutroCountUp';
+				amount: number;
+				cost: number;
+				winLevelData: WinLevelData;
+		  };
 </script>
 
 <script lang="ts">
@@ -17,6 +22,7 @@
 	import { getContext } from '../game/context';
 	import { countUpEasing } from '../game/constants';
 	import { winCountUpSoundsEnd } from '../game/winSounds';
+	import { winClimb } from '../game/winLevelMap';
 	import FreeSpinAnimation from './FreeSpinAnimation.svelte';
 	import PressToContinue from './PressToContinue.svelte';
 	import CoinShower from './CoinShower.svelte';
@@ -25,6 +31,7 @@
 
 	let show = $state(true);
 	let amount = $state(0);
+	let cost = $state(0);
 	let winLevelData = $state<WinLevelData>();
 	let oncomplete = $state(() => {});
 
@@ -33,6 +40,7 @@
 		freeSpinOutroHide: async () => (show = false),
 		freeSpinOutroCountUp: async (emitterEvent) => {
 			amount = emitterEvent.amount;
+			cost = emitterEvent.cost;
 			winLevelData = emitterEvent.winLevelData;
 			await waitForResolve((resolve) => (oncomplete = resolve));
 		},
@@ -41,27 +49,35 @@
 
 <FadeContainer {show}>
 	{#if winLevelData}
-		{@const duration = winLevelData.presentDuration}
+		{@const isBigWin = winLevelData.type === 'big'}
+		{@const climb = winClimb({ amount, cost, level: winLevelData })}
 		<WinCountUpProvider
 			{amount}
-			{duration}
-			easing={winLevelData.type === 'big' ? undefined : countUpEasing}
+			duration={isBigWin ? climb.duration : winLevelData.presentDuration}
+			easing={isBigWin ? climb.easing : countUpEasing}
 			oncomplete={() => winCountUpSoundsEnd({ winLevelData })}
 		>
 			{#snippet children({ countUpAmount, startCountUp, finishCountUp, countUpCompleted })}
+				{@const level = isBigWin
+					? climb.levelAt({ shown: countUpAmount, completed: countUpCompleted })
+					: undefined}
 				<OnMount onmount={() => startCountUp()} />
 
 				<CanvasSizeRectangle backgroundColor={0x000000} backgroundAlpha={0.5} />
-				{#if winLevelData.type === 'big'}
-					<CoinShower />
+				{#if level}
+					<CoinShower count={16 + level.tier.coins} />
 				{/if}
 
 				<FreeSpinAnimation
 					key="panelFreeSpinsOutro"
-					label={context.i18nDerived.totalWin()}
+					label={level?.alias === 'max'
+						? context.i18nDerived.winLevel(level.text)
+						: context.i18nDerived.totalWin()}
 					value={bookEventAmountToCountUpCurrencyString(countUpAmount, amount)}
 					caption={context.i18nDerived.freeSpinsComplete()}
 					completed={countUpCompleted}
+					{level}
+					levels={climb.levels}
 				/>
 
 				<PressToContinue onpress={() => (countUpCompleted ? oncomplete() : finishCountUp())} />
