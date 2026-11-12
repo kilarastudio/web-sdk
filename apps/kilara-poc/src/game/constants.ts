@@ -122,7 +122,7 @@ export const CHARACTER_SIZES = {
 	bottom: { minHeight: 200, maxHeight: 400, gap: 8 },
 };
 
-// the Deep Glint logo with the miner on the loading screen, a little narrower than the board (600);
+// the game logo on the loading screen, a little narrower than the board (600);
 // ratio is the trimmed art's width / height
 export const LOADING_LOGO = { width: 440, ratio: 1209 / 979 };
 

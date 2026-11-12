@@ -1,7 +1,7 @@
 export default {
 	providerName: 'kilara',
-	gameName: 'deep_glint',
-	gameID: 'deep_glint',
+	gameName: 'dragons_glint',
+	gameID: 'dragons_glint',
 	rtp: 0.965,
 	numReels: 6,
 	numRows: [5, 5, 5, 5, 5, 5],

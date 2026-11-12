@@ -3,7 +3,7 @@ import type { BetModeMeta, BetModeData } from 'state-shared';
 
 import config from './config';
 
-// The modes published by math (games/deep_glint/library/publish_files/index.json). Titles are the
+// The modes published by math (games/dragons_glint/library/publish_files/index.json). Titles are the
 // math mode names: Stake wants the same names in the game, the replay and the math files.
 const activate = (
 	key: 'ANTE' | 'BOOST',

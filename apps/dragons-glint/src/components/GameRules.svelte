@@ -4,7 +4,7 @@
 
 	import config from '../game/config';
 
-	// The rules, as the math implements them (math-sdk/games/deep_glint/readme.md). Costs, the top
+	// The rules, as the math implements them (math-sdk/games/dragons_glint/readme.txt). Costs, the top
 	// prize and the return come from the game's config, not from this text.
 	const translate = stateI18nDerived.translate;
 	const social = stateUrlDerived.social();

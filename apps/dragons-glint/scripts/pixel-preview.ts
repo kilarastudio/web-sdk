@@ -1,4 +1,4 @@
-// Renders the art drawn by code to PNG sheets for review. Run from apps/deep-glint:
+// Renders the art drawn by code to PNG sheets for review. Run from apps/dragons-glint:
 //   node scripts/pixel-preview.ts [output folder]
 import { mkdirSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';

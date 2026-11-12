@@ -20,7 +20,7 @@
 			x={600}
 			y={100}
 			anchor={0.5}
-			text="DEEP GLINT FORGE"
+			text="DRAGON'S HOARD"
 			maxWidth={1100}
 			style={gameTextStyle({ fontSize: 94, tone: 'label' })}
 		/>

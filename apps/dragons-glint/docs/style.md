@@ -6,8 +6,8 @@ This game's own look and feel. What it shares with every Kilara game is in
 ## Theme
 
 A 16-bit RPG dungeon: the hall of a red dragon and its hoard. Chosen by the user from three
-themes judged as a player would. The display name is Dragon's Glint; the math and RGS id stay
-`deep_glint`.
+themes judged as a player would. The display name is Dragon's Glint; the math and RGS id is
+`dragons_glint` and the app folder is `apps/dragons-glint`.
 
 ## Look
 
@@ -15,10 +15,11 @@ themes judged as a player would. The display name is Dragon's Glint; the math an
 - **Density:** one art pixel is 2.5 game units; a reel cell is 40 art pixels. Textures are made
   four screen-texture pixels to an art pixel and sampled linearly.
 - **Light** from the top left; a one-pixel dark outline round symbols.
-- **Drawn by code** (`src/pixel`): the ten symbols, board floor and frame, panels, Glint tiles,
-  particles, coins, the torch flames.
+- **Drawn by code** (`src/pixel`): the nine reel symbols (plus a wild coin the math never
+  places), board floor and frame, panels, Glint tiles, particles, coins, the torch flames.
 - **Generated, then locked to the palette and grid:** the four backgrounds (base and bonus hall,
-  wide and tall), the dragon's frame strips, the bitmap font, the logo, the mode pictures.
+  wide and tall), the dragon's frame strips, the two bitmap fonts (Gold and Ink), the logo, the
+  mode pictures.
 - **Symbols:** crown, sword, shield, potion (high); ruby, sapphire, emerald, amethyst (low); the
   dragon's eye (scatter). Glint tiers use RPG rarity colours: blue, violet, orange, red.
 - **No sparkles.** Gems shine only by the light turning round their facets. The resting board has

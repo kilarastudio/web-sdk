@@ -1,6 +1,6 @@
 # How a Kilara game gets built
 
-The workflow used for the first release game (Dragon's Glint, `apps/deep-glint`), written so the
+The workflow used for the first release game (Dragon's Glint, `apps/dragons-glint`), written so the
 next game can follow it whatever its theme or art style. It says how the work is done. What a game
 should look and feel like is kept apart from it:
 

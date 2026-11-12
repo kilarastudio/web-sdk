@@ -137,7 +137,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/eslint-config-custom
 
-  apps/deep-glint:
+  apps/dragons-glint:
     dependencies:
       '@lingui/core':
         specifier: 6.10.0

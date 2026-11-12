@@ -4,13 +4,13 @@ Saat pekerjaan mengubah tampilan atau animasi yang dapat diperiksa di Storybook,
 
 - Periksa alamat saat ini dengan `tailscale ip -4`; jangan mengandalkan alamat IP lama.
 - Gunakan server Storybook yang sudah berjalan jika story yang tepat dapat diakses melalui alamat Tailscale. Jika server hanya mendengarkan `localhost`, jalankan server lain pada port yang tersedia tanpa menghentikan proses yang tidak terkait.
-- Untuk Deep Glint, jalankan dari `apps/deep-glint`:
+- Untuk Dragon's Glint, jalankan dari `apps/dragons-glint`:
 
   ```sh
-  PUBLIC_CHROMATIC=true pnpm exec storybook dev --host 0.0.0.0 -p 6013 --ci --no-open --disable-telemetry
+  PUBLIC_CHROMATIC=true pnpm exec storybook dev --host 0.0.0.0 -p 6108 --ci --no-open --disable-telemetry
   ```
 
-  Jika port 6013 dipakai oleh layanan lain, pilih port kosong dan gunakan port itu dalam tautan. Server yang mendengarkan `0.0.0.0` juga dapat diakses melalui jaringan lokal, bukan hanya Tailscale.
+  Jika port 6108 dipakai oleh layanan lain, pilih port kosong dan gunakan port itu dalam tautan. Server yang mendengarkan `0.0.0.0` juga dapat diakses melalui jaringan lokal, bukan hanya Tailscale.
 - Pastikan server siap dan uji story melalui alamat Tailscale, termasuk **Action** jika ada. Berikan tautan berbentuk `http://<tailscale-ip>:<port>/?path=/story/<story-id>`, bukan tautan `localhost`.
 - Biarkan server berjalan untuk preview, dan jelaskan bahwa preview tersedia selama proses Storybook dan koneksi Tailscale aktif. Jika Tailscale atau server tidak tersedia, sebutkan hambatannya dan hasil pemeriksaan yang berhasil.
 

@@ -100,7 +100,7 @@
 {#if !context.stateLayout.showLoadingScreen}
 	<UI>
 		{#snippet gameName()}
-			<UiGameName name="DEEP GLINT" />
+			<UiGameName name="KILARA POC" />
 		{/snippet}
 	</UI>
 {/if}
