@@ -1,5 +1,21 @@
 # Web SDK
 
+> **Kilara fork.** This is Kilara Studio's copy of the Stake Engine web SDK. The tutorial below is
+> upstream's and still explains how the SDK works, but in this fork:
+>
+> - Kilara's own docs are in [docs/kilara](/docs/kilara) (how a game is built, the studio style) and
+>   each game's look is in `apps/<game>/docs/style.md`. The release game is
+>   [Dragon's Glint](/apps/dragons-glint) (math id `dragons_glint`); `apps/kilara-poc` is an internal
+>   playground.
+> - The sample apps (`lines`, `scatter`, …) have no art, sound or `loader.gif`: their
+>   `src/game/assets.ts` is empty, so the spine and symbol steps of the tutorial draw nothing.
+> - Every game uses the one shared Kilara HUD and menus in `packages/components-ui-html`.
+> - Storybook: run `PUBLIC_CHROMATIC=true pnpm exec storybook dev -p 6001` from the app's folder
+>   (the apps' `storybook` script passes an extra `public` argument and fails).
+> - `pnpm run build --filter=<app>` writes the finished game to `apps/<app>/build` (`index.html` with
+>   the code inlined, plus the static files). Upload that folder as it is.
+> - Agent instructions are in [AGENTS.md](/AGENTS.md).
+
 This is a web sdk that is convenient for you to develop a game in a declarative way. It is an optional way to build and launch your games on with [Stake Engine](https://engine.stake.com/) with some easy steps. It is powered by Svelte 5, PixiJS 8 and TurboRepo.
 
 - How to use: To have 100% freedom to any source code from this repo, start your own codebase based on this repo. You can change any source code as you need.
@@ -93,15 +109,14 @@ WIth out any error messages showing up, you are good to continue.
 ## Run in Storybook
 
 ```
-pnpm run storybook --filter=lines
+cd apps/lines
+PUBLIC_CHROMATIC=true pnpm exec storybook dev -p 6001
 ```
 
-- Run `pnpm run storybook --filter=<MODULE_NAME>` in the terminal to see the storybook of a sample game in a TurboRepo way. `<MODULE_NAME>` is the name in the package.json file of a module in apps or packages folders.
-- For example, we have `"name": "lines"` in the [apps/lines/package.json](/apps/lines/package.json), so we can find it and run its storybook.
-- For Windows users, you might need to add the script with "cross-env" to make it work:
-```
-"storybook": "cross-env PUBLIC_CHROMATIC=true storybook dev -p 6001 public",
-```
+- Run it from the folder of any app in `apps` to see that game's storybook. (Upstream's
+  `pnpm run storybook --filter=lines` uses the apps' `storybook` script, which passes an extra
+  `public` argument and fails.)
+- For Windows users, set the variable with "cross-env": `cross-env PUBLIC_CHROMATIC=true storybook dev -p 6001`.
 - You should see this:
 
 
@@ -131,25 +146,16 @@ pnpm run dev --filter=lines
 pnpm run build --filter=lines
 ```
 
-- You should see an `index.html` output here `apps/lines/.svelte-kit/output/prerendered/pages/index.html`.
-
-- Create a new folder anywhere you prefer and put the `index.html` file there. For example:
-
-```
-build
-  |-index.html
-```
-
-- Then copy/paste everything in `apps/lines/.svelte-kit/output/client` to the same folder like:
+- The static adapter writes the whole game to `apps/lines/build`, with the code inlined in
+  `index.html` and the files from `static` next to it:
 
 ```
-build
+apps/lines/build
   |-index.html
   |-_app
   |-assets
-  |-loader.gif
 ```
-- Now you are ready to upload a game!
+- Now you are ready to upload a game: upload that `build` folder as it is.
 
 <a name="launchAGame"></a>
 

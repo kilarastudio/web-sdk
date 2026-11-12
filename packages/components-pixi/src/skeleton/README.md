@@ -2,6 +2,8 @@
 
 Runtime animasi cutout milik Kilara. Dibuat 30 Oktober 2026 setelah diputuskan bahwa animasi skeleton dikerjakan tanpa Spine Editor. Runtime Spine (`spine-pixi-v8`) hanya boleh dipakai pemegang lisensi Spine Editor, jadi animasi baru memakai format dan runtime ini.
 
+> **Status (12 November 2026):** keputusan di atas di-reset pada 10 November 2026, dan saat ini tidak ada game yang memakai runtime ini; kodenya tetap disimpan. Dragon's Glint menggambar simbolnya dengan kode dan menganimasikan naganya dengan strip frame PNG ditambah lapisan gerak dari kode. Contoh di bawah (skeleton `glint`, skin `t2`, event `glint-primed`) berasal dari aset lama yang sudah dihapus; anggap hanya sebagai ilustrasi format.
+
 - `skeleton.ts`: data, sampling, pose, matriks, validasi, dan `AnimationState`. Tidak bergantung pada Pixi atau Svelte, jadi bisa dijalankan skrip Node.
 - `../components/Skeleton.svelte`: menggambar skeleton di Pixi, satu `Sprite` per slot.
 
