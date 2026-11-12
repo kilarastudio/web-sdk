@@ -45,30 +45,18 @@ const gem: SymbolAct = {
 	frames: { suffix: 'Turn', from: 0.55 },
 };
 
-// a twinkle that opens and closes at one spot
-const twinkle = (t: number, start: number, x: number, y: number): SymbolEffect[] =>
-	t >= start && t < start + 0.34
-		? [{ key: 'sparkle', at: span(t, start, start + 0.34), x, y, size: 11 }]
-		: [];
-
 export const SYMBOL_ACTS: Record<string, SymbolAct> = {
 	symbolL1: gem,
 	symbolL2: gem,
 	symbolL3: gem,
 	symbolL4: gem,
-	// the crown is tossed: one hop and a smaller one, tipping from side to side, and its three
-	// pearls catch the light one after another
+	// the crown is tossed: one hop and a smaller one, tipping from side to side
 	symbolH1: {
 		pivot: { x: 0, y: 14 },
 		pose: (t) => ({
 			y: -8 * arc(span(t, 0, 0.5)) - 2.5 * arc(span(t, 0.5, 0.78)),
 			rotation: 0.17 * Math.sin(Math.PI * 4 * t) * (1 - t),
 		}),
-		effects: (t) => [
-			...twinkle(t, 0.12, -15.5, -12),
-			...twinkle(t, 0.28, 0, -16.5),
-			...twinkle(t, 0.44, 15.5, -12),
-		],
 	},
 	// the sword is drawn back about its grip, cuts, and rings to rest; the cut leaves an arc
 	symbolH2: {

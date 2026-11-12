@@ -1,6 +1,5 @@
 import { PixelCanvas } from './canvas.ts';
 import { CLEAR, INK, RAMPS, WHITE, color } from './palette.ts';
-import { sparkle } from './shapes.ts';
 
 // Board, frame, panels, Glint Spots and particles, all drawn by code on the same art-pixel grid as
 // the symbols (40 art pixels to a reel cell).
@@ -281,16 +280,6 @@ export const coinFrames = () =>
 		return canvas.outline(INK);
 	});
 
-// a four-point twinkle growing and fading
-export const sparkleFrames = () =>
-	[1, 2, 3, 2, 1].map((size, index) => {
-		const canvas = new PixelCanvas(9, 9);
-		sparkle(canvas, 4, 4, size, index === 2 ? WHITE : color(0xffeb57));
-		if (size > 1) canvas.set(4, 4, WHITE);
-		if (size === 3) canvas.dots(color(0xffeb57), [3, 3], [5, 3], [3, 5], [5, 5]);
-		return canvas;
-	});
-
 // A torch flame as a loop of frames, on a canvas of the given size with its foot on the bottom
 // edge. The flame is not a shape that is bent about: it is heat, worked out cell by cell the way
 // fire burns. Heat is fed in along the foot, every cell takes the heat of the cells under it, and
@@ -440,13 +429,6 @@ export const burstFrames = () =>
 		}
 		return canvas;
 	});
-
-export const ember = () => {
-	const canvas = new PixelCanvas(3, 3);
-	canvas.dots(RAMPS.fire[4], [1, 0], [0, 1], [2, 1], [1, 2]);
-	canvas.set(1, 1, RAMPS.fire[5]);
-	return canvas;
-};
 
 // one solid art pixel, tinted by the game for shards and dust
 export const pixel = () => {

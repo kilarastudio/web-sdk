@@ -120,7 +120,6 @@ writeFileSync(
 			ui.glintPrimed(),
 			ui.panel(),
 			...ui.coinFrames(),
-			...ui.sparkleFrames(),
 			...ui.fireballFrames(),
 			...ui.burstFrames(),
 			ui.anticipationBeam(),

@@ -42,7 +42,6 @@
 	getContextParent().addToParent(container);
 
 	let coins: Coin[] = [];
-	let sparks: { sprite: PIXI.Sprite; start: number }[] = [];
 	let request = 0;
 	let note = 0;
 	let lastPing = 0;
@@ -64,7 +63,6 @@
 
 	const tick = (now: number) => {
 		const coinFrames = frames('coin');
-		const sparkFrames = frames('sparkle');
 		coins = coins.filter((coin) => {
 			const progress = (now - coin.start) / coin.duration;
 			if (progress < 0) return true;
@@ -72,14 +70,6 @@
 				coin.sprite.destroy();
 				coin.land?.();
 				ping(now);
-				// a glint where the coin went in
-				if (sparkFrames.length) {
-					const sprite = new PIXI.Sprite({ texture: sparkFrames[0], anchor: 0.5 });
-					sprite.setSize(COINS.size);
-					sprite.position.set(coin.to.x, coin.to.y);
-					container.addChild(sprite);
-					sparks.push({ sprite, start: now });
-				}
 
 				return false;
 			}
@@ -99,18 +89,7 @@
 
 			return true;
 		});
-		sparks = sparks.filter((spark) => {
-			const progress = (now - spark.start) / 220;
-			if (progress >= 1) {
-				spark.sprite.destroy();
-
-				return false;
-			}
-			spark.sprite.texture = sparkFrames[Math.floor(progress * sparkFrames.length)];
-
-			return true;
-		});
-		request = coins.length || sparks.length ? requestAnimationFrame(tick) : 0;
+		request = coins.length ? requestAnimationFrame(tick) : 0;
 	};
 
 	const fly = ({ positions, step }: { positions: Position[]; step: number }) =>

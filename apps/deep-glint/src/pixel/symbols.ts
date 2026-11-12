@@ -1,6 +1,6 @@
 import { PixelCanvas } from './canvas.ts';
 import { CLEAR, INK, LIGHTER, RAMPS, WHITE, color } from './palette.ts';
-import { bevel, facetedGem, lightAt, outlined, part, sparkle } from './shapes.ts';
+import { bevel, facetedGem, lightAt, outlined, part } from './shapes.ts';
 
 // Reel symbols, drawn by code on a 40 × 40 art-pixel cell with a clear pixel round the edge for
 // the outline. Low symbols are four cut gems told apart by cut and colour; high symbols are the
@@ -203,7 +203,6 @@ const crown = () => {
 	jewel(20, RAMPS.red, 3);
 	jewel(10, RAMPS.blue, 2);
 	jewel(30, RAMPS.blue, 2);
-	sparkle(canvas, 8, 16, 1);
 	return outlined(canvas);
 };
 
@@ -237,7 +236,6 @@ const sword = () => {
 	canvas.set(4, 33, g[5]);
 	canvas.set(5, 34, RAMPS.red[5]);
 	canvas.set(7, 36, g[2]);
-	sparkle(canvas, 31, 8, 1);
 	return outlined(canvas);
 };
 
@@ -321,7 +319,6 @@ const potion = () => {
 	canvas.rect(16, 2, 8, 1, RAMPS.wood[5]);
 	canvas.rect(22, 3, 2, 4, RAMPS.wood[3]);
 	canvas.rect(16, 6, 8, 1, RAMPS.wood[2]);
-	sparkle(canvas, 27, 13, 1);
 	return outlined(canvas);
 };
 
@@ -370,7 +367,6 @@ const dragonEye = ({ lid = 0, alert = false }: { lid?: 0 | 1 | 2; alert?: boolea
 		);
 		canvas.paint((x, y) => inEye(x, y) && y < 17.5 - open - 1 && (x + y) % 5 === 0, RAMPS.red[3]);
 	}
-	sparkle(canvas, 31, 6, 1);
 	return outlined(canvas);
 };
 
@@ -390,7 +386,6 @@ const wild = () => {
 		canvas.path(INK, [19 + dx, 17], [23 + dx, 27]);
 		canvas.path(INK, [23 + dx, 27], [26 + dx, 12]);
 	}
-	sparkle(canvas, 9, 9, 1);
 	return outlined(canvas);
 };
 

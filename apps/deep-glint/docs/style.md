@@ -21,6 +21,8 @@ themes judged as a player would. The display name is Dragon's Glint; the math an
   wide and tall), the dragon's frame strips, the bitmap font, the logo, the mode pictures.
 - **Symbols:** crown, sword, shield, potion (high); ruby, sapphire, emerald, amethyst (low); the
   dragon's eye (scatter). Glint tiers use RPG rarity colours: blue, violet, orange, red.
+- **No sparkles.** Gems shine only by the light turning round their facets. The resting board has
+  no twinkles, a landing coin no glint, the crown's act no flashes on its pearls.
 - **Mode pictures** use the game's own symbols where they show one: ANTE is the scatter's eye,
   twice; BONUS is the dragon's head over the reel's sword, crossed. A picture must not show a
   different version of a thing the reels show.
@@ -55,6 +57,13 @@ have their own music.
   accepted: "sudah bagus animasi apinya".
 - Menus: "kenapa masih pakai background abu abu solid?" and, of buy bonus, "terlihat seperti menu,
   tidak seamless dengan game"; "bedakan button active dan buy".
+- Shine: "kenapa AI kalau buat gambar ... setelah ada diamond diamond, selalu ada seperti efek
+  partikel partikel cahaya seperti diamond, plus. sangat mudah terlihat AI". All four-point
+  sparkles were removed from the game, and prompts now forbid them.
+- Dragon: the red dragon is "terlalu general". Twelve concepts in three rounds were rejected and
+  deleted ("tidak suka. hapus semua konsep naga"): crystal, miser, obsidian; eastern serpent,
+  armoured knight, dracolich, coin golem, robed merchant, black cat-like; fat glutton, rogue thief,
+  chained guardian. The red dragon stays in the game until a new one is chosen.
 - Sound: the first landing sound was "terlalu generik".
 - Mode pictures: the eye in ANTE must be the scatter's; the swords in BONUS must be the reel's
   sword, crossed.

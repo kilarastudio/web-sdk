@@ -46,6 +46,10 @@ A new game copies the workflow, keeps the studio style, and writes its own game 
 - **Code-drawn art** lives in `apps/<game>/src/pixel` (palette, canvas, shapes, drawings,
   textures). It has no DOM or Pixi dependency, so `node scripts/pixel-preview.ts` renders review
   sheets without a browser. Draw, render the sheet, look at it, repeat.
+- **Prompts for generated images** forbid the shine cliché in so many words ("no sparkles, no
+  twinkle stars, no plus-shaped glints, no lens flare, no floating light specks, no glow") and
+  avoid words that call it up (glowing, shiny, glint, sparkling); gems are described by their
+  facets. Check every result for it before showing it.
 - **Generated images**: generate a key image first and get it approved; make everything else from
   it, with region-locked edits so only the part that should change can change. Then lock the
   result to the palette and grid (`tools/play/pixelize.py`). Check each frame against the key:

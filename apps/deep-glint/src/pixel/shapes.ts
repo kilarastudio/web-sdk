@@ -12,7 +12,7 @@ export const lightAt = (turn: number, turns: number): Point => {
 };
 
 // a ramp colour for a surface facing the light (1) or away from it (-1), keeping the ramp's ends
-// for outlines and sparkles
+// for outlines and highlights
 export const tone = (ramp: readonly number[], brightness: number) => {
 	const span = ramp.length - 3;
 	const at = 1 + Math.round(((Math.max(-1, Math.min(1, brightness)) + 1) / 2) * span);
@@ -94,13 +94,6 @@ export const part = (
 	const canvas = new PixelCanvas(width, height);
 	draw(canvas);
 	finish?.(canvas);
-	return canvas;
-};
-
-// a small four-point sparkle
-export const sparkle = (canvas: PixelCanvas, x: number, y: number, size: number, c = WHITE) => {
-	canvas.line(x - size, y, x + size, y, c);
-	canvas.line(x, y - size, x, y + size, c);
 	return canvas;
 };
 

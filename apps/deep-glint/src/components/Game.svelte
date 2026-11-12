@@ -33,7 +33,6 @@
 	import FreeSpinOutro from './FreeSpinOutro.svelte';
 	import Transition from './Transition.svelte';
 	import GeneratedArt from './GeneratedArt.svelte';
-	import BoardSparkles from './BoardSparkles.svelte';
 	import PayTable from './PayTable.svelte';
 	import GameRules from './GameRules.svelte';
 	import TransitionAnimation from './TransitionAnimation.svelte';
@@ -90,7 +89,6 @@
 		<MainContainer>
 			<GlintSpots layer="under" />
 			<Board />
-			<BoardSparkles />
 			<Anticipations />
 			<TumbleWinAmount />
 		</MainContainer>

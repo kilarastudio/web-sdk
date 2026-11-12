@@ -53,6 +53,14 @@ style, characters) is in `apps/<game>/docs/style.md`. How the work is done is in
 - What research supports as moving players is anticipation, the order things are revealed in, and
   celebration in proportion to the win. Speeds and bounces are readability and brand choices.
 
+## Light and shine
+
+- No four-point twinkles, plus-shaped glints, lens flares or floating specks of light, in any art
+  or effect, drawn or generated. They are the mark of generated art: scattered at random, all the
+  same size, unrelated to where the light comes from.
+- A shiny thing shows its shine in its own shape: facets lit from the light's side, a highlight
+  that moves across the surface. Particles are solid flecks, smoke, coins or shards, never stars.
+
 ## Wins
 
 - A win is felt in steps: a hit (a held beat and a shake in whole pixels), the symbols' own act,
