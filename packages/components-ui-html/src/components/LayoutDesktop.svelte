@@ -4,7 +4,7 @@
 
 <!-- stage: 1920 × 1080 -->
 <div class="layout">
-	<HudBar stackedBetArrows />
+	<HudBar stackedControls />
 </div>
 
 <style lang="scss">
@@ -13,7 +13,8 @@
 		--ui-button-size: 84px;
 		--ui-button-size-large: 164px;
 		--ui-feature-size: 136px;
-		--bar-width: 1400px;
+		/* the contents at usual amounts plus room for a win; longer amounts shrink to fit */
+		--bar-width: 1200px;
 		--bar-height: 112px;
 		--bar-bottom: 44px;
 		/* the same inset on every side: the space above and below a button in the dock */

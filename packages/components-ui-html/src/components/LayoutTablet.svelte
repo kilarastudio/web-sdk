@@ -13,7 +13,8 @@
 		--ui-button-size: 88px;
 		--ui-button-size-large: 172px;
 		--ui-feature-size: 140px;
-		--bar-width: 1440px;
+		/* the contents at usual amounts plus room for a win; longer amounts shrink to fit */
+		--bar-width: 1360px;
 		--bar-height: 118px;
 		--bar-bottom: 52px;
 		/* the same inset on every side: the space above and below a button in the dock */

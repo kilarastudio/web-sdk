@@ -19,6 +19,7 @@
 	import ButtonDecrease from './ButtonDecrease.svelte';
 	import ButtonIncrease from './ButtonIncrease.svelte';
 	import { getContext } from '../context';
+	import { fitText } from './fitText';
 
 	const context = getContext();
 
@@ -94,14 +95,14 @@
 
 		<!-- the win line follows the drawer down until it rests above the footer -->
 		<div class="slide" style:transform="translateY(min({drawerTween.current}px, var(--win-drop)))">
-			<div class="win">
+			<div class="win" use:fitText>
 				<LabelWin stacked hideZero />
 			</div>
 		</div>
 
 		<div class="footer">
 			<ButtonMenu />
-			<div class="labels">
+			<div class="labels" use:fitText>
 				<LabelBalance stacked />
 				{#if stateUi.freeSpinCounterShow}
 					<LabelFreeSpinCounter stacked />
@@ -200,8 +201,10 @@
 		);
 	}
 
+	/* a long win shrinks to fit the screen's width (fitText) */
 	.win {
 		bottom: var(--win-bottom);
+		max-width: calc(100% - var(--edge) * 2);
 	}
 
 	.footer {
@@ -214,6 +217,7 @@
 		gap: 16px;
 	}
 
+	/* long amounts shrink to fit between the menu and autoplay (fitText) */
 	.labels {
 		--ui-label-align: start;
 

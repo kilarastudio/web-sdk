@@ -13,14 +13,24 @@
 	import ButtonAutoSpin from './ButtonAutoSpin.svelte';
 	import ButtonBet from './ButtonBet.svelte';
 	import ButtonTurbo from './ButtonTurbo.svelte';
+	import { fitText } from './fitText';
 
 	type Props = {
-		// the bet's ▲ ▼ stacked beside the amount (desktop, mouse) or − and + on its sides (tablet,
-		// touch: stacked halves would be too small for a finger)
-		stackedBetArrows?: boolean;
+		// desktop (mouse): the bet's ▲ ▼ stacked beside the amount, and autoplay over turbo in one
+		// column. Otherwise (tablet, touch) − and + beside the amount and autoplay and turbo in a row:
+		// stacked halves would be too small for a finger.
+		stackedControls?: boolean;
 	};
 
 	const props: Props = $props();
+
+	// the spin's distance from the dock's right edge: inset, the autoplay and turbo controls (each
+	// keeping an inset on its left for the curve), notch radius
+	const notchX = $derived(
+		props.stackedControls
+			? 'calc(100% - var(--bar-padding) * 2 - var(--stack-width) - var(--notch-radius))'
+			: 'calc(100% - var(--bar-padding) * 2 - var(--ui-button-size) * 2 - var(--play-gap) - var(--notch-radius))',
+	);
 </script>
 
 <!--
@@ -28,51 +38,55 @@
 	the right: bet, the spin button sticking out of the dock, autoplay and turbo. The bet sits right
 	next to the spin so setting a bet and spinning is one short move. During free spins the counter
 	takes the bet's place. Buy bonus is its own square badge left of the dock. The layout sets the
-	--bar-*, --stepper-height and --ui-feature-size sizes. The HUD reaches up to the top of the spin
-	button, the highest thing sticking out of the dock.
+	--bar-*, --stepper-height and --ui-feature-size sizes. Amounts too long for their place shrink
+	to fit it (fitText). The HUD reaches up to the top of the spin button, the highest thing
+	sticking out of the dock.
 -->
 <UiStage
 	insetBottom="calc(var(--bar-bottom) + (var(--bar-height) + var(--ui-button-size-large)) / 2)"
 >
-	<div class="buy-bonus">
-		<ButtonBuyBonus />
-	</div>
-
-	<!--
-		The notch's centre is worked out from the play group's sizes below: the spin's distance from
-		the dock's right edge (inset, turbo, gap, autoplay with its inset, notch radius).
-	-->
+	<!-- the play group's sizes, which the notch's centre is worked out from -->
 	<UiBar
 		--play-gap="12px"
+		--stack-width="calc(var(--ui-button-size) * 0.75)"
 		notch
-		notchX="calc(100% - var(--bar-padding) * 2 - var(--ui-button-size) * 2 - var(--play-gap) - var(--notch-radius))"
+		{notchX}
 	>
+		<!-- left of the dock -->
+		<div class="buy-bonus">
+			<ButtonBuyBonus />
+		</div>
+
 		<div class="dock">
 			<div class="side money">
 				<ButtonMenu />
-				<div class="labels">
+				<div class="labels" use:fitText>
 					<LabelBalance stacked />
 					<LabelWin stacked hideZero />
 				</div>
 			</div>
 
-			<div class="side play">
+			<div class="side play" class:stacked={props.stackedControls}>
 				<div class="bet">
 					{#if stateUi.freeSpinCounterShow}
 						<div class="free-spins">
 							<LabelFreeSpinCounter stacked />
 						</div>
 					{:else}
-						<BetStepper stacked={props.stackedBetArrows} />
+						<BetStepper stacked={props.stackedControls} besideNotch />
 					{/if}
 				</div>
 				<div class="spin">
 					<ButtonBet />
 				</div>
-				<div class="autoplay">
-					<ButtonAutoSpin />
+				<div class="controls">
+					<div class="autoplay">
+						<ButtonAutoSpin />
+					</div>
+					<div class="turbo">
+						<ButtonTurbo />
+					</div>
 				</div>
-				<ButtonTurbo />
 			</div>
 		</div>
 	</UiBar>
@@ -96,13 +110,16 @@
 		min-width: 0;
 	}
 
+	/* takes the room the play group leaves; long amounts shrink to fit it (fitText) */
 	.money {
+		flex: 1;
 		gap: 12px;
 	}
 
 	.labels {
 		--ui-label-align: start;
 
+		flex: 1;
 		display: flex;
 		align-items: center;
 		gap: 28px;
@@ -122,13 +139,6 @@
 	}
 
 	.bet {
-		--bet-stepper-end-inset: var(--bar-padding);
-		--bet-stepper-mask: radial-gradient(
-			circle at calc(100% + var(--notch-radius)) 50%,
-			transparent var(--curve),
-			#000 calc(var(--curve) + 1px)
-		);
-
 		display: flex;
 	}
 
@@ -145,23 +155,57 @@
 		width: calc(var(--notch-radius) * 2);
 	}
 
-	/* the autoplay button is the inset wider; that room on its left is where its background curves */
-	.autoplay {
+	.controls {
+		display: flex;
+		align-items: center;
+	}
+
+	/*
+		A button beside the notch is the inset wider; that room on its left is where its background
+		curves. --curve-y puts the notch's centre level with the dock's middle.
+	*/
+	.autoplay,
+	.stacked .turbo {
 		--ui-button-width: calc(var(--ui-button-size) + var(--bar-padding));
 		--ui-button-inset-start: var(--bar-padding);
 		--ui-button-mask: radial-gradient(
-			circle at calc(var(--notch-radius) * -1) 50%,
+			circle at calc(var(--notch-radius) * -1) var(--curve-y, 50%),
 			transparent var(--curve),
 			#000 calc(var(--curve) + 1px)
 		);
 
 		display: flex;
+	}
+
+	.autoplay {
 		margin-right: var(--play-gap);
+	}
+
+	/* autoplay over turbo, two half-height buttons together as tall as a dock button */
+	.stacked {
+		.controls {
+			--ui-button-size: var(--stack-width);
+			--ui-button-height: calc(var(--bar-height) / 2 - var(--bar-padding));
+			--ui-icon-scale: 0.5;
+
+			flex-direction: column;
+		}
+
+		.autoplay {
+			--curve-y: 100%;
+
+			margin-right: 0;
+		}
+
+		.turbo {
+			--curve-y: 0%;
+		}
 	}
 
 	.buy-bonus {
 		position: absolute;
-		left: calc(50% - var(--bar-width) / 2 - var(--ui-feature-size) - 20px);
-		bottom: calc(var(--bar-bottom) + (var(--bar-height) - var(--ui-feature-size)) / 2);
+		top: 50%;
+		right: calc(100% + 20px);
+		translate: 0 -50%;
 	}
 </style>

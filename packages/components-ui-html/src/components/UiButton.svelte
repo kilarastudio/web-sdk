@@ -143,15 +143,16 @@
 
 		/*
 			An icon button may be wider or flatter than square (the bet's stacked ▲ ▼), keep room on its
-			left that only its background covers (--ui-button-inset-start), and have that background cut
-			by a mask (--ui-button-mask), as beside the dock's notch. The background sits on a
-			pseudo-element so the mask never cuts the icon or the focus ring.
+			left or right that only its background covers (--ui-button-inset-start, -end), and have
+			that background cut by a mask (--ui-button-mask), as beside the dock's notch. The
+			background sits on a pseudo-element so the mask never cuts the icon or the focus ring.
 		*/
 		&.icon {
 			isolation: isolate;
 			width: var(--ui-button-width, var(--size));
 			height: var(--ui-button-height, var(--size));
 			padding-left: var(--ui-button-inset-start, 0);
+			padding-right: var(--ui-button-inset-end, 0);
 			background-color: transparent;
 
 			&::before {

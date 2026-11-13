@@ -52,7 +52,11 @@
 		border-radius: inherit;
 		background-color: var(--ui-accent);
 		color: var(--ui-accent-contrast);
-		font-size: calc(var(--ui-button-size) * 0.2 * var(--counter-font-size));
+		/* by the shorter side, so it also fits a flat button */
+		font-size: calc(
+			min(var(--ui-button-size), var(--ui-button-height, var(--ui-button-size))) * 0.2 *
+				var(--counter-font-size)
+		);
 		font-weight: bold;
 	}
 </style>

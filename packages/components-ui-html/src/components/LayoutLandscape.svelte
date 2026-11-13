@@ -14,6 +14,7 @@
 	import ButtonTurbo from './ButtonTurbo.svelte';
 	import ButtonDecrease from './ButtonDecrease.svelte';
 	import ButtonIncrease from './ButtonIncrease.svelte';
+	import { fitText } from './fitText';
 </script>
 
 <!--
@@ -51,7 +52,7 @@
 		<div class="footer">
 			<div class="side money">
 				<ButtonMenu />
-				<div class="labels">
+				<div class="labels" use:fitText>
 					<LabelBalance stacked />
 					{#if stateUi.freeSpinCounterShow}
 						<LabelFreeSpinCounter stacked />
@@ -61,7 +62,7 @@
 				</div>
 			</div>
 
-			<div class="win">
+			<div class="win" use:fitText>
 				<LabelWin stacked hideZero />
 			</div>
 
@@ -137,7 +138,8 @@
 		right: var(--edge);
 		bottom: var(--footer-bottom);
 		display: grid;
-		grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+		/* the win takes at most a third of the footer; longer wins shrink to fit (fitText) */
+		grid-template-columns: minmax(0, 1fr) fit-content(34%) minmax(0, 1fr);
 		align-items: center;
 		gap: 24px;
 		height: var(--ui-button-size);
@@ -154,9 +156,12 @@
 		justify-content: flex-start;
 	}
 
+	/* long amounts shrink to fit the room left of the win (fitText) */
 	.labels {
 		--ui-label-align: start;
 
+		flex: 1;
+		min-width: 0;
 		display: flex;
 		align-items: center;
 		gap: 36px;
@@ -165,5 +170,9 @@
 
 	.play {
 		justify-content: flex-end;
+	}
+
+	.win {
+		min-width: 0;
 	}
 </style>

@@ -21,7 +21,8 @@
 		align-items: baseline;
 		gap: 0.4em;
 		color: var(--ui-text);
-		font-size: var(--ui-font-size);
+		/* --ui-fit: a fitText parent shrinks the label to fit its slot */
+		font-size: calc(var(--ui-font-size) * var(--ui-fit, 1));
 		line-height: 1.15;
 		white-space: nowrap;
 		text-shadow: var(--ui-label-shadow, none);

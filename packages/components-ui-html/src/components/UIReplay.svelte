@@ -15,6 +15,7 @@
 	import ButtonReplay from './ButtonReplay.svelte';
 	import ButtonTurbo from './ButtonTurbo.svelte';
 	import ButtonMenu from './ButtonMenu.svelte';
+	import { fitText } from './fitText';
 	import { getContext } from '../context';
 	import { i18nDerived } from '../i18n/i18nDerived';
 
@@ -50,7 +51,7 @@
 				<ButtonMenu />
 				<ButtonTurbo />
 
-				<div class="labels">
+				<div class="labels" use:fitText>
 					<LabelWin stacked />
 					{#if stateUi.freeSpinCounterShow}
 						<LabelFreeSpinCounter stacked />
