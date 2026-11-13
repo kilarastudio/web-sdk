@@ -40,7 +40,8 @@ const assets: Assets = {
 	fontGold: { type: 'font', src: asset('assets/fonts/dragons-glint-gold.fnt') },
 	fontInk: { type: 'font', src: asset('assets/fonts/dragons-glint-ink.fnt') },
 
-	sound: { type: 'audio', src: asset('assets/audio/sounds.json'), preload: true },
+	// not preloaded: the audio is several MB, and the loading screen should not wait for it
+	sound: { type: 'audio', src: asset('assets/audio/sounds.json') },
 };
 
 export default assets;

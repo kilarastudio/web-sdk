@@ -10,6 +10,8 @@
 		background: Snippet<[{ width: number; height: number }]>;
 		progress: Snippet<[{ width: number; height: number }]>;
 		frame: Snippet<[{ width: number; height: number }]>;
+		/** 0 to 100; the app's loading progress unless given (a game can pass a smoothed value) */
+		value?: number;
 	};
 
 	const props: Props = $props();
@@ -26,7 +28,7 @@
 		<Rectangle
 			isMask
 			height={props.height}
-			width={props.width * (context.stateApp.loadingProgress / 100)}
+			width={props.width * ((props.value ?? context.stateApp.loadingProgress) / 100)}
 		/>
 	</Container>
 	{@render props.frame(sizes)}

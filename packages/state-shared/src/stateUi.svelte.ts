@@ -69,6 +69,8 @@ export const stateUi = $state({
 	// edge where its controls stand in columns there, in CSS px, so a game can keep its board clear
 	// of it
 	hudInset: { top: 0, bottom: 0, side: 0 },
+	// the Kilara Studio intro: 'none' where a page has none, so a loading screen need not wait
+	studioIntro: 'none' as 'none' | 'showing' | 'ended',
 	config: {
 		mode: 'default' as UIConfigMode,
 	},

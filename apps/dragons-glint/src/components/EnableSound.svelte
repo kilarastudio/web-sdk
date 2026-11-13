@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-
 	import type { LoadedAudio } from 'pixi-svelte';
 
 	import { getContext } from '../game/context';
@@ -8,16 +6,15 @@
 
 	const context = getContext();
 
-	onMount(() => {
-		const loadedAudio = $state.snapshot(
-			context.stateApp.loadedAssets['sound'],
-		) as LoadedAudio<SoundName>;
-		const { destroy } = sound.load(loadedAudio);
+	// the audio is not preloaded, so it may arrive after this mounts
+	const audio = $derived(context.stateApp.loadedAssets['sound']);
 
-		return () => {
-			// Equivalent to onDestroy(); Leave this comment for searching.
-			destroy();
-		};
+	$effect(() => {
+		if (!audio) return;
+		const { destroy } = sound.load($state.snapshot(audio) as LoadedAudio<SoundName>);
+
+		// Equivalent to onDestroy(); Leave this comment for searching.
+		return () => destroy();
 	});
 
 	sound.enableEffect();
