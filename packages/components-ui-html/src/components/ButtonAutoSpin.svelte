@@ -42,8 +42,10 @@
 
 <style lang="scss">
 	.counter {
+		/* a square in the button's own size, right of any room the button keeps on its left */
 		position: absolute;
-		inset: 5%;
+		inset: calc(var(--ui-button-size) * 0.05);
+		left: calc(var(--ui-button-inset-start, 0px) + var(--ui-button-size) * 0.05);
 		display: flex;
 		justify-content: center;
 		align-items: center;

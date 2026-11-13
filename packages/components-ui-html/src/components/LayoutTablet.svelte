@@ -16,7 +16,8 @@
 		--bar-width: 1440px;
 		--bar-height: 118px;
 		--bar-bottom: 52px;
-		--bar-padding: 20px;
+		/* the same inset on every side: the space above and below a button in the dock */
+		--bar-padding: calc((var(--bar-height) - var(--ui-button-size)) / 2);
 		--stepper-height: 88px;
 		/* the menu opens over the menu button, the first item in the dock */
 		--menu-x: calc(50% - var(--bar-width) / 2 + var(--bar-padding) + var(--ui-button-size) / 2);

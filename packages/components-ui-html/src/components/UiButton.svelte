@@ -141,6 +141,31 @@
 			cursor: not-allowed;
 		}
 
+		/*
+			An icon button may be wider or flatter than square (the bet's stacked ▲ ▼), keep room on its
+			left that only its background covers (--ui-button-inset-start), and have that background cut
+			by a mask (--ui-button-mask), as beside the dock's notch. The background sits on a
+			pseudo-element so the mask never cuts the icon or the focus ring.
+		*/
+		&.icon {
+			isolation: isolate;
+			width: var(--ui-button-width, var(--size));
+			height: var(--ui-button-height, var(--size));
+			padding-left: var(--ui-button-inset-start, 0);
+			background-color: transparent;
+
+			&::before {
+				content: '';
+				position: absolute;
+				inset: 0;
+				z-index: -1;
+				background-color: var(--ui-button-bg);
+				transition: background-color 0.15s;
+				-webkit-mask: var(--ui-button-mask, none);
+				mask: var(--ui-button-mask, none);
+			}
+		}
+
 		/* no scale on press: the icon dips instead */
 		&.icon:not(:disabled):active .ui-button-icon {
 			transform: translateY(calc(var(--size) * 0.04));
@@ -153,7 +178,8 @@
 		}
 
 		@media (hover: hover) {
-			&:not(:disabled):hover {
+			&:not(.icon):not(:disabled):hover,
+			&.icon:not(:disabled):hover::before {
 				background-color: var(--ui-button-hover-bg, var(--ui-button-bg));
 			}
 		}

@@ -5,6 +5,12 @@
 	import { getContext } from '../context';
 	import { i18nDerived } from '../i18n/i18nDerived';
 
+	type Props = {
+		// a chevron (▲ ▼) instead of + and −, for the stacked pair beside the bet
+		chevron?: boolean;
+	};
+
+	const props: Props = $props();
 	const context = getContext();
 	const biggest = $derived(stateConfig.betAmountOptions[stateConfig.betAmountOptions.length - 1]);
 	const disabled = $derived(!context.stateXstateDerived.isIdle() || stateBet.betAmount === biggest);
@@ -20,4 +26,10 @@
 	};
 </script>
 
-<UiButton label={i18nDerived.increase()} icon="increase" {disabled} {onpress} />
+<UiButton
+	label={i18nDerived.increase()}
+	icon={props.chevron ? 'drawer' : 'increase'}
+	iconRotation={props.chevron ? 180 : undefined}
+	{disabled}
+	{onpress}
+/>

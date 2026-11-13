@@ -4,7 +4,7 @@
 
 <!-- stage: 1920 × 1080 -->
 <div class="layout">
-	<HudBar />
+	<HudBar stackedBetArrows />
 </div>
 
 <style lang="scss">
@@ -16,7 +16,8 @@
 		--bar-width: 1400px;
 		--bar-height: 112px;
 		--bar-bottom: 44px;
-		--bar-padding: 20px;
+		/* the same inset on every side: the space above and below a button in the dock */
+		--bar-padding: calc((var(--bar-height) - var(--ui-button-size)) / 2);
 		--stepper-height: 84px;
 		/* the menu opens over the menu button, the first item in the dock */
 		--menu-x: calc(50% - var(--bar-width) / 2 + var(--bar-padding) + var(--ui-button-size) / 2);
