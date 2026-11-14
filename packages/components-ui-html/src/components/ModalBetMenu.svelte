@@ -3,6 +3,7 @@
 	import { stateBet, stateConfig, stateModal } from 'state-shared';
 	import { getContextEventEmitter } from 'utils-event-emitter';
 	import { numberToCurrencyString } from 'utils-shared/amount';
+	import { CURRENCY_META } from 'utils-shared/currency';
 
 	import UiSheet from './UiSheet.svelte';
 	import UiSheetSection from './UiSheetSection.svelte';
@@ -20,7 +21,8 @@
 		if (value > 999999) return `${(value / 1000000).toFixed(2)}M`;
 		if (value > 999) return `${(value / 1000).toFixed(2)}K`;
 
-		return value.toFixed(2);
+		// the currency's own decimals: 100 for JPY, 0.000010 for BTC
+		return value.toFixed(CURRENCY_META[stateBet.currency]?.decimals ?? 2);
 	};
 
 	const choose = (value: number) => {

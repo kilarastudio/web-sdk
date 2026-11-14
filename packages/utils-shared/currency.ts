@@ -48,6 +48,9 @@ export const CURRENCY_META: Record<string, CurrencyMeta> = {
 	TZS: { symbol: 'TSh', decimals: 2 },
 	UGX: { symbol: 'USh', decimals: 0 },
 	XOF: { symbol: 'CFA', decimals: 0, after: true },
+	// Crypto: the code stands after the amount. Engine's review tests these two ([219]).
+	USDT: { symbol: 'USDT', decimals: 2, after: true },
+	BTC: { symbol: 'BTC', decimals: 6, after: true },
 	XGC: { symbol: 'GC', decimals: 2, after: true },
 	XSC: { symbol: 'SC', decimals: 2, after: true },
 	XEC: { symbol: 'SC', decimals: 2, after: true },

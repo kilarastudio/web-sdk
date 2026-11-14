@@ -50,8 +50,9 @@
 
 	img {
 		flex: none;
-		width: 4em;
-		height: 4em;
+		/* shrinks on a narrow card so the pays keep their room */
+		width: clamp(2.5em, 30%, 4em);
+		aspect-ratio: 1;
 		object-fit: contain;
 
 		&.pixelated {
@@ -62,27 +63,32 @@
 	dl {
 		flex: 1 1 auto;
 		min-width: 0;
-		display: flex;
-		flex-direction: column;
-		gap: 0.1em;
+		/* counts flush left, pays flush right against the card's edge */
+		display: grid;
+		grid-template-columns: max-content max-content;
+		justify-content: space-between;
+		column-gap: 0.6em;
+		row-gap: 0.1em;
 		margin: 0;
 		font-size: 0.93em;
 		font-variant-numeric: tabular-nums;
 	}
 
 	.row {
-		display: flex;
-		justify-content: space-between;
-		gap: 0.6em;
+		display: contents;
 	}
 
 	dt {
+		justify-self: start;
+		text-align: left;
 		color: var(--ui-text-muted);
 		white-space: nowrap;
 	}
 
 	dd {
+		justify-self: end;
 		margin: 0;
+		text-align: right;
 		color: var(--ui-accent);
 		font-weight: 700;
 		white-space: nowrap;

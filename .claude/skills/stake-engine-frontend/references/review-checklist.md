@@ -1,6 +1,6 @@
 # Review checklist
 
-What Engine reviewers check, with the guideline IDs they use in feedback, and how to check each one in this codebase. Distilled from the Studio approval guidelines and Engine's published AI-review prompt (https://studio.engine.io/docs/ai-review; archive copy, if present: `../docs/sources/studio/assets/docs-content/prompt.md` — use it verbatim for a full formal audit).
+What Engine reviewers check, with the guideline IDs they use in feedback, and how to check each one in this codebase. Distilled from the Studio approval guidelines and Engine's published AI-review prompt (https://studio.engine.io/docs/ai-review; newest copy, 2026-11-12: `.claude/skills/stake-reviewer/references/approval-checklist.md` in the workspace root — the `stake-reviewer` skill runs it as the full formal audit).
 
 ## Contents
 1. How to audit
@@ -55,7 +55,7 @@ What Engine reviewers check, with the guideline IDs they use in feedback, and ho
 
 | ID | Guideline | Check |
 | --- | --- | --- |
-| 219 | USD, EUR, CAD, MXN, JPY load, bet and display correctly in balance, bet, win, modals; no clipping of `CA$`/`MX$` | `utils-shared/amount.ts` + `currency.ts` against the Engine table; no `$` literals, no fixed 2 decimals |
+| 219 | USD, EUR, CAD, MXN, JPY, USDT (`10.00 USDT`) and BTC (`10.000000 BTC`, 6 decimals) load, bet and display correctly in balance, bet, win, modals; no clipping of `CA$`/`MX$`/`USDT`; no `Intl` currency style without a fallback (it throws on codes that are not 3 letters) | `utils-shared/amount.ts` + `currency.ts` against the Engine table; no `$` literals, no fixed 2 decimals |
 | 273 | Sub-cent payouts show exactly (no `0.00`, no rounding up) | Win formatter precision vs minimum win |
 
 ## 6. RGS requests

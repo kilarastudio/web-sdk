@@ -13,6 +13,14 @@
 	const props: Props = $props();
 </script>
 
+<!--
+	the scrims: their own layer under the header, one soft diagonal fade out of each top corner of
+	the screen, dark behind the game name and the logo and gone by the diagonal from the far top
+	corner down to the screen edge, so the middle of the top stays clear
+-->
+<div class="ui-top-scrim left"></div>
+<div class="ui-top-scrim right"></div>
+
 <!-- its height is published to the game as stateUi.hudInset.top -->
 <header class="ui-header" bind:clientHeight={stateUi.hudInset.top}>
 	<div>{@render props.gameName()}</div>
@@ -48,18 +56,35 @@
 		white-space: nowrap;
 		pointer-events: none;
 		isolation: isolate;
+	}
 
-		/* the scrim: dark behind the text, gone a little below it */
-		&::before {
-			content: '';
-			position: absolute;
-			inset: 0 0 -140% 0;
-			z-index: -1;
+	.ui-top-scrim {
+		position: absolute;
+		top: 0;
+		/* sized against the screen; on narrow screens never shorter than the text needs */
+		height: max(11%, 5.5em);
+		font-size: clamp(10px, 1.8vmin, 15px);
+		pointer-events: none;
+
+		&.left {
+			left: 0;
+			width: max(27%, 22em);
 			background: linear-gradient(
-				to bottom,
+				to bottom right,
 				var(--ui-scrim-edge),
-				var(--ui-scrim-mid) 42%,
-				transparent
+				var(--ui-scrim-mid) 22%,
+				transparent 50%
+			);
+		}
+
+		&.right {
+			right: 0;
+			width: max(23%, 12em);
+			background: linear-gradient(
+				to bottom left,
+				var(--ui-scrim-edge),
+				var(--ui-scrim-mid) 22%,
+				transparent 50%
 			);
 		}
 	}
