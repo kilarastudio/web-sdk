@@ -2,6 +2,7 @@ import UI from './src/components/UI.svelte';
 import UiGameName from './src/components/UiGameName.svelte';
 import UiLogo from './src/components/UiLogo.svelte';
 import StudioIntro from './src/components/StudioIntro.svelte';
+import GameLoader from './src/components/GameLoader.svelte';
 import Modals from './src/components/Modals.svelte';
 import ModalError from './src/components/ModalError.svelte';
 import GameVersion from './src/components/GameVersion.svelte';
@@ -27,6 +28,14 @@ export {
 	studioIntroHtml,
 	injectStudioIntro,
 } from './src/components/studioIntroShell';
+export {
+	GAME_LOADER_ID,
+	GAME_LOADER_PLACEHOLDER,
+	GAME_LOADER_ESTIMATE,
+	gameLoaderBar,
+	gameLoaderHtml,
+	injectGameLoader,
+} from './src/components/gameLoaderShell';
 
 export {
 	messagesMap,
@@ -35,6 +44,7 @@ export {
 	UiGameName,
 	UiLogo,
 	StudioIntro,
+	GameLoader,
 	Modals,
 	ModalError,
 	GameVersion,
