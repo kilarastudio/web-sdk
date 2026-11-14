@@ -7,8 +7,8 @@ import type { EmitterEventFreeSpinIntro } from '../components/FreeSpinIntro.svel
 import type { EmitterEventFreeSpinOutro } from '../components/FreeSpinOutro.svelte';
 import type { EmitterEventWin } from '../components/Win.svelte';
 import type { EmitterEventSound } from '../components/Sound.svelte';
-import type { EmitterEventTransition } from '../components/Transition.svelte';
-import type { EmitterEventCharacter } from '../components/Character.svelte';
+import type { EmitterEventBackground } from '../components/Background.svelte';
+import type { EmitterEventDragon } from '../components/DragonEye.svelte';
 import type { EmitterEventGlintSpots } from '../components/GlintSpots.svelte';
 import type { EmitterEventWinCoins } from '../components/WinCoins.svelte';
 
@@ -22,7 +22,7 @@ export type EmitterEventGame =
 	| EmitterEventFreeSpinIntro
 	| EmitterEventFreeSpinOutro
 	| EmitterEventSound
-	| EmitterEventTransition
-	| EmitterEventCharacter
+	| EmitterEventBackground
+	| EmitterEventDragon
 	| EmitterEventGlintSpots
 	| EmitterEventWinCoins;

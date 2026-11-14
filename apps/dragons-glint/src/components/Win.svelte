@@ -13,13 +13,15 @@
 	import GameText from './GameText.svelte';
 	import { waitForResolve, waitForTimeout } from 'utils-shared/wait';
 	import { bookEventAmountToCountUpCurrencyString } from 'utils-shared/amount';
-	import { CanvasSizeRectangle, MainContainer } from 'components-layout';
+	import { MainContainer } from 'components-layout';
 	import { OnMount } from 'components-shared';
 
+	import BoardDim from './BoardDim.svelte';
 	import WinAnimation from './WinAnimation.svelte';
 	import PressToContinue from './PressToContinue.svelte';
 	import CoinShower from './CoinShower.svelte';
 	import WinPunch from './WinPunch.svelte';
+	import Slam from './Slam.svelte';
 	import { BOARD_FIT, BOARD_SIZES, SYMBOL_SIZE, countUpEasing } from '../game/constants';
 	import { getContext } from '../game/context';
 	import { gameTextStyle } from '../game/typography';
@@ -69,7 +71,7 @@
 			{#snippet children({ countUpAmount, startCountUp, finishCountUp, countUpCompleted })}
 				{@const level = climb.levelAt({ shown: countUpAmount, completed: countUpCompleted })}
 				{#if isBigWin}
-					<CanvasSizeRectangle backgroundColor={0x000000} backgroundAlpha={0.5} />
+					<BoardDim />
 					<CoinShower count={16 + level.tier.coins} />
 				{/if}
 
@@ -90,15 +92,18 @@
 						{#if isBigWin}
 							<WinAnimation {level} levels={climb.levels} panel="celebration" scale={panelScale}>
 								{#snippet children({ face })}
-									<GameText
-										anchor={0.5}
-										x={face.x}
-										y={face.y - face.height * 0.24}
-										text={context.i18nDerived.winLevel(level.text)}
-										style={panelTextStyle({ fontSize: face.height * 0.26, tone: 'label' })}
-										maxWidth={face.width}
-									/>
-									<WinPunch x={face.x} y={face.y + face.height * 0.16} completed={countUpCompleted}>
+									<!-- each level's name comes down and hits its place -->
+									{#key level.level}
+										<Slam x={face.x} y={face.y - face.height * 0.3}>
+											<GameText
+												anchor={0.5}
+												text={context.i18nDerived.winLevel(level.text)}
+												style={panelTextStyle({ fontSize: face.height * 0.34, tone: 'label' })}
+												maxWidth={face.width}
+											/>
+										</Slam>
+									{/key}
+									<WinPunch x={face.x} y={face.y + face.height * 0.2} completed={countUpCompleted}>
 										<GameText
 											anchor={0.5}
 											text={bookEventAmountToCountUpCurrencyString(countUpAmount, amount)}

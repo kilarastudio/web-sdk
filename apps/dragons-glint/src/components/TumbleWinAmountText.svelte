@@ -18,7 +18,7 @@
 
 	const props: Props = $props();
 	// the tumble's total swells while it counts up to the new amount, then settles; before the
-	// first coins of a spin land the panel stands empty
+	// first coins of a spin land there is no amount
 	const COUNT_DURATION = 450;
 	const amount = new Tween(0);
 	const pop = new Tween(1);
@@ -47,7 +47,7 @@
 		text={props.amount === 0 && amount.current === 0
 			? ''
 			: bookEventAmountToCountUpCurrencyString(amount.current, props.amount)}
-		style={panelTextStyle({ fontSize: props.face.height * 0.9, tone: 'value' })}
+		style={panelTextStyle({ fontSize: props.face.height, tone: 'value' })}
 		maxWidth={props.face.width}
 	/>
 </Container>

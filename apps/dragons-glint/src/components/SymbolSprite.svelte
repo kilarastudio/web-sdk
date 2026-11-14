@@ -49,6 +49,9 @@
 	};
 	const WIN_DURATION = WIN.hold.duration + WIN.flash.duration + ACT_DURATION;
 	const DIMMED = { red: 0x70, green: 0x78, blue: 0x96 };
+	const DIMMED_DEEP = { red: 0x34, green: 0x36, blue: 0x4a };
+	// the scatters under the free spins intro's words: dimmer than awake, far brighter than the rest
+	const HUSHED = 0x86;
 
 	let pop = $state(1);
 	let pose = $state<SymbolPose>({});
@@ -68,6 +71,13 @@
 	const texture = (key: string) =>
 		(context.stateApp.loadedAssets[key] ?? PIXI.Texture.EMPTY) as PIXI.Texture;
 	const frames = (key: string) => (context.stateApp.loadedAssets[key] ?? []) as PIXI.Texture[];
+
+	// after its win a symbol stays as the win left it, until it goes
+	const hurt = $derived(
+		'motion' in props.symbolInfo && props.symbolInfo.motion === 'hurt'
+			? frames(`${assetKey}Hurt`).at(-1)
+			: undefined,
+	);
 
 	const win = async (id: number, key: string) => {
 		if (prefersReducedMotion.current) {
@@ -158,17 +168,25 @@
 
 	// waiting on a scatter: the scatters down on the board are wide awake and throb, the rest darken
 	const dim = $derived(anticipationDim.current);
-	const awake = $derived(scatter && atRest && dim > 0.5);
+	const dimmed = $derived(anticipation.deep ? DIMMED_DEEP : DIMMED);
+	const awake = $derived(scatter && (atRest || anticipation.deep) && dim > 0.5);
 	const throb = $derived(scatter && atRest && !reduced ? 1 + 0.09 * anticipation.pulse * dim : 1);
 	const tint = $derived(
 		scatter || dim === 0
 			? 0xffffff
-			: (Math.round(lerp(255, DIMMED.red, dim)) << 16) |
-					(Math.round(lerp(255, DIMMED.green, dim)) << 8) |
-					Math.round(lerp(255, DIMMED.blue, dim)),
+			: (Math.round(lerp(255, dimmed.red, dim)) << 16) |
+					(Math.round(lerp(255, dimmed.green, dim)) << 8) |
+					Math.round(lerp(255, dimmed.blue, dim)),
+	);
+	const hushed = $derived(
+		scatter && anticipation.hush > 0
+			? Math.round(lerp(255, HUSHED, anticipation.hush)) * 0x010101
+			: 0xffffff,
 	);
 	const art = $derived(
-		stand ?? (awake ? (frames(`${assetKey}Alert`)[0] ?? texture(assetKey)) : texture(assetKey)),
+		stand ??
+			hurt ??
+			(awake ? (frames(`${assetKey}Alert`)[0] ?? texture(assetKey)) : texture(assetKey)),
 	);
 
 	const pivot = $derived({
@@ -189,7 +207,7 @@
 	};
 </script>
 
-<Container x={props.x} y={props.y} scale={pop * throb}>
+<Container x={props.x} y={props.y} scale={pop * throb} tint={hushed}>
 	<!-- the symbol turns and grows about its act's pivot -->
 	<Container
 		x={pivot.x + (pose.x ?? 0) * ART_PIXEL}

@@ -6,7 +6,7 @@
 	import { Sprite } from 'pixi-svelte';
 	import { stateBetDerived } from 'state-shared';
 
-	import { ART_PIXEL, SYMBOL_SIZE } from '../game/constants';
+	import { SYMBOL_SIZE } from '../game/constants';
 	import { GLINT_ANIMATION_MS } from '../game/glint';
 	import { frameAt } from '../game/motion';
 	import { pixelClock } from '../game/pixelClock.svelte';
@@ -20,15 +20,17 @@
 	let playing = $state(animate);
 	let completed = false;
 
-	// the ember is 9 art pixels across; it drops in large and settles, then glows on the clock
-	const SIZE = 9 * ART_PIXEL;
-	const POP = [2.2, 1.6, 1.2, 1];
-	const GLOW = [1, 1, 0.85, 0.7, 0.85, 1];
+	// the cracks open with a glare that dies down, then glow on the clock
+	const POP = [1, 1, 0.9, 0.8];
+	const GLOW = [0.75, 0.75, 0.62, 0.5, 0.62, 0.75];
 
 	const moving = $derived(playing && !prefersReducedMotion.current);
-	const size = $derived(SIZE * (moving ? POP[frameAt(progress.current, POP.length)] : 1));
 	const alpha = $derived(
-		moving || prefersReducedMotion.current ? 1 : GLOW[pixelClock.frame % GLOW.length],
+		moving
+			? POP[frameAt(progress.current, POP.length)]
+			: prefersReducedMotion.current
+				? 0.7
+				: GLOW[pixelClock.frame % GLOW.length],
 	);
 
 	const finish = () => {
@@ -47,14 +49,6 @@
 	onDestroy(finish);
 </script>
 
-{#if props.layer === 'over'}
-	<Sprite
-		key="glintPrimed"
-		x={SYMBOL_SIZE * 0.36}
-		y={-SYMBOL_SIZE * 0.36}
-		anchor={0.5}
-		width={size}
-		height={size}
-		{alpha}
-	/>
+{#if props.layer === 'under'}
+	<Sprite key="glintPrimed" anchor={0.5} width={SYMBOL_SIZE} height={SYMBOL_SIZE} {alpha} />
 {/if}

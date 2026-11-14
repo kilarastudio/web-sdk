@@ -16,14 +16,15 @@
 	import { FadeContainer, WinCountUpProvider } from 'components-pixi';
 	import { bookEventAmountToCountUpCurrencyString } from 'utils-shared/amount';
 	import { waitForResolve } from 'utils-shared/wait';
-	import { CanvasSizeRectangle } from 'components-layout';
 	import { OnMount } from 'components-shared';
 
 	import { getContext } from '../game/context';
 	import { countUpEasing } from '../game/constants';
 	import { winCountUpSoundsEnd } from '../game/winSounds';
 	import { winClimb } from '../game/winLevelMap';
+	import BoardDim from './BoardDim.svelte';
 	import FreeSpinAnimation from './FreeSpinAnimation.svelte';
+	import SpotsOut from './SpotsOut.svelte';
 	import PressToContinue from './PressToContinue.svelte';
 	import CoinShower from './CoinShower.svelte';
 
@@ -63,7 +64,11 @@
 					: undefined}
 				<OnMount onmount={() => startCountUp()} />
 
-				<CanvasSizeRectangle backgroundColor={0x000000} backgroundAlpha={0.5} />
+				<BoardDim />
+				<SpotsOut
+					duration={isBigWin ? climb.duration : winLevelData.presentDuration}
+					completed={countUpCompleted}
+				/>
 				{#if level}
 					<CoinShower count={16 + level.tier.coins} />
 				{/if}
@@ -80,7 +85,10 @@
 					levels={climb.levels}
 				/>
 
-				<PressToContinue onpress={() => (countUpCompleted ? oncomplete() : finishCountUp())} />
+				<PressToContinue
+					underBoard
+					onpress={() => (countUpCompleted ? oncomplete() : finishCountUp())}
+				/>
 			{/snippet}
 		</WinCountUpProvider>
 	{/if}

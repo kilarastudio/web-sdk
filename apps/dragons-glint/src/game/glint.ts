@@ -1,6 +1,6 @@
 import { SYMBOL_SIZE } from './constants';
 
-export const GLINT_LIGHT_DURATION_MS = 400;
+export const GLINT_LIGHT_DURATION_MS = 520;
 export const GLINT_ANIMATION_MS = {
 	prime: 300,
 	apply: 500,
@@ -46,16 +46,17 @@ export type GlintChange = GlintCellPosition & {
 	animation: GlintAnimation;
 };
 
-// Prime only 0 → 1. Directly initialized lit boards, unchanged values, and
-// resets do not replay an upgrade. A strike may skip to the authoritative tier.
+// Prime only 0 → 1. Unchanged values and resets do not replay an upgrade. A spot that lights,
+// from primed or from nothing (a strike), catches fire from inside, at whatever tier it lands
+// on. SUPER and HOARD light the whole board the same way, every spot at once.
 export const glintChanges = (previous: number[][], next: number[][]): GlintChange[] =>
 	next.flatMap((column, reel) =>
 		column.flatMap((to, row): GlintChange[] => {
 			const from = previous[reel]?.[row] ?? 0;
 			if (from === 0 && to === 1) return [{ reel, row, from, to, animation: 'prime' }];
-			if (from < 1 || to < 2 || to <= from) return [];
+			if (to < 2 || to <= from) return [];
 			const animation =
-				from === 1 ? 'light' : glintTier(to) > glintTier(from) ? 'tier_up' : 'double';
+				from <= 1 ? 'light' : glintTier(to) > glintTier(from) ? 'tier_up' : 'double';
 			return [{ reel, row, from, to, animation }];
 		}),
 	);

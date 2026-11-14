@@ -19,7 +19,6 @@
 	import { setContext } from '../game/context';
 	import { eventEmitter } from '../game/eventEmitter';
 
-	
 	setContext();
 </script>
 

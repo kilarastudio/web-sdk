@@ -1,14 +1,12 @@
 import { asset } from '$app/paths';
 import type { Assets } from 'pixi-svelte';
 
-import { CHARACTER } from './character';
-
-// Image art (backgrounds, the dragon, the logo, mode pictures), the bitmap fonts and the audio
+// Image art (backgrounds, the dragon's eye, the logo, mode pictures), the bitmap fonts and the audio
 // sprite ship in static/assets. Symbols, the board, panels, Glint Spots and particles are not
 // here: they are drawn by code (src/pixel) and join the loaded assets in GeneratedArt.
 const assets: Assets = {
-	// shown while the rest loads
-	logo: { type: 'sprite', src: asset('assets/ui/logo.png'), preload: true },
+	// the welcome screen's; the loading screen is HTML and shows its own copy (game/loader.ts)
+	logo: { type: 'sprite', src: asset('assets/ui/logo.png') },
 
 	backgroundBaseLandscape: {
 		type: 'sprite',
@@ -24,13 +22,11 @@ const assets: Assets = {
 		src: asset('assets/backgrounds/bonus-portrait.png'),
 	},
 
-	// one strip of frames for each of the dragon's animations
-	...Object.fromEntries(
-		Object.keys(CHARACTER.animations).map((name) => [
-			`character_${name}`,
-			{ type: 'sprite', src: asset(`assets/character/${name}.png`) },
-		]),
-	),
+	// the dragon's eye: one strip of frames for each background (game/dragonEye.ts)
+	eyeBaseLandscape: { type: 'sprite', src: asset('assets/eye/base-landscape-eye.png') },
+	eyeBasePortrait: { type: 'sprite', src: asset('assets/eye/base-portrait-eye.png') },
+	eyeBonusLandscape: { type: 'sprite', src: asset('assets/eye/bonus-landscape-eye.png') },
+	eyeBonusPortrait: { type: 'sprite', src: asset('assets/eye/bonus-portrait-eye.png') },
 
 	modeAnte: { type: 'sprite', src: asset('assets/ui/mode-ante.png') },
 	modeBoost: { type: 'sprite', src: asset('assets/ui/mode-boost.png') },

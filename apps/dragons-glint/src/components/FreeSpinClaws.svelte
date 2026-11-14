@@ -1,23 +1,24 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import { onMount } from 'svelte';
-	import { prefersReducedMotion, Tween } from 'svelte/motion';
-	import { backOut, cubicOut, quadIn } from 'svelte/easing';
-	import * as PIXI from 'pixi.js';
+	import { prefersReducedMotion } from 'svelte/motion';
+	import { backOut, cubicOut, quadOut } from 'svelte/easing';
 
-	import { BaseSprite, Container } from 'pixi-svelte';
+	import { BaseSprite, Container, Rectangle } from 'pixi-svelte';
 
-	import FireAround from './FireAround.svelte';
 	import { getContext } from '../game/context';
+	import { anticipation } from '../game/anticipation.svelte';
 	import { ART_PIXEL } from '../game/constants';
 	import { impact, shake } from '../game/impact.svelte';
+	import { animate } from '../game/motion';
 	import { panelLayout, type PanelFace } from '../game/panels';
-	import { fireAround, introPanelTexture } from '../pixel/textures';
-	import { CELL } from '../pixel/ui';
+	import { clawMarks } from '../pixel/textures';
 
-	// The free spins intro lands like a door slammed shut: it drops in from above, hits with a jolt
-	// and a thud, the fire round it catches, the dragon's eye on its crest snaps open, and the
-	// dragon behind it rears. Then it waits, burning, and the eye blinks now and then.
+	// The free spins intro is the dragon's own mark, and nothing like a win: three claws rake
+	// across the board, one after another, each with a jolt, and leave it scarred and glowing.
+	// Then the words land in the marks white-hot and cool to gold, as the marks cool to embers
+	// that go on breathing while the intro waits. No panel, no bed of fire.
+	// (0, 0) is the board's middle; `face` is the room the words are laid out in.
 	type Props = {
 		// 1 keeps the game's pixel density
 		scale: number;
@@ -27,93 +28,108 @@
 	const props: Props = $props();
 	const context = getContext();
 	const layout = $derived(panelLayout({ key: 'panelFreeSpinsIntro', scale: props.scale }));
-	const texture = $derived(introPanelTexture(layout.pixels.width, layout.pixels.height));
-	const fire = $derived(fireAround(layout.pixels.width, layout.pixels.height));
-	const crest = $derived(CELL * ART_PIXEL * props.scale);
+	const marks = clawMarks();
 
-	const FALL = 300;
-	const BLINK = { every: 3400, frame: 80 };
+	const RAKE = 130; // one claw crossing the board
+	const BETWEEN = 150; // from one claw to the next
+	const WORDS = 260; // the words landing
+	const COOL = 1500; // white-hot to gold, molten to embers
+	const EMBERS = { low: 0.34, swing: 0.12, period: 2400 };
 
 	const still = prefersReducedMotion.current;
-	const drop = new Tween(still ? 0 : -1);
-	const punch = new Tween(1);
-	let landed = $state(still);
-	// shut, half, open, alert: the crest's eye
-	let eye = $state<'shut' | 'half' | 'open' | 'alert'>(still ? 'open' : 'shut');
-
-	const eyeTexture = $derived.by(() => {
-		const art = context.stateApp.loadedAssets;
-		const blink = (art.symbolScatterBlink ?? []) as PIXI.Texture[];
-		if (eye === 'shut') return blink[1];
-		if (eye === 'half') return blink[0];
-		if (eye === 'alert') return (art.symbolScatterAlert as PIXI.Texture[] | undefined)?.[0];
-		return art.symbolScatter as PIXI.Texture | undefined;
-	});
+	// how far each claw has raked, how hot its mark is, and the words: there, their size, their heat
+	const raked = $state(marks.map(() => (still ? 1 : 0)));
+	let molten = $state(still ? EMBERS.low : 1);
+	let words = $state(still ? 1 : 0);
+	let size = $state(1);
+	let hot = $state(0);
 
 	const wait = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 	onMount(() => {
+		if (still) {
+			anticipation.hush = 1;
+
+			return () => (anticipation.hush = 0);
+		}
 		let alive = true;
-		let blinking = 0;
-		const land = async () => {
-			await drop.set(0, { duration: FALL, easing: quadIn });
-			if (!alive) return;
-			landed = true;
-			shake(3, 360);
-			context.eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_fireball_hit' });
-			context.eventEmitter.broadcast({ type: 'characterReact', reaction: 'bonus' });
-			punch
-				.set(1.08, { duration: 70, easing: cubicOut })
-				.then(() => punch.set(1, { duration: 280, easing: backOut }));
-			eye = 'half';
-			await wait(70);
-			eye = 'alert';
-			await wait(420);
-			if (alive) eye = 'open';
-		};
-		if (!still) void land();
-		const blink = async () => {
-			if (eye !== 'open') return;
-			for (const lid of ['half', 'shut', 'half', 'open'] as const) {
+		let request = 0;
+		const run = async () => {
+			for (const index of marks.keys()) {
 				if (!alive) return;
-				eye = lid;
-				await wait(BLINK.frame);
+				context.eventEmitter.broadcast({
+					type: 'soundOnce',
+					name: 'sfx_claw_rake',
+					forcePlay: true,
+				});
+				shake(index === 1 ? 3 : 2, 180);
+				void animate(RAKE, (progress) => (raked[index] = quadOut(progress)), {
+					timeScaled: false,
+				});
+				await wait(BETWEEN);
 			}
+			await wait(120);
+			if (!alive) return;
+			context.eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_brand_land' });
+			shake(3, 320);
+			void animate(
+				WORDS,
+				(progress) => {
+					words = Math.min(1, progress * 3);
+					// the scatters step back as the words land over them
+					anticipation.hush = progress;
+					size = 1.16 - 0.16 * backOut(progress);
+				},
+				{ timeScaled: false },
+			);
+			hot = 1;
+			await animate(
+				COOL,
+				(progress) => {
+					hot = 1 - cubicOut(progress);
+					molten = 1 - (1 - EMBERS.low) * cubicOut(progress);
+				},
+				{ timeScaled: false },
+			);
+			// the embers breathe
+			const start = performance.now();
+			const breathe = (now: number) => {
+				if (!alive) return;
+				request = requestAnimationFrame(breathe);
+				molten =
+					EMBERS.low +
+					EMBERS.swing * 0.5 * (1 - Math.cos(((now - start) / EMBERS.period) * Math.PI * 2));
+			};
+			request = requestAnimationFrame(breathe);
 		};
-		if (!still) blinking = window.setInterval(blink, BLINK.every);
+		void run();
 
 		return () => {
 			alive = false;
-			clearInterval(blinking);
+			anticipation.hush = 0;
+			cancelAnimationFrame(request);
 		};
 	});
 </script>
 
-<Container
-	x={impact.x}
-	y={impact.y + drop.current * context.stateLayoutDerived.canvasSizes().height}
->
-	<Container scale={punch.current}>
-		<!-- mounted from the start, under the frame, and shown as the panel lands -->
-		<Container alpha={landed ? 1 : 0}>
-			<FireAround
-				x={-layout.sizes.width / 2}
-				y={-layout.sizes.height / 2}
-				width={layout.sizes.width}
-				height={layout.sizes.height}
-				frames={fire}
-			/>
+<Container x={impact.x} y={impact.y}>
+	{#each marks as mark, index}
+		{@const width = mark.width * ART_PIXEL}
+		{@const height = mark.height * ART_PIXEL}
+		<Container x={mark.x * ART_PIXEL - width / 2} y={mark.y * ART_PIXEL - height / 2}>
+			<!-- shown from the right, where the claw lands, to the left -->
+			<Rectangle isMask x={width * (1 - raked[index])} width={width * raked[index]} {height} />
+			<BaseSprite texture={mark.scar} {width} {height} />
+			<BaseSprite texture={mark.glow} {width} {height} alpha={molten} />
 		</Container>
-		<BaseSprite {texture} anchor={0.5} width={layout.sizes.width} height={layout.sizes.height} />
-		{#if eyeTexture}
-			<BaseSprite
-				texture={eyeTexture}
-				anchor={0.5}
-				y={-layout.sizes.height / 2}
-				width={crest}
-				height={crest}
-			/>
-		{/if}
+	{/each}
+
+	<Container scale={size} alpha={words}>
 		{@render props.children({ face: layout.face })}
+		{#if hot > 0}
+			<Container blendMode="add" alpha={hot}>
+				{@render props.children({ face: layout.face })}
+			</Container>
+		{/if}
 	</Container>
 </Container>

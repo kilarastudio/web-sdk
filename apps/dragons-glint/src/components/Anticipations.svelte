@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { untrack } from 'svelte';
+
 	import { OnMount } from 'components-shared';
 	import { SECOND } from 'constants-shared/time';
 
@@ -11,8 +13,10 @@
 		context.stateGame.board.some((reel) => reel.reelState.anticipating),
 	);
 
+	// only a change in the reels' waiting sets it: the free spins intro darkens the board too
 	$effect(() => {
-		setAnticipating(hasAnticipation);
+		const on = hasAnticipation;
+		untrack(() => setAnticipating(on));
 	});
 </script>
 

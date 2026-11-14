@@ -3,7 +3,9 @@ import { Tween } from 'svelte/motion';
 // While a column waits on a scatter the whole board holds its breath: `dim` goes to 1 (the other
 // symbols darken) and `pulse` beats between 0 and 1 (the scatters already down throb with it).
 export const anticipationDim = new Tween(0, { duration: 220 });
-export const anticipation = $state({ pulse: 0 });
+// `deep`: the free spins intro darkens them much further, so its words read over the board
+// `hush`: 0 to 1, how far the scatters themselves step back once the intro's words stand over them
+export const anticipation = $state({ pulse: 0, deep: false, hush: 0 });
 
 const BEAT = 420;
 let request = 0;
@@ -18,7 +20,8 @@ const tick = (now: number) => {
 	}
 };
 
-export const setAnticipating = (on: boolean) => {
+export const setAnticipating = (on: boolean, deep = false) => {
+	if (on) anticipation.deep = deep;
 	if (anticipationDim.target > 0 === on) return;
 	anticipationDim.set(on ? 1 : 0);
 	if (on && !request) request = requestAnimationFrame(tick);

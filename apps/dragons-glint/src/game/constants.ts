@@ -104,23 +104,10 @@ export const BOARD_MARGINS = {
 // the side edges (or the HUD's side columns) and from the header and the controls
 export const BOARD_FIT = { edge: 10, gap: 8 };
 
-// The game's character: where the screen leaves room beside the frame it stands right of it, its
-// feet level with the frame's bottom; otherwise it stands right-aligned under the frame on the
-// bottom of the screen, behind the HUD's floating controls, or stays hidden where the room there
-// is too small to read it. Its height grows with the room, between these bounds, and stays below
-// the board's (500) so the reels keep the focus; width = height × ratio.
-export const CHARACTER_SIZES = {
-	// width / height of the dragon's idle figure (static/assets/character/character.json)
-	ratio: 472 / 636,
-	// kept clear between the character and the edge of the screen
-	edge: 16,
-	side: { minHeight: 240, maxHeight: 400, gap: 24 },
-	bottom: { minHeight: 200, maxHeight: 400, gap: 8 },
-};
-
-// the title logo on the loading and welcome screens (static/assets/ui/logo.png), a little
-// narrower than the board (600); ratio is its width / height
-export const LOADING_LOGO = { width: 480, ratio: 192 / 135 };
+// the title logo on the loading and welcome screens (static/assets/ui/logo.png, 152 × 79 art
+// pixels shipped ×4, drawn by workspace output/pratala/logo/pixel/pratala_pixel_logo.py --ship),
+// three game units to an art pixel; ratio is its width / height
+export const LOADING_LOGO = { width: 456, ratio: 152 / 79 };
 
 export const BACKGROUND_RATIO = 2039 / 1000;
 export const PORTRAIT_BACKGROUND_RATIO = 1242 / 2208;
@@ -212,8 +199,8 @@ export const zIndexes = {
 };
 
 // Symbols are drawn by code (src/pixel/symbols.ts) and animated by code as solid objects: one
-// smooth curve into place, a win act of their own (SymbolSprite, game/symbolActs.ts), and an
-// explosion that breaks the symbol into its own pixels.
+// smooth curve into place, a win act of their own (SymbolSprite, game/symbolActs.ts) that leaves
+// the symbol hurt until it goes, and its own way of leaving the board (SymbolExplosion).
 const explosion = { type: 'explosion', assetKey: '', sizeRatios: { width: 1, height: 1 } } as const;
 
 const kilaraSymbol = (assetKey: string) => {
@@ -227,7 +214,7 @@ const kilaraSymbol = (assetKey: string) => {
 		static: resting,
 		spin: sprite,
 		land: { ...sprite, motion: 'land' },
-		postWinStatic: resting,
+		postWinStatic: { ...sprite, motion: 'hurt' },
 		win: { ...sprite, motion: 'win' },
 	} as const;
 };

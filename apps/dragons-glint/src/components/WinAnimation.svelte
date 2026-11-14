@@ -4,25 +4,26 @@
 	import { prefersReducedMotion, Tween } from 'svelte/motion';
 	import { backOut, cubicOut } from 'svelte/easing';
 
-	import { BaseSprite, Container } from 'pixi-svelte';
+	import { Container } from 'pixi-svelte';
 
 	import CoinBurst from './CoinBurst.svelte';
-	import FireAround from './FireAround.svelte';
+	import FireBed from './FireBed.svelte';
 	import { panelLayout, type PanelFace } from '../game/panels';
 	import { impact, shake } from '../game/impact.svelte';
+	import { clearHallMood, landHallMood } from '../game/hallMood.svelte';
 	import { winLevelSoundsLand } from '../game/winSounds';
 	import type { BigWinLevelData } from '../game/winLevelMap';
-	import { fireAround, winPanelTexture } from '../pixel/textures';
 
-	// The panel of a big win, in the frame of the level the count has reached. Each level lands as
-	// an event: the frame turns to the new material with a punch, the screen jolts harder than the
-	// last time, coins burst from behind the panel, more for each level, and the level's sound and
-	// music come in. MAX WIN's frame burns. Without a level (a free spins total too small to
-	// celebrate) it is the stone frame, standing still.
+	// A big win, with no panel: the level and the amount stand in a bed of fire. Each level lands
+	// as an event: the fire leaps and from then on burns wider and higher than the last, the
+	// screen jolts harder, coins burst out of the fire, more for each level, and the level's sound
+	// and music come in. Without a level (a free spins total too small to celebrate) the fire
+	// burns low.
 	type Props = {
 		level?: BigWinLevelData;
 		// the levels the count will land on, in order (winClimb)
 		levels?: BigWinLevelData[];
+		// whose place the words are laid out in
 		panel: 'celebration' | 'panelFreeSpinsOutro';
 		// 1 keeps the game's pixel density
 		scale: number;
@@ -31,26 +32,20 @@
 
 	const props: Props = $props();
 	const layout = $derived(panelLayout({ key: props.panel, scale: props.scale }));
-	const tier = $derived(props.level?.tier ?? { art: 1 as const, coins: 0, shake: 0 });
-	const texture = $derived(winPanelTexture(tier.art, layout.pixels.width, layout.pixels.height));
-	const fire = $derived(
-		tier.art === 5 ? fireAround(layout.pixels.width, layout.pixels.height) : undefined,
-	);
+	const tier = $derived(props.level?.tier ?? { art: 0, coins: 0, shake: 0 });
+	// the bed is drawn once, in art pixels; each level burns it bigger
+	const BED = { length: 340, depth: 80, under: 14 };
+	const grow = $derived(((0.7 + 0.13 * tier.art) * layout.sizes.width) / (BED.length * 0.62 * 2.5));
 
 	const still = prefersReducedMotion.current;
 	const punch = new Tween(still ? 1 : 0.9);
 
 	onMount(() => {
 		punch.set(1, { duration: 320, easing: backOut });
-	});
 
-	// the frame of the next level is drawn while this one stands, so its landing never waits on it
-	const prepare = (level: BigWinLevelData | undefined) => {
-		if (!level) return;
-		const { width, height } = layout.pixels;
-		winPanelTexture(level.tier.art, width, height);
-		if (level.tier.art === 5) fireAround(width, height);
-	};
+		// the hall settles when the win leaves
+		return clearHallMood;
+	});
 
 	let landed = 0;
 	$effect(() => {
@@ -59,9 +54,9 @@
 		const first = landed === 0;
 		landed = level.level;
 		untrack(() => {
-			const upcoming = props.levels?.find((next) => next.level > level.level);
-			setTimeout(() => prepare(upcoming), 600);
 			winLevelSoundsLand(level);
+			// the hall answers each level in its own way (game/hallMood.svelte.ts)
+			landHallMood(level.tier.art);
 			shake(level.tier.shake, 260 + level.tier.shake * 60);
 			if (first || still) return;
 			punch
@@ -72,20 +67,13 @@
 </script>
 
 <Container x={impact.x} y={impact.y}>
+	<Container y={layout.sizes.height * 0.42}>
+		<FireBed {...BED} flare={props.level?.level ?? 0} {grow} />
+	</Container>
 	{#if props.level}
 		<CoinBurst level={props.level.level} count={tier.coins} width={layout.sizes.width} />
 	{/if}
 	<Container scale={punch.current}>
-		{#if fire}
-			<FireAround
-				x={-layout.sizes.width / 2}
-				y={-layout.sizes.height / 2}
-				width={layout.sizes.width}
-				height={layout.sizes.height}
-				frames={fire}
-			/>
-		{/if}
-		<BaseSprite {texture} anchor={0.5} width={layout.sizes.width} height={layout.sizes.height} />
 		{@render props.children({ face: layout.face })}
 	</Container>
 </Container>

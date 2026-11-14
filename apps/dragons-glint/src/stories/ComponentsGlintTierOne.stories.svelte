@@ -24,8 +24,8 @@
 		assets={{
 			glintSheet: assets.glintSheet,
 			glintTile1: assets.glintTile1,
-			gameFontGold: assets.gameFontGold,
-			gameFontInk: assets.gameFontInk,
+			fontGold: assets.fontGold,
+			fontInk: assets.fontInk,
 		}}
 	>
 		<Rectangle width={1200} height={675} backgroundColor={0x07131e} />

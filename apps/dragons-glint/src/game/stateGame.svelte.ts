@@ -13,8 +13,6 @@ import {
 	SYMBOL_SIZE,
 	BOARD_SIZES,
 	BOARD_MARGINS,
-	BOARD_FRAME_SIDE,
-	CHARACTER_SIZES,
 	INITIAL_BOARD,
 	BOARD_DIMENSIONS,
 	SPIN_OPTIONS_DEFAULT,
@@ -139,50 +137,6 @@ const boardLayout = () => ({
 	...BOARD_SIZES,
 });
 
-// the character's box, (x, y) being the middle of its feet: beside the frame where the screen
-// leaves room for a tall enough character there; otherwise right-aligned under the frame,
-// standing on the bottom of the screen behind the HUD's floating controls and as tall as the room
-// under the frame allows; hidden where that room is too small to read it
-const characterLayout = () => {
-	const { ratio, edge, side, bottom } = CHARACTER_SIZES;
-	const board = boardLayout();
-	const frameRight = board.x + BOARD_SIZES.width / 2 + BOARD_FRAME_SIDE;
-	const frameBottom = board.y + BOARD_SIZES.height / 2 + boardMargins().bottom;
-	const canvas = canvasArea();
-	const { top: freeTop, bottom: freeBottom } = freeArea();
-	const sideRoom = (canvas.width - BOARD_SIZES.width) / 2 - BOARD_FRAME_SIDE - side.gap - edge;
-	const sideHeight = Math.min(side.maxHeight, sideRoom / ratio, freeBottom - freeTop);
-
-	if (sideHeight >= side.minHeight) {
-		const width = sideHeight * ratio;
-
-		return {
-			placement: 'side' as const,
-			x: frameRight + side.gap + width / 2,
-			y: frameBottom,
-			width,
-			height: sideHeight,
-		};
-	}
-
-	const feet = canvas.bottom - edge;
-	const bottomHeight = Math.min(bottom.maxHeight, feet - frameBottom - bottom.gap);
-
-	if (bottomHeight < bottom.minHeight) {
-		return { placement: 'hidden' as const, x: 0, y: 0, width: 0, height: 0 };
-	}
-
-	const width = bottomHeight * ratio;
-
-	return {
-		placement: 'bottom' as const,
-		x: frameRight - width / 2,
-		y: feet,
-		width,
-		height: bottomHeight,
-	};
-};
-
 const boardRaw = () =>
 	board.map((reel) => reel.reelState.symbols.map((reelSymbol) => reelSymbol.rawSymbol));
 
@@ -214,7 +168,6 @@ export const stateGameDerived = {
 	onSymbolLand,
 	freeArea,
 	boardLayout,
-	characterLayout,
 	boardRaw,
 	tumbleBoardCombined,
 	scatterLandIndex,

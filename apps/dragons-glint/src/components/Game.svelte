@@ -1,16 +1,20 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { prefersReducedMotion } from 'svelte/motion';
+	import { quadIn } from 'svelte/easing';
 
 	import { EnablePixiExtension } from 'components-pixi';
 	import { EnableHotkey } from 'components-shared';
 	import { MainContainer } from 'components-layout';
-	import { App } from 'pixi-svelte';
+	import { App, Container } from 'pixi-svelte';
 	import { stateMeta, stateModal, stateUrlDerived } from 'state-shared';
 
 	import { UI, UiGameName, GameVersion, Modals } from 'components-ui-html';
 
 	import { version as gameVersion } from '../../package.json';
 	import { getContext } from '../game/context';
+	import { animate } from '../game/motion';
+	import { shake } from '../game/impact.svelte';
 	import { betModeMeta } from '../game/betModeMeta';
 	import EnableSound from './EnableSound.svelte';
 	import EnableGameActor from './EnableGameActor.svelte';
@@ -19,7 +23,6 @@
 	import Background from './Background.svelte';
 	import LoadingScreen from './LoadingScreen.svelte';
 	import BoardFrame from './BoardFrame.svelte';
-	import Character from './Character.svelte';
 	import Board from './Board.svelte';
 	import Anticipations from './Anticipations.svelte';
 	import ClusterWinAmounts from './ClusterWinAmounts.svelte';
@@ -32,18 +35,29 @@
 	import Win from './Win.svelte';
 	import FreeSpinIntro from './FreeSpinIntro.svelte';
 	import FreeSpinOutro from './FreeSpinOutro.svelte';
-	import Transition from './Transition.svelte';
 	import GeneratedArt from './GeneratedArt.svelte';
 	import PayTable from './PayTable.svelte';
 	import GameRules from './GameRules.svelte';
-	import TransitionAnimation from './TransitionAnimation.svelte';
 
 	const context = getContext();
 
 	stateMeta.betModeMeta = betModeMeta(stateUrlDerived.social());
 
-	// the wipe that closed the welcome screen opens on the game
-	let entering = $state(false);
+	// The welcome screen left the hall; the board comes down into it: one fall from above the
+	// screen, no bounce, and a jolt as it lands. With reduced motion it fades in.
+	const ENTER = 460;
+	let entered = $state(1);
+	const canvas = $derived(context.stateLayoutDerived.canvasSizes());
+	const enter = async () => {
+		entered = 0;
+		await animate(ENTER, (progress) => (entered = progress), { timeScaled: false });
+		shake(2, 200);
+	};
+	const entrance = $derived(
+		prefersReducedMotion.current
+			? { y: 0, alpha: entered }
+			: { y: -canvas.height * (1 - quadIn(entered)), alpha: 1 },
+	);
 
 	onMount(() => (context.stateLayout.showLoadingScreen = true));
 
@@ -67,7 +81,7 @@
 		<LoadingScreen
 			onloaded={() => {
 				context.stateLayout.showLoadingScreen = false;
-				entering = true;
+				enter();
 			}}
 		/>
 	{:else}
@@ -79,47 +93,41 @@
 		-->
 		<Sound />
 
-		<MainContainer>
-			<BoardFrame />
-		</MainContainer>
+		<Container {...entrance}>
+			<MainContainer>
+				<BoardFrame />
+			</MainContainer>
 
-		<MainContainer>
-			<Character />
-		</MainContainer>
+			<MainContainer>
+				<GlintSpots layer="under" />
+				<Board />
+				<Anticipations />
+			</MainContainer>
 
-		<MainContainer>
-			<GlintSpots layer="under" />
-			<Board />
-			<Anticipations />
-		</MainContainer>
-
-		<MainContainer>
-			<TumbleBoard />
-			<!-- <TumbleAnticipations /> -->
-			<GlintSpots layer="over" />
-			<GlintEffects />
-			<!-- the coins fly under every amount: the cluster amounts and the tumble win they pay into -->
-			<BoardContainer>
-				<WinCoins />
-			</BoardContainer>
-			<ClusterWinAmounts />
-			<TumbleWinAmount />
-		</MainContainer>
+			<MainContainer>
+				<TumbleBoard />
+				<!-- <TumbleAnticipations /> -->
+				<GlintSpots layer="over" />
+				<GlintEffects />
+				<!-- the coins fly under every amount: the cluster amounts and the tumble win they pay into -->
+				<BoardContainer>
+					<WinCoins />
+				</BoardContainer>
+				<ClusterWinAmounts />
+				<TumbleWinAmount />
+			</MainContainer>
+		</Container>
 
 		<Win />
 		<FreeSpinIntro />
 		<FreeSpinOutro />
-		<Transition />
-		{#if entering}
-			<TransitionAnimation mode="uncover" oncomplete={() => (entering = false)} />
-		{/if}
 	{/if}
 </App>
 
 {#if !context.stateLayout.showLoadingScreen}
 	<UI>
 		{#snippet gameName()}
-			<UiGameName name="DRAGON'S GLINT" />
+			<UiGameName name="PRATALA" />
 		{/snippet}
 	</UI>
 {/if}

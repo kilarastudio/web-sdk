@@ -24,12 +24,13 @@ const toTexture = (canvas: PixelCanvas) => {
 	});
 };
 
-// the symbol with a band of light crossing it from the top left to the bottom right:
-// lighter toward the band's edges, white at its core
+// a band of light crossing the symbol from the top left to the bottom right: lighter toward the
+// band's edges, white at its core. Only the band is drawn, so it lies over whatever the symbol
+// shows under it.
 const shineFrames = (canvas: PixelCanvas) =>
 	Array.from({ length: SHINE_FRAMES }, (_, frame) => {
 		const at = -8 + ((canvas.width + canvas.height + 16) * frame) / (SHINE_FRAMES - 1);
-		const lit = canvas.clone();
+		const lit = new PixelCanvas(canvas.width, canvas.height);
 		for (let y = 0; y < canvas.height; y++)
 			for (let x = 0; x < canvas.width; x++) {
 				const c = canvas.get(x, y);
@@ -74,9 +75,8 @@ export const generateArt = ({
 		art[`${key}Shine`] = shineFrames(canvas).map(toTexture);
 	}
 
-	// the gems' turning light, the scatter's blink and alert
+	// what the symbols do at rest, how a win leaves them and how they go
 	for (const [key, frames] of Object.entries(SYMBOL_FRAME_RUNS())) art[key] = frames.map(toTexture);
-	art.slash = ui.slashFrames().map(toTexture);
 
 	for (const [width, height] of flames) {
 		const run = ui.flameFrames(width, height);
@@ -89,28 +89,19 @@ export const generateArt = ({
 
 	art.boardFloor = toTexture(ui.boardFloor(columns, rows));
 	art.boardFrame = toTexture(ui.boardFrame(columns, rows));
-	const fire = fireAround(
-		ui.FRAME.border * 2 + columns * ui.CELL,
-		ui.FRAME.border * 2 + rows * ui.CELL,
-	);
-	art.boardFireTop = fire.top;
-	art.boardFireLeft = fire.left;
-	art.boardFireRight = fire.right;
 	art.panel = toTexture(ui.panel());
-	for (const tier of [1, 2, 3, 4] as const) art[`glintTile${tier}`] = toTexture(ui.glintTile(tier));
+	for (const tier of [1, 2, 3, 4] as const) {
+		art[`glintTile${tier}`] = toTexture(ui.glintTile(tier));
+		art[`glintIgnite${tier}`] = ui.glintIgniteFrames(tier).map(toTexture);
+	}
+	art.glintIgniteFront = ui.glintIgniteFrames(0).map(toTexture);
 	art.glintPrimed = toTexture(ui.glintPrimed());
 	art.glintFlash = toTexture(ui.glintFlash());
 	art.coin = ui.coinFrames().map(toTexture);
 	art.fireball = ui.fireballFrames().map(toTexture);
 	art.burst = ui.burstFrames().map(toTexture);
 	art.pixel = toTexture(ui.pixel());
-	art.fireWall = ui.fireWallFrames().map(toTexture);
-	art.fireWallSmoke = toTexture(ui.fireWallSmoke());
-	art.fireWallTail = toTexture(ui.fireWallTail());
 	art.anticipationBeam = toTexture(ui.anticipationBeam());
-	const { trough, fill } = ui.loadingBar(120);
-	art.loadingTrough = toTexture(trough);
-	art.loadingFill = toTexture(fill);
 
 	return art;
 };
@@ -123,18 +114,28 @@ const once = <T>(key: string, draw: () => T) => {
 	return drawn.get(key) as T;
 };
 
-// the fire round a rectangle of this many art pixels, as loops of frames
-export const fireAround = (width: number, height: number) =>
-	once(`fire${width}x${height}`, () => {
-		const { top, left, right } = ui.fireAroundFrames(width, height);
+// a bed of fire this many art pixels across and high, as a loop of frames
+export const fireBed = (
+	length: number,
+	depth: number,
+	under = 0,
+	seed = 11,
+	taper = 0.42,
+	wild = 1.2,
+) =>
+	once(`fireBed${length}x${depth}+${under}:${seed}:${taper}:${wild}`, () =>
+		ui.fireBedFrames(length, depth, under, seed, taper, wild).map(toTexture),
+	);
 
-		return { top: top.map(toTexture), left: left.map(toTexture), right: right.map(toTexture) };
-	});
-
-// a big win panel of this tier, this many art pixels across and down
-export const winPanelTexture = (tier: ui.WinPanelTier, width: number, height: number) =>
-	once(`winPanel${tier}:${width}x${height}`, () => toTexture(ui.winPanel(tier, width, height)));
-
-// the free spins intro panel, this many art pixels across and down
-export const introPanelTexture = (width: number, height: number) =>
-	once(`introPanel:${width}x${height}`, () => toTexture(ui.introPanel(width, height)));
+// the claw marks of the free spins intro: each one's scar and the glow inside it
+export const clawMarks = () =>
+	once('clawMarks', () =>
+		ui.clawMarks().map(({ scar, glow, x, y }) => ({
+			scar: toTexture(scar),
+			glow: toTexture(glow),
+			x,
+			y,
+			width: scar.width,
+			height: scar.height,
+		})),
+	);

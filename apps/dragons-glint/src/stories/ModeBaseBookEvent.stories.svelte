@@ -17,9 +17,9 @@
 	import Game from '../components/Game.svelte';
 	import { setContext } from '../game/context';
 	import { playBookEvent } from '../game/utils';
+	import { eventEmitter } from '../game/eventEmitter';
 	import events from './data/base_events';
 
-	
 	setContext();
 </script>
 
@@ -106,6 +106,23 @@
 	{template}
 />
 
+<!-- the tumble win's fire is as big as the win: from 0.08 to 1,000 bets, then a small win again -->
+<Story
+	name="tumbleWinFire"
+	args={templateArgs({
+		skipLoadingScreen: true,
+		data: [8, 30, 100, 300, 1000, 3000, 10000, 30000, 100000, 0, 8],
+		action: async (amounts: number[]) => {
+			for (const amount of amounts) {
+				if (amount === 0) eventEmitter.broadcast({ type: 'tumbleWinAmountReset' });
+				else await playBookEvent({ index: 0, type: 'updateTumbleWin', amount }, { bookEvents: [] });
+				await new Promise((resolve) => setTimeout(resolve, 1000));
+			}
+		},
+	})}
+	{template}
+/>
+
 <Story
 	name="tumbleBoard"
 	args={templateArgs({
@@ -141,6 +158,61 @@
 	args={templateArgs({
 		skipLoadingScreen: true,
 		data: events.setWin,
+		action: async (data) => await playBookEvent(data, { bookEvents: [] }),
+	})}
+	{template}
+/>
+
+<!-- a big win that climbs to BIG: what the hall does at each level it passes -->
+<Story
+	name="setWin BIG"
+	args={templateArgs({
+		skipLoadingScreen: true,
+		data: { ...events.setWin, amount: 1500 },
+		action: async (data) => await playBookEvent(data, { bookEvents: [] }),
+	})}
+	{template}
+/>
+
+<!-- a big win that climbs to SUPER: what the hall does at each level it passes -->
+<Story
+	name="setWin SUPER"
+	args={templateArgs({
+		skipLoadingScreen: true,
+		data: { ...events.setWin, amount: 5000 },
+		action: async (data) => await playBookEvent(data, { bookEvents: [] }),
+	})}
+	{template}
+/>
+
+<!-- a big win that climbs to MEGA: what the hall does at each level it passes -->
+<Story
+	name="setWin MEGA"
+	args={templateArgs({
+		skipLoadingScreen: true,
+		data: { ...events.setWin, amount: 20000 },
+		action: async (data) => await playBookEvent(data, { bookEvents: [] }),
+	})}
+	{template}
+/>
+
+<!-- a big win that climbs to EPIC: what the hall does at each level it passes -->
+<Story
+	name="setWin EPIC"
+	args={templateArgs({
+		skipLoadingScreen: true,
+		data: { ...events.setWin, amount: 150000 },
+		action: async (data) => await playBookEvent(data, { bookEvents: [] }),
+	})}
+	{template}
+/>
+
+<!-- a big win that climbs to MAX: what the hall does at each level it passes -->
+<Story
+	name="setWin MAX"
+	args={templateArgs({
+		skipLoadingScreen: true,
+		data: { ...events.setWin, amount: 2500000 },
 		action: async (data) => await playBookEvent(data, { bookEvents: [] }),
 	})}
 	{template}

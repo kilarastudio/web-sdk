@@ -16,6 +16,7 @@
 	import Game from '../components/Game.svelte';
 	import { setContext } from '../game/context';
 	import { emptyGlint, stateGame } from '../game/stateGame.svelte';
+	import { glintChanges } from '../game/glint';
 	import { playBookEvent } from '../game/utils';
 	import { eventEmitter } from '../game/eventEmitter';
 	import type { GlintCellPosition } from '../game/glint';
@@ -124,8 +125,10 @@
 			stateGame.glint = emptyGlint();
 			await tick();
 			await waitForTimeout(300);
-			stateGame.glint = emptyGlint().map((column) => column.map(() => 2));
-			await eventEmitter.broadcastAsync({ type: 'glintSuperShow' });
+			const lit = emptyGlint().map((column) => column.map(() => 8));
+			const spots = glintChanges(stateGame.glint, lit);
+			stateGame.glint = lit;
+			await eventEmitter.broadcastAsync({ type: 'glintAnimateShow', spots });
 		},
 	})}
 	{template}

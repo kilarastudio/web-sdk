@@ -13,18 +13,18 @@ export const TORCHES: Record<'Landscape' | 'Portrait', Record<'base' | 'bonus', 
 			{ x: 504.5, y: 118, width: 22, height: 60 },
 		],
 		bonus: [
-			{ x: 64.5, y: 118, width: 38, height: 72 },
-			{ x: 510.5, y: 118, width: 38, height: 72 },
+			{ x: 67.5, y: 118, width: 38, height: 72 },
+			{ x: 508, y: 118, width: 38, height: 72 },
 		],
 	},
 	Portrait: {
 		base: [
-			{ x: 45.5, y: 58, width: 24, height: 60 },
-			{ x: 278.5, y: 58, width: 24, height: 60 },
+			{ x: 44, y: 59, width: 24, height: 60 },
+			{ x: 279.5, y: 59, width: 24, height: 60 },
 		],
 		bonus: [
-			{ x: 42.5, y: 58, width: 30, height: 66 },
-			{ x: 280, y: 58, width: 30, height: 66 },
+			{ x: 43.5, y: 59, width: 30, height: 66 },
+			{ x: 280.5, y: 59, width: 30, height: 66 },
 		],
 	},
 };

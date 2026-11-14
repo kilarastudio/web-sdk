@@ -131,11 +131,10 @@ writeFileSync(
 );
 console.log('wrote board.png, ui.png');
 
-// the frame runs beside the still symbols: the gems' turning light, the scatter's blink and alert,
-// and the sword's slash
+// the frame runs beside the still symbols: at rest, hurt by a win, and leaving the board
 writeFileSync(
 	join(out, 'symbol-frames.png'),
-	sheet([...Object.values(SYMBOL_FRAME_RUNS()).flat(), ...ui.slashFrames()], {
+	sheet(Object.values(SYMBOL_FRAME_RUNS()).flat(), {
 		columns: 8,
 		scale: 5,
 	}),

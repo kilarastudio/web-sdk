@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Tween, prefersReducedMotion } from 'svelte/motion';
 	import { cubicInOut } from 'svelte/easing';
-	import { Container, Rectangle } from 'pixi-svelte';
+	import { Container } from 'pixi-svelte';
 	import { stateBetDerived } from 'state-shared';
 	import { getContext } from '../game/context';
 	import { SYMBOL_SIZE } from '../game/constants';
@@ -13,9 +13,7 @@
 
 	const context = getContext();
 	let flights: GlintApplySpot[] = $state([]);
-	let waveActive = $state(false);
 	const flightProgress = new Tween(0);
-	const waveProgress = new Tween(0);
 	const reduced = $derived(prefersReducedMotion.current);
 	context.eventEmitter.subscribeOnMount({
 		glintApplyFly: async ({ spots }) => {
@@ -26,12 +24,6 @@
 				easing: cubicInOut,
 			});
 			flights = [];
-		},
-		glintSuperShow: async () => {
-			waveProgress.set(0, { duration: 0 });
-			waveActive = true;
-			await waveProgress.set(1, { duration: 800 / stateBetDerived.timeScale() });
-			waveActive = false;
 		},
 	});
 </script>
@@ -57,22 +49,4 @@
 			/>
 		</Container>
 	{/each}
-	{#if waveActive && !reduced}
-		<Rectangle
-			x={waveProgress.current * 680 - 40}
-			y={0}
-			width={50}
-			height={500}
-			backgroundColor={0x8fffee}
-			backgroundAlpha={0.18 * Math.sin(Math.PI * waveProgress.current)}
-		/>
-		<Rectangle
-			x={waveProgress.current * 680 - 16}
-			y={0}
-			width={5}
-			height={500}
-			backgroundColor={0xffffff}
-			backgroundAlpha={0.65 * Math.sin(Math.PI * waveProgress.current)}
-		/>
-	{/if}
 </BoardContainer>

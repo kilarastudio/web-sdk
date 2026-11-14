@@ -20,10 +20,14 @@
 	const props: Props = $props();
 	const context = getContext();
 
-	// A winning symbol breaks into its own pixels: it flashes white, then its 5 × 5 blocks fly
-	// out from the middle and fall, each held on the art-pixel grid, while a burst ring opens.
+	// A winning symbol leaves the board in its own way, drawn as a run of frames beside its art
+	// (pixel/symbols.ts, Gone): the crown melts down, a gem breaks into its facets. The run starts
+	// from how the win left the symbol. A symbol with no run of its own breaks into its own pixels:
+	// it flashes white, then its 5 × 5 blocks fly out from the middle and fall, each held on the
+	// art-pixel grid, while a burst ring opens.
 	const CHUNKS = 5;
 	const DURATION = 460;
+	const GONE_DURATION = 480;
 	const FLASH = 0.14;
 	const GRAVITY = 1500;
 	const chunkCache = new Map<string, PIXI.Texture[]>();
@@ -64,11 +68,27 @@
 			const symbol = texture(props.assetKey);
 			if (!symbol) return props.oncomplete?.();
 
+			const hurt = (context.stateApp.loadedAssets[`${props.assetKey}Hurt`] ?? []) as PIXI.Texture[];
+			const gone = (context.stateApp.loadedAssets[`${props.assetKey}Gone`] ?? []) as PIXI.Texture[];
+
 			if (prefersReducedMotion.current) {
-				const still = new PIXI.Sprite({ texture: symbol, anchor: 0.5 });
+				const still = new PIXI.Sprite({ texture: hurt.at(-1) ?? symbol, anchor: 0.5 });
 				still.setSize(SYMBOL_SIZE);
 				container.addChild(still);
 				await animate(200, (progress) => alive && (still.alpha = 1 - progress));
+
+				return props.oncomplete?.();
+			}
+
+			if (gone.length) {
+				// the frames are drawn wider than the cell, at the symbol's own scale
+				const leaving = new PIXI.Sprite({ texture: gone[0], anchor: 0.5 });
+				leaving.setSize((SYMBOL_SIZE * gone[0].width) / symbol.width);
+				container.addChild(leaving);
+				await animate(GONE_DURATION, (progress) => {
+					if (alive) leaving.texture = gone[frameAt(progress, gone.length)];
+				});
+				leaving.visible = false;
 
 				return props.oncomplete?.();
 			}

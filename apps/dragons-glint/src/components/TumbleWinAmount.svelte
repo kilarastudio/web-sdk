@@ -40,7 +40,7 @@
 </script>
 
 <TumbleWinAmountWrap {show}>
-	<TumbleWinAmountFrame>
+	<TumbleWinAmountFrame lit={show} {amount}>
 		{#snippet children({ face })}
 			<TumbleWinAmountText {face} {amount} {animate} {oncomplete} />
 		{/snippet}

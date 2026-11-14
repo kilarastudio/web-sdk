@@ -51,111 +51,61 @@ export const boardFloor = (columns: number, rows: number) => {
 	return canvas;
 };
 
-export const FRAME = { border: 14, corner: 22 };
+export const FRAME = { border: 14 };
 
-// The frame round the board: dressed stone blocks with a gold inner trim and gem-set corner
-// plates. It is drawn whole, at the board's size, so its blocks never stretch.
+// The frame round the board: plain dressed stone blocks with one gold line round the opening and
+// nothing on the corners (the user chose it over gold corner plates, 2026-11-13). It is drawn
+// whole, at the board's size, so its blocks never stretch.
 export const boardFrame = (columns: number, rows: number) => {
-	const { border, corner } = FRAME;
+	const { border } = FRAME;
 	const width = columns * CELL + border * 2;
 	const height = rows * CELL + border * 2;
 	const canvas = new PixelCanvas(width, height);
 	const g = RAMPS.gold;
 	const next = random(21);
+	const ring = (inset: number, c: number) => {
+		const w = width - inset * 2;
+		const h = height - inset * 2;
+		canvas.rect(inset, inset, w, 1, c);
+		canvas.rect(inset, inset + h - 1, w, 1, c);
+		canvas.rect(inset, inset, 1, h, c);
+		canvas.rect(inset + w - 1, inset, 1, h, c);
+	};
 
 	canvas.rect(0, 0, width, height, SLATE);
-	// the opening
-	canvas.paint(
-		(x, y) => x >= border && y >= border && x < width - border && y < height - border,
-		CLEAR,
-	);
 	// stone: a lit outer lip, a shaded inner step
-	canvas.rect(0, 0, width, 1, INK);
-	canvas.rect(0, height - 1, width, 1, INK);
-	canvas.rect(0, 0, 1, height, INK);
-	canvas.rect(width - 1, 0, 1, height, INK);
+	ring(0, INK);
 	canvas.rect(1, 1, width - 2, 2, STEEL);
 	canvas.rect(1, 1, 2, height - 2, STEEL);
 	canvas.rect(1, height - 3, width - 2, 2, DUSK);
 	canvas.rect(width - 3, 1, 2, height - 2, DUSK);
-	// block seams along each side
-	const seam = (x: number, y: number, vertical: boolean) => {
-		if (vertical) {
-			canvas.rect(x, y, 1, border - 6, DUSK);
-			canvas.rect(x + 1, y, 1, border - 6, STEEL);
-		} else {
-			canvas.rect(x, y, border - 6, 1, DUSK);
-			canvas.rect(x, y + 1, border - 6, 1, STEEL);
-		}
-	};
-	for (let x = corner + 14; x < width - corner - 6; x += 24 + Math.floor(next() * 3) * 4) {
-		seam(x, 3, true);
-		seam(x + 9, height - border + 3, true);
+	// block seams along each side, the far side's set half a block off
+	const block = 44;
+	const long = border - 6;
+	for (let x = 30; x < width - 20; x += block) {
+		canvas.rect(x, 3, 1, long, DUSK);
+		canvas.rect(x + 1, 3, 1, long, STEEL);
+		canvas.rect(x + block / 2, height - border + 3, 1, long, DUSK);
+		canvas.rect(x + block / 2 + 1, height - border + 3, 1, long, STEEL);
 	}
-	for (let y = corner + 12; y < height - corner - 6; y += 22 + Math.floor(next() * 3) * 4) {
-		seam(3, y, false);
-		seam(width - border + 3, y + 7, false);
+	for (let y = 30; y < height - 20; y += block) {
+		canvas.rect(3, y, long, 1, DUSK);
+		canvas.rect(3, y + 1, long, 1, STEEL);
+		canvas.rect(width - border + 3, y + block / 2, long, 1, DUSK);
+		canvas.rect(width - border + 3, y + block / 2 + 1, long, 1, STEEL);
 	}
 	// stone specks
-	for (let i = 0; i < 160; i++) {
+	for (let i = 0; i < 60; i++) {
 		const x = 3 + Math.floor(next() * (width - 6));
 		const y = 3 + Math.floor(next() * (height - 6));
-		if (canvas.get(x, y) === SLATE) canvas.set(x, y, next() < 0.5 ? DUSK : STEEL);
+		if (canvas.get(x, y) === SLATE) canvas.set(x, y, DUSK);
 	}
-	// gold trim round the opening
-	const trim = (inset: number, c: number) => {
-		const left = border - inset;
-		const top = border - inset;
-		const w = width - left * 2;
-		const h = height - top * 2;
-		canvas.rect(left, top, w, 1, c);
-		canvas.rect(left, top + h - 1, w, 1, c);
-		canvas.rect(left, top, 1, h, c);
-		canvas.rect(left + w - 1, top, 1, h, c);
-	};
-	trim(5, INK);
-	trim(4, g[5]);
-	trim(3, g[4]);
-	trim(2, g[2]);
-	trim(1, INK);
-	// the trim's lower and right runs sit in shadow
-	canvas.paint(
-		(x, y, c) => c === g[5] && (y > height / 2 || x > width / 2) && x + y > (width + height) / 2,
-		g[3],
-	);
-	// corner plates
-	const plate = (x: number, y: number) => {
-		canvas.rect(x, y, corner, corner, INK);
-		canvas.rect(x + 1, y + 1, corner - 2, corner - 2, g[4]);
-		canvas.rect(x + 1, y + 1, corner - 2, 1, g[5]);
-		canvas.rect(x + 1, y + 1, 1, corner - 2, g[5]);
-		canvas.rect(x + 1, y + corner - 3, corner - 2, 2, g[3]);
-		canvas.rect(x + corner - 3, y + 1, 2, corner - 2, g[3]);
-		canvas.rect(x + 4, y + 4, corner - 8, corner - 8, g[2]);
-		canvas.rect(x + 5, y + 5, corner - 10, corner - 10, g[3]);
-		// a ruby in the middle
-		const cx = x + corner / 2 - 0.5;
-		const cy = y + corner / 2 - 0.5;
-		canvas.ellipse(cx, cy, 4.5, 4.5, INK);
-		canvas.ellipse(cx, cy, 3.5, 3.5, RAMPS.red[3]);
-		canvas.paint((px, py, c) => c === RAMPS.red[3] && px + py > cx + cy + 1, RAMPS.red[2]);
-		canvas.set(cx - 1.5, cy - 1.5, RAMPS.red[5]);
-		canvas.set(cx - 0.5, cy - 1.5, WHITE);
-		// rivets
-		canvas.dots(g[5], [x + 2, y + 2], [x + corner - 4, y + 2], [x + 2, y + corner - 4]);
-		canvas.dots(
-			g[2],
-			[x + 3, y + 3],
-			[x + corner - 3, y + 3],
-			[x + 3, y + corner - 3],
-			[x + corner - 3, y + corner - 3],
-		);
-	};
-	plate(0, 0);
-	plate(width - corner, 0);
-	plate(0, height - corner);
-	plate(width - corner, height - corner);
-	// the plates stand clear of the opening
+	// one gold line round the opening, its lower and right runs in shadow
+	ring(border - 3, INK);
+	ring(border - 2, g[4]);
+	ring(border - 1, INK);
+	canvas.paint((x, y, c) => c === g[4] && x + y > (width + height) / 2, g[2]);
+	// the opening
 	canvas.paint(
 		(x, y) => x >= border && y >= border && x < width - border && y < height - border,
 		CLEAR,
@@ -197,9 +147,9 @@ export const panel = (accent: readonly number[] = RAMPS.gold) => {
 // The big win panels: one frame for each level from BIG to MAX, drawn whole at the panel's size so
 // nothing in it stretches, all with the same 14-pixel border round the same night face, so a
 // level that lands only turns the frame into a richer material: dressed stone (BIG), a gold bar
-// on stone (SUPER), the bar set with the reels' gems (MEGA), red dragon scales (EPIC), gold dragon
-// scales (MAX, which also burns). The corners carry a plate: stone, a ruby, a sapphire, then the
-// dragon's eye.
+// on stone (SUPER), the bar set with raised gold bosses (MEGA), red dragon scales (EPIC), gold dragon
+// scales (MAX, which also burns). The corners carry a plate: stone, an iron stud, a gold boss, then the
+// dragon's eye. Nothing is set with gems.
 export type WinPanelTier = 1 | 2 | 3 | 4 | 5;
 export const WIN_PANEL_BORDER = 14;
 
@@ -234,8 +184,6 @@ const scale = (along: number, depth: number, ramp: readonly number[]) => {
 	if (u <= 2 && v >= 1 && v <= 2) return ramp[5];
 	return reach > 2.6 ? ramp[2] : ramp[3];
 };
-
-const GEMS = [RAMPS.red, RAMPS.blue, RAMPS.green] as const;
 
 export const winPanel = (tier: WinPanelTier, width: number, height: number) => {
 	const canvas = new PixelCanvas(width, height);
@@ -287,7 +235,7 @@ export const winPanel = (tier: WinPanelTier, width: number, height: number) => {
 	ring(BAND + 3, trim[1]);
 	ring(border - 1, INK);
 
-	// rivets along the gold bar, gems set in it at MEGA
+	// rivets along the gold bar, raised bosses at MEGA
 	if (tier === 2 || tier === 3) {
 		const middle = Math.round(3 + (BAND - 3) / 2);
 		const runs = [
@@ -312,12 +260,10 @@ export const winPanel = (tier: WinPanelTier, width: number, height: number) => {
 						canvas.set(cx - 1, cy - 1, WHITE);
 						continue;
 					}
-					const gem = GEMS[(index + cx + cy) % GEMS.length];
 					canvas.ellipse(cx, cy, 4.2, 4.2, g[2]);
-					canvas.ellipse(cx, cy, 3.3, 3.3, INK);
-					canvas.ellipse(cx, cy, 2.5, 2.5, gem[3]);
-					canvas.paint((px, py, c) => c === gem[3] && px + py > cx + cy + 1, gem[2]);
-					canvas.set(cx - 1, cy - 1, gem[5]);
+					canvas.ellipse(cx, cy, 3.3, 3.3, g[4]);
+					canvas.paint((px, py, c) => c === g[4] && px + py > cx + cy + 1, g[3]);
+					canvas.rect(cx - 2, cy - 2, 2, 1, g[6]);
 				}
 		}
 	}
@@ -345,13 +291,16 @@ export const winPanel = (tier: WinPanelTier, width: number, height: number) => {
 			continue;
 		}
 		if (tier <= 3) {
-			const gem = tier === 2 ? RAMPS.red : RAMPS.blue;
+			// an iron stud, then a larger gold boss
+			const boss = tier === 2 ? RAMPS.steel : g;
 			const r = tier === 2 ? 4.5 : 6;
 			canvas.ellipse(cx, cy, r, r, INK);
-			canvas.ellipse(cx, cy, r - 1, r - 1, gem[3]);
-			canvas.paint((x, y, c) => c === gem[3] && x + y > cx + cy + 1, gem[2]);
-			canvas.set(cx - r / 2, cy - r / 2, gem[5]);
-			canvas.set(cx - r / 2 + 1, cy - r / 2, WHITE);
+			canvas.ellipse(cx, cy, r - 1, r - 1, boss[tier === 2 ? 3 : 5]);
+			canvas.paint(
+				(x, y, c) => c === boss[tier === 2 ? 3 : 5] && x + y > cx + cy + 1,
+				boss[tier === 2 ? 2 : 3],
+			);
+			canvas.rect(cx - r / 2, cy - r / 2, 2, 1, boss[tier === 2 ? 5 : 6]);
 			continue;
 		}
 		// the dragon's eye: a gold iris (an ember one on the gold plate) cut by a black slit
@@ -361,73 +310,6 @@ export const winPanel = (tier: WinPanelTier, width: number, height: number) => {
 		canvas.paint((x, y, c) => c === iris[4] && y > cy + 1, iris[3]);
 		canvas.rect(cx - 0.5, cy - 3, 2, 7, INK);
 		canvas.set(cx - 3.5, cy - 2.5, iris[5]);
-	}
-
-	return canvas;
-};
-
-// The free spins intro: the door to the dragon's lair. A band of the dragon's scales charred black
-// with embers glowing in their middles, a gold trim, iron corner studs each holding an ember, round
-// the same dark face as EPIC's. It burns (fireAround) and wears the scatter's eye as a crest, both
-// drawn beside it, so it reads as the bonus and as none of the big win levels.
-const EMBER_SCALES = [
-	color(0x0e071b),
-	color(0x1c121c),
-	color(0x5d2c28),
-	color(0xc64524),
-	color(0xff5000),
-	color(0xffa214),
-] as const;
-
-export const introPanel = (width: number, height: number) => {
-	const canvas = new PixelCanvas(width, height);
-	const g = RAMPS.gold;
-	const border = WIN_PANEL_BORDER;
-
-	canvas.rect(0, 0, width, height, INK);
-	canvas.rect(border, border, width - border * 2, height - border * 2, color(0x1c121c));
-	canvas.rect(border, border, width - border * 2, 1, RAMPS.wood[1]);
-	canvas.rect(border, border, 1, height - border * 2, RAMPS.wood[1]);
-
-	for (let y = 1; y < height - 1; y++)
-		for (let x = 1; x < width - 1; x++) {
-			const depth = Math.min(x, y, width - 1 - x, height - 1 - y) - 1;
-			if (depth >= BAND) continue;
-			const vertical = Math.min(x, width - 1 - x) - 1 === depth;
-			canvas.set(x, y, scale(vertical ? y : x, depth, EMBER_SCALES));
-		}
-
-	const ring = (inset: number, c: number) => {
-		canvas.rect(inset, inset, width - inset * 2, 1, c);
-		canvas.rect(inset, height - 1 - inset, width - inset * 2, 1, c);
-		canvas.rect(inset, inset, 1, height - inset * 2, c);
-		canvas.rect(width - 1 - inset, inset, 1, height - inset * 2, c);
-	};
-	ring(BAND + 1, INK);
-	ring(BAND + 2, g[4]);
-	ring(BAND + 3, g[2]);
-	ring(border - 1, INK);
-
-	const plate = 18;
-	for (const [px, py] of [
-		[0, 0],
-		[width - plate, 0],
-		[0, height - plate],
-		[width - plate, height - plate],
-	] as const) {
-		const iron = RAMPS.steel;
-		canvas.rect(px, py, plate, plate, INK);
-		canvas.rect(px + 1, py + 1, plate - 2, plate - 2, iron[2]);
-		canvas.rect(px + 1, py + 1, plate - 2, 1, iron[4]);
-		canvas.rect(px + 1, py + 1, 1, plate - 2, iron[4]);
-		canvas.rect(px + 1, py + plate - 3, plate - 2, 2, iron[1]);
-		canvas.rect(px + plate - 3, py + 1, 2, plate - 2, iron[1]);
-		const cx = px + plate / 2 - 0.5;
-		const cy = py + plate / 2 - 0.5;
-		canvas.ellipse(cx, cy, 4.5, 4.5, INK);
-		canvas.ellipse(cx, cy, 3.5, 3.5, RAMPS.fire[3]);
-		canvas.paint((x, y, c) => c === RAMPS.fire[3] && x + y < cx + cy - 1, RAMPS.fire[4]);
-		canvas.set(cx - 1, cy - 1, RAMPS.fire[5]);
 	}
 
 	return canvas;
@@ -487,15 +369,89 @@ export const glintTile = (tier: 1 | 2 | 3 | 4) => {
 	return canvas;
 };
 
-// a spot that has been primed by an explosion: an ember waiting in the stone
+// A spot that has been primed by an explosion: the flagstone has cracked, and the fire under it
+// shows through. The cracks run from the middle of the cell out toward its corners and edges,
+// hotter toward the middle, so they show round whatever symbol stands on them.
 export const glintPrimed = () => {
-	const canvas = new PixelCanvas(9, 9);
+	const canvas = new PixelCanvas(CELL, CELL);
 	const f = RAMPS.fire;
-	canvas.ellipse(4, 4, 3.6, 3.6, f[2]);
-	canvas.ellipse(4, 4, 2.4, 2.4, f[3]);
-	canvas.ellipse(4, 4, 1.2, 1.2, f[5]);
-	canvas.set(4, 4, WHITE);
-	return canvas.outline(INK);
+	const next = random(41);
+	const middle = CELL / 2;
+	for (const [dx, dy] of [
+		[-1, -0.8],
+		[1, -0.9],
+		[-0.9, 1],
+		[0.8, 0.9],
+		[0.1, -1],
+		[-1, 0.15],
+	]) {
+		let [x, y] = [middle + (next() - 0.5) * 3, middle + (next() - 0.5) * 3];
+		const length = 15 + Math.round(next() * 5);
+		for (let step = 0; step < length; step++) {
+			const from = [Math.round(x), Math.round(y)] as const;
+			// the crack wanders as it runs
+			x += dx * 1.1 + (next() - 0.5) * 1.6;
+			y += dy * 1.1 + (next() - 0.5) * 1.6;
+			if (x < 2 || y < 2 || x > CELL - 3 || y > CELL - 3) break;
+			canvas.line(
+				from[0],
+				from[1],
+				Math.round(x),
+				Math.round(y),
+				step < 5 ? f[4] : step < 11 ? f[3] : f[2],
+			);
+		}
+	}
+
+	return canvas;
+};
+
+// A spot catching fire from inside, as a run of frames: the fire breaks out in the middle of the
+// cell and spreads to its sides, red at its ragged front and pale behind it, and what it leaves
+// behind is the lit tile. The last frame is the tile alone. Tier 0 is the fire's front alone, to
+// pass over the symbol standing on the spot.
+export const GLINT_IGNITE_FRAMES = 8;
+
+export const glintIgniteFrames = (tier: 0 | 1 | 2 | 3 | 4) => {
+	const tile = tier ? glintTile(tier) : new PixelCanvas(CELL, CELL);
+	const f = RAMPS.fire;
+	// every tier burns the same way, so the front over the symbol matches the one under it
+	const next = random(57);
+	// the front is uneven: soft blotches four cells across
+	const grain = 4;
+	const knots = Array.from({ length: CELL / grain + 2 }, () =>
+		Array.from({ length: CELL / grain + 2 }, next),
+	);
+	const uneven = (x: number, y: number) => {
+		const [u, v] = [x / grain, y / grain];
+		const [i, j] = [Math.floor(u), Math.floor(v)];
+		const [a, b] = [u - i, v - j];
+
+		return (
+			(knots[j][i] * (1 - a) + knots[j][i + 1] * a) * (1 - b) +
+			(knots[j + 1][i] * (1 - a) + knots[j + 1][i + 1] * a) * b
+		);
+	};
+	const middle = (CELL - 1) / 2;
+	const FRONT = [f[2], f[3], f[3], f[4], f[4], f[5], color(0xf9e6cf)];
+
+	return Array.from({ length: GLINT_IGNITE_FRAMES }, (_, frame) => {
+		if (frame === GLINT_IGNITE_FRAMES - 1) return tile;
+		const canvas = new PixelCanvas(CELL, CELL);
+		const reach = 3 + ((frame + 1) / (GLINT_IGNITE_FRAMES - 1)) * (middle + FRONT.length + 4);
+		for (let y = 1; y < CELL - 1; y++)
+			for (let x = 1; x < CELL - 1; x++) {
+				// between a circle and the cell's own square, so the fire ends up filling the cell
+				const [dx, dy] = [Math.abs(x - middle), Math.abs(y - middle)];
+				const distance = Math.hypot(dx, dy) * 0.45 + Math.max(dx, dy) * 0.55;
+				const behind = reach - distance - uneven(x, y) * 5;
+				if (behind < 0) continue;
+				const c = behind < FRONT.length ? FRONT[Math.floor(behind)] : tile.get(x, y);
+				if (c !== CLEAR) canvas.set(x, y, c);
+			}
+
+		return canvas;
+	});
 };
 
 // a full-cell flash, for the frames where a tile ignites
@@ -572,11 +528,14 @@ const drawHeat = (
 	width: number,
 	height: number,
 	bands: [number, number][] = FLAME_BANDS,
+	// heat taken off a cell before it is drawn, so a fire can die away before its canvas ends
+	cooled: (x: number, rise: number) => number = () => 0,
 ) => {
 	const canvas = new PixelCanvas(width, height);
 	for (let rise = 0; rise < height; rise++)
 		for (let x = 0; x < width; x++) {
-			const band = bands.find(([floor]) => heat[rise][x] >= floor);
+			const shown = heat[rise][x] - cooled(x, rise);
+			const band = bands.find(([floor]) => shown >= floor);
 			if (band) canvas.set(x, height - 1 - rise, band[1]);
 		}
 
@@ -647,7 +606,10 @@ export const sootFrames = (width: number, height: number) =>
 // foot (the bottom edge of the canvas) and burning up to `depth` cells from it. `lean` tips the
 // tongues toward the right as they rise (1 at most), and `rising` feeds the right end of the foot
 // harder than the left, so heat gathers toward that end. With `wrap` the run's two ends meet, so
-// copies of it laid side by side join up (length a multiple of 8).
+// copies of it laid side by side join up (length a multiple of 8). The fire never reaches the far
+// edge of its canvas: its tongues cool away over the upper part of `depth`, each at its own
+// height, so no flame is cut off straight. `ends` is how many cells at the [first, last] end of
+// the run the fire shrinks away over, so the run ends in low flames instead of a wall.
 export const EDGE_FIRE_FRAMES = 16;
 
 export const edgeFireFrames = ({
@@ -657,6 +619,10 @@ export const edgeFireFrames = ({
 	rising = 0,
 	seed = 1,
 	wrap = false,
+	ends = [0, 0],
+	die = false,
+	wild = 1.2,
+	bands = FLAME_BANDS,
 }: {
 	length: number;
 	depth: number;
@@ -664,8 +630,24 @@ export const edgeFireFrames = ({
 	rising?: number;
 	seed?: number;
 	wrap?: boolean;
+	ends?: [number, number];
+	// the ends burn right down to nothing, for a fire that stands alone
+	die?: boolean;
+	// how uneven the air is: low and the fire burns in short, even tongues; high and it tears
+	// into tall ones with gaps between them
+	wild?: number;
+	bands?: [number, number][];
 }) => {
 	const climb = 2;
+	const cooled = (x: number, rise: number) => {
+		const tip = Math.max(0, rise / depth - 0.3) ** 1.6 * 1.8;
+		const first = ends[0] ? Math.max(0, 1 - (x + 0.5) / ends[0]) : 0;
+		const last = ends[1] ? Math.max(0, 1 - (length - x - 0.5) / ends[1]) : 0;
+		const end = Math.max(first, last);
+
+		// toward an end the fire is lower: cooled more the higher it has climbed
+		return tip + end * end * ((die ? 1.3 : 0.25) + (1.6 * rise) / depth);
+	};
 	const drift = EDGE_FIRE_FRAMES * climb;
 	const air = driftingAir(random(seed * 977 + length), length, drift, wrap ? 8 : 5, wrap);
 	const across = (x: number) =>
@@ -694,7 +676,7 @@ export const edgeFireFrames = ({
 			const airRow = still[(((rise - time) % drift) + drift) % drift];
 			for (let x = 0; x < length; x++) {
 				const drawn = under[across(x - 1)] * left + under[x] / 2 + under[across(x + 1)] * right;
-				row[x] = Math.max(0, drawn - loss * (1 + 1.2 * (airRow[x] - 0.5)));
+				row[x] = Math.max(0, drawn - loss * (1 + wild * (airRow[x] - 0.5)));
 			}
 		}
 		next = heat;
@@ -709,119 +691,105 @@ export const edgeFireFrames = ({
 	return Array.from({ length: EDGE_FIRE_FRAMES }, () => {
 		for (let steps = 0; steps < climb; steps++) step(time++);
 
-		return drawHeat(heat, length, depth);
+		return drawHeat(heat, length, depth, bands, cooled);
 	});
 };
 
-// a canvas turned a quarter to the left: its bottom edge becomes its right edge
-export const turnLeft = (source: PixelCanvas) => {
-	const canvas = new PixelCanvas(source.height, source.width);
-	for (let y = 0; y < source.height; y++)
-		for (let x = 0; x < source.width; x++) canvas.set(y, source.width - 1 - x, source.get(x, y));
+// A bed of fire that stands alone, for an amount to stand in: highest in the middle, sinking to
+// nothing at both ends, so it has no edge anywhere. It burns in the torches' colours. Sizes in art
+// pixels.
+// `under` rows hang below a fire's foot: its own shape turned over and pressed flat, so a fire
+// that stands on nothing has a ragged underside instead of a straight foot.
+const withUnderside = (fire: PixelCanvas, under: number) => {
+	if (!under) return fire;
+	const depth = fire.height;
+	const canvas = new PixelCanvas(fire.width, depth + under).blit(fire, 0, 0);
+	const press = (depth * 0.5) / under;
+	for (let row = 0; row < under; row++)
+		for (let x = 0; x < fire.width; x++) {
+			const c = fire.get(x, depth - 1 - Math.round((row + 1) * press));
+			if (c !== CLEAR) canvas.set(x, depth + row, c);
+		}
 
 	return canvas;
 };
 
-// Fire round a rectangle (the board frame in free spins, the MAX WIN panel): flames along its top
-// and up both its sides, burning outward from it and never over it. The top run spans the
-// rectangle and the sides' reach; each side run is the rectangle's height, its foot against it,
-// its flames leaning up and growing toward the top. Sizes in art pixels.
-export const FIRE_REACH = { top: 22, side: 12 };
+// `taper` is the share of the length each end sinks away over: less of it and the fire runs long
+// and level, like one creeping along the floor. `seed` gives each bed its own burning.
+export const fireBedFrames = (
+	length: number,
+	depth: number,
+	under = 0,
+	seed = 11,
+	taper = 0.42,
+	wild = 1.2,
+) =>
+	edgeFireFrames({
+		length,
+		depth,
+		seed,
+		wild,
+		ends: [Math.round(length * taper), Math.round(length * taper)],
+		die: true,
+	}).map((fire) => withUnderside(fire, under));
 
-export const fireAroundFrames = (width: number, height: number) => {
-	const top = edgeFireFrames({
-		length: width + FIRE_REACH.side * 2,
-		depth: FIRE_REACH.top,
-		seed: 3,
-	});
-	// drawn foot down and turned left: the foot ends up against the rectangle's left side, the
-	// flames point away from it, and "right" along the run becomes "up"
-	const side = edgeFireFrames({
-		length: height,
-		depth: FIRE_REACH.side,
-		lean: 0.7,
-		rising: 0.45,
-		seed: 5,
-	}).map(turnLeft);
-	const mirrored = (canvas: PixelCanvas) =>
-		new PixelCanvas(canvas.width, canvas.height).blit(canvas, 0, 0, true);
-
-	return { top, left: side, right: side.map(mirrored) };
-};
-
-// The screen change: a wall of the dragon's fire that sweeps up the screen, with the dark of its
-// smoke behind it, and a charred edge where the smoke ends. The front is a loop of frames of a
-// run of flames that tiles side by side, over a band of embers that cools through dull reds into
-// the smoke; the smoke itself rolls in dark banks; the tail is one ragged, smouldering edge that
-// tiles the same way. Sizes in art pixels.
-export const FIRE_WALL = { length: 160, flames: 40, embers: 24, smoke: 160, tail: 10 };
-
-// below the flames' own bands: the embers cooling, then soot
-const COOLING_BANDS: [number, number][] = [
-	...FLAME_BANDS,
-	[0.07, RAMPS.fire[1]],
-	[0.035, RAMPS.fire[0]],
-	[0.015, color(0x391f21)],
+// The dragon's mark for free spins: three claws raked across the board, from the upper right to
+// the lower left. Each is drawn twice, in the same place: the scar it leaves, charred, and the
+// molten glow inside it, which the game lets cool. A claw digs in hard where it lands and trails
+// away to nothing. `x` and `y` are where the mark's box stands from the board's middle.
+const CLAWS = [
+	{ length: 196, drop: 68, thick: 10, x: -10, y: -56, seed: 3 },
+	{ length: 236, drop: 80, thick: 13, x: 0, y: 0, seed: 5 },
+	{ length: 204, drop: 70, thick: 11, x: 12, y: 56, seed: 8 },
 ];
 
-export const fireWallFrames = () => {
-	const { length, flames, embers } = FIRE_WALL;
-	// under the flames the heat falls away unevenly into the smoke
-	const air = driftingAir(random(17), length, 64, 8, true);
-	const glow = new PixelCanvas(length, embers);
-	for (let y = 0; y < embers; y++)
+export const clawMarks = () =>
+	CLAWS.map(({ length, drop, thick, x: offsetX, y: offsetY, seed }) => {
+		const pad = Math.ceil(thick) + 2;
+		const height = drop + pad * 2;
+		const scar = new PixelCanvas(length, height);
+		const glow = new PixelCanvas(length, height);
+		const next = random(seed);
+		const knots = Array.from({ length: Math.ceil(length / 10) + 2 }, next);
+		const rough = (x: number) => {
+			const at = x / 10;
+			const index = Math.floor(at);
+			const part = at - index;
+			const ease = part * part * (3 - 2 * part);
+
+			return knots[index] * (1 - ease) + knots[index + 1] * ease;
+		};
+		const char = color(0x391f21);
 		for (let x = 0; x < length; x++) {
-			const heat = (1 - y / embers) ** 2.2 + 0.4 * (air(x, y * 3) - 0.5);
-			glow.set(x, y, COOLING_BANDS.find(([floor]) => heat >= floor)?.[1] ?? INK);
+			// the claw lands at the right and is dragged to the left
+			const along = 1 - x / (length - 1);
+			const middle = pad + drop * along + 3 * Math.sin(Math.PI * along);
+			const dug = along < 0.1 ? along / 0.1 : (1 - (along - 0.1) / 0.9) ** 0.65;
+			const half = thick * dug * (0.78 + 0.44 * rough(x));
+			if (half < 0.6) continue;
+			for (let y = Math.floor(middle - half); y <= Math.ceil(middle + half); y++) {
+				const from = Math.abs(y - middle);
+				if (from > half) continue;
+				const lip = from > half - 1.3;
+				scar.set(x, y, lip ? char : INK);
+				if (lip) continue;
+				const heat = 1 - from / Math.max(0.01, half - 1.3);
+				glow.set(
+					x,
+					y,
+					heat > 0.72
+						? RAMPS.fire[5]
+						: heat > 0.42
+							? RAMPS.fire[4]
+							: heat > 0.18
+								? RAMPS.fire[3]
+								: RAMPS.fire[2],
+				);
+			}
 		}
 
-	return edgeFireFrames({ length, depth: flames, wrap: true, seed: 9 }).map((front) => {
-		const canvas = new PixelCanvas(length, flames + embers);
-		canvas.blit(front);
-		canvas.blit(glow, 0, flames);
-
-		return canvas;
+		return { scar, glow, x: offsetX, y: offsetY };
 	});
-};
-
-// the smoke behind the wall: dark banks rolling in it, a square that tiles both ways
-export const fireWallSmoke = () => {
-	const { length, smoke } = FIRE_WALL;
-	const air = driftingAir(random(23), length, smoke, 16, true);
-	const fine = driftingAir(random(29), length, smoke / 2, 8, true);
-	const canvas = new PixelCanvas(length, smoke);
-	for (let y = 0; y < smoke; y++)
-		for (let x = 0; x < length; x++) {
-			const bank = air(x, y) * 0.75 + fine(x, y) * 0.25;
-			canvas.set(x, y, bank > 0.7 ? DUSK : bank > 0.56 ? NIGHT : INK);
-		}
-
-	return canvas;
-};
-
-export const fireWallTail = () => {
-	const { length, tail } = FIRE_WALL;
-	const canvas = new PixelCanvas(length, tail);
-	const next = random(41);
-	// a ragged edge: a few soft dips across the run, the ends meeting
-	const knots = Array.from({ length: 10 }, next);
-	const edge = (x: number) => {
-		const u = (x / length) * knots.length;
-		const i = Math.floor(u);
-		const a = u - i;
-		const t = a * a * (3 - 2 * a);
-
-		return (knots[i % knots.length] * (1 - t) + knots[(i + 1) % knots.length] * t) * (tail - 3);
-	};
-	for (let x = 0; x < length; x++) {
-		const bottom = Math.round(2 + edge(x) + (next() < 0.3 ? 1 : 0));
-		canvas.rect(x, 0, 1, bottom, INK);
-		canvas.set(x, bottom, RAMPS.fire[1]);
-		if (next() < 0.35) canvas.set(x, bottom - 1, RAMPS.fire[2]);
-	}
-
-	return canvas;
-};
 
 // The light a flame throws on the wall and the stone round it: a pool in four bands of grey, each
 // a step brighter toward the middle, drawn for the game to tint warm and add to the picture behind
@@ -903,32 +871,6 @@ export const smokeWispFrames = () => {
 		return canvas;
 	});
 };
-
-// the arc a sword leaves in the air: a quarter ring swept from straight up round to the right,
-// about the grip at its bottom left corner; three frames, thinning out
-export const slashFrames = () =>
-	[
-		{ thickness: 4, core: WHITE, edge: RAMPS.steel[5] },
-		{ thickness: 3, core: RAMPS.steel[5], edge: RAMPS.steel[4] },
-		{ thickness: 2, core: RAMPS.steel[4], edge: RAMPS.steel[3] },
-	].map(({ thickness, core, edge }) => {
-		const size = 30;
-		const canvas = new PixelCanvas(size, size);
-		const [cx, cy, radius] = [2, size - 3, size - 5];
-		canvas.ring(cx, cy, radius, radius, thickness, core);
-		canvas.ring(cx, cy, radius - thickness + 1, radius - thickness + 1, 1, edge);
-		// keep the quarter between up and right, tapering to a point at both ends
-		canvas.paint((x, y) => {
-			const angle = Math.atan2(cy - y, x - cx);
-			const along = angle / (Math.PI / 2);
-			const taper = Math.min(along, 1 - along) * 5;
-			const depth = radius - Math.hypot(x - cx, y - cy);
-
-			return along < 0.04 || along > 0.96 || depth > thickness * Math.min(1, taper);
-		}, CLEAR);
-
-		return canvas;
-	});
 
 // a fireball flying left to right, with a flickering tail
 export const fireballFrames = () =>

@@ -69,7 +69,7 @@ export const winLevelMap = {
 		above: 10,
 		text: 'BIG WIN',
 		presentDuration: 4 * SECOND,
-		sound: { sfx: 'sfx_winlevel_small', bgm: 'bgm_winlevel_big' },
+		sound: { sfx: 'sfx_winlevel_big', bgm: 'bgm_winlevel_big' },
 		tier: { art: 1, coins: 14, shake: 2 },
 	},
 	7: {
@@ -79,7 +79,7 @@ export const winLevelMap = {
 		above: 30,
 		text: 'SUPER WIN',
 		presentDuration: 8 * SECOND,
-		sound: { sfx: 'sfx_fireball_hit', bgm: 'bgm_winlevel_superwin' },
+		sound: { sfx: 'sfx_winlevel_super', bgm: 'bgm_winlevel_superwin' },
 		tier: { art: 2, coins: 24, shake: 3 },
 	},
 	8: {
@@ -89,7 +89,7 @@ export const winLevelMap = {
 		above: 150,
 		text: 'MEGA WIN',
 		presentDuration: 12 * SECOND,
-		sound: { sfx: 'sfx_fireball_hit', bgm: 'bgm_winlevel_mega' },
+		sound: { sfx: 'sfx_winlevel_mega', bgm: 'bgm_winlevel_mega' },
 		tier: { art: 3, coins: 36, shake: 4 },
 	},
 	9: {
@@ -99,7 +99,7 @@ export const winLevelMap = {
 		above: 1000,
 		text: 'EPIC WIN!',
 		presentDuration: 16 * SECOND,
-		sound: { sfx: 'sfx_fireball_hit', bgm: 'bgm_winlevel_epic' },
+		sound: { sfx: 'sfx_winlevel_epic', bgm: 'bgm_winlevel_epic' },
 		tier: { art: 4, coins: 48, shake: 5 },
 	},
 	10: {
@@ -109,7 +109,7 @@ export const winLevelMap = {
 		above: Infinity,
 		text: 'MAX WIN',
 		presentDuration: 16 * SECOND,
-		sound: { sfx: 'sfx_dragon_strike', bgm: 'bgm_winlevel_max' },
+		sound: { sfx: 'sfx_winlevel_max', bgm: 'bgm_winlevel_max' },
 		tier: { art: 5, coins: 72, shake: 6 },
 	},
 } as const;

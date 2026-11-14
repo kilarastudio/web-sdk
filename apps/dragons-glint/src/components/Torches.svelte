@@ -20,6 +20,8 @@
 		// where the background's art pixel (0, 0) is on the canvas, and how big one art pixel is
 		origin: { x: number; y: number };
 		scale: number;
+		// 0 to 1: the flames leap and their light spreads, for a big win
+		flare?: number;
 	};
 
 	const props: Props = $props();
@@ -32,7 +34,7 @@
 	const LIGHT = {
 		tint: 0xffa214,
 		// the pool across, in flame heights, and how strongly it adds to the picture
-		size: 3.4,
+		size: 2.2,
 		alpha: 0.6,
 		// how far the flame's heat swings the pool's size and strength
 		swell: 0.12,
@@ -62,6 +64,7 @@
 	});
 
 	const tick = $derived(prefersReducedMotion.current ? 0 : step);
+	const flare = $derived(props.flare ?? 0);
 </script>
 
 {#each props.torches as torch, index}
@@ -75,8 +78,16 @@
 		anchor={0.5}
 		{x}
 		y={y - torch.height * props.scale * 0.35}
-		width={torch.height * props.scale * LIGHT.size * (1 + (light - 1) * LIGHT.swell)}
-		height={torch.height * props.scale * LIGHT.size * (1 + (light - 1) * LIGHT.swell)}
+		width={torch.height *
+			props.scale *
+			LIGHT.size *
+			(1 + (light - 1) * LIGHT.swell) *
+			(1 + 0.6 * flare)}
+		height={torch.height *
+			props.scale *
+			LIGHT.size *
+			(1 + (light - 1) * LIGHT.swell) *
+			(1 + 0.6 * flare)}
 		tint={LIGHT.tint}
 		alpha={Math.min(0.95, Math.max(0, LIGHT.alpha * (1 + (light - 1) * LIGHT.flicker)))}
 		blendMode="add"
@@ -99,8 +110,8 @@
 			anchor={{ x: 0.5, y: 1 }}
 			{x}
 			{y}
-			width={torch.width * props.scale}
-			height={torch.height * props.scale}
+			width={torch.width * props.scale * (1 + 0.3 * flare)}
+			height={torch.height * props.scale * (1 + 0.75 * flare)}
 		/>
 	{/if}
 {/each}

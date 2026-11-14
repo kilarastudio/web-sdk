@@ -52,7 +52,7 @@
 			title: translate('GLINT STRIKE'),
 			lines: [
 				translate(
-					'The dragon breathes fire and lights 3 to 6 random spots at ×2, ×4 or ×8. A brighter spot keeps its value.',
+					'Dragon fire lights 3 to 6 random spots at ×2, ×4 or ×8. A brighter spot keeps its value.',
 				),
 				translate(
 					'It strikes before the board is evaluated on 1 in 10 base game spins, and on every spin in BOOST. It also opens every FREE SPINS session.',

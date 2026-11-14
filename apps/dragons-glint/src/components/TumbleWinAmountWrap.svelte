@@ -1,16 +1,16 @@
 <script lang="ts" module>
-	import { PANELS_BOTTOM, BOARD_SIZES } from '../game/constants';
-	import { TUMBLE_PANEL_SIZES } from './TumbleWinAmountFrame.svelte';
+	import { ART_PIXEL, BOARD_FRAME, BOARD_SIZES } from '../game/constants';
 
-	// where the tumble win panel stands, in the board's own units: on the frame over the board's
-	// middle, in the base game and in free spins alike; in the stacked layout it is bigger
+	// where the foot of the tumble win's fire stands, in the board's own units: on the frame's top
+	// edge over the board's middle, in the base game and in free spins alike; in the stacked
+	// layout it is bigger
 	export const tumblePanelPlace = ({ stacked }: { stacked: boolean }) => {
 		const scale = stacked ? 1.28 : 1;
 
 		return {
 			scale,
 			x: BOARD_SIZES.width * 0.5,
-			y: -PANELS_BOTTOM - TUMBLE_PANEL_SIZES.height * 0.5 * scale,
+			y: -BOARD_FRAME.border + ART_PIXEL * 2,
 		};
 	};
 </script>

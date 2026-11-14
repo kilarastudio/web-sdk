@@ -12,7 +12,7 @@ export const i18nDerived = {
 		`${stateI18nDerived.translate('Wins light the floor. A spot lights at ×2 on its second hit and doubles on every hit after, up to')} ${cap}.`,
 	welcomeStrikeTitle: () => stateI18nDerived.translate('GLINT STRIKE'),
 	welcomeStrikeText: () =>
-		stateI18nDerived.translate('The dragon breathes fire and lights 3 to 6 spots.'),
+		stateI18nDerived.translate('Dragon fire lights 3 to 6 spots.'),
 	welcomeFreeSpinsTitle: () => stateI18nDerived.translate('FREE SPINS'),
 	welcomeFreeSpinsText: () =>
 		stateI18nDerived.translate('4 or more SCATTERS wake the dragon. Spots stay lit all feature.'),

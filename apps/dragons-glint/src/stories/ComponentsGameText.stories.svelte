@@ -14,7 +14,7 @@
 </script>
 
 <Story name="specimen">
-	<StoryPixiApp assets={{ gameFontGold: assets.gameFontGold, gameFontInk: assets.gameFontInk }}>
+	<StoryPixiApp assets={{ fontGold: assets.fontGold, fontInk: assets.fontInk }}>
 		<Rectangle width={1200} height={675} backgroundColor={0x071c24} />
 		<GameText
 			x={600}
@@ -50,12 +50,7 @@
 		/>
 		{#each [2, 4, 8, 16, 32, 64, 128, 256] as value, index}
 			<Container x={340 + index * 74} y={525}>
-				<Rectangle
-					anchor={0.5}
-					width={56}
-					height={30}
-					backgroundColor={0x4fd1c5}
-				/>
+				<Rectangle anchor={0.5} width={56} height={30} backgroundColor={0x4fd1c5} />
 				<GameText
 					anchor={0.5}
 					text={`×${value}`}

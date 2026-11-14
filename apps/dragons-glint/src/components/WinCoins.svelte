@@ -14,12 +14,12 @@
 	import { stateBetDerived } from 'state-shared';
 
 	import { getContext } from '../game/context';
-	import { SYMBOL_SIZE } from '../game/constants';
+	import { ART_PIXEL, SYMBOL_SIZE } from '../game/constants';
 	import { tumblePanelPlace } from './TumbleWinAmountWrap.svelte';
-	import { TUMBLE_PANEL_SIZES } from './TumbleWinAmountFrame.svelte';
+	import { TUMBLE_WIN } from './TumbleWinAmountFrame.svelte';
 
 	// A win pays out where the player can see it: every winning symbol throws a coin, which hops
-	// up, then flies faster and faster into the tumble win panel, where the amount counts up as the
+	// up, then flies faster and faster into the tumble win's fire, where the amount counts up as the
 	// coins land. Later wins of the same spin throw more coins. Drawn in the board's own units, so
 	// this sits inside a BoardContainer.
 	const COINS = { delay: 260, spread: 320, flight: 520, size: SYMBOL_SIZE * 0.42, most: 30 };
@@ -116,10 +116,10 @@
 					x: SYMBOL_SIZE * (position.reel + 0.5),
 					y: SYMBOL_SIZE * (position.row - 0.5),
 				};
-				// the panel takes the coins along its bottom edge, clear of the amount
+				// the coins drop into the foot of the fire, under the amount
 				const to = {
-					x: place.x + (Math.random() - 0.5) * TUMBLE_PANEL_SIZES.width * place.scale * 0.8,
-					y: place.y + TUMBLE_PANEL_SIZES.height * place.scale * 0.5,
+					x: place.x + (Math.random() - 0.5) * TUMBLE_WIN.width * place.scale * 0.6,
+					y: place.y - ART_PIXEL * 2,
 				};
 				const sprite = new PIXI.Sprite({ texture: coinFrames[0], anchor: 0.5 });
 				sprite.visible = false;

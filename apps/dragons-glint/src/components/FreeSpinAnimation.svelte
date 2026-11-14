@@ -4,7 +4,7 @@
 
 	import { Container } from 'pixi-svelte';
 
-	import IntroPanel from './IntroPanel.svelte';
+	import FreeSpinClaws from './FreeSpinClaws.svelte';
 	import PopIn from './PopIn.svelte';
 	import WinAnimation from './WinAnimation.svelte';
 	import WinPunch from './WinPunch.svelte';
@@ -14,7 +14,7 @@
 	import type { BigWinLevelData } from '../game/winLevelMap';
 
 	// the free spins panel over the board: a label, the count or amount, and a caption. The intro
-	// slams in with its own burning frame; the total at the end stands in the frame of the level
+	// stands in the dragon's claw marks; the total at the end stands in the frame of the level
 	// its count has reached, like a big win.
 	type Props = {
 		key: 'panelFreeSpinsIntro' | 'panelFreeSpinsOutro';
@@ -78,11 +78,11 @@
 			x={context.stateGameDerived.boardLayout().x}
 			y={context.stateGameDerived.boardLayout().y}
 		>
-			<IntroPanel {scale}>
+			<FreeSpinClaws {scale}>
 				{#snippet children({ face })}
 					{@render body({ face })}
 				{/snippet}
-			</IntroPanel>
+			</FreeSpinClaws>
 		</Container>
 	{/if}
 </MainContainer>

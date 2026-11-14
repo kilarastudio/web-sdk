@@ -20,8 +20,8 @@
 			glintTile2: assets.glintTile2,
 			glintTile3: assets.glintTile3,
 			glintTile4: assets.glintTile4,
-			gameFontGold: assets.gameFontGold,
-			gameFontInk: assets.gameFontInk,
+			fontGold: assets.fontGold,
+			fontInk: assets.fontInk,
 		}}
 	>
 		<Rectangle width={1000} height={600} backgroundColor={0x07131e} />

@@ -56,7 +56,7 @@
 		if (wide) {
 			const card = panelLayout({ key: 'welcomeCard', scale: 1 }).sizes;
 			const gap = 28;
-			const logoWidth = 330;
+			const logoWidth = 380; // 2.5 game units to an art pixel, the board's density
 			const top = 16;
 			const logoHeight = logoWidth / LOADING_LOGO.ratio;
 			const cardsY = top + logoHeight + 62 + card.height / 2;
@@ -77,7 +77,7 @@
 			(main.width - 40) / panelLayout({ key: 'welcomeRow', scale: 1 }).sizes.width,
 		);
 		const row = panelLayout({ key: 'welcomeRow', scale }).sizes;
-		const logoWidth = 440;
+		const logoWidth = LOADING_LOGO.width;
 		const logoHeight = logoWidth / LOADING_LOGO.ratio;
 		const top = 10;
 		const first = top + logoHeight + 96 + row.height / 2;

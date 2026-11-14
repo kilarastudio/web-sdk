@@ -3,7 +3,9 @@
 	import { Tween, prefersReducedMotion } from 'svelte/motion';
 	import { linear } from 'svelte/easing';
 
-	import { Container, Sprite } from 'pixi-svelte';
+	import * as PIXI from 'pixi.js';
+
+	import { BaseSprite, Container, Sprite } from 'pixi-svelte';
 	import { stateBetDerived } from 'state-shared';
 
 	import { SYMBOL_SIZE } from '../game/constants';
@@ -15,6 +17,7 @@
 		glintMultiplierLayout,
 		type GlintAnimation,
 	} from '../game/glint';
+	import { getContext } from '../game/context';
 	import { frameAt } from '../game/motion';
 	import { pixelClock } from '../game/pixelClock.svelte';
 	import { gameTextStyle } from '../game/typography';
@@ -29,6 +32,7 @@
 	};
 
 	const props: Props = $props();
+	const context = getContext();
 
 	// Each event has a keyed component instance. Completion of its one-shot must
 	// never be tied to the perpetual loop of a spot at the cap (×4,096) that may follow it.
@@ -41,18 +45,21 @@
 
 	const tier = $derived(glintTier(props.value));
 	const layout = $derived(glintMultiplierLayout(props.value));
+	const front = $derived(
+		(context.stateApp.loadedAssets.glintIgniteFront ?? []) as PIXI.Texture[],
+	);
+	const ignite = $derived(
+		(context.stateApp.loadedAssets[`glintIgnite${tier}`] ?? []) as PIXI.Texture[],
+	);
 	const reduced = $derived(prefersReducedMotion.current);
 
 	// The tile's motion is five held poses: how big the tile is, how solid, and how strong the
-	// flash over it. Lighting a spot fades it in under a flash; a doubling beats; a new tier
+	// flash over it. Lighting a spot burns it in from its middle; a doubling beats; a new tier
 	// lands from larger with the brightest flash.
 	const POSES = {
 		prime: { size: [1, 1, 1, 1, 1], alpha: [1, 1, 1, 1, 1], flash: [0, 0, 0, 0, 0] },
-		light: {
-			size: [1.3, 1.2, 1.1, 1.04, 1],
-			alpha: [0.4, 0.7, 1, 1, 1],
-			flash: [0.9, 0.6, 0.3, 0, 0],
-		},
+		// lighting has its own frames: the spot catches fire from inside (glintIgnite)
+		light: { size: [1, 1, 1, 1, 1], alpha: [1, 1, 1, 1, 1], flash: [0, 0, 0, 0, 0] },
 		double: {
 			size: [1.12, 1.16, 1.1, 1.04, 1],
 			alpha: [1, 1, 1, 1, 1],
@@ -118,13 +125,22 @@
 			alpha={1 - progress.current}
 		/>
 	{/if}
-	<Sprite
-		key={GLINT_TIERS[tier].tile}
-		anchor={0.5}
-		width={tileSize}
-		height={tileSize}
-		alpha={tileAlpha}
-	/>
+	{#if moving && animation === 'light' && ignite.length}
+		<BaseSprite
+			texture={ignite[frameAt(progress.current, ignite.length)]}
+			anchor={0.5}
+			width={SYMBOL_SIZE}
+			height={SYMBOL_SIZE}
+		/>
+	{:else}
+		<Sprite
+			key={GLINT_TIERS[tier].tile}
+			anchor={0.5}
+			width={tileSize}
+			height={tileSize}
+			alpha={tileAlpha}
+		/>
+	{/if}
 	{#if flashAlpha > 0}
 		<Sprite
 			key="glintFlash"
@@ -136,7 +152,21 @@
 		/>
 	{/if}
 {:else}
-	<Container x={layout.x} y={layout.y} scale={multiplierScale}>
+	<!-- the fire's front passes over the symbol too -->
+	{#if moving && animation === 'light' && front.length}
+		<BaseSprite
+			texture={front[frameAt(progress.current, front.length)]}
+			anchor={0.5}
+			width={SYMBOL_SIZE}
+			height={SYMBOL_SIZE}
+		/>
+	{/if}
+	<Container
+		x={layout.x}
+		y={layout.y}
+		scale={multiplierScale}
+		alpha={playing && animation === 'light' && !reduced && progress.current < 0.55 ? 0 : 1}
+	>
 		<GameText
 			anchor={0.5}
 			text={`×${props.value}`}
