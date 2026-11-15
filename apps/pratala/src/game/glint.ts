@@ -8,7 +8,7 @@ export const GLINT_ANIMATION_MS = {
 	double: 350,
 	tier_up: 500,
 } as const;
-// What the math sets (math-sdk/games/dragons_glint/game_config.py): a lit spot doubles up to the cap,
+// What the math sets (math-sdk/games/pratala/game_config.py): a lit spot doubles up to the cap,
 // and SUPER and HOARD start free spins with every spot lit at these values.
 export const GLINT_CAP = 4096;
 export const MODE_START_GLINT = { super: 4, hoard: 8 } as const;

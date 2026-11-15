@@ -28,7 +28,7 @@
 		<GameText
 			x={50}
 			y={30}
-			text="DRAGON'S GLINT"
+			text="PRATALA"
 			style={gameTextStyle({ fontSize: 38, tone: 'value' })}
 		/>
 		{#each [2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096] as value, index}

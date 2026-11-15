@@ -1,4 +1,4 @@
-# Pratala (Dragon's Glint): style
+# Pratala: style
 
 This game's own look and feel. What it shares with every Kilara game is in
 `docs/kilara/style-kilara.md`; how it was built is in `docs/kilara/game-workflow.md`.
@@ -10,8 +10,8 @@ dragon is one colossal eye behind the broken back wall and two claws gripping th
 everything on the reels has met it. Chosen by the user from three
 themes judged as a player would. The display name is Pratala (user, 2026-11-13: Old Javanese for the
 earth and the underworld; in wayang, Saptapratala is the seventh underworld where the giant naga
-Antaboga rules), chosen to replace Dragon's Glint. The ids have not been renamed yet: the math and
-RGS id is still `dragons_glint` and the app folder `apps/dragons-glint`.
+Antaboga rules), chosen to replace the working name. The math and RGS id is `pratala` and the app folder
+`apps/pratala`.
 
 ## Look
 

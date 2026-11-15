@@ -33,8 +33,8 @@ const assets: Assets = {
 	modeBonus: { type: 'sprite', src: asset('assets/ui/mode-bonus.png') },
 	modeSuper: { type: 'sprite', src: asset('assets/ui/mode-super.png') },
 
-	fontGold: { type: 'font', src: asset('assets/fonts/dragons-glint-gold.fnt') },
-	fontInk: { type: 'font', src: asset('assets/fonts/dragons-glint-ink.fnt') },
+	fontGold: { type: 'font', src: asset('assets/fonts/pratala-gold.fnt') },
+	fontInk: { type: 'font', src: asset('assets/fonts/pratala-ink.fnt') },
 
 	// not preloaded: the audio is several MB, and the loading screen should not wait for it
 	sound: { type: 'audio', src: asset('assets/audio/sounds.json') },

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
-"""Regenerate the Storybook book fixtures from the published Dragon's Glint books.
+"""Regenerate the Storybook book fixtures from the published Pratala books.
 
 Run from any directory:
 
-    uv run --with zstandard python web-sdk/apps/dragons-glint/scripts/extract_story_books.py
+    uv run --with zstandard python web-sdk/apps/pratala/scripts/extract_story_books.py
 
 The modes and their book files come from publish_files/index.json. For each mode in STORY_BOOKS
 the script writes <mode>_books.ts, the named books in order. For each mode in EVENT_SOURCES it
@@ -22,7 +22,7 @@ import zstandard
 APP = Path(__file__).resolve().parents[1]
 WEB_SDK = Path(__file__).resolve().parents[3]
 STAKE_ENGINE = Path(__file__).resolve().parents[4]
-DEFAULT_LIBRARY = STAKE_ENGINE / "math-sdk/games/dragons_glint/library/publish_files"
+DEFAULT_LIBRARY = STAKE_ENGINE / "math-sdk/games/pratala/library/publish_files"
 DEFAULT_OUT = APP / "src/stories/data"
 PRETTIER = WEB_SDK / "node_modules/.bin/prettier"
 

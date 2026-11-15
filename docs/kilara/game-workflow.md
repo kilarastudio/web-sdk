@@ -1,6 +1,6 @@
 # How a Kilara game gets built
 
-The workflow used for the first release game (Dragon's Glint, `apps/dragons-glint`), written so the
+The workflow used for the first release game (Pratala, `apps/pratala`), written so the
 next game can follow it whatever its theme or art style. It says how the work is done. What a game
 should look and feel like is kept apart from it:
 
@@ -28,7 +28,7 @@ A new game copies the workflow, keeps the studio style, and writes its own game 
 2. **Lock the look before making anything.** One palette, one pixel density (or the style's
    equivalent), light direction, outline. Write it into the game's `style.md`. Everything made
    later is checked against it.
-3. **Decide what is drawn by code and what is generated.** In Dragon's Glint: symbols, board,
+3. **Decide what is drawn by code and what is generated.** In Pratala: symbols, board,
    panels, particles and effects are drawn and animated by code; backgrounds, the character and
    the font come from an image model; all sound from a sound model. Code-drawn art is exact,
    cheap to change and animates freely; generated art carries detail code cannot.

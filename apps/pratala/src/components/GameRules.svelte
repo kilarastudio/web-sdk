@@ -7,7 +7,7 @@
 	import { GLINT_CAP } from '../game/glint';
 	import { i18nDerived } from '../i18n/i18nDerived';
 
-	// The rules, as the math implements them (math-sdk/games/dragons_glint/readme.txt). Costs, the top
+	// The rules, as the math implements them (math-sdk/games/pratala/readme.txt). Costs, the top
 	// prize and the return come from the game's config, and what each mode does from the mode table,
 	// not from this text.
 	const translate = stateI18nDerived.translate;

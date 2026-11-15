@@ -5,7 +5,7 @@
 >
 > - Kilara's own docs are in [docs/kilara](/docs/kilara) (how a game is built, the studio style) and
 >   each game's look is in `apps/<game>/docs/style.md`. The release game is
->   [Dragon's Glint](/apps/dragons-glint) (math id `dragons_glint`); `apps/kilara-poc` is an internal
+>   [Pratala](/apps/pratala) (math id `pratala`); `apps/kilara-poc` is an internal
 >   playground.
 > - The sample apps (`lines`, `scatter`, …) have no art, sound or `loader.gif`: their
 >   `src/game/assets.ts` is empty, so the spine and symbol steps of the tutorial draw nothing.

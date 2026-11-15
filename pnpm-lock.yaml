@@ -137,7 +137,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/eslint-config-custom
 
-  apps/dragons-glint:
+  apps/pratala:
     dependencies:
       '@lingui/core':
         specifier: 6.10.0

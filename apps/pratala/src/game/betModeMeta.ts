@@ -7,7 +7,7 @@ import { MODE_START_GLINT } from './glint';
 type MathMode = keyof typeof config.betModes;
 
 // One row per mode the player can choose, as math publishes them
-// (games/dragons_glint/library/publish_files/index.json). The bonus menu, the confirmation and the
+// (games/pratala/library/publish_files/index.json). The bonus menu, the confirmation and the
 // rules are all written from this table, so a mode is described the same way everywhere. Titles are
 // the math mode names: Stake wants the same names in the game, the replay and the math files.
 export const MODES = [

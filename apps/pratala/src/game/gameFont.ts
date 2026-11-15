@@ -2,8 +2,8 @@
 // and outlined by the font build. Gold carries its colours in the atlas; Ink is white so it can
 // be tinted. Lowercase letters draw the capital glyphs.
 export const GAME_FONT_FAMILIES = {
-	gold: 'Dragons Glint Gold',
-	ink: 'Dragons Glint Ink',
+	gold: 'Pratala Gold',
+	ink: 'Pratala Ink',
 } as const;
 
 export const GAME_FONT_CHARACTERS =

@@ -1,9 +1,9 @@
-// The game's config, from the math: library/configs/config_fe_dragons_glint.json, with the mode
-// costs, RTP and max win taken from math-sdk/games/dragons_glint/game_config.py.
+// The game's config, from the math: library/configs/config_fe_pratala.json, with the mode
+// costs, RTP and max win taken from math-sdk/games/pratala/game_config.py.
 export default {
 	providerName: 'kilara',
-	gameName: 'dragons_glint',
-	gameID: 'dragons_glint',
+	gameName: 'pratala',
+	gameID: 'pratala',
 	rtp: 0.967,
 	numReels: 6,
 	numRows: [5, 5, 5, 5, 5, 5],
@@ -44,7 +44,7 @@ export default {
 			max_win: 25000.0,
 		},
 		hoard: {
-			// The one place the app keeps HOARD's cost (math-sdk/games/dragons_glint/game_config.py).
+			// The one place the app keeps HOARD's cost (math-sdk/games/pratala/game_config.py).
 			cost: 640.0,
 			feature: false,
 			buyBonus: true,

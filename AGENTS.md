@@ -4,7 +4,7 @@ Saat pekerjaan mengubah tampilan atau animasi yang dapat diperiksa di Storybook,
 
 - Periksa alamat saat ini dengan `tailscale ip -4`; jangan mengandalkan alamat IP lama.
 - Gunakan server Storybook yang sudah berjalan jika story yang tepat dapat diakses melalui alamat Tailscale. Jika server hanya mendengarkan `localhost`, jalankan server lain pada port yang tersedia tanpa menghentikan proses yang tidak terkait.
-- Untuk Dragon's Glint, jalankan dari `apps/dragons-glint`:
+- Untuk Pratala, jalankan dari `apps/pratala`:
 
   ```sh
   PUBLIC_CHROMATIC=true pnpm exec storybook dev --host 0.0.0.0 -p 6108 --ci --no-open --disable-telemetry
