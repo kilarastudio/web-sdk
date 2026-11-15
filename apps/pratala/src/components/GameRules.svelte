@@ -78,6 +78,10 @@
 	const controls = [
 		[i18nDerived.bet(), translate('Plays one round. Press SPACE to do the same.')],
 		[
+			i18nDerived.stop(),
+			translate('Takes the place of the bet button while a round plays. Press it to stop the reels at once and, during autoplay, to end it. The result does not change.'),
+		],
+		[
 			'− / +',
 			`${translate('Lower or raise the')} ${amount}. ${translate('Every win scales with it. Press the amount itself to pick it from a list.')}`,
 		],
@@ -91,10 +95,18 @@
 			translate('Shows the modes: turn ANTE or BOOST on, or start FREE SPINS straight away.'),
 		],
 		[
-			i18nDerived.menu(),
-			`${i18nDerived.payTable()}, ${translate('these rules, settings and the sound switch.')}`,
+			i18nDerived.disable(),
+			translate('Takes the place of the buy bonus button while ANTE or BOOST is on. Press it to turn the mode off.'),
 		],
-		[translate('SOUND'), translate('Mutes or unmutes all sound. Volumes are in the settings.')],
+		[
+			`${i18nDerived.showControls()} / ${i18nDerived.hideControls()}`,
+			translate('On a phone held upright during free spins, shows or hides the bet controls.'),
+		],
+		[
+			i18nDerived.menu(),
+			`${i18nDerived.payTable()}, ${translate('these rules, settings and the audio switch.')}`,
+		],
+		[i18nDerived.audio(), translate('Mutes or unmutes all sound. Volumes are in the settings.')],
 	];
 
 	const general = [

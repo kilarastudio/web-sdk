@@ -1,5 +1,6 @@
 import type { BaseBet } from 'utils-bet';
 import { stateMeta } from './stateMeta.svelte';
+import { stateConfig } from './stateConfig.svelte';
 
 export type Currency = string;
 export type BetToResume = BaseBet | null;
@@ -21,13 +22,18 @@ export const stateBet = $state({
 	isTurbo: false,
 });
 
+// the bet is always one of the RGS bet levels: where the balance cannot cover it, it drops to the
+// biggest level the balance covers, and where none is covered it stays, so the bet bar can show
+// that the balance is too low. It never makes up an amount between levels.
 const correctBetAmount = (value: number) => {
 	if (value <= 0) return 0;
 	const costMultiplier = betCostMultiplier();
 	if (costMultiplier === 0) return 0;
-	const max = stateBet.balanceAmount / costMultiplier;
-	if (value >= max) return max;
-	return value;
+	if (value * costMultiplier <= stateBet.balanceAmount) return value;
+	const covered = stateConfig.betAmountOptions.filter(
+		(level) => level <= value && level * costMultiplier <= stateBet.balanceAmount,
+	);
+	return covered.length ? Math.max(...covered) : value;
 };
 
 const setBetAmount = (value: number) => {

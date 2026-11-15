@@ -2,6 +2,7 @@
 	import { onMount, onDestroy } from 'svelte';
 
 	import { getContextEventEmitter } from 'utils-event-emitter';
+	import { stateModal, stateUi } from 'state-shared';
 
 	import type { EmitterEventHotKey } from '../types';
 
@@ -11,12 +12,17 @@
 
 	const getValidElement = (e: KeyboardEvent) =>
 		!EXCLUDED_TAGS.includes(e?.target?.tagName?.toLowerCase());
+	// while a modal, sheet or the HUD menu is open, SPACE does nothing: it must not place a bet
+	// behind it. Key-ups still pass, so a SPACE hold that started before ends cleanly.
+	const isBlockedBehindOverlay = (key: string) =>
+		key === 'Space' && (stateModal.modal !== null || stateUi.menuOpen);
 
 	function handleKeydown(e: KeyboardEvent) {
 		if (getValidElement(e)) {
 			const isSpace = e.key === ' ';
 			const key = isSpace ? 'Space' : e.key;
 			if (PREVENT_DEFAULT_KEYS.includes(key)) e.preventDefault();
+			if (isBlockedBehindOverlay(key)) return;
 			if (key) context.eventEmitter.broadcast({ type: 'hotKey', key, action: 'keyDown' });
 		}
 	}

@@ -30,7 +30,7 @@ const lang = (): Language => {
 };
 const currency = () => {
 	const value = (getUrlSearchParam('currency') || '').trim().toUpperCase();
-	return /^[A-Z]{3}$/.test(value) ? value : 'USD';
+	return /^[A-Z]{3,5}$/.test(value) ? value : 'USD';
 };
 const sessionID = () => getUrlSearchParam('sessionID') || '';
 const rgsUrl = () => getUrlSearchParam('rgs_url') || '';
