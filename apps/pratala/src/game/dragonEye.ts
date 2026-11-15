@@ -1,5 +1,5 @@
-// The dragon is too large to be seen whole: one eye behind the broken back wall, and its claws on
-// the pillars, painted into the backgrounds (static/assets/backgrounds). The eye is painted there
+// The dragon is too large to be seen whole: only one eye shows, behind the broken back wall,
+// painted into the backgrounds (static/assets/backgrounds). The eye is painted there
 // open; the game draws its other frames over it from a strip (static/assets/eye), in the
 // background's own art pixels.
 export const EYE_FRAMES = [
