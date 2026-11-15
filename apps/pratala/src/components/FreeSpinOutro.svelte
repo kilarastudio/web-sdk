@@ -75,9 +75,7 @@
 
 				<FreeSpinAnimation
 					key="panelFreeSpinsOutro"
-					label={level?.alias === 'max'
-						? context.i18nDerived.winLevel(level.text)
-						: context.i18nDerived.totalWin()}
+					label={level ? context.i18nDerived.winLevel(level.text) : context.i18nDerived.totalWin()}
 					value={bookEventAmountToCountUpCurrencyString(countUpAmount, amount)}
 					caption={context.i18nDerived.freeSpinsComplete()}
 					completed={countUpCompleted}

@@ -229,6 +229,16 @@
 />
 
 <Story
+	name="freeSpinEnd EPIC"
+	args={templateArgs({
+		skipLoadingScreen: true,
+		data: { ...events.freeSpinEnd, amount: 120000 },
+		action: async (data) => await playBookEvent(data, { bookEvents: [] }),
+	})}
+	{template}
+/>
+
+<Story
 	name="wincap"
 	args={templateArgs({
 		skipLoadingScreen: true,
