@@ -7,7 +7,7 @@
 	import InitialiseParent from './InitialiseParent.svelte';
 	import AssetsLoader from './AssetsLoader.svelte';
 
-	type Props = { children: Snippet };
+	type Props = { children: Snippet; antialias?: boolean; maxResolution?: number };
 
 	const props: Props = $props();
 	const context = getContextApp();
@@ -16,7 +16,7 @@
 	onDestroy(() => context.stateApp.reset());
 </script>
 
-<InitialiseApplication>
+<InitialiseApplication antialias={props.antialias} maxResolution={props.maxResolution}>
 	<InitialiseParent>
 		<AssetsLoader>
 			{@render props.children()}

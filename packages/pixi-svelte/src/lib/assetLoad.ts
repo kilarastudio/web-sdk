@@ -1,21 +1,12 @@
-import * as SPINE_PIXI from '@esotericsoftware/spine-pixi-v8';
-import type { RawType, RawAsset, RawSpine, RawSprites, SpineSrc, RawAudio } from './types';
+import type { RawType, RawAsset, RawSprites, SpineSrc, RawAudio } from './types';
 
-const PROCESS_METHOD_MAP = {
-	spine: ({ key, rawAsset, src }: { key: string; rawAsset: RawSpine; src: SpineSrc }) => {
-		const atlasAsset = rawAsset[src.atlas] as SPINE_PIXI.TextureAtlas;
-		const skeletonAsset = rawAsset[src.skeleton] as Uint8Array;
-		const attachmentLoader = new SPINE_PIXI.AtlasAttachmentLoader(atlasAsset);
-		const parser =
-			skeletonAsset instanceof Uint8Array
-				? new SPINE_PIXI.SkeletonBinary(attachmentLoader)
-				: new SPINE_PIXI.SkeletonJson(attachmentLoader);
-		const scale = src?.scale ?? 1;
-		parser.scale = scale;
-		const skeletonData = parser.readSkeletonData(skeletonAsset);
+type ProcessMethod = (options: {
+	key: string;
+	rawAsset: any;
+	src: any;
+}) => Record<string, unknown> | undefined;
 
-		return { [key]: skeletonData };
-	},
+const PROCESS_METHOD_MAP: Partial<Record<RawType, ProcessMethod>> = {
 	sprite: ({ key, rawAsset }: { key: string; rawAsset: RawSprites }) => ({ [key]: rawAsset }),
 	sprites: ({ rawAsset }: { rawAsset: RawSprites }) => rawAsset.textures,
 	spriteSheet: ({ key, rawAsset }: { key: string; rawAsset: RawSprites }) => ({
@@ -24,7 +15,13 @@ const PROCESS_METHOD_MAP = {
 	audio: ({ key, rawAsset }: { key: string; rawAsset: RawAudio }) => {
 		return { [key]: rawAsset };
 	},
-} as const;
+};
+
+// The spine type is registered by BaseSpineProvider.svelte, so the Spine runtime is only bundled
+// into games that render a Spine component.
+export const registerAssetProcessMethod = (type: RawType, processMethod: ProcessMethod) => {
+	PROCESS_METHOD_MAP[type] = processMethod;
+};
 
 export const getProcessed = ({
 	key,
@@ -40,7 +37,10 @@ export const getProcessed = ({
 	if (type === 'font') return; // No need to process raw font data and add it to the loaded assets.
 	const processMethod = PROCESS_METHOD_MAP[type];
 	if (!processMethod)
-		throw Error('No asset process method found, please check the type of the asset.');
-	// @ts-expect-error
+		throw Error(
+			type === 'spine'
+				? 'Spine assets are only processed in a game that uses a Spine component (SpineProvider or BaseSpineProvider).'
+				: 'No asset process method found, please check the type of the asset.',
+		);
 	return processMethod({ key, rawAsset, src });
 };

@@ -104,7 +104,7 @@
 	const scale = $derived((cell * 0.5) / SYMBOL_SIZE);
 </script>
 
-<App>
+<App antialias={false}>
 	<GeneratedArt />
 	<GameLoader
 		html={loaderHtml()}

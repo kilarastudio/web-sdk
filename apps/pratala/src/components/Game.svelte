@@ -68,7 +68,7 @@
 	});
 </script>
 
-<App>
+<App antialias={false}>
 	<GeneratedArt />
 	<EnableSound />
 	<EnableHotkey />

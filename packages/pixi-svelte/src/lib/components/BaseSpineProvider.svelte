@@ -3,6 +3,11 @@
 	import * as SPINE_PIXI from '@esotericsoftware/spine-pixi-v8';
 
 	import type { OverwriteCursor } from '../types';
+	import { registerAssetProcessMethod } from '../assetLoad';
+	import { processSpine } from '../assetLoadSpine';
+
+	// Runs when a game's bundle includes this component, which is before any asset is loaded.
+	registerAssetProcessMethod('spine', processSpine);
 
 	export type Props = OverwriteCursor<Omit<SPINE_PIXI.SpineOptions, 'children'>> & {
 		spineData: SPINE_PIXI.SkeletonData;

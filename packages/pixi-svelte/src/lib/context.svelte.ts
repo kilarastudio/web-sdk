@@ -1,6 +1,6 @@
 import type * as PIXI from 'pixi.js';
 import { setContext, getContext, onMount } from 'svelte';
-import * as SPINE_PIXI from '@esotericsoftware/spine-pixi-v8';
+import type * as SPINE_PIXI from '@esotericsoftware/spine-pixi-v8';
 
 import type { App as ContextApp } from './createApp.svelte';
 

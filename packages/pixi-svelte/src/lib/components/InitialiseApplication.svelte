@@ -6,7 +6,14 @@
 	import { getContextApp } from '../context.svelte';
 	import { preloadFont } from '../utils.svelte';
 
-	type Props = { children: Snippet };
+	type Props = {
+		children: Snippet;
+		// Off for pixel art, where smoothing edges costs GPU time and shows nothing.
+		antialias?: boolean;
+		// Screens above this density render at it: a 3x phone at full density draws 2.25 times the
+		// pixels of 2x for a difference that is hard to see.
+		maxResolution?: number;
+	};
 
 	const props: Props = $props();
 	const context = getContextApp();
@@ -24,11 +31,11 @@
 			backgroundAlpha: 0,
 			hello: true,
 			multiView: false,
-			antialias: true,
+			antialias: props.antialias ?? true,
 			clearBeforeRender: true,
 			preference: 'webgpu',
 			powerPreference: 'high-performance',
-			resolution: devicePixelRatio.current,
+			resolution: Math.min(devicePixelRatio.current ?? 1, props.maxResolution ?? 2),
 			resizeTo: window,
 		});
 

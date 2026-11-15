@@ -1,5 +1,5 @@
 import type * as PIXI from 'pixi.js';
-import * as SPINE_PIXI from '@esotericsoftware/spine-pixi-v8';
+import type * as SPINE_PIXI from '@esotericsoftware/spine-pixi-v8';
 
 export type PixiPoint = PIXI.PointData | number | undefined;
 
