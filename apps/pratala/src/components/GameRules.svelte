@@ -28,7 +28,7 @@
 			lines: [
 				translate('6 reels, 5 rows. 8 or more of the same symbol anywhere on the board win.'),
 				translate(
-					'Winning symbols explode and new symbols fall in. This repeats until no win is left.',
+					'Winning symbols are destroyed and new symbols fall in. This repeats until no win is left.',
 				),
 			],
 		},
@@ -37,7 +37,7 @@
 			lines: [
 				translate('Every position on the board has a Glint Spot.'),
 				`${translate(
-					'An explosion primes an unlit spot. An explosion on a primed spot lights it at ×2. Every explosion after that doubles it, up to',
+					'A win primes the unlit spots under its symbols. A win on a primed spot lights it at ×2. Every win after that doubles it, up to',
 				)} ×${GLINT_CAP.toLocaleString('en-US')}.`,
 				translate('A symbol win is multiplied by the highest lit spot under its symbols.'),
 				translate(
@@ -121,6 +121,11 @@
 			'If the connection is lost during a round, the round is still completed on the server. Reload the game to see its result.',
 		),
 		translate('A malfunction voids all wins and plays.'),
+		translate('A consistent internet connection is required.'),
+		translate(
+			'The game display is not representative of any physical device and is for illustrative purposes only.',
+		),
+		translate('TM and © 2026 Engine.'),
 	];
 </script>
 

@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { stateUi } from 'state-shared';
+	import { stateModal, stateUi } from 'state-shared';
 
 	import UiStage from './UiStage.svelte';
 	import ButtonPayTable from './ButtonPayTable.svelte';
@@ -14,6 +14,11 @@
 	};
 
 	const props: Props = $props();
+
+	// a sheet or modal opened from the menu takes its place, so the menu's rows do not show beside it
+	$effect(() => {
+		if (stateModal.modal !== null) stateUi.menuOpen = false;
+	});
 </script>
 
 <!--

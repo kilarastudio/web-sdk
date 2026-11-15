@@ -1,6 +1,8 @@
 import { locales } from 'config-lingui';
 import { page } from '$app/state';
 
+import { stateConfig } from './stateConfig.svelte';
+
 export type Language = (typeof locales)[number];
 
 export type Key =
@@ -34,7 +36,10 @@ const currency = () => {
 };
 const sessionID = () => getUrlSearchParam('sessionID') || '';
 const rgsUrl = () => getUrlSearchParam('rgs_url') || '';
-const social = () => getUrlSearchParam('social') === 'true';
+// social wording applies when the link asks for it or the RGS says the jurisdiction is a social
+// casino; the config arrives with authenticate, before the game mounts
+const social = () =>
+	getUrlSearchParam('social') === 'true' || stateConfig.jurisdiction?.socialCasino === true;
 
 // params for replay
 const replay = () => getUrlSearchParam('replay') === 'true';

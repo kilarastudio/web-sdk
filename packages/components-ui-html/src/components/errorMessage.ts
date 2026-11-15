@@ -15,7 +15,7 @@ export type ErrorMessage = {
 	recoverable: boolean;
 	/** the emblem drawing, from the Kilara icon set */
 	icon: KilaraIconName;
-	/** the code and raw message, for support */
+	/** the RGS error code (none for a script or network error) and raw message, for support */
 	code: string;
 	detail: string;
 };
@@ -25,7 +25,6 @@ const SESSION_CODES = ['ERR_VAL', 'ERR_IS', 'ERR_ATE', 'ERR_BNF', 'ERR_BE'];
 const readCode = (error: any): string => {
 	if (typeof error?.error === 'string') return error.error;
 	if (typeof error?.code === 'string') return error.code;
-	if (error instanceof Error) return error.name;
 	return '';
 };
 

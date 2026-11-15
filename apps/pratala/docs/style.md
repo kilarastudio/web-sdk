@@ -6,7 +6,8 @@ This game's own look and feel. What it shares with every Kilara game is in
 ## Theme
 
 A 16-bit RPG dungeon: the hall of a dragon too large to be seen whole, and its hoard. The
-dragon is one colossal eye behind the broken back wall and two claws gripping the pillars;
+dragon is one colossal eye behind the broken back wall (the claws on the pillars were removed on
+2026-11-15: they did not line up with the eye);
 everything on the reels has met it. Chosen by the user from three
 themes judged as a player would. The display name is Pratala (user, 2026-11-13: Old Javanese for the
 earth and the underworld; in wayang, Saptapratala is the seventh underworld where the giant naga
@@ -79,17 +80,18 @@ mode_pictures.py`; rebuild them whenever a symbol's art changes): ANTE is the sc
 - At rest a gem's light turns now and then, a band of light slides over the metal of the crown,
   sword, shield and helm (one ramp step lighter, no white), and the eye blinks. While a column waits on a scatter
   the other symbols darken and the landed scatters wake and throb.
-- The dragon answers a run of tumble wins in four steps: a nod, a snort of smoke, a beat of its
-  wing, a roar. Its body is moved by code over its frames (hop, lunge, landing), with smoke and
-  embers from its mouth. The dragon may squash; the symbols may not.
+- The eye answers the game with a held frame (components/DragonEye.svelte): it glances down at a
+  small win, narrows its pupil at a bigger one and at the start of free spins, and stays narrowed
+  while a column waits on a scatter and in the hall's hottest moods. The stronger answers jolt the
+  board. Before a Glint Strike the pupil narrows first, then the fire leaves for the board.
 - The torches' flames are a small heat simulation drawn in colour bands, 24 looping frames.
   The painted flames were erased from the backgrounds. Each torch lights the wall round it with
   a pool of light in four bands that swells and dims with how far its flame's tongues reach,
   carried on a slow draught so it never repeats with the flame's loop; dark soot, burned the same
-  way, climbs behind each flame. The dragon catches the nearest torch's flicker.
-- At rest the dragon breathes: its head rises two pixels and settles, about a breath every three
-  seconds, each a little longer or shorter than the last. Now and then it blinks, and most breaths
-  out leave a puff of smoke from its nostril, drawn with the same heat simulation in greys.
+  way, climbs behind each flame.
+- At rest the eye blinks every 2.6 to 6.2 seconds and looks left, right or down every 5 to 11
+  seconds, at times drawn between those bounds so it never ticks like a clock. With reduced motion
+  it stays open.
 - In free spins the board frame does not burn (2026-11-13: its fire clashed with the tumble
   win's): separate fires burn scattered on the hall's floor round the board, never in one
   straight line, and the frame takes the heat, its stone and gold turned toward red with a slow
