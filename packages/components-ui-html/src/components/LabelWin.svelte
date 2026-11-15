@@ -48,7 +48,7 @@
 		}
 
 		&.has-win {
-			--ui-label-value-color: var(--ui-accent);
+			--ui-label-value-color: var(--ui-win);
 		}
 	}
 </style>

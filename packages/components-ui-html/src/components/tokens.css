@@ -1,10 +1,12 @@
 /*
 	Kilara UI tokens, the same in every game, for anything drawn outside the HUD's own element
-	(the menus). They repeat UI.svelte's values: Kilau #ffc53d, Malam #0e1014, Kertas #f3f4f6,
+	(the menus). They repeat UI.svelte's values: Kilau #9b87ff (violet), Emas #ffc53d (wins), Malam #0e1014, Kertas #f3f4f6,
 	Kabut #8a92a0, Langit #7ab8ff.
 */
 :root {
-	--ui-accent: #ffc53d;
+	--ui-accent: #9b87ff;
+	--ui-accent-hover: #a898ff;
+	--ui-win: #ffc53d;
 	--ui-accent-contrast: #0e1014;
 	--ui-activate: #7ab8ff;
 	--ui-text: #f3f4f6;

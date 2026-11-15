@@ -89,7 +89,7 @@
 		justify-self: end;
 		margin: 0;
 		text-align: right;
-		color: var(--ui-accent);
+		color: var(--ui-win);
 		font-weight: 700;
 		white-space: nowrap;
 	}

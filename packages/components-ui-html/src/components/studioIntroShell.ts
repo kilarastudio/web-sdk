@@ -47,7 +47,7 @@ ${ID} {
 	--intro-background: #0e1014;
 	--intro-ink: #f3f4f6;
 	--intro-sub: #8a92a0;
-	--intro-light: #ffc53d;
+	--intro-light: #9b87ff;
 	/* firm ease-out, the same feel as the reel settle: fast in, no bounce */
 	--intro-ease: cubic-bezier(0.16, 1, 0.3, 1);
 

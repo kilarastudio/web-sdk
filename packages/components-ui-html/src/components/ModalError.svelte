@@ -86,7 +86,7 @@
 <style lang="scss">
 	.error-modal {
 		/* the HUD tokens from UI.svelte, so the panel matches it before the HUD mounts */
-		--ui-accent: #ffc53d;
+		--ui-accent: #9b87ff;
 		--ui-text: #f3f4f6;
 		--ui-text-muted: #8a92a0;
 		--ui-surface: rgba(14, 16, 20, 0.84);

@@ -58,6 +58,21 @@
 		}
 	};
 
+	// While the buy bonus can be pressed and the game is idle, its Kilau dot runs around the frame
+	// now and then, a quiet invitation. Never while a round plays (the button is disabled then), so
+	// it never competes with the reels.
+	const IDLE_RUN_MS = 9000;
+	$effect(() => {
+		if (kind !== 'feature' || disabled || muted || active) return;
+		const timer = setInterval(() => {
+			if (document.hidden || reducedMotion() || !kilauEl) return;
+			kilauEl.classList.remove('run');
+			void kilauEl.offsetWidth;
+			kilauEl.classList.add('run');
+		}, IDLE_RUN_MS);
+		return () => clearInterval(timer);
+	});
+
 	const onclick = () => {
 		playPress();
 		onpress();
@@ -245,20 +260,33 @@
 	}
 
 	/*
-		Buy bonus: a square badge in the dock's own surface with a Kilau frame (as thick as the spin
-		button's ring) and the Kilau dot from the Kilara wordmark. The dot sits near the top edge, out
-		of the text flow, so the two-line label keeps the whole centre. Smaller than the spin button,
-		which stays the one primary action and the only round one.
+		Buy bonus: a square badge filled with the brand violet, so it is the one coloured control in
+		the HUD, with the Kilau dot from the Kilara wordmark in Malam. Its state changes are quiet so
+		they never pull the eye from the reels: disabled keeps the violet but sinks it toward Malam
+		(dusk, not grey), and hover only lifts it a little; both fade rather than snap. The dot sits
+		near the top edge, out of the text flow, so the two-line label keeps the whole centre. Smaller
+		than the spin button, which stays the one primary action and the only round one.
 	*/
 	.feature {
 		--size: var(--ui-feature-size);
-		--ui-button-hover-bg: var(--ui-surface-raised);
-		--kilau: var(--ui-accent);
+		--ui-button-hover-bg: var(--ui-accent-hover);
+		--kilau: var(--ui-accent-contrast);
+		/* the dusk state: the same violet sunk toward Malam, text a step lighter than the fill */
+		--ui-feature-dim-bg: color-mix(in srgb, var(--ui-accent) 32%, #0e1014);
+		--ui-feature-dim-text: color-mix(in srgb, var(--ui-accent) 62%, #0e1014);
 
-		background-color: var(--ui-surface);
-		box-shadow:
-			inset 0 0 0 calc(var(--size) * 0.035) var(--kilau),
-			var(--ui-shadow);
+		background-color: var(--ui-accent);
+		box-shadow: var(--ui-shadow);
+		color: var(--ui-accent-contrast);
+		transition:
+			color 0.4s ease,
+			background-color 0.4s ease;
+
+		@media (hover: hover) {
+			&:not(:disabled):hover {
+				transition-duration: 0.2s;
+			}
+		}
 		font-size: calc(var(--size) * 0.18);
 		font-weight: 700;
 		line-height: 1.05;
@@ -289,9 +317,10 @@
 
 		&.muted,
 		&:disabled {
-			--kilau: var(--ui-text-disabled);
+			--kilau: var(--ui-feature-dim-text);
 
-			color: var(--ui-text-disabled);
+			background-color: var(--ui-feature-dim-bg);
+			color: var(--ui-feature-dim-text);
 		}
 
 		/* hover: the Kilau dot runs once around the frame */
@@ -315,7 +344,7 @@
 		border-radius: 50%;
 		background-color: var(--kilau);
 		pointer-events: none;
-		transition: background-color 0.2s;
+		transition: background-color 0.4s ease;
 
 		&:global(.run) {
 			animation: kilau-frame 0.9s;
