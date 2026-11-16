@@ -41,7 +41,9 @@ export const i18nDerived = {
 	// modes; an error can come before the language loads, so these fall back to the English key
 	errorBalanceTitle: () => translateSafe('BALANCE TOO LOW'),
 	errorBalanceBody: () =>
-		translateSafe('Your balance does not cover this round. Choose a lower amount or add to your balance.'),
+		translateSafe(
+			'Your balance does not cover this round. Choose a lower amount or add to your balance.',
+		),
 	errorLimitTitle: () => translateSafe('LIMIT REACHED'),
 	errorLimitBody: () => translateSafe('You have reached a play limit set on your account.'),
 	errorBusyTitle: () => translateSafe('ONE MOMENT'),
@@ -84,4 +86,10 @@ export const i18nDerived = {
 	playing: () => stateI18nDerived.translate('PLAYING'),
 	playAgain: () => stateI18nDerived.translate('PLAY AGAIN'),
 	realCost: () => stateI18nDerived.translate('REAL COST'),
+	// menus
+	rtp: () => stateI18nDerived.translate('RTP'),
+	maxWin: () => stateI18nDerived.translate('MAX WIN'),
+	close: () => stateI18nDerived.translate('Close'),
+	decreaseLabel: () => stateI18nDerived.translate('Decrease'),
+	increaseLabel: () => stateI18nDerived.translate('Increase'),
 };

@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { zIndex } from 'constants-shared/zIndex';
-	import { stateBet, stateModal, stateUi, INFINITY_MARK } from 'state-shared';
+	import { stateBet, stateI18nDerived, stateModal, stateUi, INFINITY_MARK } from 'state-shared';
 	import { getContextEventEmitter } from 'utils-event-emitter';
 	import { numberToCurrencyString } from 'utils-shared/amount';
 
@@ -54,10 +54,16 @@
 		{#if mode.rtp !== undefined || mode.maxWin !== undefined}
 			<dl class="facts">
 				{#if mode.rtp !== undefined}
-					<div><dt>RTP</dt><dd>{(mode.rtp * 100).toFixed(2)}%</dd></div>
+					<div>
+						<dt>{i18nDerived.rtp()}</dt>
+						<dd>{stateI18nDerived.percent(mode.rtp)}</dd>
+					</div>
 				{/if}
 				{#if mode.maxWin !== undefined}
-					<div><dt>MAX WIN</dt><dd>{mode.maxWin.toLocaleString('en-US')}×</dd></div>
+					<div>
+						<dt>{i18nDerived.maxWin()}</dt>
+						<dd>{stateI18nDerived.times(mode.maxWin)}</dd>
+					</div>
 				{/if}
 			</dl>
 		{/if}
@@ -65,7 +71,7 @@
 		<div class="cost">
 			<span class="label">{i18nDerived.realCost()}</span>
 			<span class="amount">{numberToCurrencyString(cost)}</span>
-			<span class="times">{mode.costMultiplier}×</span>
+			<span class="times">{stateI18nDerived.times(mode.costMultiplier)}</span>
 		</div>
 
 		{#snippet footer()}

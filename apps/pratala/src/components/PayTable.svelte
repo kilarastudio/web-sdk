@@ -28,7 +28,7 @@
 					? `${step.from}`
 					: `${step.from}–${next - 1}`;
 
-			return { count, value: `${step.value}×` };
+			return { count, value: stateI18nDerived.times(step.value) };
 		});
 	};
 

@@ -1,4 +1,5 @@
 import { SECOND } from 'constants-shared/time';
+import { i18nKey } from 'utils-shared/i18n';
 
 // A win's level is measured against what the round cost (the base bet times the mode's cost), so
 // a bought round celebrates what it paid back, not what it paid out. `above` is how many times the
@@ -67,7 +68,7 @@ export const winLevelMap = {
 		alias: 'big',
 		type: 'big',
 		above: 10,
-		text: 'BIG WIN',
+		text: i18nKey('BIG WIN'),
 		presentDuration: 4 * SECOND,
 		sound: { sfx: 'sfx_winlevel_big', bgm: 'bgm_winlevel_big' },
 		tier: { art: 1, coins: 14, shake: 2 },
@@ -77,7 +78,7 @@ export const winLevelMap = {
 		alias: 'superwin',
 		type: 'big',
 		above: 30,
-		text: 'SUPER WIN',
+		text: i18nKey('SUPER WIN'),
 		presentDuration: 8 * SECOND,
 		sound: { sfx: 'sfx_winlevel_super', bgm: 'bgm_winlevel_superwin' },
 		tier: { art: 2, coins: 24, shake: 3 },
@@ -87,7 +88,7 @@ export const winLevelMap = {
 		alias: 'mega',
 		type: 'big',
 		above: 150,
-		text: 'MEGA WIN',
+		text: i18nKey('MEGA WIN'),
 		presentDuration: 12 * SECOND,
 		sound: { sfx: 'sfx_winlevel_mega', bgm: 'bgm_winlevel_mega' },
 		tier: { art: 3, coins: 36, shake: 4 },
@@ -97,7 +98,7 @@ export const winLevelMap = {
 		alias: 'epic',
 		type: 'big',
 		above: 1000,
-		text: 'EPIC WIN!',
+		text: i18nKey('EPIC WIN!'),
 		presentDuration: 16 * SECOND,
 		sound: { sfx: 'sfx_winlevel_epic', bgm: 'bgm_winlevel_epic' },
 		tier: { art: 4, coins: 48, shake: 5 },
@@ -107,7 +108,7 @@ export const winLevelMap = {
 		alias: 'max',
 		type: 'big',
 		above: Infinity,
-		text: 'MAX WIN',
+		text: i18nKey('MAX WIN'),
 		presentDuration: 16 * SECOND,
 		sound: { sfx: 'sfx_winlevel_max', bgm: 'bgm_winlevel_max' },
 		tier: { art: 5, coins: 72, shake: 6 },

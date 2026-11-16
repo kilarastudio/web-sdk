@@ -70,3 +70,12 @@ body {
 .scroll-light::-webkit-scrollbar-thumb {
 	background: var(--grey);
 }
+
+/*
+	Right-to-left languages (Arabic): the layout stays as it is, but each piece of text takes its
+	direction from its own first letter, so an Arabic sentence with ANTE or 25,000× in it reads in
+	the right order. stateI18nDerived.init sets the page's lang.
+*/
+:root:lang(ar) body * {
+	unicode-bidi: plaintext;
+}

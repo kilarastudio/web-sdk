@@ -4,6 +4,7 @@ import type { MessagesMap } from 'utils-shared/i18n';
 // Preserve every language previously supplied by the instruction sprite sheet.
 const instructions = {
 	ar: 'اضغط في أي مكان للمتابعة',
+	da: 'Tryk hvor som helst for at fortsætte',
 	de: 'Zum Fortfahren an einer beliebigen Stelle drücken',
 	en: 'Press anywhere to continue',
 	es: 'Pulsa en cualquier lugar para continuar',

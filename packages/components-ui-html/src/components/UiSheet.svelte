@@ -17,6 +17,7 @@
 	import './font.css';
 	import './tokens.css';
 	import { KILARA_ICONS } from './kilaraIcons';
+	import { i18nDerived } from '../i18n/i18nDerived';
 
 	type Props = {
 		title: string;
@@ -63,7 +64,7 @@
 				type="button"
 				class="close"
 				data-test="close-button"
-				aria-label="Close"
+				aria-label={i18nDerived.close()}
 				onclick={props.onclose}
 			>
 				<svg viewBox="0 0 96 96" focusable="false" aria-hidden="true">

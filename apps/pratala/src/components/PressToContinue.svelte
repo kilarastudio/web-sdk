@@ -49,6 +49,8 @@
 		style={{
 			...gameTextStyle({ fontSize, tone: 'hint', onArt: true }),
 			wordWrap: true,
+			// Chinese, Japanese and similar text has no spaces to wrap at
+			breakWords: true,
 			wordWrapWidth: maxWidth,
 			lineHeight: fontSize * 1.35,
 		}}

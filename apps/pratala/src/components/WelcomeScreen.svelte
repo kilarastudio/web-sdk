@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { Container, Sprite } from 'pixi-svelte';
+	import { stateI18nDerived } from 'state-shared';
 
 	import { getContext } from '../game/context';
 	import config from '../game/config';
@@ -33,12 +34,12 @@
 	});
 	const main = $derived(design);
 
-	const maxWin = `${config.betModes.base.max_win.toLocaleString('en-US')}×`;
+	const maxWin = stateI18nDerived.times(config.betModes.base.max_win);
 	const features = $derived([
 		{
 			art: 'spots' as const,
 			title: context.i18nDerived.welcomeSpotsTitle(),
-			text: context.i18nDerived.welcomeSpotsText(`×${GLINT_CAP.toLocaleString('en-US')}`),
+			text: context.i18nDerived.welcomeSpotsText(`×${stateI18nDerived.number(GLINT_CAP)}`),
 		},
 		{
 			art: 'modeBoost' as const,
@@ -153,6 +154,8 @@
 							style={{
 								...panelTextStyle({ fontSize: 17, tone: 'hint' }),
 								wordWrap: true,
+								// Chinese, Japanese and similar text has no spaces to wrap at
+								breakWords: true,
 								wordWrapWidth: face.width,
 								lineHeight: 22,
 							}}
@@ -181,6 +184,8 @@
 								...panelTextStyle({ fontSize: 27 * layout.scale, tone: 'hint' }),
 								align: 'left',
 								wordWrap: true,
+								// Chinese, Japanese and similar text has no spaces to wrap at
+								breakWords: true,
 								wordWrapWidth: face.width * 0.7,
 								lineHeight: 34 * layout.scale,
 							}}

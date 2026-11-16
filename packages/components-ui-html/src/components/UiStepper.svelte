@@ -4,6 +4,7 @@
 -->
 <script lang="ts" generics="TValue extends string | number">
 	import { KILARA_ICONS } from './kilaraIcons';
+	import { i18nDerived } from '../i18n/i18nDerived';
 
 	type Props = {
 		value: TValue;
@@ -28,7 +29,7 @@
 		type="button"
 		class="step"
 		data-test="down-button"
-		aria-label="Decrease"
+		aria-label={i18nDerived.decreaseLabel()}
 		disabled={index <= 0}
 		onclick={() => step(-1)}
 	>
@@ -46,7 +47,7 @@
 		type="button"
 		class="step"
 		data-test="up-button"
-		aria-label="Increase"
+		aria-label={i18nDerived.increaseLabel()}
 		disabled={index < 0 || index >= props.options.length - 1}
 		onclick={() => step(1)}
 	>

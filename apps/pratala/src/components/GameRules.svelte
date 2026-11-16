@@ -3,20 +3,19 @@
 	import { UiInfoSection } from 'components-ui-html';
 
 	import config from '../game/config';
-	import { MODES, modeWords } from '../game/betModeMeta';
+	import { MODES, modeText, modeWords } from '../game/betModeMeta';
 	import { GLINT_CAP, GLINT_WIN_CAP, SIX_SCATTER_START_GLINT } from '../game/glint';
 	import { i18nDerived } from '../i18n/i18nDerived';
 
 	// The rules, as the math implements them (math-sdk/games/pratala/readme.txt). Costs, the top
 	// prize and the return come from the game's config, and what each mode does from the mode table,
-	// not from this text.
-	const translate = stateI18nDerived.translate;
+	// not from this text. Numbers and button names go in as {placeholders}, so every language keeps
+	// one whole sentence to translate.
+	const t = stateI18nDerived.translate;
 	const social = stateUrlDerived.social();
-	const words = modeWords(social);
-	const amount = translate(words.amount);
+	const { amount } = modeWords(social);
 	const { betModes } = config;
-	const times = (value: number) => `${value.toLocaleString('en-US')}×`;
-	const percent = (rtp: number) => `${(rtp * 100).toFixed(2)}%`;
+	const { times, percent } = stateI18nDerived;
 	const modeRows = [
 		{ key: 'BASE', mode: 'base' as const },
 		...MODES.map(({ key, mode }) => ({ key, mode })),
@@ -24,125 +23,145 @@
 
 	const sections = [
 		{
-			title: translate('HOW TO WIN'),
+			title: t('HOW TO WIN'),
 			lines: [
-				translate('6 reels, 5 rows. 8 or more of the same symbol anywhere on the board win.'),
-				translate(
+				t('6 reels, 5 rows. 8 or more of the same symbol anywhere on the board win.'),
+				t(
 					'Winning symbols are destroyed and new symbols fall in. This repeats until no win is left.',
 				),
 			],
 		},
 		{
-			title: translate('GLINT SPOTS'),
+			title: t('GLINT SPOTS'),
 			lines: [
-				translate('Every position on the board has a Glint Spot.'),
-				`${translate(
-					'A win primes the unlit spots under its symbols. A win on a primed spot lights it at ×2. Every win after that doubles it, up to',
-				)} ×${GLINT_WIN_CAP}. ${translate("Past that only the Dragon's Gaze doubles a spot.")}`,
-				translate('A symbol win is multiplied by the highest lit spot under its symbols.'),
-				translate(
+				t('Every position on the board has a Glint Spot.'),
+				t(
+					"A win primes the unlit spots under its symbols. A win on a primed spot lights it at ×2. Every win after that doubles it, up to {cap}. Past that only the Dragon's Gaze doubles a spot.",
+					{ cap: `×${GLINT_WIN_CAP}` },
+				),
+				t('A symbol win is multiplied by the highest lit spot under its symbols.'),
+				t(
 					'A win counts the spots as they are when it lands. Only then do the spots under its symbols grow.',
 				),
-				translate(
+				t(
 					'Spots reset at the start of every base game round, and stay lit for the whole of FREE SPINS.',
 				),
 			],
 		},
 		{
-			title: translate('GLINT STRIKE'),
+			title: t('GLINT STRIKE'),
 			lines: [
-				translate(
+				t(
 					'Dragon fire lights 3 to 6 random spots at ×2, ×4 or ×8. A brighter spot keeps its value.',
 				),
-				translate(
+				t(
 					'It strikes before the board is evaluated on 1 in 10 base game spins, and on every spin in BOOST.',
 				),
 			],
 		},
 		{
-			title: translate("DRAGON'S GAZE"),
+			title: t("DRAGON'S GAZE"),
 			lines: [
-				`${translate(
-					'During FREE SPINS every SCATTER that lands looks down its reel: each spot on that reel doubles, up to',
-				)} ×${GLINT_CAP.toLocaleString('en-US')}. ${translate('An unlit or primed spot lights at ×2.')}`,
-				translate(
+				t(
+					'During FREE SPINS every SCATTER that lands looks down its reel: each spot on that reel doubles, up to {cap}. An unlit or primed spot lights at ×2.',
+					{ cap: `×${stateI18nDerived.number(GLINT_CAP)}` },
+				),
+				t(
 					'A SCATTER gazes once, when it lands with the spin or falls in after a win, before the board is evaluated.',
 				),
-				translate('Two SCATTERS on one reel double that reel twice.'),
+				t('Two SCATTERS on one reel double that reel twice.'),
 			],
 		},
 		{
-			title: translate('FREE SPINS'),
+			title: t('FREE SPINS'),
 			lines: [
-				translate('4, 5 or 6+ SCATTERS start 10, 12 or 15 FREE SPINS.'),
-				`${translate('With 6 or more SCATTERS every Glint Spot starts lit at')} ×${SIX_SCATTER_START_GLINT}.`,
-				translate('Every FREE SPINS session opens with a Glint Strike on 8 to 15 spots.'),
-				translate('3 or more SCATTERS during FREE SPINS add 5 FREE SPINS.'),
+				t('4, 5 or 6+ SCATTERS start 10, 12 or 15 FREE SPINS.'),
+				t('With 6 or more SCATTERS every Glint Spot starts lit at {multiplier}.', {
+					multiplier: `×${SIX_SCATTER_START_GLINT}`,
+				}),
+				t('Every FREE SPINS session opens with a Glint Strike on 8 to 15 spots.'),
+				t('3 or more SCATTERS during FREE SPINS add 5 FREE SPINS.'),
 			],
 		},
 		{
-			title: translate('MODES'),
-			lines: MODES.map(
-				({ key, mode, rule }) =>
-					`${key} (${times(betModes[mode].cost)} ${amount}): ${translate(rule)}`,
+			title: t('MODES'),
+			lines: MODES.map(({ key, mode, rule }) =>
+				t('{mode} ({cost} {amount}): {rule}', {
+					mode: key,
+					cost: times(betModes[mode].cost),
+					amount,
+					rule: modeText(rule, mode),
+				}),
 			),
 		},
 	];
 
 	const controls = [
-		[i18nDerived.bet(), translate('Plays one round. Press SPACE to do the same.')],
+		[i18nDerived.bet(), t('Plays one round. Press SPACE to do the same.')],
 		[
 			i18nDerived.stop(),
 			// the buttons are named as the player sees them: SPIN and PLAY BONUS in social mode
-			`${translate('Takes the place of the')} ${i18nDerived.bet()} ${translate('button while a round plays. Press it to stop the reels at once and, during autoplay, to end it. The result does not change.')}`,
+			t(
+				'Takes the place of the {button} button while a round plays. Press it to stop the reels at once and, during autoplay, to end it. The result does not change.',
+				{ button: i18nDerived.bet() },
+			),
 		],
 		[
 			'− / +',
-			`${translate('Lower or raise the')} ${amount}. ${translate('Every win scales with it. Press the amount itself to pick it from a list.')}`,
+			t(
+				'Lower or raise the {amount}. Every win scales with it. Press the amount itself to pick it from a list.',
+				{ amount },
+			),
 		],
 		[
 			i18nDerived.autoSpin(),
-			translate(
-				'Plays a chosen number of rounds in a row, with optional limits. Press it again to stop.',
-			),
+			t('Plays a chosen number of rounds in a row, with optional limits. Press it again to stop.'),
 		],
-		[i18nDerived.turbo(), translate('Plays rounds faster. Results are the same.')],
+		[i18nDerived.turbo(), t('Plays rounds faster. Results are the same.')],
 		[
 			i18nDerived.buyBonus(),
-			translate('Shows the modes: turn ANTE or BOOST on, or start FREE SPINS straight away.'),
+			t('Shows the modes: turn ANTE or BOOST on, or start FREE SPINS straight away.'),
 		],
 		[
 			i18nDerived.disable(),
-			`${translate('Takes the place of the')} ${i18nDerived.buyBonus()} ${translate('button while ANTE or BOOST is on. Press it to turn the mode off.')}`,
+			t(
+				'Takes the place of the {button} button while ANTE or BOOST is on. Press it to turn the mode off.',
+				{ button: i18nDerived.buyBonus() },
+			),
 		],
 		[
 			`${i18nDerived.showControls()} / ${i18nDerived.hideControls()}`,
-			translate('On a phone held upright during free spins, shows or hides the controls.'),
+			t('On a phone held upright during free spins, shows or hides the controls.'),
 		],
 		[
 			i18nDerived.menu(),
-			`${i18nDerived.payTable()}, ${translate('these rules, settings and the audio switch.')}`,
+			t('{paytable}, these rules, settings and the audio switch.', {
+				paytable: i18nDerived.payTable(),
+			}),
 		],
-		[i18nDerived.audio(), translate('Mutes or unmutes all sound. Volumes are in the settings.')],
+		[i18nDerived.audio(), t('Mutes or unmutes all sound. Volumes are in the settings.')],
 	];
 
 	const general = [
-		`${translate('The most a round can win is')} ${times(betModes.base.max_win)} ${translate('the base')} ${amount}. ${translate('Reaching it ends the round.')}`,
-		translate(
+		t('The most a round can win is {multiplier} the base {amount}. Reaching it ends the round.', {
+			multiplier: times(betModes.base.max_win),
+			amount,
+		}),
+		t(
 			'The return to player is the theoretical share of all play returned as wins over a very large number of rounds. Any one session can return more or less.',
 		),
-		translate(
+		t(
 			'Every round is decided and settled by the game server when it starts. Pictures, animations and amounts on screen only show that result.',
 		),
-		translate(
+		t(
 			'If the connection is lost during a round, the round is still completed on the server. Reload the game to see its result.',
 		),
-		translate('A malfunction voids all wins and plays.'),
-		translate('A consistent internet connection is required.'),
-		translate(
+		t('A malfunction voids all wins and plays.'),
+		t('A consistent internet connection is required.'),
+		t(
 			'The game display is not representative of any physical device and is for illustrative purposes only.',
 		),
-		translate('TM and © 2026 Engine.'),
+		t('TM and © 2026 Engine.'),
 	];
 </script>
 
@@ -154,14 +173,14 @@
 	</UiInfoSection>
 {/each}
 
-<UiInfoSection title={translate('RETURN AND TOP PRIZE')}>
+<UiInfoSection title={t('RETURN AND TOP PRIZE')}>
 	<table>
 		<thead>
 			<tr>
-				<th>{translate('MODE')}</th>
-				<th>{translate('COST')}</th>
-				<th>RTP</th>
-				<th>{translate('MAX WIN')}</th>
+				<th>{t('MODE')}</th>
+				<th>{t('COST')}</th>
+				<th>{i18nDerived.rtp()}</th>
+				<th>{i18nDerived.maxWin()}</th>
 			</tr>
 		</thead>
 		<tbody>
@@ -177,7 +196,7 @@
 	</table>
 </UiInfoSection>
 
-<UiInfoSection title={translate('HOW TO PLAY')}>
+<UiInfoSection title={t('HOW TO PLAY')}>
 	<dl>
 		{#each controls as [control, does]}
 			<div>
@@ -188,7 +207,7 @@
 	</dl>
 </UiInfoSection>
 
-<UiInfoSection title={translate('GENERAL')}>
+<UiInfoSection title={t('GENERAL')}>
 	{#each general as line}
 		<p>{line}</p>
 	{/each}

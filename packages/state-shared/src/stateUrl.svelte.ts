@@ -26,6 +26,8 @@ const getUrlSearchParam = (key: Key) => page.url.searchParams.get(key) as string
 
 // params for play
 const lang = (): Language => {
+	// Engine: English is the only supported language in social mode
+	if (social()) return 'en';
 	const requested = getUrlSearchParam('lang');
 	const language = requested === 'br' ? 'pt' : requested;
 	return locales.includes(language as Language) ? (language as Language) : 'en';

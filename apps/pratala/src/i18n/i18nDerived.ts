@@ -1,27 +1,32 @@
 import { stateI18nDerived } from 'state-shared';
 import { i18nDerived as i18nDerivedUiHtml } from 'components-ui-html';
 
+const t = stateI18nDerived.translate;
+
+// Pratala's own text on top of the shared UI's. A number goes in as a {placeholder}, so each
+// language can put it where its sentence needs it.
 export const i18nDerived = {
 	...i18nDerivedUiHtml,
-	pressToContinue: () => stateI18nDerived.translate('Press anywhere to continue'),
-	pressToStart: () => stateI18nDerived.translate('Press anywhere to start'),
+	pressToContinue: () => t('Press anywhere to continue'),
+	pressToStart: () => t('Press anywhere to start'),
 	// welcome screen
-	welcomeMaxWin: (multiplier: string) => `${stateI18nDerived.translate('WIN UP TO')} ${multiplier}`,
-	welcomeSpotsTitle: () => stateI18nDerived.translate('GLINT SPOTS'),
+	welcomeMaxWin: (multiplier: string) => t('WIN UP TO {multiplier}', { multiplier }),
+	welcomeSpotsTitle: () => t('GLINT SPOTS'),
 	welcomeSpotsText: (cap: string) =>
-		`${stateI18nDerived.translate('Wins light the floor. In FREE SPINS every SCATTER doubles its reel of spots, up to')} ${cap}.`,
-	welcomeStrikeTitle: () => stateI18nDerived.translate('GLINT STRIKE'),
-	welcomeStrikeText: () => stateI18nDerived.translate('Dragon fire lights 3 to 6 spots.'),
-	welcomeFreeSpinsTitle: () => stateI18nDerived.translate('FREE SPINS'),
-	welcomeFreeSpinsText: () =>
-		stateI18nDerived.translate('4 or more SCATTERS wake the dragon. Spots stay lit all feature.'),
+		t('Wins light the floor. In FREE SPINS every SCATTER doubles its reel of spots, up to {cap}.', {
+			cap,
+		}),
+	welcomeStrikeTitle: () => t('GLINT STRIKE'),
+	welcomeStrikeText: () => t('Dragon fire lights 3 to 6 spots.'),
+	welcomeFreeSpinsTitle: () => t('FREE SPINS'),
+	welcomeFreeSpinsText: () => t('4 or more SCATTERS wake the dragon. Spots stay lit all feature.'),
 	// panels
-	tumbleWin: () => stateI18nDerived.translate('TUMBLE WIN'),
-	youWon: () => stateI18nDerived.translate('YOU WON'),
-	totalWin: () => stateI18nDerived.translate('TOTAL WIN'),
-	freeSpinsComplete: () => stateI18nDerived.translate('FREE SPINS COMPLETE'),
-	// a win level's title, BIG WIN to MAX WIN
-	winLevel: (text: string) => stateI18nDerived.translate(text),
+	tumbleWin: () => t('TUMBLE WIN'),
+	youWon: () => t('YOU WON'),
+	totalWin: () => t('TOTAL WIN'),
+	freeSpinsComplete: () => t('FREE SPINS COMPLETE'),
+	// a win level's title, BIG WIN to MAX WIN (marked with i18nKey in game/winLevelMap.ts)
+	winLevel: (text: string) => t(text),
 	// symbols
-	scatter: () => stateI18nDerived.translate('SCATTER'),
+	scatter: () => t('SCATTER'),
 };

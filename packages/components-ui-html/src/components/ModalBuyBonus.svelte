@@ -2,7 +2,13 @@
 	import { fade } from 'svelte/transition';
 
 	import { zIndex } from 'constants-shared/zIndex';
-	import { stateBet, stateConfig, stateModal, stateMetaDerived } from 'state-shared';
+	import {
+		stateBet,
+		stateConfig,
+		stateI18nDerived,
+		stateModal,
+		stateMetaDerived,
+	} from 'state-shared';
 	import type { BetModeData } from 'state-shared';
 	import { getContextEventEmitter } from 'utils-event-emitter';
 	import { numberToCurrencyString } from 'utils-shared/amount';
@@ -32,8 +38,8 @@
 	// what Stake requires next to every mode: its return and its top prize
 	const modeFacts = (mode: BetModeData) =>
 		[
-			mode.rtp !== undefined && `RTP ${(mode.rtp * 100).toFixed(2)}%`,
-			mode.maxWin !== undefined && `MAX WIN ${mode.maxWin.toLocaleString('en-US')}×`,
+			mode.rtp !== undefined && `${i18nDerived.rtp()} ${stateI18nDerived.percent(mode.rtp)}`,
+			mode.maxWin !== undefined && `${i18nDerived.maxWin()} ${stateI18nDerived.times(mode.maxWin)}`,
 		]
 			.filter(Boolean)
 			.join(' · ');
@@ -82,7 +88,7 @@
 				type="button"
 				class="close"
 				data-test="close-button"
-				aria-label="Close"
+				aria-label={i18nDerived.close()}
 				onclick={close}
 			>
 				<svg viewBox="0 0 96 96" focusable="false" aria-hidden="true">
@@ -112,7 +118,7 @@
 					{/if}
 					<span class="cost">
 						<span class="amount">{numberToCurrencyString(cost(mode.costMultiplier))}</span>
-						<span class="times">{mode.costMultiplier}×</span>
+						<span class="times">{stateI18nDerived.times(mode.costMultiplier)}</span>
 					</span>
 					<span class="action"><span>{mode.text.button}</span></span>
 				</button>

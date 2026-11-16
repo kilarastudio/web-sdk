@@ -1,5 +1,6 @@
 import { asset } from '$app/paths';
-import type { BetModeMeta, BetModeData } from 'state-shared';
+import { stateI18nDerived, type BetModeMeta, type BetModeData } from 'state-shared';
+import { i18nKey } from 'utils-shared/i18n';
 
 import config from './config';
 import { MODE_START_GLINT } from './glint';
@@ -15,36 +16,38 @@ export const MODES = [
 		key: 'ANTE',
 		mode: 'ante',
 		type: 'activate',
-		rule: 'FREE SPINS trigger about 7 times as often.',
-		card: 'FREE SPINS about 7× as often.',
+		rule: i18nKey('FREE SPINS trigger about 7 times as often.'),
+		card: i18nKey('FREE SPINS about 7× as often.'),
 	},
 	{
 		key: 'BOOST',
 		mode: 'boost',
 		type: 'activate',
-		rule: 'A Glint Strike lights 3 to 6 Glint Spots before every spin is evaluated.',
-		card: 'A Glint Strike on every spin.',
+		rule: i18nKey('A Glint Strike lights 3 to 6 Glint Spots before every spin is evaluated.'),
+		card: i18nKey('A Glint Strike on every spin.'),
 	},
 	{
 		key: 'BONUS',
 		mode: 'bonus',
 		type: 'buy',
-		rule: 'Starts FREE SPINS straight away. Glint Spots stay lit for the whole feature.',
-		card: 'FREE SPINS straight away.',
+		rule: i18nKey('Starts FREE SPINS straight away. Glint Spots stay lit for the whole feature.'),
+		card: i18nKey('FREE SPINS straight away.'),
 	},
 	{
 		key: 'SUPER',
 		mode: 'super',
 		type: 'buy',
-		rule: `Starts FREE SPINS with every Glint Spot already lit at ×${MODE_START_GLINT.super}.`,
-		card: `FREE SPINS, every spot ×${MODE_START_GLINT.super}.`,
+		rule: i18nKey('Starts FREE SPINS with every Glint Spot already lit at {start}.'),
+		card: i18nKey('FREE SPINS, every spot {start}.'),
 	},
 	{
 		key: 'HOARD',
 		mode: 'hoard',
 		type: 'buy',
-		rule: `Starts FREE SPINS with every Glint Spot already lit at ×${MODE_START_GLINT.hoard}. Before every free spin the Dragon's Gaze doubles one reel of spots: the first reel before the first spin, then one reel to the right each spin.`,
-		card: `FREE SPINS, a Dragon's Gaze before every spin.`,
+		rule: i18nKey(
+			"Starts FREE SPINS with every Glint Spot already lit at {start}. Before every free spin the Dragon's Gaze doubles one reel of spots: the first reel before the first spin, then one reel to the right each spin.",
+		),
+		card: i18nKey("FREE SPINS, a Dragon's Gaze before every spin."),
 	},
 ] as const satisfies readonly {
 	key: string;
@@ -54,17 +57,32 @@ export const MODES = [
 	card: string;
 }[];
 
+// a mode's rule or card in the player's language, its starting spot value filled in
+export const modeText = (text: string, mode: MathMode) => {
+	const start = (MODE_START_GLINT as Partial<Record<MathMode, number>>)[mode];
+	return stateI18nDerived.translate(text, start === undefined ? undefined : { start: `×${start}` });
+};
+
 // Social play must not show "bet" or "buy": the words a mode uses in each kind of play.
+// Mode names stay as math publishes them; the rest is translated (only real-money play has other
+// languages: social play is always English).
 export const modeWords = (social: boolean) => ({
-	amount: social ? 'play amount' : 'bet',
-	buy: social ? 'PLAY' : 'BUY',
+	amount: stateI18nDerived.translate(social ? 'play amount' : 'bet'),
+	buy: stateI18nDerived.translate(social ? 'PLAY' : 'BUY'),
 });
 
 const modeData = (row: (typeof MODES)[number], social: boolean): BetModeData => {
 	const { cost, max_win: maxWin, rtp } = config.betModes[row.mode];
 	const words = modeWords(social);
-	const price = `Costs ${cost}× the ${words.amount}.`;
-	const stays = row.type === 'activate' ? ` ${row.key} stays on until you turn it off.` : '';
+	const t = stateI18nDerived.translate;
+	const price = t('Costs {cost} the {amount}.', {
+		cost: stateI18nDerived.times(cost),
+		amount: words.amount,
+	});
+	const stays =
+		row.type === 'activate'
+			? ` ${t('{mode} stays on until you turn it off.', { mode: row.key })}`
+			: '';
 
 	return {
 		mode: row.key,
@@ -75,12 +93,12 @@ const modeData = (row: (typeof MODES)[number], social: boolean): BetModeData => 
 		children: '',
 		text: {
 			title: row.key,
-			dialog: `${row.rule} ${price}${stays}`,
-			description: row.card,
-			button: row.type === 'activate' ? 'ACTIVATE' : words.buy,
+			dialog: `${modeText(row.rule, row.mode)} ${price}${stays}`,
+			description: modeText(row.card, row.mode),
+			button: row.type === 'activate' ? t('ACTIVATE') : words.buy,
 			betAmountLabel: row.type === 'activate' ? row.key : undefined,
-			tickerIdle: row.type === 'activate' ? `${row.key} IS ACTIVE` : '',
-			tickerSpin: row.type === 'activate' ? 'GOOD LUCK' : '',
+			tickerIdle: row.type === 'activate' ? t('{mode} IS ACTIVE', { mode: row.key }) : '',
+			tickerSpin: row.type === 'activate' ? t('GOOD LUCK') : '',
 			bannerText: '',
 		},
 		maxWin,
