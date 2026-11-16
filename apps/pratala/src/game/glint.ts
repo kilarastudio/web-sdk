@@ -8,10 +8,13 @@ export const GLINT_ANIMATION_MS = {
 	double: 350,
 	tier_up: 500,
 } as const;
-// What the math sets (math-sdk/games/pratala/game_config.py): a lit spot doubles up to the cap,
-// and SUPER and HOARD start free spins with every spot lit at these values.
+// What the math sets (math-sdk/games/pratala/game_config.py): a win doubles a lit spot up to
+// GLINT_WIN_CAP, the dragon's gaze doubles it up to GLINT_CAP, SUPER and HOARD start free spins
+// with every spot lit at these values, and so does a trigger of six or more scatters.
 export const GLINT_CAP = 4096;
-export const MODE_START_GLINT = { super: 4, hoard: 8 } as const;
+export const GLINT_WIN_CAP = 8;
+export const MODE_START_GLINT = { super: 8, hoard: 4 } as const;
+export const SIX_SCATTER_START_GLINT = 128;
 // The four tiers follow RPG rarity colours (rare blue, epic violet, legendary orange, mythic red),
 // so a brighter tier reads as a rarer one at a glance. Tiles are drawn by src/pixel/ui.ts. The
 // twelve values from ×2 to ×4,096 are shared three per tier: ×2–×8, ×16–×64, ×128–×512, ×1,024+.
@@ -48,7 +51,7 @@ export type GlintChange = GlintCellPosition & {
 
 // Prime only 0 → 1. Unchanged values and resets do not replay an upgrade. A spot that lights,
 // from primed or from nothing (a strike), catches fire from inside, at whatever tier it lands
-// on. SUPER and HOARD light the whole board the same way, every spot at once.
+// on. SUPER, HOARD and a six-scatter trigger light the whole board the same way, every spot at once.
 export const glintChanges = (previous: number[][], next: number[][]): GlintChange[] =>
 	next.flatMap((column, reel) =>
 		column.flatMap((to, row): GlintChange[] => {
@@ -60,3 +63,29 @@ export const glintChanges = (previous: number[][], next: number[][]): GlintChang
 			return [{ reel, row, from, to, animation }];
 		}),
 	);
+
+// The dragon's gaze comes down a reel one row at a time, and each spot doubles as it is reached.
+export const GAZE_ROW_MS = 80;
+export const GAZE_FADE_MS = 260;
+
+// A gaze as the passes the player sees: every gazed reel once, then again the reels gazed at
+// twice (two scatters on one reel). A reel's last pass lands on the book's own value.
+export const gazePasses = (previous: number[][], reels: number[], final: number[][]) => {
+	const times = new Map<number, number>();
+	reels.forEach((reel) => times.set(reel, (times.get(reel) ?? 0) + 1));
+	const double = (value: number) => (value < 2 ? 2 : Math.min(GLINT_CAP, value * 2));
+	let current = previous.map((column) => [...column]);
+
+	return Array.from({ length: Math.max(0, ...times.values()) }, (_, pass) => {
+		const gazed = [...times].filter(([, count]) => count > pass).map(([reel]) => reel);
+		current = current.map((column, reel) =>
+			!gazed.includes(reel)
+				? column
+				: times.get(reel) === pass + 1
+					? [...(final[reel] ?? column)]
+					: column.map(double),
+		);
+
+		return { reels: gazed.sort((a, b) => a - b), glint: current };
+	});
+};

@@ -19,7 +19,6 @@
 	import { playBookEvent } from '../game/utils';
 	import events from './data/bonus_events';
 
-	
 	setContext();
 </script>
 
@@ -131,6 +130,16 @@
 	args={templateArgs({
 		skipLoadingScreen: true,
 		data: events.glintStrike,
+		action: async (data) => await playBookEvent(data, { bookEvents: [] }),
+	})}
+	{template}
+/>
+
+<Story
+	name="glintGaze"
+	args={templateArgs({
+		skipLoadingScreen: true,
+		data: events.glintGaze,
 		action: async (data) => await playBookEvent(data, { bookEvents: [] }),
 	})}
 	{template}

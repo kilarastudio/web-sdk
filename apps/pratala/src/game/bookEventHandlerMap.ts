@@ -1,4 +1,5 @@
 import _ from 'lodash';
+import { prefersReducedMotion } from 'svelte/motion';
 
 import { recordBookEvent, checkIsMultipleRevealEvents, type BookEventHandlerMap } from 'utils-book';
 import { stateBet, stateBetDerived, stateUi } from 'state-shared';
@@ -14,7 +15,7 @@ import { clearHallMood } from './hallMood.svelte';
 import { stateGame, stateGameDerived, emptyGlint } from './stateGame.svelte';
 import type { BookEvent, BookEventOfType, BookEventContext } from './typesBookEvent';
 import type { Position } from './types';
-import { glintChanges } from './glint';
+import { GAZE_ROW_MS, gazePasses, glintChanges } from './glint';
 import { impact, shake } from './impact.svelte';
 import type { GlintApplySpot } from '../components/GlintSpots.svelte';
 
@@ -24,7 +25,7 @@ let winStep = 0;
 
 let awaitingFirstFreeSpinGlint = false;
 const updateGlint = async (glint: number[][]) => {
-	// SUPER and HOARD open free spins with all 30 spots lit at one value (×4 or ×8)
+	// SUPER, HOARD and a six-eye trigger open free spins with all 30 spots lit at one value
 	const startValue = glint[0]?.[0] ?? 0;
 	const superStart =
 		awaitingFirstFreeSpinGlint &&
@@ -295,6 +296,51 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		});
 		await updateGlint(bookEvent.glint);
 	},
+	glintGaze: async (bookEvent: BookEventOfType<'glintGaze'>) => {
+		awaitingFirstFreeSpinGlint = false;
+		// The eye in the wall looks down at the board, and the eyes that just landed flare (the HOARD
+		// sweep has none). Then the gaze comes down each reel it looks along, and every spot doubles
+		// as it is reached, top to bottom. A reel gazed at twice is swept twice.
+		eventEmitter.broadcast({ type: 'dragonReact', reaction: 'gaze' });
+		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_dragon_strike' });
+		if (bookEvent.eyes.length) await animateSymbols({ positions: bookEvent.eyes });
+		const passes = gazePasses(stateGame.glint, bookEvent.reels, bookEvent.glint);
+		if (prefersReducedMotion.current) {
+			await updateGlint(bookEvent.glint);
+
+			return;
+		}
+		for (const pass of passes) {
+			eventEmitter.broadcast({ type: 'dragonReact', reaction: 'gaze' });
+			const beam = eventEmitter.broadcastAsync({ type: 'glintGazeShow', reels: pass.reels });
+			const lit: Promise<unknown>[] = [];
+			for (let row = 0; row < pass.glint[0].length; row++) {
+				// the row the gaze has just reached takes its new values
+				const next = stateGame.glint.map((column, reel) =>
+					pass.reels.includes(reel)
+						? column.map((value, at) => (at === row ? pass.glint[reel][row] : value))
+						: column,
+				);
+				const spots = glintChanges(stateGame.glint, next);
+				stateGame.glint = next;
+				if (spots.length) {
+					if (row % 2 === 0)
+						eventEmitter.broadcast({
+							type: 'soundOnce',
+							name: 'sfx_glint_double',
+							forcePlay: true,
+						});
+					lit.push(eventEmitter.broadcastAsync({ type: 'glintAnimateShow', spots }));
+				}
+				await waitForTimeout(GAZE_ROW_MS / stateBetDerived.timeScale());
+			}
+			// the gaze lands on the floor
+			shake(1);
+			await Promise.all([beam, ...lit]);
+		}
+		// whatever the passes left out, the book's grid is what stands
+		await updateGlint(bookEvent.glint);
+	},
 	freeSpinEnd: async (bookEvent: BookEventOfType<'freeSpinEnd'>) => {
 		const winLevelData = roundWinLevelData(bookEvent);
 
@@ -382,8 +428,15 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		const lastSetTotalWinEvent = findLastBookEvent('setTotalWin' as const);
 		const lastGlintEvent = _.findLast(
 			bookEvents,
-			(bookEvent) => bookEvent.type === 'updateGlint' || bookEvent.type === 'glintStrike',
-		) as BookEventOfType<'updateGlint'> | BookEventOfType<'glintStrike'> | undefined;
+			(bookEvent) =>
+				bookEvent.type === 'updateGlint' ||
+				bookEvent.type === 'glintStrike' ||
+				bookEvent.type === 'glintGaze',
+		) as
+			| BookEventOfType<'updateGlint'>
+			| BookEventOfType<'glintStrike'>
+			| BookEventOfType<'glintGaze'>
+			| undefined;
 
 		if (lastFreeSpinTriggerEvent) await playBookEvent(lastFreeSpinTriggerEvent, { bookEvents });
 		if (lastUpdateFreeSpinEvent) playBookEvent(lastUpdateFreeSpinEvent, { bookEvents });

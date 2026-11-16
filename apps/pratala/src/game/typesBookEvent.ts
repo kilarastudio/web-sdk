@@ -76,6 +76,17 @@ type BookEventGlintStrike = {
 	glint: number[][];
 };
 
+// the dragon's gaze doubles every spot on the listed reels (a reel listed twice doubles twice).
+// `eyes` are the scatters that just landed and caused it, rows including the padding row; it is
+// empty for the gaze that sweeps one reel before every HOARD free spin
+type BookEventGlintGaze = {
+	index: number;
+	type: 'glintGaze';
+	eyes: Position[];
+	reels: number[];
+	glint: number[][];
+};
+
 type BookEventFreeSpinEnd = {
 	index: number;
 	type: 'freeSpinEnd';
@@ -126,6 +137,7 @@ export type BookEvent =
 	| BookEventUpdateFreeSpin
 	| BookEventUpdateGlint
 	| BookEventGlintStrike
+	| BookEventGlintGaze
 	| BookEventTumbleBoard
 	| BookEventCreateBonusSnapshot
 	| BookEventFinalWin

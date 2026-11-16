@@ -4,7 +4,7 @@
 
 	import config from '../game/config';
 	import { MODES, modeWords } from '../game/betModeMeta';
-	import { GLINT_CAP } from '../game/glint';
+	import { GLINT_CAP, GLINT_WIN_CAP, SIX_SCATTER_START_GLINT } from '../game/glint';
 	import { i18nDerived } from '../i18n/i18nDerived';
 
 	// The rules, as the math implements them (math-sdk/games/pratala/readme.txt). Costs, the top
@@ -38,7 +38,7 @@
 				translate('Every position on the board has a Glint Spot.'),
 				`${translate(
 					'A win primes the unlit spots under its symbols. A win on a primed spot lights it at ×2. Every win after that doubles it, up to',
-				)} ×${GLINT_CAP.toLocaleString('en-US')}.`,
+				)} ×${GLINT_WIN_CAP}. ${translate("Past that only the Dragon's Gaze doubles a spot.")}`,
 				translate('A symbol win is multiplied by the highest lit spot under its symbols.'),
 				translate(
 					'A win counts the spots as they are when it lands. Only then do the spots under its symbols grow.',
@@ -55,14 +55,28 @@
 					'Dragon fire lights 3 to 6 random spots at ×2, ×4 or ×8. A brighter spot keeps its value.',
 				),
 				translate(
-					'It strikes before the board is evaluated on 1 in 10 base game spins, and on every spin in BOOST. It also opens every FREE SPINS session.',
+					'It strikes before the board is evaluated on 1 in 10 base game spins, and on every spin in BOOST.',
 				),
+			],
+		},
+		{
+			title: translate("DRAGON'S GAZE"),
+			lines: [
+				`${translate(
+					'During FREE SPINS every SCATTER that lands looks down its reel: each spot on that reel doubles, up to',
+				)} ×${GLINT_CAP.toLocaleString('en-US')}. ${translate('An unlit or primed spot lights at ×2.')}`,
+				translate(
+					'A SCATTER gazes once, when it lands with the spin or falls in after a win, before the board is evaluated.',
+				),
+				translate('Two SCATTERS on one reel double that reel twice.'),
 			],
 		},
 		{
 			title: translate('FREE SPINS'),
 			lines: [
 				translate('4, 5 or 6+ SCATTERS start 10, 12 or 15 FREE SPINS.'),
+				`${translate('With 6 or more SCATTERS every Glint Spot starts lit at')} ×${SIX_SCATTER_START_GLINT}.`,
+				translate('Every FREE SPINS session opens with a Glint Strike on 8 to 15 spots.'),
 				translate('3 or more SCATTERS during FREE SPINS add 5 FREE SPINS.'),
 			],
 		},
@@ -79,7 +93,8 @@
 		[i18nDerived.bet(), translate('Plays one round. Press SPACE to do the same.')],
 		[
 			i18nDerived.stop(),
-			translate('Takes the place of the bet button while a round plays. Press it to stop the reels at once and, during autoplay, to end it. The result does not change.'),
+			// the buttons are named as the player sees them: SPIN and PLAY BONUS in social mode
+			`${translate('Takes the place of the')} ${i18nDerived.bet()} ${translate('button while a round plays. Press it to stop the reels at once and, during autoplay, to end it. The result does not change.')}`,
 		],
 		[
 			'− / +',
@@ -87,7 +102,9 @@
 		],
 		[
 			i18nDerived.autoSpin(),
-			translate('Plays a chosen number of rounds in a row, with optional limits. Press it again to stop.'),
+			translate(
+				'Plays a chosen number of rounds in a row, with optional limits. Press it again to stop.',
+			),
 		],
 		[i18nDerived.turbo(), translate('Plays rounds faster. Results are the same.')],
 		[
@@ -96,11 +113,11 @@
 		],
 		[
 			i18nDerived.disable(),
-			translate('Takes the place of the buy bonus button while ANTE or BOOST is on. Press it to turn the mode off.'),
+			`${translate('Takes the place of the')} ${i18nDerived.buyBonus()} ${translate('button while ANTE or BOOST is on. Press it to turn the mode off.')}`,
 		],
 		[
 			`${i18nDerived.showControls()} / ${i18nDerived.hideControls()}`,
-			translate('On a phone held upright during free spins, shows or hides the bet controls.'),
+			translate('On a phone held upright during free spins, shows or hides the controls.'),
 		],
 		[
 			i18nDerived.menu(),

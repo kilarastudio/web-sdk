@@ -943,3 +943,30 @@ export const anticipationBeam = () => {
 		}
 	return canvas;
 };
+
+// The dragon's gaze down a reel: a slit of light, palest along its middle like the pupil it comes
+// from, with a dithered edge. Two frames shimmer; `head` is the cell at the front of the gaze,
+// narrowing to a point as it comes down.
+export const gazeBeamFrames = (head: boolean) =>
+	[0, 2].map((shift) => {
+		const canvas = new PixelCanvas(CELL, CELL);
+		const f = RAMPS.fire;
+		const middle = (CELL - 1) / 2;
+		for (let y = 0; y < CELL; y++) {
+			const reach = head ? 13 * (1 - y / CELL) : 13;
+			for (let x = 0; x < CELL; x++) {
+				const side = Math.abs(x - middle);
+				if (side > reach) continue;
+				// how far from the middle to the edge of the slit at this height, 0 to 1
+				const out = side / Math.max(1, reach);
+				const bayer = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5][
+					((y + shift) % 4) * 4 + (x % 4)
+				];
+				if (out < 0.16) canvas.set(x, y, f[6]);
+				else if (out < 0.34) canvas.set(x, y, f[5]);
+				else if (out < 0.56) canvas.set(x, y, (1 - out) * 16 > bayer ? f[4] : f[3]);
+				else if ((1 - out) * 26 > bayer) canvas.set(x, y, f[3]);
+			}
+		}
+		return canvas;
+	});

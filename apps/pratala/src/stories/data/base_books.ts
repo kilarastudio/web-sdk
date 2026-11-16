@@ -167,10 +167,10 @@ export default [
 		baseGameWins: 0.0,
 		freeGameWins: 0.0,
 	},
-	// 33273: base win: three tumbles, Glint Strike, Glint multipliers 4x and 8x
+	// 689: base win: three tumbles, Glint Strike, Glint multipliers 2x, 4x and 8x
 	{
-		id: 33273,
-		payoutMultiplier: 500,
+		id: 689,
+		payoutMultiplier: 1000,
 		events: [
 			{
 				index: 0,
@@ -178,68 +178,68 @@ export default [
 				board: [
 					[
 						{
+							name: 'L1',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L1',
+						},
+						{
 							name: 'L3',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L3',
+						},
+					],
+					[
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L3',
+						},
+					],
+					[
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L1',
 						},
 						{
 							name: 'H1',
 						},
 						{
-							name: 'L2',
-						},
-						{
 							name: 'L1',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H2',
-						},
-					],
-					[
-						{
-							name: 'H2',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L2',
-						},
-					],
-					[
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L3',
 						},
 						{
 							name: 'L1',
@@ -247,45 +247,22 @@ export default [
 					],
 					[
 						{
-							name: 'H2',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L2',
-						},
-						{
 							name: 'L1',
 						},
 						{
-							name: 'L4',
+							name: 'L3',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'H2',
 						},
 						{
 							name: 'H1',
 						},
-					],
-					[
 						{
-							name: 'L3',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'L4',
+							name: 'H2',
 						},
 						{
 							name: 'H2',
@@ -296,26 +273,49 @@ export default [
 							name: 'L4',
 						},
 						{
+							name: 'L2',
+						},
+						{
 							name: 'L3',
 						},
 						{
-							name: 'L4',
+							name: 'L3',
 						},
 						{
 							name: 'H3',
 						},
 						{
-							name: 'L4',
+							name: 'H4',
 						},
+						{
+							name: 'H3',
+						},
+					],
+					[
 						{
 							name: 'L2',
 						},
 						{
+							name: 'L4',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L4',
+						},
+						{
 							name: 'L3',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H2',
 						},
 					],
 				],
-				paddingPositions: [54, 70, 165, 165, 107, 10],
+				paddingPositions: [118, 249, 45, 120, 184, 202],
 				gameType: 'basegame',
 				anticipation: [0, 0, 0, 0, 0, 0],
 			},
@@ -324,19 +324,14 @@ export default [
 				type: 'glintStrike',
 				spots: [
 					{
-						reel: 4,
-						row: 5,
-						value: 4,
-					},
-					{
 						reel: 5,
-						row: 3,
-						value: 4,
-					},
-					{
-						reel: 3,
 						row: 5,
 						value: 2,
+					},
+					{
+						reel: 1,
+						row: 5,
+						value: 4,
 					},
 					{
 						reel: 4,
@@ -346,45 +341,49 @@ export default [
 				],
 				glint: [
 					[0, 0, 0, 0, 0],
+					[0, 0, 0, 0, 4],
 					[0, 0, 0, 0, 0],
 					[0, 0, 0, 0, 0],
+					[2, 0, 0, 0, 0],
 					[0, 0, 0, 0, 2],
-					[2, 0, 0, 0, 4],
-					[0, 0, 4, 0, 0],
 				],
 			},
 			{
 				index: 2,
 				type: 'winInfo',
-				totalWin: 60,
+				totalWin: 160,
 				wins: [
 					{
-						symbol: 'L2',
-						win: 60,
+						symbol: 'L3',
+						win: 160,
 						positions: [
 							{
 								reel: 0,
-								row: 2,
-							},
-							{
-								reel: 1,
-								row: 2,
-							},
-							{
-								reel: 1,
 								row: 4,
 							},
 							{
-								reel: 2,
+								reel: 1,
 								row: 3,
+							},
+							{
+								reel: 1,
+								row: 5,
+							},
+							{
+								reel: 2,
+								row: 1,
+							},
+							{
+								reel: 3,
+								row: 1,
 							},
 							{
 								reel: 3,
 								row: 2,
 							},
 							{
-								reel: 3,
-								row: 3,
+								reel: 4,
+								row: 2,
 							},
 							{
 								reel: 4,
@@ -392,15 +391,15 @@ export default [
 							},
 							{
 								reel: 5,
-								row: 5,
+								row: 4,
 							},
 						],
 						meta: {
 							globalMult: 1,
-							clusterMult: 1,
-							winWithoutMult: 60,
+							clusterMult: 4,
+							winWithoutMult: 40,
 							overlay: {
-								reel: 3,
+								reel: 4,
 								row: 3,
 							},
 						},
@@ -410,18 +409,18 @@ export default [
 			{
 				index: 3,
 				type: 'updateTumbleWin',
-				amount: 60,
+				amount: 160,
 			},
 			{
 				index: 4,
 				type: 'updateGlint',
 				glint: [
-					[0, 1, 0, 0, 0],
-					[0, 1, 0, 1, 0],
-					[0, 0, 1, 0, 0],
-					[0, 1, 1, 0, 2],
-					[2, 0, 1, 0, 4],
-					[0, 0, 4, 0, 1],
+					[0, 0, 0, 1, 0],
+					[0, 0, 1, 0, 8],
+					[1, 0, 0, 0, 0],
+					[1, 1, 0, 0, 0],
+					[2, 1, 1, 0, 0],
+					[0, 0, 0, 1, 2],
 				],
 			},
 			{
@@ -430,65 +429,73 @@ export default [
 				newSymbols: [
 					[
 						{
+							name: 'L4',
+						},
+					],
+					[
+						{
+							name: 'L2',
+						},
+						{
+							name: 'H3',
+						},
+					],
+					[
+						{
 							name: 'H4',
 						},
 					],
 					[
 						{
-							name: 'H1',
-						},
-						{
 							name: 'L2',
 						},
-					],
-					[
-						{
-							name: 'L1',
-						},
-					],
-					[
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L3',
-						},
-					],
-					[
 						{
 							name: 'L4',
 						},
 					],
 					[
 						{
-							name: 'L3',
+							name: 'L4',
+						},
+						{
+							name: 'L4',
+						},
+					],
+					[
+						{
+							name: 'S',
+							scatter: true,
 						},
 					],
 				],
 				explodingSymbols: [
 					{
 						reel: 0,
-						row: 2,
-					},
-					{
-						reel: 1,
-						row: 2,
-					},
-					{
-						reel: 1,
 						row: 4,
 					},
 					{
-						reel: 2,
+						reel: 1,
 						row: 3,
+					},
+					{
+						reel: 1,
+						row: 5,
+					},
+					{
+						reel: 2,
+						row: 1,
+					},
+					{
+						reel: 3,
+						row: 1,
 					},
 					{
 						reel: 3,
 						row: 2,
 					},
 					{
-						reel: 3,
-						row: 3,
+						reel: 4,
+						row: 2,
 					},
 					{
 						reel: 4,
@@ -496,192 +503,54 @@ export default [
 					},
 					{
 						reel: 5,
-						row: 5,
+						row: 4,
 					},
 				],
 			},
 			{
 				index: 6,
 				type: 'winInfo',
-				totalWin: 120,
+				totalWin: 640,
 				wins: [
 					{
 						symbol: 'L4',
-						win: 120,
+						win: 640,
 						positions: [
+							{
+								reel: 0,
+								row: 3,
+							},
 							{
 								reel: 0,
 								row: 5,
 							},
 							{
-								reel: 2,
-								row: 1,
-							},
-							{
-								reel: 3,
-								row: 5,
-							},
-							{
-								reel: 4,
+								reel: 1,
 								row: 3,
 							},
 							{
-								reel: 4,
-								row: 5,
-							},
-							{
-								reel: 5,
-								row: 1,
-							},
-							{
-								reel: 5,
-								row: 3,
-							},
-							{
-								reel: 5,
-								row: 5,
-							},
-						],
-						meta: {
-							globalMult: 1,
-							clusterMult: 4,
-							winWithoutMult: 30,
-							overlay: {
-								reel: 4,
-								row: 3,
-							},
-						},
-					},
-				],
-			},
-			{
-				index: 7,
-				type: 'updateTumbleWin',
-				amount: 180,
-			},
-			{
-				index: 8,
-				type: 'updateGlint',
-				glint: [
-					[0, 1, 0, 0, 1],
-					[0, 1, 0, 1, 0],
-					[1, 0, 1, 0, 0],
-					[0, 1, 1, 0, 4],
-					[2, 0, 2, 0, 8],
-					[1, 0, 8, 0, 2],
-				],
-			},
-			{
-				index: 9,
-				type: 'tumbleBoard',
-				newSymbols: [
-					[
-						{
-							name: 'L4',
-						},
-					],
-					[],
-					[
-						{
-							name: 'H3',
-						},
-					],
-					[
-						{
-							name: 'L4',
-						},
-					],
-					[
-						{
-							name: 'H3',
-						},
-						{
-							name: 'H2',
-						},
-					],
-					[
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L4',
-						},
-					],
-				],
-				explodingSymbols: [
-					{
-						reel: 0,
-						row: 5,
-					},
-					{
-						reel: 2,
-						row: 1,
-					},
-					{
-						reel: 3,
-						row: 5,
-					},
-					{
-						reel: 4,
-						row: 3,
-					},
-					{
-						reel: 4,
-						row: 5,
-					},
-					{
-						reel: 5,
-						row: 1,
-					},
-					{
-						reel: 5,
-						row: 3,
-					},
-					{
-						reel: 5,
-						row: 5,
-					},
-				],
-			},
-			{
-				index: 10,
-				type: 'winInfo',
-				totalWin: 320,
-				wins: [
-					{
-						symbol: 'L3',
-						win: 320,
-						positions: [
-							{
-								reel: 0,
-								row: 2,
+								reel: 1,
+								row: 4,
 							},
 							{
 								reel: 1,
 								row: 5,
 							},
 							{
-								reel: 2,
-								row: 3,
-							},
-							{
-								reel: 2,
-								row: 5,
-							},
-							{
 								reel: 3,
-								row: 2,
+								row: 1,
 							},
 							{
 								reel: 4,
-								row: 3,
+								row: 1,
+							},
+							{
+								reel: 4,
+								row: 2,
 							},
 							{
 								reel: 5,
-								row: 3,
+								row: 2,
 							},
 							{
 								reel: 5,
@@ -691,620 +560,157 @@ export default [
 						meta: {
 							globalMult: 1,
 							clusterMult: 8,
-							winWithoutMult: 40,
-							overlay: {
-								reel: 2,
-								row: 3,
-							},
-						},
-					},
-				],
-			},
-			{
-				index: 11,
-				type: 'updateTumbleWin',
-				amount: 500,
-			},
-			{
-				index: 12,
-				type: 'updateGlint',
-				glint: [
-					[0, 2, 0, 0, 1],
-					[0, 1, 0, 1, 1],
-					[1, 0, 2, 0, 1],
-					[0, 2, 1, 0, 4],
-					[2, 0, 4, 0, 8],
-					[1, 0, 16, 1, 2],
-				],
-			},
-			{
-				index: 13,
-				type: 'tumbleBoard',
-				newSymbols: [
-					[
-						{
-							name: 'L4',
-						},
-					],
-					[
-						{
-							name: 'L3',
-						},
-					],
-					[
-						{
-							name: 'S',
-							scatter: true,
-						},
-						{
-							name: 'H2',
-						},
-					],
-					[
-						{
-							name: 'H2',
-						},
-					],
-					[
-						{
-							name: 'L3',
-						},
-					],
-					[
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L4',
-						},
-					],
-				],
-				explodingSymbols: [
-					{
-						reel: 0,
-						row: 2,
-					},
-					{
-						reel: 1,
-						row: 5,
-					},
-					{
-						reel: 2,
-						row: 3,
-					},
-					{
-						reel: 2,
-						row: 5,
-					},
-					{
-						reel: 3,
-						row: 2,
-					},
-					{
-						reel: 4,
-						row: 3,
-					},
-					{
-						reel: 5,
-						row: 3,
-					},
-					{
-						reel: 5,
-						row: 4,
-					},
-				],
-			},
-			{
-				index: 14,
-				type: 'setWin',
-				amount: 500,
-				winLevel: 5,
-			},
-			{
-				index: 15,
-				type: 'setTotalWin',
-				amount: 500,
-			},
-			{
-				index: 16,
-				type: 'finalWin',
-				amount: 500,
-			},
-		],
-		criteria: 'basegame',
-		baseGameWins: 5.0,
-		freeGameWins: 0.0,
-	},
-	// 85489: free spins trigger after a base win, with one retrigger
-	{
-		id: 85489,
-		payoutMultiplier: 1030,
-		events: [
-			{
-				index: 0,
-				type: 'reveal',
-				board: [
-					[
-						{
-							name: 'L4',
-						},
-						{
-							name: 'S',
-							scatter: true,
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'H1',
-						},
-						{
-							name: 'S',
-							scatter: true,
-						},
-					],
-					[
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'S',
-							scatter: true,
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'H1',
-						},
-						{
-							name: 'L4',
-						},
-					],
-					[
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'S',
-							scatter: true,
-						},
-						{
-							name: 'L1',
-						},
-					],
-					[
-						{
-							name: 'H4',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'S',
-							scatter: true,
-						},
-					],
-					[
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L4',
-						},
-					],
-					[
-						{
-							name: 'L1',
-						},
-						{
-							name: 'S',
-							scatter: true,
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'H2',
-						},
-					],
-				],
-				paddingPositions: [70, 79, 81, 150, 178, 165],
-				gameType: 'basegame',
-				anticipation: [0, 0, 0, 1, 2, 3],
-			},
-			{
-				index: 1,
-				type: 'winInfo',
-				totalWin: 30,
-				wins: [
-					{
-						symbol: 'L4',
-						win: 30,
-						positions: [
-							{
-								reel: 1,
-								row: 1,
-							},
-							{
-								reel: 2,
-								row: 1,
-							},
-							{
-								reel: 2,
-								row: 2,
-							},
-							{
-								reel: 3,
-								row: 2,
-							},
-							{
-								reel: 4,
-								row: 3,
-							},
-							{
-								reel: 4,
-								row: 4,
-							},
-							{
-								reel: 4,
-								row: 5,
-							},
-							{
-								reel: 5,
-								row: 4,
-							},
-						],
-						meta: {
-							globalMult: 1,
-							clusterMult: 1,
-							winWithoutMult: 30,
+							winWithoutMult: 80,
 							overlay: {
 								reel: 4,
-								row: 3,
-							},
-						},
-					},
-				],
-			},
-			{
-				index: 2,
-				type: 'updateTumbleWin',
-				amount: 30,
-			},
-			{
-				index: 3,
-				type: 'updateGlint',
-				glint: [
-					[0, 0, 0, 0, 0],
-					[1, 0, 0, 0, 0],
-					[1, 1, 0, 0, 0],
-					[0, 1, 0, 0, 0],
-					[0, 0, 1, 1, 1],
-					[0, 0, 0, 1, 0],
-				],
-			},
-			{
-				index: 4,
-				type: 'tumbleBoard',
-				newSymbols: [
-					[],
-					[
-						{
-							name: 'L3',
-						},
-					],
-					[
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L3',
-						},
-					],
-					[
-						{
-							name: 'H4',
-						},
-					],
-					[
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'L1',
-						},
-					],
-					[
-						{
-							name: 'L3',
-						},
-					],
-				],
-				explodingSymbols: [
-					{
-						reel: 1,
-						row: 1,
-					},
-					{
-						reel: 2,
-						row: 1,
-					},
-					{
-						reel: 2,
-						row: 2,
-					},
-					{
-						reel: 3,
-						row: 2,
-					},
-					{
-						reel: 4,
-						row: 3,
-					},
-					{
-						reel: 4,
-						row: 4,
-					},
-					{
-						reel: 4,
-						row: 5,
-					},
-					{
-						reel: 5,
-						row: 4,
-					},
-				],
-			},
-			{
-				index: 5,
-				type: 'winInfo',
-				totalWin: 100,
-				wins: [
-					{
-						symbol: 'L1',
-						win: 100,
-						positions: [
-							{
-								reel: 0,
 								row: 2,
 							},
-							{
-								reel: 2,
-								row: 2,
-							},
-							{
-								reel: 2,
-								row: 4,
-							},
-							{
-								reel: 3,
-								row: 3,
-							},
-							{
-								reel: 4,
-								row: 2,
-							},
-							{
-								reel: 4,
-								row: 4,
-							},
-							{
-								reel: 4,
-								row: 5,
-							},
-							{
-								reel: 5,
-								row: 1,
-							},
-						],
-						meta: {
-							globalMult: 1,
-							clusterMult: 1,
-							winWithoutMult: 100,
-							overlay: {
-								reel: 3,
-								row: 3,
-							},
 						},
 					},
 				],
-			},
-			{
-				index: 6,
-				type: 'updateTumbleWin',
-				amount: 130,
 			},
 			{
 				index: 7,
-				type: 'updateGlint',
-				glint: [
-					[0, 1, 0, 0, 0],
-					[1, 0, 0, 0, 0],
-					[1, 2, 0, 1, 0],
-					[0, 1, 1, 0, 0],
-					[0, 1, 1, 2, 2],
-					[1, 0, 0, 1, 0],
-				],
+				type: 'updateTumbleWin',
+				amount: 800,
 			},
 			{
 				index: 8,
-				type: 'tumbleBoard',
-				newSymbols: [
-					[
-						{
-							name: 'L4',
-						},
-					],
-					[],
-					[
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L3',
-						},
-					],
-					[
-						{
-							name: 'H4',
-						},
-					],
-					[
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'H1',
-						},
-					],
-					[
-						{
-							name: 'H2',
-						},
-					],
-				],
-				explodingSymbols: [
-					{
-						reel: 0,
-						row: 2,
-					},
-					{
-						reel: 2,
-						row: 2,
-					},
-					{
-						reel: 2,
-						row: 4,
-					},
-					{
-						reel: 3,
-						row: 3,
-					},
-					{
-						reel: 4,
-						row: 2,
-					},
-					{
-						reel: 4,
-						row: 4,
-					},
-					{
-						reel: 4,
-						row: 5,
-					},
-					{
-						reel: 5,
-						row: 1,
-					},
+				type: 'updateGlint',
+				glint: [
+					[0, 0, 1, 1, 1],
+					[0, 0, 2, 1, 8],
+					[1, 0, 0, 0, 0],
+					[2, 1, 0, 0, 0],
+					[4, 2, 1, 0, 0],
+					[0, 1, 0, 2, 2],
 				],
 			},
 			{
 				index: 9,
+				type: 'tumbleBoard',
+				newSymbols: [
+					[
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L1',
+						},
+					],
+					[
+						{
+							name: 'L3',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'L2',
+						},
+					],
+					[],
+					[
+						{
+							name: 'H3',
+						},
+					],
+					[
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L4',
+						},
+					],
+					[
+						{
+							name: 'L3',
+						},
+						{
+							name: 'H2',
+						},
+					],
+				],
+				explodingSymbols: [
+					{
+						reel: 0,
+						row: 3,
+					},
+					{
+						reel: 0,
+						row: 5,
+					},
+					{
+						reel: 1,
+						row: 3,
+					},
+					{
+						reel: 1,
+						row: 4,
+					},
+					{
+						reel: 1,
+						row: 5,
+					},
+					{
+						reel: 3,
+						row: 1,
+					},
+					{
+						reel: 4,
+						row: 1,
+					},
+					{
+						reel: 4,
+						row: 2,
+					},
+					{
+						reel: 5,
+						row: 2,
+					},
+					{
+						reel: 5,
+						row: 4,
+					},
+				],
+			},
+			{
+				index: 10,
 				type: 'winInfo',
-				totalWin: 80,
+				totalWin: 200,
 				wins: [
 					{
-						symbol: 'L3',
-						win: 80,
+						symbol: 'L1',
+						win: 200,
 						positions: [
 							{
-								reel: 1,
+								reel: 0,
 								row: 1,
 							},
 							{
-								reel: 2,
-								row: 1,
-							},
-							{
-								reel: 2,
-								row: 2,
-							},
-							{
-								reel: 2,
+								reel: 0,
 								row: 3,
 							},
 							{
-								reel: 4,
-								row: 1,
-							},
-							{
-								reel: 4,
+								reel: 0,
 								row: 5,
 							},
 							{
-								reel: 5,
+								reel: 2,
 								row: 1,
 							},
 							{
-								reel: 5,
+								reel: 2,
 								row: 3,
+							},
+							{
+								reel: 2,
+								row: 5,
+							},
+							{
+								reel: 3,
+								row: 2,
 							},
 							{
 								reel: 5,
@@ -1314,7 +720,7 @@ export default [
 						meta: {
 							globalMult: 1,
 							clusterMult: 2,
-							winWithoutMult: 40,
+							winWithoutMult: 100,
 							overlay: {
 								reel: 2,
 								row: 3,
@@ -1324,35 +730,136 @@ export default [
 				],
 			},
 			{
-				index: 10,
-				type: 'updateTumbleWin',
-				amount: 210,
-			},
-			{
 				index: 11,
-				type: 'updateGlint',
-				glint: [
-					[0, 1, 0, 0, 0],
-					[2, 0, 0, 0, 0],
-					[2, 4, 1, 1, 0],
-					[0, 1, 1, 0, 0],
-					[1, 1, 1, 2, 4],
-					[2, 0, 1, 1, 1],
-				],
+				type: 'updateTumbleWin',
+				amount: 1000,
 			},
 			{
 				index: 12,
+				type: 'updateGlint',
+				glint: [
+					[1, 0, 2, 1, 2],
+					[0, 0, 2, 1, 8],
+					[2, 0, 1, 0, 1],
+					[2, 2, 0, 0, 0],
+					[4, 2, 1, 0, 0],
+					[0, 1, 0, 2, 4],
+				],
+			},
+			{
+				index: 13,
 				type: 'tumbleBoard',
 				newSymbols: [
+					[
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L3',
+						},
+					],
 					[],
 					[
 						{
-							name: 'H1',
+							name: 'L4',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L4',
 						},
 					],
 					[
 						{
-							name: 'H1',
+							name: 'S',
+							scatter: true,
+						},
+					],
+					[],
+					[
+						{
+							name: 'H3',
+						},
+					],
+				],
+				explodingSymbols: [
+					{
+						reel: 0,
+						row: 1,
+					},
+					{
+						reel: 0,
+						row: 3,
+					},
+					{
+						reel: 0,
+						row: 5,
+					},
+					{
+						reel: 2,
+						row: 1,
+					},
+					{
+						reel: 2,
+						row: 3,
+					},
+					{
+						reel: 2,
+						row: 5,
+					},
+					{
+						reel: 3,
+						row: 2,
+					},
+					{
+						reel: 5,
+						row: 5,
+					},
+				],
+			},
+			{
+				index: 14,
+				type: 'setWin',
+				amount: 1000,
+				winLevel: 5,
+			},
+			{
+				index: 15,
+				type: 'setTotalWin',
+				amount: 1000,
+			},
+			{
+				index: 16,
+				type: 'finalWin',
+				amount: 1000,
+			},
+		],
+		criteria: 'basegame',
+		baseGameWins: 10.0,
+		freeGameWins: 0.0,
+	},
+	// 111: free spins trigger with seven Dragon's Gazes and one retrigger, about 150x
+	{
+		id: 111,
+		payoutMultiplier: 15240,
+		events: [
+			{
+				index: 0,
+				type: 'reveal',
+				board: [
+					[
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L4',
 						},
 						{
 							name: 'L4',
@@ -1360,8 +867,235 @@ export default [
 						{
 							name: 'H3',
 						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L2',
+						},
 					],
-					[],
+					[
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'S',
+							scatter: true,
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L3',
+						},
+					],
+					[
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'S',
+							scatter: true,
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L3',
+						},
+					],
+					[
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'S',
+							scatter: true,
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L2',
+						},
+					],
+					[
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L4',
+						},
+					],
+					[
+						{
+							name: 'H2',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'S',
+							scatter: true,
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L4',
+						},
+					],
+				],
+				paddingPositions: [154, 199, 137, 112, 178, 139],
+				gameType: 'basegame',
+				anticipation: [0, 0, 0, 0, 1, 2],
+			},
+			{
+				index: 1,
+				type: 'winInfo',
+				totalWin: 80,
+				wins: [
+					{
+						symbol: 'L4',
+						win: 80,
+						positions: [
+							{
+								reel: 0,
+								row: 2,
+							},
+							{
+								reel: 0,
+								row: 3,
+							},
+							{
+								reel: 0,
+								row: 5,
+							},
+							{
+								reel: 1,
+								row: 3,
+							},
+							{
+								reel: 1,
+								row: 4,
+							},
+							{
+								reel: 2,
+								row: 1,
+							},
+							{
+								reel: 2,
+								row: 2,
+							},
+							{
+								reel: 3,
+								row: 3,
+							},
+							{
+								reel: 4,
+								row: 3,
+							},
+							{
+								reel: 4,
+								row: 4,
+							},
+							{
+								reel: 4,
+								row: 5,
+							},
+						],
+						meta: {
+							globalMult: 1,
+							clusterMult: 1,
+							winWithoutMult: 80,
+							overlay: {
+								reel: 3,
+								row: 3,
+							},
+						},
+					},
+				],
+			},
+			{
+				index: 2,
+				type: 'updateTumbleWin',
+				amount: 80,
+			},
+			{
+				index: 3,
+				type: 'updateGlint',
+				glint: [
+					[0, 1, 1, 0, 1],
+					[0, 0, 1, 1, 0],
+					[1, 1, 0, 0, 0],
+					[0, 0, 1, 0, 0],
+					[0, 0, 1, 1, 1],
+					[0, 0, 0, 0, 0],
+				],
+			},
+			{
+				index: 4,
+				type: 'tumbleBoard',
+				newSymbols: [
+					[
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'H1',
+						},
+					],
 					[
 						{
 							name: 'H4',
@@ -1372,91 +1106,113 @@ export default [
 					],
 					[
 						{
-							name: 'L2',
+							name: 'H1',
 						},
 						{
 							name: 'L3',
 						},
+					],
+					[
 						{
 							name: 'H1',
 						},
 					],
+					[
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L1',
+						},
+					],
+					[],
 				],
 				explodingSymbols: [
-					{
-						reel: 1,
-						row: 1,
-					},
-					{
-						reel: 2,
-						row: 1,
-					},
-					{
-						reel: 2,
-						row: 2,
-					},
-					{
-						reel: 2,
-						row: 3,
-					},
-					{
-						reel: 4,
-						row: 1,
-					},
-					{
-						reel: 4,
-						row: 5,
-					},
-					{
-						reel: 5,
-						row: 1,
-					},
-					{
-						reel: 5,
-						row: 3,
-					},
-					{
-						reel: 5,
-						row: 5,
-					},
-				],
-			},
-			{
-				index: 13,
-				type: 'setWin',
-				amount: 210,
-				winLevel: 4,
-			},
-			{
-				index: 14,
-				type: 'setTotalWin',
-				amount: 210,
-			},
-			{
-				index: 15,
-				type: 'freeSpinTrigger',
-				totalFs: 10,
-				positions: [
 					{
 						reel: 0,
 						row: 2,
 					},
 					{
-						reel: 1,
-						row: 2,
+						reel: 0,
+						row: 3,
 					},
 					{
-						reel: 2,
+						reel: 0,
 						row: 5,
 					},
 					{
-						reel: 5,
+						reel: 1,
+						row: 3,
+					},
+					{
+						reel: 1,
 						row: 4,
+					},
+					{
+						reel: 2,
+						row: 1,
+					},
+					{
+						reel: 2,
+						row: 2,
+					},
+					{
+						reel: 3,
+						row: 3,
+					},
+					{
+						reel: 4,
+						row: 3,
+					},
+					{
+						reel: 4,
+						row: 4,
+					},
+					{
+						reel: 4,
+						row: 5,
 					},
 				],
 			},
 			{
-				index: 16,
+				index: 5,
+				type: 'setWin',
+				amount: 80,
+				winLevel: 2,
+			},
+			{
+				index: 6,
+				type: 'setTotalWin',
+				amount: 80,
+			},
+			{
+				index: 7,
+				type: 'freeSpinTrigger',
+				totalFs: 10,
+				positions: [
+					{
+						reel: 1,
+						row: 4,
+					},
+					{
+						reel: 2,
+						row: 4,
+					},
+					{
+						reel: 3,
+						row: 4,
+					},
+					{
+						reel: 5,
+						row: 2,
+					},
+				],
+			},
+			{
+				index: 8,
 				type: 'updateGlint',
 				glint: [
 					[0, 0, 0, 0, 0],
@@ -1468,22 +1224,17 @@ export default [
 				],
 			},
 			{
-				index: 17,
+				index: 9,
 				type: 'glintStrike',
 				spots: [
-					{
-						reel: 0,
-						row: 2,
-						value: 2,
-					},
 					{
 						reel: 4,
 						row: 4,
 						value: 2,
 					},
 					{
-						reel: 5,
-						row: 5,
+						reel: 4,
+						row: 2,
 						value: 2,
 					},
 					{
@@ -1492,29 +1243,367 @@ export default [
 						value: 2,
 					},
 					{
-						reel: 2,
-						row: 1,
+						reel: 0,
+						row: 3,
+						value: 2,
+					},
+					{
+						reel: 3,
+						row: 4,
 						value: 2,
 					},
 					{
 						reel: 0,
+						row: 4,
+						value: 2,
+					},
+					{
+						reel: 3,
+						row: 3,
+						value: 2,
+					},
+					{
+						reel: 2,
 						row: 1,
 						value: 2,
 					},
 				],
 				glint: [
-					[2, 2, 0, 0, 0],
+					[0, 0, 2, 2, 0],
 					[0, 0, 0, 0, 0],
 					[2, 0, 0, 0, 0],
-					[0, 0, 0, 0, 2],
-					[0, 0, 0, 2, 0],
-					[0, 0, 0, 0, 2],
+					[0, 0, 2, 2, 2],
+					[0, 2, 0, 2, 0],
+					[0, 0, 0, 0, 0],
 				],
+			},
+			{
+				index: 10,
+				type: 'updateFreeSpin',
+				amount: 1,
+				total: 10,
+			},
+			{
+				index: 11,
+				type: 'reveal',
+				board: [
+					[
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L3',
+						},
+					],
+					[
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'H4',
+						},
+					],
+					[
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L4',
+						},
+					],
+					[
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H4',
+						},
+					],
+					[
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L2',
+						},
+					],
+					[
+						{
+							name: 'H1',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'S',
+							scatter: true,
+						},
+					],
+				],
+				paddingPositions: [239, 231, 95, 70, 100, 120],
+				gameType: 'freegame',
+				anticipation: [0, 0, 0, 0, 0, 0],
+			},
+			{
+				index: 12,
+				type: 'winInfo',
+				totalWin: 60,
+				wins: [
+					{
+						symbol: 'L4',
+						win: 60,
+						positions: [
+							{
+								reel: 0,
+								row: 2,
+							},
+							{
+								reel: 0,
+								row: 4,
+							},
+							{
+								reel: 1,
+								row: 1,
+							},
+							{
+								reel: 2,
+								row: 4,
+							},
+							{
+								reel: 3,
+								row: 1,
+							},
+							{
+								reel: 3,
+								row: 3,
+							},
+							{
+								reel: 3,
+								row: 5,
+							},
+							{
+								reel: 4,
+								row: 3,
+							},
+							{
+								reel: 5,
+								row: 1,
+							},
+						],
+						meta: {
+							globalMult: 1,
+							clusterMult: 2,
+							winWithoutMult: 30,
+							overlay: {
+								reel: 3,
+								row: 3,
+							},
+						},
+					},
+				],
+			},
+			{
+				index: 13,
+				type: 'updateTumbleWin',
+				amount: 60,
+			},
+			{
+				index: 14,
+				type: 'updateGlint',
+				glint: [
+					[0, 1, 2, 4, 0],
+					[1, 0, 0, 0, 0],
+					[2, 0, 0, 1, 0],
+					[1, 0, 4, 2, 4],
+					[0, 2, 1, 2, 0],
+					[1, 0, 0, 0, 0],
+				],
+			},
+			{
+				index: 15,
+				type: 'tumbleBoard',
+				newSymbols: [
+					[
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H3',
+						},
+					],
+					[
+						{
+							name: 'L1',
+						},
+					],
+					[
+						{
+							name: 'H3',
+						},
+					],
+					[
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H2',
+						},
+					],
+					[
+						{
+							name: 'L3',
+						},
+					],
+					[
+						{
+							name: 'H2',
+						},
+					],
+				],
+				explodingSymbols: [
+					{
+						reel: 0,
+						row: 2,
+					},
+					{
+						reel: 0,
+						row: 4,
+					},
+					{
+						reel: 1,
+						row: 1,
+					},
+					{
+						reel: 2,
+						row: 4,
+					},
+					{
+						reel: 3,
+						row: 1,
+					},
+					{
+						reel: 3,
+						row: 3,
+					},
+					{
+						reel: 3,
+						row: 5,
+					},
+					{
+						reel: 4,
+						row: 3,
+					},
+					{
+						reel: 5,
+						row: 1,
+					},
+				],
+			},
+			{
+				index: 16,
+				type: 'setWin',
+				amount: 60,
+				winLevel: 2,
+			},
+			{
+				index: 17,
+				type: 'setTotalWin',
+				amount: 140,
 			},
 			{
 				index: 18,
 				type: 'updateFreeSpin',
-				amount: 1,
+				amount: 2,
 				total: 10,
 			},
 			{
@@ -1523,14 +1612,99 @@ export default [
 				board: [
 					[
 						{
+							name: 'L3',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L2',
+						},
+					],
+					[
+						{
+							name: 'H1',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H4',
+						},
+					],
+					[
+						{
+							name: 'S',
+							scatter: true,
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'S',
+							scatter: true,
+						},
+						{
+							name: 'L3',
+						},
+					],
+					[
+						{
 							name: 'L2',
 						},
 						{
 							name: 'H4',
 						},
 						{
+							name: 'L4',
+						},
+						{
 							name: 'H2',
 						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'H3',
+						},
+					],
+					[
 						{
 							name: 'L3',
 						},
@@ -1538,37 +1712,6 @@ export default [
 							name: 'H3',
 						},
 						{
-							name: 'L2',
-						},
-						{
-							name: 'H1',
-						},
-					],
-					[
-						{
-							name: 'H1',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H1',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L1',
-						},
-					],
-					[
-						{
 							name: 'L4',
 						},
 						{
@@ -1579,572 +1722,66 @@ export default [
 						},
 						{
 							name: 'L3',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L4',
-						},
-					],
-					[
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L4',
 						},
 						{
 							name: 'H2',
 						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L4',
-						},
 					],
 					[
 						{
-							name: 'L3',
+							name: 'S',
+							scatter: true,
 						},
 						{
-							name: 'L2',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'L3',
+							name: 'H4',
 						},
 						{
 							name: 'L4',
-						},
-					],
-					[
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'H2',
 						},
 						{
 							name: 'H1',
 						},
 						{
-							name: 'H3',
+							name: 'H4',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'L2',
 						},
 					],
 				],
-				paddingPositions: [62, 224, 139, 65, 204, 226],
+				paddingPositions: [129, 52, 171, 79, 221, 21],
 				gameType: 'freegame',
 				anticipation: [0, 0, 0, 0, 0, 0],
 			},
 			{
 				index: 20,
-				type: 'setTotalWin',
-				amount: 210,
+				type: 'glintGaze',
+				eyes: [
+					{
+						reel: 2,
+						row: 5,
+					},
+				],
+				reels: [2],
+				glint: [
+					[0, 1, 2, 4, 0],
+					[1, 0, 0, 0, 0],
+					[4, 2, 2, 2, 2],
+					[1, 0, 4, 2, 4],
+					[0, 2, 1, 2, 0],
+					[1, 0, 0, 0, 0],
+				],
 			},
 			{
 				index: 21,
-				type: 'updateFreeSpin',
-				amount: 2,
-				total: 10,
-			},
-			{
-				index: 22,
-				type: 'reveal',
-				board: [
-					[
-						{
-							name: 'H3',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L1',
-						},
-					],
-					[
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L3',
-						},
-					],
-					[
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L3',
-						},
-					],
-					[
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'H3',
-						},
-					],
-					[
-						{
-							name: 'H1',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'H3',
-						},
-					],
-					[
-						{
-							name: 'H4',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H1',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'L4',
-						},
-					],
-				],
-				paddingPositions: [238, 125, 162, 79, 168, 25],
-				gameType: 'freegame',
-				anticipation: [0, 0, 0, 0, 0, 0],
-			},
-			{
-				index: 23,
-				type: 'setTotalWin',
-				amount: 210,
-			},
-			{
-				index: 24,
-				type: 'updateFreeSpin',
-				amount: 3,
-				total: 10,
-			},
-			{
-				index: 25,
-				type: 'reveal',
-				board: [
-					[
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L4',
-						},
-					],
-					[
-						{
-							name: 'H1',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'H1',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H1',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L4',
-						},
-					],
-					[
-						{
-							name: 'L1',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'H4',
-						},
-					],
-					[
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'H2',
-						},
-					],
-					[
-						{
-							name: 'H1',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'H1',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'L3',
-						},
-					],
-					[
-						{
-							name: 'H3',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L4',
-						},
-					],
-				],
-				paddingPositions: [85, 106, 216, 152, 112, 232],
-				gameType: 'freegame',
-				anticipation: [0, 0, 0, 0, 0, 0],
-			},
-			{
-				index: 26,
-				type: 'setTotalWin',
-				amount: 210,
-			},
-			{
-				index: 27,
-				type: 'updateFreeSpin',
-				amount: 4,
-				total: 10,
-			},
-			{
-				index: 28,
-				type: 'reveal',
-				board: [
-					[
-						{
-							name: 'H3',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H4',
-						},
-					],
-					[
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H1',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L3',
-						},
-					],
-					[
-						{
-							name: 'H1',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H1',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L1',
-						},
-					],
-					[
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'H4',
-						},
-					],
-					[
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H3',
-						},
-					],
-					[
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'H1',
-						},
-						{
-							name: 'L2',
-						},
-					],
-				],
-				paddingPositions: [11, 121, 113, 149, 99, 159],
-				gameType: 'freegame',
-				anticipation: [0, 0, 0, 0, 0, 0],
-			},
-			{
-				index: 29,
 				type: 'winInfo',
 				totalWin: 60,
 				wins: [
 					{
-						symbol: 'L2',
+						symbol: 'L4',
 						win: 60,
 						positions: [
 							{
@@ -2152,400 +1789,69 @@ export default [
 								row: 3,
 							},
 							{
-								reel: 1,
-								row: 2,
+								reel: 0,
+								row: 5,
 							},
 							{
 								reel: 2,
-								row: 2,
-							},
-							{
-								reel: 3,
-								row: 1,
-							},
-							{
-								reel: 3,
-								row: 2,
-							},
-							{
-								reel: 3,
 								row: 3,
 							},
 							{
-								reel: 4,
-								row: 2,
-							},
-							{
-								reel: 4,
-								row: 3,
-							},
-							{
-								reel: 4,
-								row: 5,
-							},
-						],
-						meta: {
-							globalMult: 1,
-							clusterMult: 1,
-							winWithoutMult: 60,
-							overlay: {
-								reel: 3,
-								row: 3,
-							},
-						},
-					},
-				],
-			},
-			{
-				index: 30,
-				type: 'updateTumbleWin',
-				amount: 60,
-			},
-			{
-				index: 31,
-				type: 'updateGlint',
-				glint: [
-					[2, 2, 1, 0, 0],
-					[0, 1, 0, 0, 0],
-					[2, 1, 0, 0, 0],
-					[1, 1, 1, 0, 2],
-					[0, 1, 1, 2, 1],
-					[0, 0, 0, 0, 2],
-				],
-			},
-			{
-				index: 32,
-				type: 'tumbleBoard',
-				newSymbols: [
-					[
-						{
-							name: 'L3',
-						},
-					],
-					[
-						{
-							name: 'L3',
-						},
-					],
-					[
-						{
-							name: 'L3',
-						},
-					],
-					[
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'H2',
-						},
-					],
-					[
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'H2',
-						},
-					],
-					[],
-				],
-				explodingSymbols: [
-					{
-						reel: 0,
-						row: 3,
-					},
-					{
-						reel: 1,
-						row: 2,
-					},
-					{
-						reel: 2,
-						row: 2,
-					},
-					{
-						reel: 3,
-						row: 1,
-					},
-					{
-						reel: 3,
-						row: 2,
-					},
-					{
-						reel: 3,
-						row: 3,
-					},
-					{
-						reel: 4,
-						row: 2,
-					},
-					{
-						reel: 4,
-						row: 3,
-					},
-					{
-						reel: 4,
-						row: 5,
-					},
-				],
-			},
-			{
-				index: 33,
-				type: 'setWin',
-				amount: 60,
-				winLevel: 2,
-			},
-			{
-				index: 34,
-				type: 'setTotalWin',
-				amount: 270,
-			},
-			{
-				index: 35,
-				type: 'updateFreeSpin',
-				amount: 5,
-				total: 10,
-			},
-			{
-				index: 36,
-				type: 'reveal',
-				board: [
-					[
-						{
-							name: 'H2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L4',
-						},
-					],
-					[
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H1',
-						},
-						{
-							name: 'S',
-							scatter: true,
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L3',
-						},
-					],
-					[
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H1',
-						},
-						{
-							name: 'L4',
-						},
-					],
-					[
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H3',
-						},
-					],
-					[
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'L3',
-						},
-					],
-					[
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'S',
-							scatter: true,
-						},
-					],
-				],
-				paddingPositions: [80, 178, 234, 66, 223, 15],
-				gameType: 'freegame',
-				anticipation: [0, 0, 0, 0, 0, 0],
-			},
-			{
-				index: 37,
-				type: 'winInfo',
-				totalWin: 160,
-				wins: [
-					{
-						symbol: 'L4',
-						win: 160,
-						positions: [
-							{
-								reel: 0,
-								row: 1,
-							},
-							{
-								reel: 0,
-								row: 2,
-							},
-							{
-								reel: 1,
-								row: 1,
-							},
-							{
-								reel: 1,
+								reel: 2,
 								row: 4,
 							},
 							{
-								reel: 2,
-								row: 1,
-							},
-							{
 								reel: 3,
 								row: 2,
-							},
-							{
-								reel: 3,
-								row: 5,
-							},
-							{
-								reel: 4,
-								row: 1,
 							},
 							{
 								reel: 4,
 								row: 2,
 							},
 							{
-								reel: 5,
-								row: 1,
-							},
-							{
-								reel: 5,
+								reel: 4,
 								row: 3,
+							},
+							{
+								reel: 4,
+								row: 4,
+							},
+							{
+								reel: 5,
+								row: 2,
 							},
 						],
 						meta: {
 							globalMult: 1,
 							clusterMult: 2,
-							winWithoutMult: 80,
+							winWithoutMult: 30,
 							overlay: {
-								reel: 3,
-								row: 2,
+								reel: 2,
+								row: 3,
 							},
 						},
 					},
 				],
 			},
 			{
-				index: 38,
+				index: 22,
 				type: 'updateTumbleWin',
-				amount: 160,
+				amount: 60,
 			},
 			{
-				index: 39,
+				index: 23,
 				type: 'updateGlint',
 				glint: [
-					[4, 4, 1, 0, 0],
-					[1, 1, 0, 1, 0],
-					[4, 1, 0, 0, 0],
-					[1, 2, 1, 0, 4],
-					[1, 2, 1, 2, 1],
-					[1, 0, 1, 0, 2],
+					[0, 1, 4, 4, 1],
+					[1, 0, 0, 0, 0],
+					[4, 2, 4, 4, 2],
+					[1, 1, 4, 2, 4],
+					[0, 4, 2, 4, 0],
+					[1, 1, 0, 0, 0],
 				],
 			},
 			{
-				index: 40,
+				index: 24,
 				type: 'tumbleBoard',
 				newSymbols: [
 					[
@@ -2553,343 +1859,13 @@ export default [
 							name: 'L2',
 						},
 						{
-							name: 'H2',
-						},
-					],
-					[
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H2',
-						},
-					],
-					[
-						{
-							name: 'H2',
-						},
-					],
-					[
-						{
-							name: 'H3',
-						},
-						{
-							name: 'L2',
-						},
-					],
-					[
-						{
 							name: 'L3',
 						},
-						{
-							name: 'H3',
-						},
 					],
-					[
-						{
-							name: 'H4',
-						},
-						{
-							name: 'H1',
-						},
-					],
-				],
-				explodingSymbols: [
-					{
-						reel: 0,
-						row: 1,
-					},
-					{
-						reel: 0,
-						row: 2,
-					},
-					{
-						reel: 1,
-						row: 1,
-					},
-					{
-						reel: 1,
-						row: 4,
-					},
-					{
-						reel: 2,
-						row: 1,
-					},
-					{
-						reel: 3,
-						row: 2,
-					},
-					{
-						reel: 3,
-						row: 5,
-					},
-					{
-						reel: 4,
-						row: 1,
-					},
-					{
-						reel: 4,
-						row: 2,
-					},
-					{
-						reel: 5,
-						row: 1,
-					},
-					{
-						reel: 5,
-						row: 3,
-					},
-				],
-			},
-			{
-				index: 41,
-				type: 'setWin',
-				amount: 160,
-				winLevel: 3,
-			},
-			{
-				index: 42,
-				type: 'setTotalWin',
-				amount: 430,
-			},
-			{
-				index: 43,
-				type: 'updateFreeSpin',
-				amount: 6,
-				total: 10,
-			},
-			{
-				index: 44,
-				type: 'reveal',
-				board: [
-					[
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'L4',
-						},
-					],
-					[
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L1',
-						},
-					],
-					[
-						{
-							name: 'H1',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'H4',
-						},
-					],
-					[
-						{
-							name: 'L1',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L1',
-						},
-					],
-					[
-						{
-							name: 'H1',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L2',
-						},
-					],
-					[
-						{
-							name: 'S',
-							scatter: true,
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L2',
-						},
-					],
-				],
-				paddingPositions: [225, 139, 55, 212, 185, 166],
-				gameType: 'freegame',
-				anticipation: [0, 0, 0, 0, 0, 0],
-			},
-			{
-				index: 45,
-				type: 'winInfo',
-				totalWin: 240,
-				wins: [
-					{
-						symbol: 'L2',
-						win: 240,
-						positions: [
-							{
-								reel: 1,
-								row: 3,
-							},
-							{
-								reel: 2,
-								row: 2,
-							},
-							{
-								reel: 2,
-								row: 4,
-							},
-							{
-								reel: 3,
-								row: 2,
-							},
-							{
-								reel: 3,
-								row: 5,
-							},
-							{
-								reel: 4,
-								row: 3,
-							},
-							{
-								reel: 5,
-								row: 2,
-							},
-							{
-								reel: 5,
-								row: 4,
-							},
-						],
-						meta: {
-							globalMult: 1,
-							clusterMult: 4,
-							winWithoutMult: 60,
-							overlay: {
-								reel: 2,
-								row: 4,
-							},
-						},
-					},
-				],
-			},
-			{
-				index: 46,
-				type: 'updateTumbleWin',
-				amount: 240,
-			},
-			{
-				index: 47,
-				type: 'updateGlint',
-				glint: [
-					[4, 4, 1, 0, 0],
-					[1, 1, 1, 1, 0],
-					[4, 2, 0, 1, 0],
-					[1, 4, 1, 0, 8],
-					[1, 2, 2, 2, 1],
-					[1, 1, 1, 1, 2],
-				],
-			},
-			{
-				index: 48,
-				type: 'tumbleBoard',
-				newSymbols: [
 					[],
 					[
 						{
-							name: 'L2',
-						},
-					],
-					[
-						{
-							name: 'L2',
+							name: 'H3',
 						},
 						{
 							name: 'L4',
@@ -2897,34 +1873,38 @@ export default [
 					],
 					[
 						{
-							name: 'H4',
-						},
-						{
 							name: 'L3',
 						},
 					],
 					[
 						{
-							name: 'H2',
+							name: 'L3',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'H3',
 						},
 					],
 					[
 						{
-							name: 'H1',
-						},
-						{
-							name: 'L2',
+							name: 'H3',
 						},
 					],
 				],
 				explodingSymbols: [
 					{
-						reel: 1,
+						reel: 0,
 						row: 3,
 					},
 					{
+						reel: 0,
+						row: 5,
+					},
+					{
 						reel: 2,
-						row: 2,
+						row: 3,
 					},
 					{
 						reel: 2,
@@ -2935,126 +1915,89 @@ export default [
 						row: 2,
 					},
 					{
-						reel: 3,
-						row: 5,
+						reel: 4,
+						row: 2,
 					},
 					{
 						reel: 4,
 						row: 3,
 					},
 					{
+						reel: 4,
+						row: 4,
+					},
+					{
 						reel: 5,
+						row: 2,
+					},
+				],
+			},
+			{
+				index: 25,
+				type: 'glintGaze',
+				eyes: [
+					{
+						reel: 2,
 						row: 2,
 					},
 					{
 						reel: 5,
-						row: 4,
+						row: 1,
+					},
+				],
+				reels: [2, 5],
+				glint: [
+					[0, 1, 4, 4, 1],
+					[1, 0, 0, 0, 0],
+					[8, 4, 8, 8, 4],
+					[1, 1, 4, 2, 4],
+					[0, 4, 2, 4, 0],
+					[2, 2, 2, 2, 2],
+				],
+			},
+			{
+				index: 26,
+				type: 'setWin',
+				amount: 60,
+				winLevel: 2,
+			},
+			{
+				index: 27,
+				type: 'setTotalWin',
+				amount: 200,
+			},
+			{
+				index: 28,
+				type: 'freeSpinRetrigger',
+				totalFs: 15,
+				positions: [
+					{
+						reel: 2,
+						row: 2,
+					},
+					{
+						reel: 2,
+						row: 5,
+					},
+					{
+						reel: 5,
+						row: 1,
 					},
 				],
 			},
 			{
-				index: 49,
-				type: 'setWin',
-				amount: 240,
-				winLevel: 4,
-			},
-			{
-				index: 50,
-				type: 'setTotalWin',
-				amount: 670,
-			},
-			{
-				index: 51,
+				index: 29,
 				type: 'updateFreeSpin',
-				amount: 7,
-				total: 10,
+				amount: 3,
+				total: 15,
 			},
 			{
-				index: 52,
+				index: 30,
 				type: 'reveal',
 				board: [
 					[
 						{
-							name: 'L3',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H1',
-						},
-						{
-							name: 'L3',
-						},
-					],
-					[
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L4',
-						},
-						{
 							name: 'H2',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'H1',
-						},
-						{
-							name: 'L1',
-						},
-					],
-					[
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'H1',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L4',
-						},
-					],
-					[
-						{
-							name: 'S',
-							scatter: true,
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L4',
 						},
 						{
 							name: 'H3',
@@ -3063,18 +2006,99 @@ export default [
 							name: 'H2',
 						},
 						{
-							name: 'L1',
+							name: 'H2',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H4',
 						},
 					],
 					[
 						{
+							name: 'L1',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'H4',
+						},
+					],
+					[
+						{
+							name: 'H4',
+						},
+						{
+							name: 'L3',
+						},
+						{
 							name: 'H1',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H1',
+						},
+					],
+					[
+						{
+							name: 'H2',
 						},
 						{
 							name: 'L1',
 						},
 						{
+							name: 'H1',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L3',
+						},
+						{
 							name: 'L2',
+						},
+						{
+							name: 'L2',
+						},
+					],
+					[
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L1',
 						},
 						{
 							name: 'H1',
@@ -3085,382 +2109,1676 @@ export default [
 						{
 							name: 'L3',
 						},
-						{
-							name: 'H3',
-						},
 					],
 					[
 						{
-							name: 'L2',
+							name: 'L3',
 						},
 						{
-							name: 'L2',
+							name: 'L4',
 						},
 						{
-							name: 'H4',
-						},
-						{
-							name: 'H4',
+							name: 'H2',
 						},
 						{
 							name: 'H1',
 						},
 						{
-							name: 'L4',
+							name: 'L1',
 						},
 						{
 							name: 'L4',
+						},
+						{
+							name: 'L3',
 						},
 					],
 				],
-				paddingPositions: [216, 185, 123, 91, 156, 133],
+				paddingPositions: [147, 34, 196, 233, 191, 105],
 				gameType: 'freegame',
 				anticipation: [0, 0, 0, 0, 0, 0],
 			},
 			{
-				index: 53,
-				type: 'setTotalWin',
-				amount: 670,
-			},
-			{
-				index: 54,
-				type: 'updateFreeSpin',
-				amount: 8,
-				total: 10,
-			},
-			{
-				index: 55,
-				type: 'reveal',
-				board: [
-					[
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'S',
-							scatter: true,
-						},
-						{
-							name: 'L4',
-						},
-					],
-					[
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L3',
-						},
-					],
-					[
-						{
-							name: 'L1',
-						},
-						{
-							name: 'H1',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H1',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'H4',
-						},
-					],
-					[
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H4',
-						},
-					],
-					[
-						{
-							name: 'H3',
-						},
-						{
-							name: 'H1',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H1',
-						},
-						{
-							name: 'H4',
-						},
-					],
-					[
-						{
-							name: 'H3',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'H2',
-						},
-					],
-				],
-				paddingPositions: [36, 229, 22, 209, 77, 35],
-				gameType: 'freegame',
-				anticipation: [0, 0, 0, 0, 0, 0],
-			},
-			{
-				index: 56,
-				type: 'setTotalWin',
-				amount: 670,
-			},
-			{
-				index: 57,
-				type: 'updateFreeSpin',
-				amount: 9,
-				total: 10,
-			},
-			{
-				index: 58,
-				type: 'reveal',
-				board: [
-					[
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L2',
-						},
-					],
-					[
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'H1',
-						},
-					],
-					[
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L4',
-						},
-					],
-					[
-						{
-							name: 'H3',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L3',
-						},
-					],
-					[
-						{
-							name: 'H2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H1',
-						},
-					],
-					[
-						{
-							name: 'H4',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L2',
-						},
-					],
-				],
-				paddingPositions: [121, 184, 185, 92, 239, 152],
-				gameType: 'freegame',
-				anticipation: [0, 0, 0, 0, 0, 0],
-			},
-			{
-				index: 59,
+				index: 31,
 				type: 'winInfo',
-				totalWin: 120,
+				totalWin: 4000,
 				wins: [
 					{
-						symbol: 'L4',
-						win: 120,
+						symbol: 'H2',
+						win: 4000,
 						positions: [
+							{
+								reel: 0,
+								row: 2,
+							},
 							{
 								reel: 0,
 								row: 3,
 							},
 							{
 								reel: 1,
-								row: 2,
-							},
-							{
-								reel: 2,
 								row: 1,
 							},
 							{
+								reel: 1,
+								row: 3,
+							},
+							{
+								reel: 1,
+								row: 4,
+							},
+							{
 								reel: 2,
+								row: 4,
+							},
+							{
+								reel: 4,
+								row: 2,
+							},
+							{
+								reel: 5,
+								row: 2,
+							},
+						],
+						meta: {
+							globalMult: 1,
+							clusterMult: 8,
+							winWithoutMult: 500,
+							overlay: {
+								reel: 2,
+								row: 4,
+							},
+						},
+					},
+				],
+			},
+			{
+				index: 32,
+				type: 'updateTumbleWin',
+				amount: 4000,
+			},
+			{
+				index: 33,
+				type: 'updateGlint',
+				glint: [
+					[0, 2, 8, 4, 1],
+					[2, 0, 1, 1, 0],
+					[8, 4, 8, 8, 4],
+					[1, 1, 4, 2, 4],
+					[0, 8, 2, 4, 0],
+					[2, 4, 2, 2, 2],
+				],
+			},
+			{
+				index: 34,
+				type: 'tumbleBoard',
+				newSymbols: [
+					[
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H1',
+						},
+					],
+					[
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L2',
+						},
+					],
+					[
+						{
+							name: 'H4',
+						},
+					],
+					[],
+					[
+						{
+							name: 'L3',
+						},
+					],
+					[
+						{
+							name: 'L3',
+						},
+					],
+				],
+				explodingSymbols: [
+					{
+						reel: 0,
+						row: 2,
+					},
+					{
+						reel: 0,
+						row: 3,
+					},
+					{
+						reel: 1,
+						row: 1,
+					},
+					{
+						reel: 1,
+						row: 3,
+					},
+					{
+						reel: 1,
+						row: 4,
+					},
+					{
+						reel: 2,
+						row: 4,
+					},
+					{
+						reel: 4,
+						row: 2,
+					},
+					{
+						reel: 5,
+						row: 2,
+					},
+				],
+			},
+			{
+				index: 35,
+				type: 'setWin',
+				amount: 4000,
+				winLevel: 7,
+			},
+			{
+				index: 36,
+				type: 'setTotalWin',
+				amount: 4200,
+			},
+			{
+				index: 37,
+				type: 'updateFreeSpin',
+				amount: 4,
+				total: 15,
+			},
+			{
+				index: 38,
+				type: 'reveal',
+				board: [
+					[
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'S',
+							scatter: true,
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L4',
+						},
+					],
+					[
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'L1',
+						},
+					],
+					[
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'S',
+							scatter: true,
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H3',
+						},
+					],
+					[
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L3',
+						},
+					],
+					[
+						{
+							name: 'H3',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L2',
+						},
+					],
+					[
+						{
+							name: 'S',
+							scatter: true,
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'H3',
+						},
+					],
+				],
+				paddingPositions: [18, 35, 82, 103, 152, 141],
+				gameType: 'freegame',
+				anticipation: [0, 0, 0, 1, 2, 3],
+			},
+			{
+				index: 39,
+				type: 'glintGaze',
+				eyes: [
+					{
+						reel: 0,
+						row: 3,
+					},
+					{
+						reel: 2,
+						row: 4,
+					},
+				],
+				reels: [0, 2],
+				glint: [
+					[2, 4, 16, 8, 2],
+					[2, 0, 1, 1, 0],
+					[16, 8, 16, 16, 8],
+					[1, 1, 4, 2, 4],
+					[0, 8, 2, 4, 0],
+					[2, 4, 2, 2, 2],
+				],
+			},
+			{
+				index: 40,
+				type: 'setTotalWin',
+				amount: 4200,
+			},
+			{
+				index: 41,
+				type: 'updateFreeSpin',
+				amount: 5,
+				total: 15,
+			},
+			{
+				index: 42,
+				type: 'reveal',
+				board: [
+					[
+						{
+							name: 'L2',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H4',
+						},
+					],
+					[
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'L3',
+						},
+					],
+					[
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'S',
+							scatter: true,
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'H4',
+						},
+					],
+					[
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H2',
+						},
+					],
+					[
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L3',
+						},
+					],
+					[
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H2',
+						},
+					],
+				],
+				paddingPositions: [55, 105, 83, 100, 94, 38],
+				gameType: 'freegame',
+				anticipation: [0, 0, 0, 0, 0, 0],
+			},
+			{
+				index: 43,
+				type: 'glintGaze',
+				eyes: [
+					{
+						reel: 2,
+						row: 3,
+					},
+				],
+				reels: [2],
+				glint: [
+					[2, 4, 16, 8, 2],
+					[2, 0, 1, 1, 0],
+					[32, 16, 32, 32, 16],
+					[1, 1, 4, 2, 4],
+					[0, 8, 2, 4, 0],
+					[2, 4, 2, 2, 2],
+				],
+			},
+			{
+				index: 44,
+				type: 'winInfo',
+				totalWin: 960,
+				wins: [
+					{
+						symbol: 'L4',
+						win: 960,
+						positions: [
+							{
+								reel: 0,
 								row: 5,
 							},
 							{
+								reel: 2,
+								row: 2,
+							},
+							{
+								reel: 2,
+								row: 4,
+							},
+							{
 								reel: 3,
+								row: 4,
+							},
+							{
+								reel: 3,
+								row: 5,
+							},
+							{
+								reel: 4,
+								row: 2,
+							},
+							{
+								reel: 5,
+								row: 4,
+							},
+							{
+								reel: 5,
+								row: 5,
+							},
+						],
+						meta: {
+							globalMult: 1,
+							clusterMult: 32,
+							winWithoutMult: 30,
+							overlay: {
+								reel: 3,
+								row: 4,
+							},
+						},
+					},
+				],
+			},
+			{
+				index: 45,
+				type: 'updateTumbleWin',
+				amount: 960,
+			},
+			{
+				index: 46,
+				type: 'updateGlint',
+				glint: [
+					[2, 4, 16, 8, 4],
+					[2, 0, 1, 1, 0],
+					[32, 16, 32, 32, 16],
+					[1, 1, 4, 4, 8],
+					[0, 8, 2, 4, 0],
+					[2, 4, 2, 4, 4],
+				],
+			},
+			{
+				index: 47,
+				type: 'tumbleBoard',
+				newSymbols: [
+					[
+						{
+							name: 'H4',
+						},
+					],
+					[],
+					[
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L4',
+						},
+					],
+					[
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L2',
+						},
+					],
+					[
+						{
+							name: 'L4',
+						},
+					],
+					[
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L2',
+						},
+					],
+				],
+				explodingSymbols: [
+					{
+						reel: 0,
+						row: 5,
+					},
+					{
+						reel: 2,
+						row: 2,
+					},
+					{
+						reel: 2,
+						row: 4,
+					},
+					{
+						reel: 3,
+						row: 4,
+					},
+					{
+						reel: 3,
+						row: 5,
+					},
+					{
+						reel: 4,
+						row: 2,
+					},
+					{
+						reel: 5,
+						row: 4,
+					},
+					{
+						reel: 5,
+						row: 5,
+					},
+				],
+			},
+			{
+				index: 48,
+				type: 'setWin',
+				amount: 960,
+				winLevel: 5,
+			},
+			{
+				index: 49,
+				type: 'setTotalWin',
+				amount: 5160,
+			},
+			{
+				index: 50,
+				type: 'updateFreeSpin',
+				amount: 6,
+				total: 15,
+			},
+			{
+				index: 51,
+				type: 'reveal',
+				board: [
+					[
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L2',
+						},
+					],
+					[
+						{
+							name: 'L2',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L2',
+						},
+					],
+					[
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L3',
+						},
+					],
+					[
+						{
+							name: 'H1',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'L3',
+						},
+					],
+					[
+						{
+							name: 'H1',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L3',
+						},
+					],
+					[
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L4',
+						},
+					],
+				],
+				paddingPositions: [248, 136, 90, 199, 112, 10],
+				gameType: 'freegame',
+				anticipation: [0, 0, 0, 0, 0, 0],
+			},
+			{
+				index: 52,
+				type: 'setTotalWin',
+				amount: 5160,
+			},
+			{
+				index: 53,
+				type: 'updateFreeSpin',
+				amount: 7,
+				total: 15,
+			},
+			{
+				index: 54,
+				type: 'reveal',
+				board: [
+					[
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L4',
+						},
+					],
+					[
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L4',
+						},
+					],
+					[
+						{
+							name: 'H1',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L1',
+						},
+					],
+					[
+						{
+							name: 'L2',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'H3',
+						},
+					],
+					[
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'L1',
+						},
+					],
+					[
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'H2',
+						},
+					],
+				],
+				paddingPositions: [200, 200, 70, 79, 240, 214],
+				gameType: 'freegame',
+				anticipation: [0, 0, 0, 0, 0, 0],
+			},
+			{
+				index: 55,
+				type: 'setTotalWin',
+				amount: 5160,
+			},
+			{
+				index: 56,
+				type: 'updateFreeSpin',
+				amount: 8,
+				total: 15,
+			},
+			{
+				index: 57,
+				type: 'reveal',
+				board: [
+					[
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'H2',
+						},
+					],
+					[
+						{
+							name: 'H2',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L1',
+						},
+					],
+					[
+						{
+							name: 'H1',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L1',
+						},
+					],
+					[
+						{
+							name: 'L3',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'L4',
+						},
+					],
+					[
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L4',
+						},
+					],
+					[
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L3',
+						},
+					],
+				],
+				paddingPositions: [144, 215, 113, 125, 217, 240],
+				gameType: 'freegame',
+				anticipation: [0, 0, 0, 0, 0, 0],
+			},
+			{
+				index: 58,
+				type: 'setTotalWin',
+				amount: 5160,
+			},
+			{
+				index: 59,
+				type: 'updateFreeSpin',
+				amount: 9,
+				total: 15,
+			},
+			{
+				index: 60,
+				type: 'reveal',
+				board: [
+					[
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'H1',
+						},
+					],
+					[
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L1',
+						},
+					],
+					[
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'S',
+							scatter: true,
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H3',
+						},
+					],
+					[
+						{
+							name: 'H4',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'L1',
+						},
+					],
+					[
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L3',
+						},
+					],
+					[
+						{
+							name: 'H4',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'L4',
+						},
+					],
+				],
+				paddingPositions: [171, 197, 82, 215, 223, 9],
+				gameType: 'freegame',
+				anticipation: [0, 0, 0, 0, 0, 0],
+			},
+			{
+				index: 61,
+				type: 'glintGaze',
+				eyes: [
+					{
+						reel: 2,
+						row: 4,
+					},
+				],
+				reels: [2],
+				glint: [
+					[2, 4, 16, 8, 4],
+					[2, 0, 1, 1, 0],
+					[64, 32, 64, 64, 32],
+					[1, 1, 4, 4, 8],
+					[0, 8, 2, 4, 0],
+					[2, 4, 2, 4, 4],
+				],
+			},
+			{
+				index: 62,
+				type: 'setTotalWin',
+				amount: 5160,
+			},
+			{
+				index: 63,
+				type: 'updateFreeSpin',
+				amount: 10,
+				total: 15,
+			},
+			{
+				index: 64,
+				type: 'reveal',
+				board: [
+					[
+						{
+							name: 'H3',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L1',
+						},
+					],
+					[
+						{
+							name: 'H4',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L3',
+						},
+					],
+					[
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L4',
+						},
+					],
+					[
+						{
+							name: 'H4',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'H4',
+						},
+					],
+					[
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L1',
+						},
+					],
+					[
+						{
+							name: 'H3',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L3',
+						},
+					],
+				],
+				paddingPositions: [238, 44, 208, 204, 177, 79],
+				gameType: 'freegame',
+				anticipation: [0, 0, 0, 0, 0, 0],
+			},
+			{
+				index: 65,
+				type: 'winInfo',
+				totalWin: 480,
+				wins: [
+					{
+						symbol: 'L4',
+						win: 480,
+						positions: [
+							{
+								reel: 0,
+								row: 3,
+							},
+							{
+								reel: 0,
+								row: 5,
+							},
+							{
+								reel: 1,
+								row: 2,
+							},
+							{
+								reel: 1,
+								row: 4,
+							},
+							{
+								reel: 3,
+								row: 4,
+							},
+							{
+								reel: 4,
+								row: 1,
+							},
+							{
+								reel: 4,
+								row: 3,
+							},
+							{
+								reel: 5,
+								row: 3,
+							},
+						],
+						meta: {
+							globalMult: 1,
+							clusterMult: 16,
+							winWithoutMult: 30,
+							overlay: {
+								reel: 3,
+								row: 4,
+							},
+						},
+					},
+				],
+			},
+			{
+				index: 66,
+				type: 'updateTumbleWin',
+				amount: 480,
+			},
+			{
+				index: 67,
+				type: 'updateGlint',
+				glint: [
+					[2, 4, 16, 8, 8],
+					[2, 1, 1, 2, 0],
+					[64, 32, 64, 64, 32],
+					[1, 1, 4, 8, 8],
+					[1, 8, 4, 4, 0],
+					[2, 4, 4, 4, 4],
+				],
+			},
+			{
+				index: 68,
+				type: 'tumbleBoard',
+				newSymbols: [
+					[
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L4',
+						},
+					],
+					[
+						{
+							name: 'H4',
+						},
+						{
+							name: 'H4',
+						},
+					],
+					[],
+					[
+						{
+							name: 'H1',
+						},
+					],
+					[
+						{
+							name: 'H4',
+						},
+						{
+							name: 'H3',
+						},
+					],
+					[
+						{
+							name: 'L1',
+						},
+					],
+				],
+				explodingSymbols: [
+					{
+						reel: 0,
+						row: 3,
+					},
+					{
+						reel: 0,
+						row: 5,
+					},
+					{
+						reel: 1,
+						row: 2,
+					},
+					{
+						reel: 1,
+						row: 4,
+					},
+					{
+						reel: 3,
+						row: 4,
+					},
+					{
+						reel: 4,
+						row: 1,
+					},
+					{
+						reel: 4,
+						row: 3,
+					},
+					{
+						reel: 5,
+						row: 3,
+					},
+				],
+			},
+			{
+				index: 69,
+				type: 'winInfo',
+				totalWin: 9600,
+				wins: [
+					{
+						symbol: 'H3',
+						win: 9600,
+						positions: [
+							{
+								reel: 0,
+								row: 2,
+							},
+							{
+								reel: 0,
+								row: 3,
+							},
+							{
+								reel: 2,
 								row: 2,
 							},
 							{
@@ -3469,7 +3787,11 @@ export default [
 							},
 							{
 								reel: 4,
-								row: 2,
+								row: 3,
+							},
+							{
+								reel: 5,
+								row: 1,
 							},
 							{
 								reel: 5,
@@ -3482,97 +3804,83 @@ export default [
 						],
 						meta: {
 							globalMult: 1,
-							clusterMult: 4,
-							winWithoutMult: 30,
+							clusterMult: 32,
+							winWithoutMult: 300,
 							overlay: {
-								reel: 3,
-								row: 2,
+								reel: 4,
+								row: 3,
 							},
 						},
 					},
 				],
 			},
 			{
-				index: 60,
+				index: 70,
 				type: 'updateTumbleWin',
-				amount: 120,
+				amount: 10080,
 			},
 			{
-				index: 61,
+				index: 71,
 				type: 'updateGlint',
 				glint: [
-					[4, 4, 2, 0, 0],
-					[1, 2, 1, 1, 0],
-					[8, 2, 0, 1, 1],
-					[1, 8, 1, 0, 8],
-					[2, 4, 2, 2, 1],
-					[1, 2, 1, 2, 2],
+					[2, 8, 16, 8, 8],
+					[2, 1, 1, 2, 0],
+					[64, 32, 64, 64, 32],
+					[1, 1, 4, 8, 8],
+					[2, 8, 8, 4, 0],
+					[4, 8, 4, 8, 4],
 				],
 			},
 			{
-				index: 62,
+				index: 72,
 				type: 'tumbleBoard',
 				newSymbols: [
 					[
 						{
-							name: 'H2',
+							name: 'L3',
 						},
-					],
-					[
 						{
 							name: 'L1',
 						},
 					],
+					[],
 					[
+						{
+							name: 'L4',
+						},
+					],
+					[],
+					[
+						{
+							name: 'L1',
+						},
 						{
 							name: 'H3',
 						},
-						{
-							name: 'L2',
-						},
 					],
 					[
 						{
-							name: 'S',
-							scatter: true,
-						},
-					],
-					[
-						{
-							name: 'H2',
+							name: 'L3',
 						},
 						{
 							name: 'H4',
 						},
-					],
-					[
 						{
-							name: 'L4',
-						},
-						{
-							name: 'L4',
+							name: 'H4',
 						},
 					],
 				],
 				explodingSymbols: [
 					{
 						reel: 0,
+						row: 2,
+					},
+					{
+						reel: 0,
 						row: 3,
 					},
 					{
-						reel: 1,
-						row: 2,
-					},
-					{
 						reel: 2,
-						row: 1,
-					},
-					{
-						reel: 2,
-						row: 5,
-					},
-					{
-						reel: 3,
 						row: 2,
 					},
 					{
@@ -3581,7 +3889,11 @@ export default [
 					},
 					{
 						reel: 4,
-						row: 2,
+						row: 3,
+					},
+					{
+						reel: 5,
+						row: 1,
 					},
 					{
 						reel: 5,
@@ -3594,518 +3906,20 @@ export default [
 				],
 			},
 			{
-				index: 63,
-				type: 'setWin',
-				amount: 120,
-				winLevel: 3,
-			},
-			{
-				index: 64,
-				type: 'setTotalWin',
-				amount: 790,
-			},
-			{
-				index: 65,
-				type: 'updateFreeSpin',
-				amount: 10,
-				total: 10,
-			},
-			{
-				index: 66,
-				type: 'reveal',
-				board: [
-					[
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'S',
-							scatter: true,
-						},
-						{
-							name: 'H3',
-						},
-					],
-					[
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'S',
-							scatter: true,
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'H3',
-						},
-					],
-					[
-						{
-							name: 'H4',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L4',
-						},
-					],
-					[
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L3',
-						},
-					],
-					[
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'H1',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'L3',
-						},
-					],
-					[
-						{
-							name: 'L2',
-						},
-						{
-							name: 'S',
-							scatter: true,
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'H1',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L2',
-						},
-					],
-				],
-				paddingPositions: [16, 169, 3, 5, 229, 140],
-				gameType: 'freegame',
-				anticipation: [0, 0, 1, 2, 3, 4],
-			},
-			{
-				index: 67,
-				type: 'setTotalWin',
-				amount: 790,
-			},
-			{
-				index: 68,
-				type: 'freeSpinRetrigger',
-				totalFs: 15,
-				positions: [
-					{
-						reel: 0,
-						row: 5,
-					},
-					{
-						reel: 1,
-						row: 2,
-					},
-					{
-						reel: 5,
-						row: 1,
-					},
-				],
-			},
-			{
-				index: 69,
-				type: 'updateFreeSpin',
-				amount: 11,
-				total: 15,
-			},
-			{
-				index: 70,
-				type: 'reveal',
-				board: [
-					[
-						{
-							name: 'H3',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H1',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L3',
-						},
-					],
-					[
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'H2',
-						},
-					],
-					[
-						{
-							name: 'L3',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L3',
-						},
-					],
-					[
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'H4',
-						},
-					],
-					[
-						{
-							name: 'H4',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H1',
-						},
-						{
-							name: 'L1',
-						},
-					],
-					[
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L2',
-						},
-					],
-				],
-				paddingPositions: [66, 0, 74, 210, 151, 57],
-				gameType: 'freegame',
-				anticipation: [0, 0, 0, 0, 0, 0],
-			},
-			{
-				index: 71,
-				type: 'setTotalWin',
-				amount: 790,
-			},
-			{
-				index: 72,
-				type: 'updateFreeSpin',
-				amount: 12,
-				total: 15,
-			},
-			{
 				index: 73,
-				type: 'reveal',
-				board: [
-					[
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L2',
-						},
-					],
-					[
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'L2',
-						},
-					],
-					[
-						{
-							name: 'S',
-							scatter: true,
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H3',
-						},
-					],
-					[
-						{
-							name: 'S',
-							scatter: true,
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H3',
-						},
-					],
-					[
-						{
-							name: 'L3',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'H1',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L1',
-						},
-					],
-					[
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'H4',
-						},
-					],
-				],
-				paddingPositions: [236, 22, 176, 51, 63, 34],
-				gameType: 'freegame',
-				anticipation: [0, 0, 0, 0, 0, 0],
+				type: 'setWin',
+				amount: 10080,
+				winLevel: 9,
 			},
 			{
 				index: 74,
 				type: 'setTotalWin',
-				amount: 790,
+				amount: 15240,
 			},
 			{
 				index: 75,
 				type: 'updateFreeSpin',
-				amount: 13,
+				amount: 11,
 				total: 15,
 			},
 			{
@@ -4114,82 +3928,10 @@ export default [
 				board: [
 					[
 						{
-							name: 'L3',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'H2',
-						},
-					],
-					[
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H3',
-						},
-						{
-							name: 'L1',
-						},
-					],
-					[
-						{
-							name: 'L2',
-						},
-						{
 							name: 'H1',
 						},
 						{
-							name: 'L4',
-						},
-						{
 							name: 'H1',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H1',
-						},
-					],
-					[
-						{
-							name: 'H3',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L3',
 						},
 						{
 							name: 'L3',
@@ -4198,47 +3940,21 @@ export default [
 							name: 'H4',
 						},
 						{
-							name: 'H4',
-						},
-						{
-							name: 'L2',
-						},
-					],
-					[
-						{
-							name: 'L2',
+							name: 'L4',
 						},
 						{
 							name: 'L1',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'H1',
 						},
 						{
 							name: 'L4',
 						},
-						{
-							name: 'L3',
-						},
 					],
 					[
 						{
-							name: 'L2',
+							name: 'L4',
 						},
 						{
-							name: 'H1',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H3',
+							name: 'L4',
 						},
 						{
 							name: 'L4',
@@ -4248,22 +3964,120 @@ export default [
 						},
 						{
 							name: 'L3',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H1',
+						},
+					],
+					[
+						{
+							name: 'H4',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L2',
+						},
+					],
+					[
+						{
+							name: 'H2',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L3',
+						},
+					],
+					[
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L3',
+						},
+					],
+					[
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L1',
 						},
 					],
 				],
-				paddingPositions: [88, 153, 238, 29, 191, 27],
+				paddingPositions: [112, 116, 155, 106, 191, 117],
 				gameType: 'freegame',
 				anticipation: [0, 0, 0, 0, 0, 0],
 			},
 			{
 				index: 77,
 				type: 'setTotalWin',
-				amount: 790,
+				amount: 15240,
 			},
 			{
 				index: 78,
 				type: 'updateFreeSpin',
-				amount: 14,
+				amount: 12,
 				total: 15,
 			},
 			{
@@ -4272,25 +4086,48 @@ export default [
 				board: [
 					[
 						{
-							name: 'L3',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H3',
+							name: 'L4',
 						},
 						{
 							name: 'L1',
 						},
 						{
+							name: 'H4',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L4',
+						},
+					],
+					[
+						{
 							name: 'H3',
 						},
 						{
-							name: 'L3',
+							name: 'L2',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'H3',
 						},
 					],
 					[
@@ -4298,60 +4135,77 @@ export default [
 							name: 'H4',
 						},
 						{
-							name: 'H3',
+							name: 'L2',
 						},
 						{
-							name: 'L3',
+							name: 'L4',
+						},
+						{
+							name: 'L4',
 						},
 						{
 							name: 'L1',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'H2',
+						},
+					],
+					[
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'H3',
+						},
+					],
+					[
+						{
+							name: 'H4',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'H3',
 						},
 						{
 							name: 'S',
 							scatter: true,
 						},
 						{
-							name: 'L4',
+							name: 'L1',
 						},
 						{
-							name: 'H3',
+							name: 'H4',
 						},
 					],
 					[
-						{
-							name: 'L1',
-						},
 						{
 							name: 'L2',
 						},
 						{
-							name: 'H2',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L3',
-						},
-						{
 							name: 'L1',
-						},
-					],
-					[
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'H2',
 						},
 						{
 							name: 'L4',
@@ -4360,73 +4214,388 @@ export default [
 							name: 'L4',
 						},
 						{
-							name: 'H2',
-						},
-					],
-					[
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'L3',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'H1',
-						},
-						{
-							name: 'L2',
-						},
-					],
-					[
-						{
-							name: 'H3',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L2',
-						},
-						{
 							name: 'H4',
 						},
 						{
 							name: 'H4',
-						},
-						{
-							name: 'H1',
 						},
 						{
 							name: 'L4',
 						},
 					],
 				],
-				paddingPositions: [53, 167, 16, 155, 60, 132],
+				paddingPositions: [33, 101, 212, 58, 137, 148],
 				gameType: 'freegame',
 				anticipation: [0, 0, 0, 0, 0, 0],
 			},
 			{
 				index: 80,
-				type: 'setTotalWin',
-				amount: 790,
+				type: 'glintGaze',
+				eyes: [
+					{
+						reel: 4,
+						row: 4,
+					},
+				],
+				reels: [4],
+				glint: [
+					[2, 8, 16, 8, 8],
+					[2, 1, 1, 2, 0],
+					[64, 32, 64, 64, 32],
+					[1, 1, 4, 8, 8],
+					[4, 16, 16, 8, 2],
+					[4, 8, 4, 8, 4],
+				],
 			},
 			{
 				index: 81,
+				type: 'setTotalWin',
+				amount: 15240,
+			},
+			{
+				index: 82,
+				type: 'updateFreeSpin',
+				amount: 13,
+				total: 15,
+			},
+			{
+				index: 83,
+				type: 'reveal',
+				board: [
+					[
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'S',
+							scatter: true,
+						},
+						{
+							name: 'H3',
+						},
+					],
+					[
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'L3',
+						},
+					],
+					[
+						{
+							name: 'L3',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L3',
+						},
+					],
+					[
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'H1',
+						},
+					],
+					[
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L3',
+						},
+					],
+					[
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L4',
+						},
+					],
+				],
+				paddingPositions: [136, 72, 74, 196, 215, 209],
+				gameType: 'freegame',
+				anticipation: [0, 0, 0, 0, 0, 0],
+			},
+			{
+				index: 84,
+				type: 'glintGaze',
+				eyes: [
+					{
+						reel: 0,
+						row: 5,
+					},
+				],
+				reels: [0],
+				glint: [
+					[4, 16, 32, 16, 16],
+					[2, 1, 1, 2, 0],
+					[64, 32, 64, 64, 32],
+					[1, 1, 4, 8, 8],
+					[4, 16, 16, 8, 2],
+					[4, 8, 4, 8, 4],
+				],
+			},
+			{
+				index: 85,
+				type: 'setTotalWin',
+				amount: 15240,
+			},
+			{
+				index: 86,
+				type: 'updateFreeSpin',
+				amount: 14,
+				total: 15,
+			},
+			{
+				index: 87,
+				type: 'reveal',
+				board: [
+					[
+						{
+							name: 'L2',
+						},
+						{
+							name: 'H4',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'H1',
+						},
+					],
+					[
+						{
+							name: 'H1',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H4',
+						},
+					],
+					[
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L3',
+						},
+					],
+					[
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L1',
+						},
+					],
+					[
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H1',
+						},
+						{
+							name: 'L1',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L3',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L4',
+						},
+					],
+					[
+						{
+							name: 'H4',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'H4',
+						},
+					],
+				],
+				paddingPositions: [62, 52, 160, 42, 125, 61],
+				gameType: 'freegame',
+				anticipation: [0, 0, 0, 0, 0, 0],
+			},
+			{
+				index: 88,
+				type: 'setTotalWin',
+				amount: 15240,
+			},
+			{
+				index: 89,
 				type: 'updateFreeSpin',
 				amount: 15,
 				total: 15,
 			},
 			{
-				index: 82,
+				index: 90,
 				type: 'reveal',
 				board: [
 					[
@@ -4455,13 +4624,7 @@ export default [
 					],
 					[
 						{
-							name: 'L4',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H2',
+							name: 'L1',
 						},
 						{
 							name: 'L3',
@@ -4470,293 +4633,134 @@ export default [
 							name: 'L4',
 						},
 						{
+							name: 'H4',
+						},
+						{
 							name: 'H1',
 						},
 						{
-							name: 'L2',
+							name: 'H1',
+						},
+						{
+							name: 'H4',
 						},
 					],
 					[
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L1',
-						},
-						{
-							name: 'L2',
-						},
 						{
 							name: 'H1',
 						},
 						{
 							name: 'L4',
 						},
-					],
-					[
 						{
-							name: 'L4',
+							name: 'L2',
+						},
+						{
+							name: 'H1',
 						},
 						{
 							name: 'L1',
 						},
 						{
-							name: 'H2',
+							name: 'L3',
+						},
+						{
+							name: 'L1',
+						},
+					],
+					[
+						{
+							name: 'L3',
+						},
+						{
+							name: 'L1',
 						},
 						{
 							name: 'L4',
 						},
 						{
-							name: 'S',
-							scatter: true,
+							name: 'L2',
 						},
 						{
 							name: 'H3',
 						},
 						{
-							name: 'L3',
-						},
-					],
-					[
-						{
-							name: 'H2',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'H2',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L4',
-						},
-						{
-							name: 'H4',
-						},
-						{
 							name: 'L2',
-						},
-					],
-					[
-						{
-							name: 'L4',
-						},
-						{
-							name: 'L2',
-						},
-						{
-							name: 'H4',
-						},
-						{
-							name: 'L4',
 						},
 						{
 							name: 'L1',
+						},
+					],
+					[
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'H2',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L2',
+						},
+						{
+							name: 'L4',
+						},
+						{
+							name: 'L2',
+						},
+					],
+					[
+						{
+							name: 'L1',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'H3',
 						},
 						{
 							name: 'H1',
 						},
 						{
-							name: 'H4',
+							name: 'L4',
+						},
+						{
+							name: 'H3',
+						},
+						{
+							name: 'L1',
 						},
 					],
 				],
-				paddingPositions: [21, 117, 234, 47, 237, 7],
+				paddingPositions: [21, 145, 113, 53, 105, 78],
 				gameType: 'freegame',
 				anticipation: [0, 0, 0, 0, 0, 0],
 			},
 			{
-				index: 83,
-				type: 'winInfo',
-				totalWin: 240,
-				wins: [
-					{
-						symbol: 'L4',
-						win: 240,
-						positions: [
-							{
-								reel: 0,
-								row: 2,
-							},
-							{
-								reel: 0,
-								row: 3,
-							},
-							{
-								reel: 1,
-								row: 1,
-							},
-							{
-								reel: 1,
-								row: 4,
-							},
-							{
-								reel: 2,
-								row: 1,
-							},
-							{
-								reel: 3,
-								row: 3,
-							},
-							{
-								reel: 4,
-								row: 3,
-							},
-							{
-								reel: 4,
-								row: 4,
-							},
-							{
-								reel: 5,
-								row: 3,
-							},
-						],
-						meta: {
-							globalMult: 1,
-							clusterMult: 8,
-							winWithoutMult: 30,
-							overlay: {
-								reel: 3,
-								row: 3,
-							},
-						},
-					},
-				],
-			},
-			{
-				index: 84,
-				type: 'updateTumbleWin',
-				amount: 240,
-			},
-			{
-				index: 85,
-				type: 'updateGlint',
-				glint: [
-					[4, 8, 4, 0, 0],
-					[2, 2, 1, 2, 0],
-					[16, 2, 0, 1, 1],
-					[1, 8, 2, 0, 8],
-					[2, 4, 4, 4, 1],
-					[1, 2, 2, 2, 2],
-				],
-			},
-			{
-				index: 86,
-				type: 'tumbleBoard',
-				newSymbols: [
-					[
-						{
-							name: 'L3',
-						},
-						{
-							name: 'H4',
-						},
-					],
-					[
-						{
-							name: 'L2',
-						},
-						{
-							name: 'L4',
-						},
-					],
-					[
-						{
-							name: 'H2',
-						},
-					],
-					[
-						{
-							name: 'L4',
-						},
-					],
-					[
-						{
-							name: 'L3',
-						},
-						{
-							name: 'H4',
-						},
-					],
-					[
-						{
-							name: 'L3',
-						},
-					],
-				],
-				explodingSymbols: [
-					{
-						reel: 0,
-						row: 2,
-					},
-					{
-						reel: 0,
-						row: 3,
-					},
-					{
-						reel: 1,
-						row: 1,
-					},
-					{
-						reel: 1,
-						row: 4,
-					},
-					{
-						reel: 2,
-						row: 1,
-					},
-					{
-						reel: 3,
-						row: 3,
-					},
-					{
-						reel: 4,
-						row: 3,
-					},
-					{
-						reel: 4,
-						row: 4,
-					},
-					{
-						reel: 5,
-						row: 3,
-					},
-				],
-			},
-			{
-				index: 87,
-				type: 'setWin',
-				amount: 240,
-				winLevel: 4,
-			},
-			{
-				index: 88,
+				index: 91,
 				type: 'setTotalWin',
-				amount: 1030,
+				amount: 15240,
 			},
 			{
-				index: 89,
+				index: 92,
 				type: 'freeSpinEnd',
-				amount: 820,
-				winLevel: 3,
+				amount: 15160,
+				winLevel: 7,
 			},
 			{
-				index: 90,
+				index: 93,
 				type: 'finalWin',
-				amount: 1030,
+				amount: 15240,
 			},
 		],
 		criteria: 'freegame',
-		baseGameWins: 2.1,
-		freeGameWins: 8.2,
+		baseGameWins: 0.8,
+		freeGameWins: 151.6,
 	},
 ];

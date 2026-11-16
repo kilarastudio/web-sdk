@@ -43,8 +43,8 @@ export const MODES = [
 		key: 'HOARD',
 		mode: 'hoard',
 		type: 'buy',
-		rule: `Starts FREE SPINS with every Glint Spot already lit at ×${MODE_START_GLINT.hoard}.`,
-		card: `FREE SPINS, every spot ×${MODE_START_GLINT.hoard}.`,
+		rule: `Starts FREE SPINS with every Glint Spot already lit at ×${MODE_START_GLINT.hoard}. Before every free spin the Dragon's Gaze doubles one reel of spots: the first reel before the first spin, then one reel to the right each spin.`,
+		card: `FREE SPINS, a Dragon's Gaze before every spin.`,
 	},
 ] as const satisfies readonly {
 	key: string;

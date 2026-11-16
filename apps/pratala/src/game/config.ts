@@ -23,7 +23,7 @@ export default {
 			max_win: 25000.0,
 		},
 		boost: {
-			cost: 1.9,
+			cost: 1.85,
 			feature: true,
 			buyBonus: false,
 			rtp: 0.967,
@@ -37,7 +37,7 @@ export default {
 			max_win: 25000.0,
 		},
 		super: {
-			cost: 350.0,
+			cost: 205.0,
 			feature: false,
 			buyBonus: true,
 			rtp: 0.967,
@@ -45,7 +45,7 @@ export default {
 		},
 		hoard: {
 			// The one place the app keeps HOARD's cost (math-sdk/games/pratala/game_config.py).
-			cost: 640.0,
+			cost: 435.0,
 			feature: false,
 			buyBonus: true,
 			rtp: 0.967,

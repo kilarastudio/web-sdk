@@ -32,6 +32,7 @@
 	import TumbleWinAmount from './TumbleWinAmount.svelte';
 	import GlintSpots from './GlintSpots.svelte';
 	import GlintEffects from './GlintEffects.svelte';
+	import GlintGaze from './GlintGaze.svelte';
 	import Win from './Win.svelte';
 	import FreeSpinIntro from './FreeSpinIntro.svelte';
 	import FreeSpinOutro from './FreeSpinOutro.svelte';
@@ -109,6 +110,7 @@
 				<!-- <TumbleAnticipations /> -->
 				<GlintSpots layer="over" />
 				<GlintEffects />
+				<GlintGaze />
 				<!-- the coins fly under every amount: the cluster amounts and the tumble win they pay into -->
 				<BoardContainer>
 					<WinCoins />

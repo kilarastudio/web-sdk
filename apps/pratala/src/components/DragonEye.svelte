@@ -1,6 +1,7 @@
 <script lang="ts" module>
 	// what the dragon does when the game tells it something happened
-	export type DragonReaction = 'nod' | 'puff' | 'flap' | 'power' | 'win' | 'bigWin' | 'bonus';
+	export type DragonReaction =
+		'nod' | 'puff' | 'flap' | 'power' | 'gaze' | 'win' | 'bigWin' | 'bonus';
 
 	export type EmitterEventDragon = {
 		type: 'dragonReact';
@@ -24,6 +25,7 @@
 		EYE_STRIP_SCALE,
 		type EyeFrame,
 	} from '../game/dragonEye';
+	import { GAZE_FADE_MS, GAZE_ROW_MS } from '../game/glint';
 	import { hallMood } from '../game/hallMood.svelte';
 	import { shake } from '../game/impact.svelte';
 
@@ -77,6 +79,8 @@
 		bonus: { frame: 'alert', ms: 1600, shake: 2 },
 		// the fire leaves once the pupil has narrowed
 		power: { frame: 'alert', ms: 900, delay: EYE_FIRE_DELAY, shake: 2 },
+		// the gaze: it looks down at the board for as long as its gaze takes to come down a reel
+		gaze: { frame: 'lookDown', ms: GAZE_ROW_MS * 5 + GAZE_FADE_MS + 300 },
 	};
 	// At rest it blinks and now and then looks aside. Times are drawn between these bounds, in ms,
 	// so it never ticks like a clock.

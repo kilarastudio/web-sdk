@@ -9,10 +9,9 @@ export const i18nDerived = {
 	welcomeMaxWin: (multiplier: string) => `${stateI18nDerived.translate('WIN UP TO')} ${multiplier}`,
 	welcomeSpotsTitle: () => stateI18nDerived.translate('GLINT SPOTS'),
 	welcomeSpotsText: (cap: string) =>
-		`${stateI18nDerived.translate('Wins light the floor. A spot lights at ×2 on its second hit and doubles on every hit after, up to')} ${cap}.`,
+		`${stateI18nDerived.translate('Wins light the floor. In FREE SPINS every SCATTER doubles its reel of spots, up to')} ${cap}.`,
 	welcomeStrikeTitle: () => stateI18nDerived.translate('GLINT STRIKE'),
-	welcomeStrikeText: () =>
-		stateI18nDerived.translate('Dragon fire lights 3 to 6 spots.'),
+	welcomeStrikeText: () => stateI18nDerived.translate('Dragon fire lights 3 to 6 spots.'),
 	welcomeFreeSpinsTitle: () => stateI18nDerived.translate('FREE SPINS'),
 	welcomeFreeSpinsText: () =>
 		stateI18nDerived.translate('4 or more SCATTERS wake the dragon. Spots stay lit all feature.'),

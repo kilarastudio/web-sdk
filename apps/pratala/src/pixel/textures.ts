@@ -102,6 +102,8 @@ export const generateArt = ({
 	art.burst = ui.burstFrames().map(toTexture);
 	art.pixel = toTexture(ui.pixel());
 	art.anticipationBeam = toTexture(ui.anticipationBeam());
+	art.gazeBeam = ui.gazeBeamFrames(false).map(toTexture);
+	art.gazeBeamHead = ui.gazeBeamFrames(true).map(toTexture);
 
 	return art;
 };

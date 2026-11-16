@@ -112,6 +112,10 @@ mode_pictures.py`; rebuild them whenever a symbol's art changes): ANTE is the sc
   through the cracks (the red ember dot was rejected); a spot that lights catches fire in its
   middle and the fire spreads to the cell's sides, leaving the lit tile behind it. A Glint
   Strike is the eye narrowing, then the struck spots catching fire the same way.
+- The Dragon's Gaze is not a strike. The eye in the wall looks down, the scatters that landed
+  flare, and a slit of light the shape of the pupil comes down the reel one row at a time; each
+  spot doubles as the slit reaches it. A reel gazed at twice is swept twice. HOARD's sweep is the
+  same slit with no scatter (`GlintGaze.svelte`, `gazePasses` in `game/glint.ts`).
 - Nothing covers the screen when the scene changes (user, 2026-11-13: every change had "layar
   hitam di depannya"; the fire wall and its smoke are gone). The welcome screen stands in the hall
   itself: it fades away and the board falls into the same hall, one fall, a jolt as it lands. Into

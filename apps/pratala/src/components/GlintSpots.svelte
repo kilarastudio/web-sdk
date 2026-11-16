@@ -5,6 +5,7 @@
 	export type GlintApplySpot = GlintStrikeSpot & { targetReel: number; targetRow: number };
 	export type EmitterEventGlintSpots =
 		| { type: 'glintStrikeShow'; spots: GlintStrikeSpot[] }
+		| { type: 'glintGazeShow'; reels: number[] }
 		| { type: 'glintApplyFly'; spots: GlintApplySpot[] }
 		| { type: 'glintResetShow' }
 		| { type: 'glintAnimateShow'; spots: GlintChange[] };
