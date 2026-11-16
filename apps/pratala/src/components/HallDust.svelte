@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { untrack } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 	import { prefersReducedMotion } from 'svelte/motion';
 	import * as PIXI from 'pixi.js';
 
@@ -10,7 +10,9 @@
 
 	// Dust and grit shaken out of the vault when a big win from SUPER up lands: it falls from the
 	// top of the screen, the grit faster than the dust, and is gone before it reaches the floor's
-	// front. `scale` is the size of one of the hall's art pixels.
+	// front. Between wins a few motes are always drifting down through the hall, slowly, swaying
+	// on the draught, so the hall is never still. `scale` is the size of one
+	// of the hall's art pixels.
 	type Props = { scale: number };
 
 	const props: Props = $props();
@@ -60,7 +62,100 @@
 	});
 
 	$effect(() => () => cancelAnimationFrame(request));
+
+	// The quiet motes: few, one or two art pixels, in the greys of stone the torches light. Speeds
+	// in art pixels a second, times in ms. Each fades in and out over a long stretch of its life,
+	// so none appears or goes at once.
+	const QUIET = {
+		count: 24,
+		fall: [5, 12],
+		sway: { reach: [1.5, 4], period: [4000, 8000] },
+		life: [9000, 16000],
+		ease: 0.2,
+		alpha: [0.5, 0.85],
+		tint: [0x858585, 0x858585, 0xb4b4b4, 0x5d5d5d],
+	};
+	type Drift = {
+		x: number;
+		y: number;
+		from: number;
+		life: number;
+		fall: number;
+		reach: number;
+		period: number;
+		phase: number;
+		size: number;
+		alpha: number;
+		tint: number;
+	};
+	const between = ([low, high]: number[]) => low + Math.random() * (high - low);
+	// a mote anywhere in the hall, part way through its life the first time round
+	const drift = (time: number, into = 0): Drift => {
+		const life = between(QUIET.life);
+
+		return {
+			x: Math.random(),
+			y: Math.random(),
+			from: time - into * life,
+			life,
+			fall: between(QUIET.fall),
+			reach: between(QUIET.sway.reach),
+			period: between(QUIET.sway.period),
+			phase: Math.random() * Math.PI * 2,
+			size: Math.random() < 0.25 ? 2 : 1,
+			alpha: between(QUIET.alpha),
+			tint: QUIET.tint[Math.floor(Math.random() * QUIET.tint.length)],
+		};
+	};
+	let drifts = $state<Drift[]>([]);
+	let drifting = $state(0);
+
+	onMount(() => {
+		if (prefersReducedMotion.current) return;
+		const start = performance.now();
+		drifts = Array.from({ length: QUIET.count }, () => drift(start, Math.random()));
+		let frame = 0;
+		const update = (time: number) => {
+			frame = requestAnimationFrame(update);
+			drifting = time;
+			if (drifts.some((mote) => time >= mote.from + mote.life))
+				drifts = drifts.map((mote) => (time >= mote.from + mote.life ? drift(time) : mote));
+		};
+		frame = requestAnimationFrame(update);
+
+		return () => cancelAnimationFrame(frame);
+	});
+
+	const quiet = (mote: Drift) => {
+		const age = (drifting - mote.from) / mote.life;
+		const seconds = (drifting - mote.from) / 1000;
+		const fade = Math.min(1, age / QUIET.ease, (1 - age) / QUIET.ease);
+
+		return {
+			alpha: mote.alpha * Math.max(0, fade),
+			x:
+				Math.round(
+					(mote.x * canvas.width) / props.scale +
+						mote.reach *
+							Math.sin((2 * Math.PI * (drifting - mote.from)) / mote.period + mote.phase),
+				) * props.scale,
+			y: Math.round((mote.y * canvas.height) / props.scale + mote.fall * seconds) * props.scale,
+		};
+	};
 </script>
+
+{#each drifts as mote}
+	{@const at = quiet(mote)}
+	<BaseSprite
+		texture={pixel}
+		tint={mote.tint}
+		alpha={at.alpha}
+		x={at.x}
+		y={at.y}
+		width={mote.size * props.scale}
+		height={mote.size * props.scale}
+	/>
+{/each}
 
 {#each motes as mote}
 	{@const age = (now - mote.from) / LIFE}

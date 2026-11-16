@@ -11,6 +11,7 @@ import type { EmitterEventBackground } from '../components/Background.svelte';
 import type { EmitterEventDragon } from '../components/DragonEye.svelte';
 import type { EmitterEventGlintSpots } from '../components/GlintSpots.svelte';
 import type { EmitterEventWinCoins } from '../components/WinCoins.svelte';
+import type { EmitterEventReelDust } from '../components/ReelDust.svelte';
 
 export type EmitterEventGame =
 	| EmitterEventBoard
@@ -25,4 +26,5 @@ export type EmitterEventGame =
 	| EmitterEventBackground
 	| EmitterEventDragon
 	| EmitterEventGlintSpots
-	| EmitterEventWinCoins;
+	| EmitterEventWinCoins
+	| EmitterEventReelDust;

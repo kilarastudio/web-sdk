@@ -412,8 +412,8 @@ export const glintPrimed = () => {
 // pass over the symbol standing on the spot.
 export const GLINT_IGNITE_FRAMES = 8;
 
-export const glintIgniteFrames = (tier: 0 | 1 | 2 | 3 | 4) => {
-	const tile = tier ? glintTile(tier) : new PixelCanvas(CELL, CELL);
+export const glintIgniteFrames = (tier: 0 | 1 | 2 | 3 | 4, lit?: PixelCanvas) => {
+	const tile = tier ? (lit ?? glintTile(tier)) : new PixelCanvas(CELL, CELL);
 	const f = RAMPS.fire;
 	// every tier burns the same way, so the front over the symbol matches the one under it
 	const next = random(57);
@@ -732,64 +732,6 @@ export const fireBedFrames = (
 		ends: [Math.round(length * taper), Math.round(length * taper)],
 		die: true,
 	}).map((fire) => withUnderside(fire, under));
-
-// The dragon's mark for free spins: three claws raked across the board, from the upper right to
-// the lower left. Each is drawn twice, in the same place: the scar it leaves, charred, and the
-// molten glow inside it, which the game lets cool. A claw digs in hard where it lands and trails
-// away to nothing. `x` and `y` are where the mark's box stands from the board's middle.
-const CLAWS = [
-	{ length: 196, drop: 68, thick: 10, x: -10, y: -56, seed: 3 },
-	{ length: 236, drop: 80, thick: 13, x: 0, y: 0, seed: 5 },
-	{ length: 204, drop: 70, thick: 11, x: 12, y: 56, seed: 8 },
-];
-
-export const clawMarks = () =>
-	CLAWS.map(({ length, drop, thick, x: offsetX, y: offsetY, seed }) => {
-		const pad = Math.ceil(thick) + 2;
-		const height = drop + pad * 2;
-		const scar = new PixelCanvas(length, height);
-		const glow = new PixelCanvas(length, height);
-		const next = random(seed);
-		const knots = Array.from({ length: Math.ceil(length / 10) + 2 }, next);
-		const rough = (x: number) => {
-			const at = x / 10;
-			const index = Math.floor(at);
-			const part = at - index;
-			const ease = part * part * (3 - 2 * part);
-
-			return knots[index] * (1 - ease) + knots[index + 1] * ease;
-		};
-		const char = color(0x391f21);
-		for (let x = 0; x < length; x++) {
-			// the claw lands at the right and is dragged to the left
-			const along = 1 - x / (length - 1);
-			const middle = pad + drop * along + 3 * Math.sin(Math.PI * along);
-			const dug = along < 0.1 ? along / 0.1 : (1 - (along - 0.1) / 0.9) ** 0.65;
-			const half = thick * dug * (0.78 + 0.44 * rough(x));
-			if (half < 0.6) continue;
-			for (let y = Math.floor(middle - half); y <= Math.ceil(middle + half); y++) {
-				const from = Math.abs(y - middle);
-				if (from > half) continue;
-				const lip = from > half - 1.3;
-				scar.set(x, y, lip ? char : INK);
-				if (lip) continue;
-				const heat = 1 - from / Math.max(0.01, half - 1.3);
-				glow.set(
-					x,
-					y,
-					heat > 0.72
-						? RAMPS.fire[5]
-						: heat > 0.42
-							? RAMPS.fire[4]
-							: heat > 0.18
-								? RAMPS.fire[3]
-								: RAMPS.fire[2],
-				);
-			}
-		}
-
-		return { scar, glow, x: offsetX, y: offsetY };
-	});
 
 // The light a flame throws on the wall and the stone round it: a pool in four bands of grey, each
 // a step brighter toward the middle, drawn for the game to tint warm and add to the picture behind

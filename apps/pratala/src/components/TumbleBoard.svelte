@@ -125,6 +125,12 @@
 								});
 
 								if (symbolIndex > 0 && symbolIndex < tumbleReel.length - 1) {
+									context.eventEmitter.broadcast({
+										type: 'reelLand',
+										reelIndex,
+										row: symbolIndex - 1,
+										anticipated: false,
+									});
 									tumbleSymbol.symbolState = 'land';
 									context.stateGameDerived.onSymbolLand({ rawSymbol: tumbleSymbol.rawSymbol });
 									await waitForResolve((resolve) => {

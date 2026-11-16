@@ -3,7 +3,7 @@
 	import { UiInfoSection, UiPayCard, UiPayGrid } from 'components-ui-html';
 
 	import config from '../game/config';
-	import { SYMBOL_DRAWINGS, type SymbolKey } from '../pixel/symbols';
+	import { bakedSymbolStill } from '../pixel/bakedSymbols';
 	import { toDataUrl } from '../pixel/dom';
 
 	// The paytable, in the shared menu parts: every paying symbol with what it wins for each count on the board, read from
@@ -32,7 +32,10 @@
 		});
 	};
 
-	const picture = (key: SymbolKey) => toDataUrl(SYMBOL_DRAWINGS[key](), 3);
+	const picture = (key: string) => {
+		const still = bakedSymbolStill(key);
+		return still ? toDataUrl(still, 3) : '';
+	};
 </script>
 
 <UiInfoSection>

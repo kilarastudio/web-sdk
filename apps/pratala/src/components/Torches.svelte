@@ -40,6 +40,14 @@
 		swell: 0.12,
 		flicker: 1,
 	};
+	// The flame leans with the hall's slow draught, and its pool of light leans with it: the pool
+	// sways sideways (and a little up and down) by whole art pixels, each torch on its own phase.
+	const SWAY = { reach: { x: 3, y: 2 }, period: { x: 5600, y: 3900 } };
+	const sway = (tick: number, index: number, axis: 'x' | 'y') =>
+		Math.round(
+			SWAY.reach[axis] *
+				Math.sin((2 * Math.PI * tick * TORCH_FRAME_MS) / SWAY.period[axis] + index * 1.9),
+		);
 
 	const frames = (key: string) => (context.stateApp.loadedAssets[key] ?? []) as PIXI.Texture[];
 	const glow = $derived(
@@ -76,8 +84,8 @@
 	<BaseSprite
 		texture={glow}
 		anchor={0.5}
-		{x}
-		y={y - torch.height * props.scale * 0.35}
+		x={x + sway(tick, index, 'x') * props.scale}
+		y={y - torch.height * props.scale * 0.35 + sway(tick, index, 'y') * props.scale}
 		width={torch.height *
 			props.scale *
 			LIGHT.size *
