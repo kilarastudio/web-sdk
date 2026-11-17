@@ -107,7 +107,7 @@ export const PANELS_BOTTOM = BOARD_FRAME_REACH.top * 0.5;
 // top) and the frame's foot and corners run under the controls, as the user asked on 2026-11-17;
 // stacked (phones) the board is as wide as the screen allows and its foot has room below it.
 export const BOARD_MARGINS = {
-	normal: { top: 110, bottom: 4 },
+	normal: { top: 110, bottom: 30 },
 	stacked: { top: 134, bottom: BOARD_FRAME_REACH.bottom },
 };
 
