@@ -973,7 +973,23 @@ const skull = (): Runs => {
 
 		return x <= MOUTH_END ? SHADOW : above;
 	};
-	const clacked = (canvas: PixelCanvas, open: number) => moved(canvas, jaw, 0, open, gap);
+	// The jaw swings on its hinge at the back of the skull: it drops `open` pixels at the chin and
+	// less toward the hinge, nothing behind it, so the mouth opens as a wedge. Dropping it straight
+	// read as a black slit cut right across the face.
+	const HINGE = 40;
+	const CHIN = 3;
+	const drop = (x: number, open: number) =>
+		Math.max(0, Math.round((open * (HINGE - x)) / (HINGE - CHIN)));
+	const clacked = (canvas: PixelCanvas, open: number) => {
+		const onto = canvas.clone();
+		for (const [x, y] of jaw) if (drop(x, open)) onto.set(x, y, gap(x));
+		for (const [x, y] of jaw) {
+			const down = drop(x, open);
+			if (down) onto.set(x, y + down, canvas.get(x, y));
+		}
+
+		return onto;
+	};
 	// where the melted crown meets bare bone below it: the drips start there
 	const lips = pick(
 		art,
