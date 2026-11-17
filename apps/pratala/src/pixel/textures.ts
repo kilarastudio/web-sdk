@@ -8,6 +8,7 @@ import { atRest, isPotion } from './potionLiquid.ts';
 import * as ui from './ui.ts';
 import * as frame from './frame.ts';
 import * as glint from './glintArt.ts';
+import { wallFrames, type WallLevel } from './anticipationArt.ts';
 
 // Art pixels are drawn four screen-texture pixels wide and sampled linearly: edges stay crisp at
 // any layout scale, and nothing shimmers while the reels move at fractional speeds.
@@ -343,5 +344,14 @@ export const clawMarks = () =>
 			width: scar.width,
 			height: scar.height,
 		})),
+	);
+
+// the walls of fire round a column waiting on a scatter, and the bed of fire at its foot for the
+// stronger level (pixel/anticipationArt.ts), drawn the first time a column waits
+export const anticipationWalls = (level: WallLevel, height: number) =>
+	once(`anticipationWall${level}x${height}`, () => wallFrames(level, height).map(sharpTexture));
+export const anticipationBed = (length: number, depth: number) =>
+	once(`anticipationBed${length}x${depth}`, () =>
+		ui.edgeFireFrames({ length, depth, seed: 23, wild: 1.5, ends: [10, 10] }).map(sharpTexture),
 	);
 

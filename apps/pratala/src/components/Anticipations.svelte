@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { untrack } from 'svelte';
+	import { onMount, untrack } from 'svelte';
 
 	import { OnMount } from 'components-shared';
 	import { SECOND } from 'constants-shared/time';
@@ -7,11 +7,24 @@
 	import { getContext } from '../game/context';
 	import { setAnticipating } from '../game/anticipation.svelte';
 	import Anticipation from './Anticipation.svelte';
+	import { BOARD_DIMENSIONS } from '../game/constants';
+	import { anticipationBed, anticipationWalls } from '../pixel/textures';
 
 	const context = getContext();
 	const hasAnticipation = $derived(
 		context.stateGame.board.some((reel) => reel.reelState.anticipating),
 	);
+
+	// the walls of fire are drawn once, a little after the game is up, so the first wait does not
+	// stall on them
+	onMount(() => {
+		const timer = setTimeout(() => {
+			anticipationWalls(1, BOARD_DIMENSIONS.y * 64);
+			anticipationWalls(2, BOARD_DIMENSIONS.y * 64);
+			anticipationBed(64, 18);
+		}, 2500);
+		return () => clearTimeout(timer);
+	});
 
 	// only a change in the reels' waiting sets it: the free spins intro darkens the board too
 	$effect(() => {

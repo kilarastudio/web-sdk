@@ -421,7 +421,7 @@
 		(Math.round(lerp(255, to.green, by)) << 8) |
 		Math.round(lerp(255, to.blue, by));
 	const tint = $derived(
-		!scatter && dim > 0
+		!scatter && dim > 0 && anticipation.deep
 			? shade(dimmed, dim)
 			: losing > 0 && !reduced
 				? shade(WIN_DIMMED, losing)
