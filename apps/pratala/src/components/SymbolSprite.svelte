@@ -12,6 +12,7 @@
 	import { getContext } from '../game/context';
 	import { getSymbolInfo } from '../game/utils';
 	import { ART_PIXEL, SYMBOL_SIZE } from '../game/constants';
+	import { SYMBOL_ART_SIZE } from '../pixel/symbolArt';
 	import { animate, frameAt, lerp } from '../game/motion';
 	import { pixelClock } from '../game/pixelClock.svelte';
 	import { anticipation, anticipationDim } from '../game/anticipation.svelte';
@@ -37,6 +38,9 @@
 	import { joinIdle } from '../game/idle';
 	import { OVER_STILL } from '../pixel/textures';
 	import { touchStrength } from '../game/contact.svelte';
+	import { STILL_SURFACE, isPotion, type Surface } from '../pixel/potionLiquid';
+	import { calm, drawnSurface, jolt, restingSlosh, stepSlosh } from '../game/slosh';
+	import PotionLiquid from './PotionLiquid.svelte';
 
 	type Props = {
 		x?: number;
@@ -85,6 +89,12 @@
 	const TOUCH = { brighten: 0.3, duration: 110 };
 	// the dragon's eye landing: a short flare of light behind it
 	const SCATTER_LAND_GLOW = 1100;
+	// a potion landing: its liquid goes on down (art pixels a second) and swings to one side
+	// (radians a second) before it settles (game/slosh.ts)
+	const LAND_SLOSH = { sink: 26, spin: 0.9 };
+	// the red potion boils as it wins: its surface churns this many pixels high over this stretch
+	// of its act
+	const BOIL = { key: 'symbolL1', ripple: 2, from: 0.12, to: 0.78 };
 	// the board turned to its winners: the others step back this far
 	const WIN_DIMMED = { red: 0x8a, green: 0x90, blue: 0xaa };
 	const DIMMED = { red: 0x70, green: 0x78, blue: 0x96 };
@@ -121,6 +131,7 @@
 	const motion = $derived('motion' in props.symbolInfo ? props.symbolInfo.motion : undefined);
 	const atRest = $derived(motion === 'rest');
 	const scatter = $derived(assetKey === 'symbolScatter');
+	const potion = $derived(isPotion(assetKey) ? assetKey : undefined);
 
 	const texture = (key: string) =>
 		(context.stateApp.loadedAssets[key] ?? PIXI.Texture.EMPTY) as PIXI.Texture;
@@ -179,6 +190,7 @@
 					Math.sin(Math.PI * 3 * twisting) *
 					(1 - twisting) ** 2
 				: 0;
+			boil = key === BOIL.key && progress >= BOIL.from && progress < BOIL.to ? BOIL.ripple : 0;
 			if (!own) return;
 			pose = own.pose(progress);
 			effects = own.effects?.(progress) ?? [];
@@ -191,6 +203,7 @@
 	};
 
 	const clear = () => {
+		boil = 0;
 		pop = 1;
 		turn = 0;
 		pose = {};
@@ -218,6 +231,54 @@
 		brighten = 0;
 	};
 
+	// A potion's liquid lies level in the world and sloshes as the bottle turns, lifts or lands
+	// (game/slosh.ts): stepped every frame while it moves, asleep once it is calm.
+	let surface = $state<Surface>(STILL_SURFACE);
+	let slosh = restingSlosh();
+	let sloshing = false;
+	let boil = 0;
+	// how the bottle stands: all its turns, and its height in its own art pixels
+	const bottleTurn = () => turn + (move.rotation ?? 0) + (pose.rotation ?? 0);
+	const bottleHeight = () =>
+		((move.y ?? 0) + (pose.y ?? 0)) * ((ART_PIXEL * SYMBOL_ART_SIZE) / SYMBOL_SIZE);
+	const wakeLiquid = () => {
+		if (sloshing || !potion || prefersReducedMotion.current) return;
+		sloshing = true;
+		let last = performance.now();
+		const tick = (now: number) => {
+			if (!sloshing) return;
+			stepSlosh(slosh, (now - last) / 1000, bottleTurn(), bottleHeight(), boil);
+			last = now;
+			const next = drawnSurface(slosh);
+			if (
+				next.tilt !== surface.tilt ||
+				next.level !== surface.level ||
+				next.ripple !== surface.ripple ||
+				next.phase !== surface.phase
+			)
+				surface = next;
+			if (calm(slosh) && !boil) sloshing = false;
+			else requestAnimationFrame(tick);
+		};
+		requestAnimationFrame(tick);
+	};
+	// a new symbol in the sprite starts with its liquid at rest
+	$effect(() => {
+		void assetKey;
+		untrack(() => {
+			sloshing = false;
+			slosh = restingSlosh(bottleTurn(), bottleHeight());
+			surface = STILL_SURFACE;
+		});
+	});
+	// the bottle moved: the liquid follows
+	$effect(() => {
+		void turn;
+		void move;
+		void pose;
+		untrack(wakeLiquid);
+	});
+
 	// The touch of a landing: it brightens, throws up dust from its foot, plays its Land run and
 	// reacts with its whole body. The dragon's eye flares the light behind it.
 	const touch = () => {
@@ -232,6 +293,10 @@
 		const reaction = LAND_MOVES[key];
 		const side = Math.random() < 0.5 ? -1 : 1;
 		if (reaction) moveFor(reaction.duration, reaction.pivot, (t) => reaction.move(t, side));
+		if (potion) {
+			jolt(slosh, LAND_SLOSH.sink, LAND_SLOSH.spin * side);
+			wakeLiquid();
+		}
 		// its own run, so an idle act starting meanwhile cannot leave the white on
 		const id = ++brightenRun;
 		const peak = TOUCH.brighten * touchStrength();
@@ -376,7 +441,8 @@
 	// awake, the eye beats with the waiting: its frames run from cool to hot and back (held at
 	// the middle one for reduced motion)
 	const wary = $derived(frames(`${assetKey}Wary`));
-	const still = $derived(texture(assetKey));
+	// a potion's art is drawn full: its liquid shows under the surface (PotionLiquid)
+	const still = $derived(texture(potion ? `${assetKey}Full` : assetKey));
 	const art = $derived(
 		stand ??
 			landing ??
@@ -432,15 +498,32 @@
 			rotation={pose.rotation ?? 0}
 			scale={pose.scale ?? 1}
 		>
-			{#if overStill}
-				<BaseSprite texture={still} {...spriteProps} {tint} />
-			{/if}
-			<BaseSprite texture={art} {...artProps} {tint} />
-			{#if overlay}
-				<BaseSprite texture={overlay} {...spriteProps} />
-			{:else if brighten > 0}
-				<BaseSprite texture={texture(`${assetKey}Flash`)} {...spriteProps} alpha={brighten} />
-			{/if}
+			<!-- a potion shows its liquid only under the surface: the glass over it is empty -->
+			<Container sortableChildren>
+				{#if overStill}
+					<BaseSprite texture={still} {...spriteProps} {tint} zIndex={-1} />
+				{/if}
+				<BaseSprite texture={art} {...artProps} {tint} />
+				{#if potion}
+					<PotionLiquid
+						key={potion}
+						{surface}
+						width={spriteProps.width}
+						height={spriteProps.height}
+						{tint}
+					/>
+				{/if}
+				{#if overlay}
+					<BaseSprite texture={overlay} {...spriteProps} zIndex={2} />
+				{:else if brighten > 0}
+					<BaseSprite
+						texture={texture(`${assetKey}Flash`)}
+						{...spriteProps}
+						alpha={brighten}
+						zIndex={2}
+					/>
+				{/if}
+			</Container>
 			{@render props.children?.()}
 		</Container>
 	</Container>

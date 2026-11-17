@@ -1,5 +1,6 @@
 import { PixelCanvas, type Point } from './canvas.ts';
 import { CLEAR, INK, LIGHTER, color } from './palette.ts';
+import { atRest, restSurface, type PotionKey } from './potionLiquid.ts';
 import { IRIS, SYMBOL_DRAWINGS, dragonEye, eyeLids, eyeOpening, goneSize } from './symbols.ts';
 
 // What each reel symbol does in every state it goes through, as runs of frames worked out from
@@ -458,6 +459,8 @@ type Liquid = {
 	glass: Set<number>;
 	left: number;
 	right: number;
+	// its highest row: where a full bottle's liquid ends, or a partly filled one's surface
+	top: number;
 	bottom: number;
 };
 
@@ -485,8 +488,20 @@ const liquidOf = (
 		glass,
 		left: Math.min(...xs),
 		right: Math.max(...xs),
+		top: Math.min(...pixels.map(([, y]) => y)),
 		bottom: Math.max(...pixels.map(([, y]) => y)),
 	};
+};
+
+// The liquid of a potion as the game shows it, filled to its rest (pixel/potionLiquid.ts): its
+// pixels stay the full bottle's, since the surface tilts and sloshes over them and the game masks
+// what is above it, but bubbles pop and light stops at the surface it rests at.
+const filled = (liquid: Liquid, key: PotionKey): Liquid => {
+	const top = restSurface(key);
+	const surface = new Map<number, number>();
+	for (const [x, y] of liquid.pixels) if (y === top) surface.set(x, top);
+
+	return { ...liquid, surface, top };
 };
 
 // The surface rises or falls by whole pixels, column by column: lift(x) is how far (up is
@@ -609,8 +624,7 @@ const risingBubbles = (
 // Light fills the liquid from the bottom, a brighter band at its rising edge, holds full, and
 // sinks back out. Large and slow, so it reads on a phone, and only colour moves.
 const lightRise = (art: PixelCanvas, liquid: Liquid, ramp: Ramp) => {
-	const top = Math.min(...liquid.pixels.map(([, y]) => y));
-	const height = liquid.bottom - top + 1;
+	const height = liquid.bottom - liquid.top + 1;
 	// how far up the light reaches (0 to 1), and whether its edge carries the brighter band
 	const steps: [number, boolean][] = [
 		[0.2, true],
@@ -628,28 +642,13 @@ const lightRise = (art: PixelCanvas, liquid: Liquid, ramp: Ramp) => {
 	];
 
 	return steps.map(([reach, band]) => {
-		const line = liquid.bottom + 1 - Math.round(reach * height);
+		// full, it lights whatever the surface has tilted up over its rest too
+		const line = reach >= 1 ? -Infinity : liquid.bottom + 1 - Math.round(reach * height);
 		const canvas = lit(art.clone(), liquid, ramp, 1, (_, y) => y >= line);
 
 		return band ? lit(canvas, liquid, ramp, 1, (_, y) => y >= line && y < line + 4) : canvas;
 	});
 };
-
-// Every bottle's land: it comes down two pixels and back as a whole, and the liquid in it keeps
-// going a moment longer, down, then up past where it rests, then home.
-const plop = (art: PixelCanvas, liquid: Liquid) =>
-	[
-		[2, 1],
-		[1, -2],
-		[0, -1],
-		[0, 1],
-	].map(([drop, lift]) =>
-		shifted(
-			lifted(art, liquid, () => lift),
-			0,
-			drop,
-		),
-	);
 
 // A part of the art picked by a box: a bottle's cork, an axe's blade.
 const inBox = (box: readonly [number, number, number, number]) => (x: number, y: number) =>
@@ -756,7 +755,7 @@ const bottleGone = (
 	const size = goneSize(SIZE);
 	const margin = (size - SIZE) / 2;
 	const middle: Point = [Math.round(liquid.middle[0]), Math.round(liquid.middle[1])];
-	const top = Math.min(...liquid.pixels.map(([, y]) => y));
+	const top = liquid.top;
 	const width = liquid.right - liquid.left + 1;
 	const height = liquid.bottom - top + 1;
 	const [dark, mid, light] = [ramp[1], ramp[Math.floor(ramp.length / 2)], ramp.at(-2)!];
@@ -1453,7 +1452,10 @@ const axe = (): Runs => {
 };
 
 // The potions. Their liquids are found by colour; the glass never moves, corks lift
-// off as solid pieces.
+// off as solid pieces. Each is drawn full and filled only partly in the game, its surface lying
+// level and sloshing as the bottle moves (pixel/potionLiquid.ts, game/slosh.ts): the frames here
+// light and stir the whole liquid, the game shows what is under the surface. Their landing is
+// that slosh, so they have no Land run.
 const glassColours = colours(
 	0xf6ca9f,
 	0xb4b4b4,
@@ -1484,13 +1486,29 @@ const mouthOf = (cork: readonly Point[]): Point => [
 	Math.max(...cork.map(([, y]) => y)) + POTION_PAD,
 ];
 
+// How a potion goes: from where its win left it, filled as it rests, so as much splashes out as
+// it held.
+const potionGone = (
+	key: PotionKey,
+	last: PixelCanvas,
+	liquid: Set<number>,
+	ramp: Ramp,
+	cork: readonly Point[],
+	seed: number,
+	keep?: (x: number, y: number) => boolean,
+) => {
+	const shown = atRest(key, last);
+
+	return bottleGone(shown, liquidOf(shown, liquid, glassColours, keep), ramp, cork, { seed });
+};
+
 // L1: the round red flask, a potion of life. At rest it beats like a heart, or big bubbles rise;
 // when it wins it boils, its cork shoots up on a burst of red steam and drops back.
 const redFlask = (): Runs => {
 	const art = SYMBOL_DRAWINGS.symbolL1();
 	const ramp = [0x571c27, 0x891e2b, 0xc42430, 0xea323c, 0xf5555d, 0xf68187].map(c);
 	const red = new Set(ramp);
-	const liquid = liquidOf(art, red, glassColours);
+	const liquid = filled(liquidOf(art, red, glassColours), 'symbolL1');
 	const cork = pick(art, inBox([31, 5, 50, 12]));
 	const [mx, my] = liquid.middle;
 	const reach = (liquid.right - liquid.left) / 2;
@@ -1513,18 +1531,16 @@ const redFlask = (): Runs => {
 		tones: { ring: 3, core: 1 },
 	});
 
-	// win: it gathers (the liquid darkens and sinks, the cork rattles), the cork shoots up on a
-	// burst of steam while the liquid boils bright, and drops back home
+	// win: it gathers (the liquid darkens, the cork rattles), the cork shoots up on a burst of
+	// steam while the liquid boils bright (its surface churns in the game, SymbolSprite's boil),
+	// and drops back home
 	const corkUp = [0, 1, 2, 9, 13, 14, 13, 10, 5, 0, 0, 0];
 	const glow = [-1, -1, 0, 2, 2, 2, 2, 1, 1, 1, 1, 1];
 	const steam = [c(0xf5555d), c(0xf68187)];
 	const [neckX, neckY] = mouthOf(cork);
 	const hurt = corkUp.map((up, frame) => {
 		const boiling = frame >= 2 && frame <= 9;
-		const lift = (x: number) =>
-			frame < 2 ? 1 : boiling ? Math.round((blotch(x, 0, frame + 9) - 0.5) * 3) : 0;
-		const body = lifted(art, liquid, lift);
-		lit(body, liquidOf(body, red, glassColours), ramp, glow[frame]);
+		const body = lit(art.clone(), liquid, ramp, glow[frame]);
 		if (boiling)
 			for (let index = 0; index < 5; index++) {
 				const x = liquid.left + 4 + hash(index, 0, 17) * (liquid.right - liquid.left - 10);
@@ -1558,9 +1574,8 @@ const redFlask = (): Runs => {
 	return {
 		symbolL1RestBeat: beat,
 		symbolL1RestBubble: rising,
-		symbolL1Land: plop(art, liquid),
 		symbolL1Hurt: [...hurt.slice(0, -1), padded(last, POTION_PAD)],
-		symbolL1Gone: bottleGone(last, liquidOf(last, red, glassColours), ramp, cork, { seed: 11 }),
+		symbolL1Gone: potionGone('symbolL1', last, red, ramp, cork, 11),
 	};
 };
 
@@ -1570,7 +1585,7 @@ const blueBottle = (): Runs => {
 	const art = SYMBOL_DRAWINGS.symbolL2();
 	const ramp = [0x03193f, 0x00396d, 0x0069aa, 0x0098dc, 0x00cdf9, 0x0cf1ff, 0x94fdff].map(c);
 	const blue = new Set(ramp);
-	const liquid = liquidOf(art, blue, glassColours);
+	const liquid = filled(liquidOf(art, blue, glassColours), 'symbolL2');
 	const cork = pick(art, inBox([27, 5, 38, 12]));
 	const rising = risingBubbles(art, liquid, ramp, {
 		starts: [
@@ -1630,9 +1645,8 @@ const blueBottle = (): Runs => {
 	return {
 		symbolL2RestLight: lightRise(art, liquid, ramp),
 		symbolL2RestBubble: rising,
-		symbolL2Land: plop(art, liquid),
 		symbolL2Hurt: [...hurt.slice(0, -1), padded(last, POTION_PAD)],
-		symbolL2Gone: bottleGone(last, liquidOf(last, blue, glassColours), ramp, cork, { seed: 23 }),
+		symbolL2Gone: potionGone('symbolL2', last, blue, ramp, cork, 23),
 	};
 };
 
@@ -1644,7 +1658,7 @@ const poisonBottle = (): Runs => {
 	const ramp = [0x134c4c, 0x1e6f50, 0x33984b, 0x5ac54f, 0x99e65f, 0xd3fc7e].map(c);
 	const green = new Set(ramp);
 	// no label: the whole green body is liquid, like the other potions
-	const liquid = liquidOf(art, green, glassColours);
+	const liquid = filled(liquidOf(art, green, glassColours), 'symbolL3');
 	const cap = pick(art, inBox([20, 5, 43, 13]));
 
 	// the seep: a bright green run creeps down the glass from under the cap and lets a drop go
@@ -1726,9 +1740,8 @@ const poisonBottle = (): Runs => {
 	return {
 		symbolL3RestSeep: seeping,
 		symbolL3RestBubble: rising,
-		symbolL3Land: plop(art, liquid),
 		symbolL3Hurt: [...hurt.slice(0, -1), padded(last, POTION_PAD)],
-		symbolL3Gone: bottleGone(last, liquidOf(last, green, glassColours), ramp, cap, { seed: 31 }),
+		symbolL3Gone: potionGone('symbolL3', last, green, ramp, cap, 31),
 	};
 };
 
@@ -1739,7 +1752,10 @@ const goldFlask = (): Runs => {
 	const art = SYMBOL_DRAWINGS.symbolL4();
 	const ramp = [0x8a4836, 0xe07438, 0xedab50, 0xffc825, 0xffeb57].map(c);
 	const gold = new Set(ramp);
-	const liquid = liquidOf(art, gold, glassColours, (_, y) => y >= 28);
+	const liquid = filled(
+		liquidOf(art, gold, glassColours, (_, y) => y >= 28),
+		'symbolL4',
+	);
 	const cork = pick(art, inBox([26, 8, 40, 14]));
 	// gold has no lighter colours to show a bubble with, so its bubbles are rings of the dark
 	const rising = risingBubbles(art, liquid, ramp, {
@@ -1756,8 +1772,6 @@ const goldFlask = (): Runs => {
 	const [neckX, neckY] = mouthOf(cork);
 	const corkUp = [0, 1, 2, 12, 19, 22, 23, 22, 18, 11, 0, 0];
 	const glow = [-1, -1, 0, 2, 2, 2, 2, 1, 1, 1, 1, 1];
-	// the level sinks as it gathers, and a little while the gold is out of the flask
-	const level = [1, 1, 0, -1, 0, 1, 1, 1, 1, 0, 0, 0];
 	// the spout: a column out of the neck, its foot and head in pixels above it
 	const spout: [number, number][] = [
 		[0, 0],
@@ -1775,13 +1789,7 @@ const goldFlask = (): Runs => {
 	];
 	const [, , mid, light, top] = ramp;
 	const hurt = corkUp.map((up, frame) => {
-		const body = lifted(art, liquid, () => level[frame]);
-		lit(
-			body,
-			liquidOf(body, gold, glassColours, (_, y) => y >= 26),
-			ramp,
-			glow[frame],
-		);
+		const body = lit(art.clone(), liquid, ramp, glow[frame]);
 		const canvas = corkedOff(body, cork, up);
 		const [foot, head] = spout[frame];
 		// six wide, its head a step wider still: a gush, not a rod
@@ -1812,15 +1820,8 @@ const goldFlask = (): Runs => {
 	return {
 		symbolL4RestLight: lightRise(art, liquid, ramp),
 		symbolL4RestBubble: rising,
-		symbolL4Land: plop(art, liquid),
 		symbolL4Hurt: [...hurt.slice(0, -1), padded(last, POTION_PAD)],
-		symbolL4Gone: bottleGone(
-			last,
-			liquidOf(last, gold, glassColours, (_, y) => y >= 26),
-			ramp,
-			cork,
-			{ seed: 41 },
-		),
+		symbolL4Gone: potionGone('symbolL4', last, gold, ramp, cork, 41, (_, y) => y >= 26),
 	};
 };
 

@@ -16,6 +16,8 @@
 	import SymbolFx from '../components/SymbolFx.svelte';
 	import { frameAt } from '../game/motion';
 	import { OVER_STILL } from '../pixel/textures';
+	import { STILL_SURFACE, isPotion } from '../pixel/potionLiquid';
+	import PotionLiquid from '../components/PotionLiquid.svelte';
 	import type { RawSymbol, SymbolState } from '../game/types';
 
 	// A page for looking at the symbols, not part of the game (dev server only, ?symbols): every
@@ -144,16 +146,30 @@
 				<SymbolFx layer="under" scope={symbol.key} />
 				{#if phase === 'rest'}
 					{@const frame = restFrames[index] ?? PIXI.Texture.EMPTY}
-					{@const still = context.stateApp.loadedAssets[symbol.key] as PIXI.Texture}
-					{#if OVER_STILL.has(frame)}
-						<BaseSprite texture={still} anchor={0.5} width={SYMBOL_SIZE} height={SYMBOL_SIZE} />
-					{/if}
-					<BaseSprite
-						texture={frame}
-						anchor={0.5}
-						width={(SYMBOL_SIZE * frame.width) / still.width}
-						height={(SYMBOL_SIZE * frame.height) / still.height}
-					/>
+					{@const potion = isPotion(symbol.key) ? symbol.key : undefined}
+					<!-- a potion's frames light its full liquid: what is over its surface is masked off -->
+					{@const still = context.stateApp.loadedAssets[
+						potion ? `${symbol.key}Full` : symbol.key
+					] as PIXI.Texture}
+					<Container>
+						{#if OVER_STILL.has(frame)}
+							<BaseSprite texture={still} anchor={0.5} width={SYMBOL_SIZE} height={SYMBOL_SIZE} />
+						{/if}
+						<BaseSprite
+							texture={frame}
+							anchor={0.5}
+							width={(SYMBOL_SIZE * frame.width) / still.width}
+							height={(SYMBOL_SIZE * frame.height) / still.height}
+						/>
+						{#if potion}
+							<PotionLiquid
+								key={potion}
+								surface={STILL_SURFACE}
+								width={SYMBOL_SIZE}
+								height={SYMBOL_SIZE}
+							/>
+						{/if}
+					</Container>
 				{:else if state}
 					{#key state}
 						<Symbol rawSymbol={symbol.rawSymbol} {state} oncomplete={() => done[index]()} />

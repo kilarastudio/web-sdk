@@ -4,6 +4,7 @@ import { PixelCanvas } from './canvas.ts';
 import { CLEAR, INK, LIGHTER, WHITE } from './palette.ts';
 import { SYMBOL_DRAWINGS, SYMBOL_GLOW } from './symbols.ts';
 import { SYMBOL_FRAME_RUNS } from './symbolRuns.ts';
+import { atRest, isPotion } from './potionLiquid.ts';
 import * as ui from './ui.ts';
 
 // Art pixels are drawn four screen-texture pixels wide and sampled linearly: edges stay crisp at
@@ -146,7 +147,11 @@ export const generateArt = ({
 	const art: GeneratedArt = {};
 
 	for (const [key, draw] of Object.entries(SYMBOL_DRAWINGS)) {
-		const canvas = draw();
+		// a potion as it stands, partly filled; in the game its full art lies under the mask that
+		// shows its liquid (components/PotionLiquid.svelte)
+		const drawn = draw();
+		const canvas = isPotion(key) ? atRest(key, drawn) : drawn;
+		if (isPotion(key)) art[`${key}Full`] = toTexture(drawn);
 		art[key] = toTexture(canvas);
 		art[`${key}Flash`] = toTexture(flash(canvas));
 		art[`${key}Shine`] = runTextures(shineFrames(canvas));
