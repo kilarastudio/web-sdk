@@ -107,10 +107,21 @@ const freeArea = () => {
 const boardMargins = () =>
 	stateLayoutDerived.isStacked() ? BOARD_MARGINS.stacked : BOARD_MARGINS.normal;
 
-// the board, with its frame and the panels above it, stands on the controls, as low as it goes
-// (the user asked for it on desktop and then on phones, 2026-11-17); when it does not fit its top
-// runs under the header
-const boardY = () => freeArea().bottom - BOARD_SIZES.height / 2 - boardMargins().bottom;
+// the board, with its frame and the panels above it, in the free area. Side by side with the HUD
+// it stands on the controls, as low as it goes; stacked (phones) it sits halfway between centred
+// and that, lower than centred but not on the controls (the user's calls, 2026-11-17). When it
+// does not fit it stays clear of the controls and lets its top run under the header.
+const STACKED_LOW = 0.5;
+const boardY = () => {
+	const margins = boardMargins();
+	const above = BOARD_SIZES.height / 2 + margins.top;
+	const below = BOARD_SIZES.height / 2 + margins.bottom;
+	const { top, bottom } = freeArea();
+	const lowest = bottom - below;
+	const centred = Math.min((top + bottom + above - below) / 2, lowest);
+
+	return stateLayoutDerived.isStacked() ? centred + (lowest - centred) * STACKED_LOW : lowest;
+};
 
 const boardLayout = () => ({
 	x: stateLayoutDerived.mainLayout().width * 0.5,
