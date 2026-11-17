@@ -25,3 +25,16 @@ export const watchContact = (symbolY: () => Tween<number>, ontouch: () => void) 
 		});
 	});
 };
+
+// How strongly a touch may brighten its symbol. One symbol landing alone flashes in full; when a
+// whole column or a tumble lands at once, each touch gets a share, so the board never goes pale
+// together. Counts the touches of the last CROWD.window ms, this one included.
+const CROWD = { window: 160, alone: 2 };
+let touchTimes: number[] = [];
+export const touchStrength = () => {
+	const now = performance.now();
+	touchTimes = touchTimes.filter((time) => now - time < CROWD.window);
+	touchTimes.push(now);
+
+	return Math.min(1, CROWD.alone / touchTimes.length);
+};

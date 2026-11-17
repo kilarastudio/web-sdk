@@ -14,7 +14,7 @@
 		templateArgs,
 	} from 'components-storybook';
 
-	import { stateGameDerived } from '../game/stateGame.svelte';
+	import { startSpin } from '../game/spin.svelte';
 	import Game from '../components/Game.svelte';
 	import { setContext } from '../game/context';
 	import { eventEmitter } from '../game/eventEmitter';
@@ -47,7 +47,7 @@
 		skipLoadingScreen: true,
 		data: {},
 		action: async () => {
-			await stateGameDerived.enhancedBoard.preSpin({});
+			startSpin();
 		},
 	})}
 	{template}

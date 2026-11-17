@@ -1,5 +1,4 @@
 import _ from 'lodash';
-import { cubicOut } from 'svelte/easing';
 
 import type { RawSymbol, SymbolState } from './types';
 
@@ -134,56 +133,56 @@ export const INITIAL_SYMBOL_STATE: SymbolState = 'static';
 
 // Kilara reel motion: columns land one by one, 1.25 × 160 = 200 ms apart, and an anticipated
 // column waits (6.25 − 1.25) × 160 = 800 ms longer, so it lands about 1 s after the one before
-const SPIN_OPTIONS_SHARED = {
+export const COLUMN_LANDING = {
 	reelFallInDelay: 160,
-	reelPaddingMultiplierNormal: 1.25,
-	reelPaddingMultiplierAnticipated: 6.25,
-	reelFallOutDelay: 145,
+	paddingNormal: 1.25,
+	paddingAnticipated: 6.25,
 };
 
 // A symbol's whole way into place is one curve, so its speed never jumps: it leaves from rest,
 // gathers speed, and is already slowing as it arrives; it runs a hair past its place (about 1%
 // of the way, 8 px on a full drop) and eases back. Nothing bounces and nothing bends. The same
-// curve brings the symbols of a tumble down.
+// curve brings the symbols of a tumble down, and a spin's symbols land on its slowing half.
 export const settleEasing = (t: number) => {
 	const over = 0.6;
 	const u = t ** 1.7 - 1;
 
 	return 1 + (over + 1) * u ** 3 + over * u ** 2;
 };
-// leaving the board starts nearly from rest
-const fallOutEasing = (t: number) => t * (0.25 + 0.75 * t);
+// leaving the board starts nearly from rest; its slope at the end is 1.75
+export const fallOutEasing = (t: number) => t * (0.25 + 0.75 * t);
 
-// 650 px into place in about 380 ms, each symbol 44 ms behind the one under it, so a column pours
-// in rather than dropping as a block
-export const SPIN_OPTIONS_DEFAULT = {
-	...SPIN_OPTIONS_SHARED,
-	symbolFallInSpeed: 1.7,
-	symbolFallInInterval: 44,
-	symbolFallInBounceSpeed: 0.2,
-	symbolFallInBounceSizeMulti: 0,
-	symbolFallInEasing: settleEasing,
-	symbolFallOutSpeed: 2.8,
-	symbolFallOutInterval: 24,
-	symbolFallOutEasing: fallOutEasing,
+// The start of a spin (game/spin.svelte.ts), tumble style. The round is asked for at the press;
+// meanwhile the whole board falls out at once, bottom row first (rowInterval apart), gathering
+// speed over `gather` units on fallOutEasing up to `speed` (units / ms), and a stream of dimmed
+// paying symbols follows the last of it down every column at that speed until the answer is in.
+// The result then follows the stream's last symbol and lands on the settle curve's slowing half
+// over its last `settle` units, each symbol landInterval ms behind the one under it, so a column
+// still pours in. It never starts before minDuration (and never before the old board is gone),
+// so a fast and a slow answer land on the same beat.
+export const SPIN_FLOW = {
+	normal: {
+		rowInterval: 30,
+		gather: 200,
+		speed: 2.8,
+		settle: 330,
+		landInterval: 44,
+		minDuration: 450,
+	},
+	// turbo: the board falls out nearly as a block and faster, and the columns land together
+	fast: {
+		rowInterval: 10,
+		gather: 160,
+		speed: 4.2,
+		settle: 330,
+		landInterval: 0,
+		minDuration: 250,
+	},
 };
 
-export const SPIN_OPTIONS_FAST = {
-	...SPIN_OPTIONS_SHARED,
-	symbolFallInSpeed: 4,
-	symbolFallInInterval: 0,
-	symbolFallInBounceSpeed: 0.3,
-	symbolFallInBounceSizeMulti: 0,
-	symbolFallInEasing: settleEasing,
-	symbolFallOutSpeed: 6,
-	symbolFallOutInterval: 0,
-	symbolFallOutEasing: fallOutEasing,
-};
-
-// prefers-reduced-motion: the same distances and timings, eased into place without running past it
-export const SPIN_OPTIONS_REDUCED_MOTION = {
-	symbolFallInEasing: cubicOut,
-};
+// the stream: the paying symbols only (a scatter in it would read as a near miss), stepped back
+export const STREAM_SYMBOLS = ['H1', 'H2', 'H3', 'H4', 'L1', 'L2', 'L3', 'L4'] as const;
+export const STREAM_TINT = 0xa8adc0;
 
 // a win amount races up and slows into its final value, so the last digits can be read
 export const countUpEasing = (t: number) => 1 - (1 - t) ** 2.4;

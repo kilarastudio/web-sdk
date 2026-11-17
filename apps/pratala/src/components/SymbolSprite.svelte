@@ -36,6 +36,7 @@
 	} from '../game/symbolFx.svelte';
 	import { joinIdle } from '../game/idle';
 	import { OVER_STILL } from '../pixel/textures';
+	import { touchStrength } from '../game/contact.svelte';
 
 	type Props = {
 		x?: number;
@@ -79,8 +80,9 @@
 		shine: { duration: 380 },
 	};
 	const WIN_DURATION = WIN.hold.duration + WIN.flash.duration + ACT_DURATION;
-	// the touch of a landing: the symbol's white silhouette over it, this strong, this long
-	const TOUCH = { brighten: 0.35, duration: 60 };
+	// the touch of a landing: the symbol's white silhouette over it, this strong at first, fading
+	// out over this long; shared out when many symbols touch at once (contact.svelte.ts)
+	const TOUCH = { brighten: 0.3, duration: 110 };
 	// the dragon's eye landing: a short flare of light behind it
 	const SCATTER_LAND_GLOW = 1100;
 	// the board turned to its winners: the others step back this far
@@ -110,6 +112,7 @@
 	let turn = $state(0);
 	// the white of a touch, 0 to 1
 	let brighten = $state(0);
+	let brightenRun = 0;
 	let touchedAt = -Infinity;
 
 	const reduced = $derived(prefersReducedMotion.current);
@@ -210,6 +213,7 @@
 	};
 	const stopMove = () => {
 		moveRun++;
+		brightenRun++;
 		move = {};
 		brighten = 0;
 	};
@@ -228,11 +232,16 @@
 		const reaction = LAND_MOVES[key];
 		const side = Math.random() < 0.5 ? -1 : 1;
 		if (reaction) moveFor(reaction.duration, reaction.pivot, (t) => reaction.move(t, side));
-		brighten = TOUCH.brighten;
-		const id = moveRun;
-		animate(TOUCH.duration, () => {}, { timeScaled: false }).then(() => {
-			if (id === moveRun) brighten = 0;
-		});
+		// its own run, so an idle act starting meanwhile cannot leave the white on
+		const id = ++brightenRun;
+		const peak = TOUCH.brighten * touchStrength();
+		animate(
+			TOUCH.duration,
+			(progress) => {
+				if (id === brightenRun) brighten = peak * (1 - progress) ** 2;
+			},
+			{ timeScaled: false },
+		);
 	};
 	// each new touch, not the count it was made with
 	let touches = untrack(() => props.contact ?? 0);

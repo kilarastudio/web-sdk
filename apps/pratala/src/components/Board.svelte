@@ -22,14 +22,19 @@
 	import BoardContainer from './BoardContainer.svelte';
 	import BoardMask from './BoardMask.svelte';
 	import BoardBase from './BoardBase.svelte';
+	import SpinStream from './SpinStream.svelte';
+	import { cancelSpin, slamSpin } from '../game/spin.svelte';
 
 	const context = getContext();
 
 	let show = $state(true);
 
 	context.eventEmitter.subscribeOnMount({
-		stopButtonClick: () => context.stateGameDerived.enhancedBoard.stop(),
-		boardSettle: ({ board }) => context.stateGameDerived.enhancedBoard.settle(board),
+		stopButtonClick: () => slamSpin(),
+		boardSettle: ({ board }) => {
+			cancelSpin();
+			context.stateGameDerived.enhancedBoard.settle(board);
+		},
 		boardShow: () => (show = true),
 		boardHide: () => (show = false),
 		boardWithAnimateSymbols: async ({ symbolPositions }) => {
@@ -68,14 +73,13 @@
 			});
 		},
 	});
-
-	context.stateGameDerived.enhancedBoard.readyToSpinEffect();
 </script>
 
 {#if show}
 	<BoardContext animate={false}>
 		<BoardContainer>
 			<BoardMask />
+			<SpinStream />
 			<BoardBase />
 		</BoardContainer>
 	</BoardContext>

@@ -18,6 +18,7 @@ import type { Position } from './types';
 import { GAZE_ROW_MS, gazePasses, glintChanges } from './glint';
 import { impact, shake } from './impact.svelte';
 import { endWin } from './symbolFx.svelte';
+import { landSpin } from './spin.svelte';
 import type { GlintApplySpot } from '../components/GlintSpots.svelte';
 
 // how many wins the current spin's tumbles have paid so far, for the rising win sound
@@ -143,7 +144,7 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		stateGame.gameType = bookEvent.gameType;
 		// spots belong to one base round; free spins keep theirs (updateGlint sets them)
 		if (bookEvent.gameType === 'basegame') await resetGlint();
-		await stateGameDerived.enhancedBoard.spin({ revealEvent: bookEvent });
+		await landSpin(bookEvent);
 		eventEmitter.broadcast({ type: 'soundScatterCounterClear' });
 	},
 	winInfo: async (bookEvent: BookEventOfType<'winInfo'>, { bookEvents }: BookEventContext) => {
