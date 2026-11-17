@@ -29,7 +29,6 @@
 	import BoardContainer from './BoardContainer.svelte';
 	import WinCoins from './WinCoins.svelte';
 	import TumbleBoard from './TumbleBoard.svelte';
-	import ReelDust from './ReelDust.svelte';
 	import TumbleWinAmount from './TumbleWinAmount.svelte';
 	import GlintSpots from './GlintSpots.svelte';
 	import GlintEffects from './GlintEffects.svelte';
@@ -109,10 +108,6 @@
 			<MainContainer>
 				<TumbleBoard />
 				<!-- <TumbleAnticipations /> -->
-				<!-- the dust a landing column knocks off the floor rises in front of the symbols -->
-				<BoardContainer>
-					<ReelDust />
-				</BoardContainer>
 				<GlintSpots layer="over" />
 				<GlintEffects />
 				<GlintGaze />

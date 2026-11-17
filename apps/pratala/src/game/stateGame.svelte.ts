@@ -38,18 +38,11 @@ const board = _.range(BOARD_DIMENSIONS.x).map((reelIndex) => {
 		symbolHeight: SYMBOL_SIZE,
 		initialSymbols: INITIAL_BOARD[reelIndex],
 		initialSymbolState: INITIAL_SYMBOL_STATE,
-		// the column's bottom cell has landed: it is at rest
 		onReelStopping: () => {
 			eventEmitter.broadcast({
 				type: 'soundOnce',
 				name: 'sfx_reel_stop_1',
 				forcePlay: !stateBet.isTurbo,
-			});
-			eventEmitter.broadcast({
-				type: 'reelLand',
-				reelIndex,
-				row: BOARD_DIMENSIONS.y - 1,
-				anticipated: reel.reelState.anticipating,
 			});
 		},
 		onSymbolLand,

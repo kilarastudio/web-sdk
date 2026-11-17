@@ -4,18 +4,17 @@
 
 	import { Container } from 'pixi-svelte';
 
-	import FreeSpinGaze from './FreeSpinGaze.svelte';
+	import FreeSpinClaws from './FreeSpinClaws.svelte';
 	import PopIn from './PopIn.svelte';
 	import WinAnimation from './WinAnimation.svelte';
 	import WinPunch from './WinPunch.svelte';
 	import { getContext } from '../game/context';
 	import { BOARD_SIZES } from '../game/constants';
 	import { panelContentWidth, panelTextStyle, type PanelFace } from '../game/panels';
-	import type { Position } from '../game/types';
 	import type { BigWinLevelData } from '../game/winLevelMap';
 
 	// the free spins panel over the board: a label, the count or amount, and a caption. The intro
-	// stands in the dragon's gaze; the total at the end stands in the frame of the level
+	// stands in the dragon's claw marks; the total at the end stands in the frame of the level
 	// its count has reached, like a big win.
 	type Props = {
 		key: 'panelFreeSpinsIntro' | 'panelFreeSpinsOutro';
@@ -27,8 +26,6 @@
 		// the big win level the total has reached, and the ones it will land on (winClimb)
 		level?: BigWinLevelData;
 		levels?: BigWinLevelData[];
-		// the intro: the scatters that won the free spins, which the dragon's gaze lights
-		scatters?: Position[];
 	};
 
 	const props: Props = $props();
@@ -81,11 +78,11 @@
 			x={context.stateGameDerived.boardLayout().x}
 			y={context.stateGameDerived.boardLayout().y}
 		>
-			<FreeSpinGaze {scale} scatters={props.scatters}>
+			<FreeSpinClaws {scale}>
 				{#snippet children({ face })}
 					{@render body({ face })}
 				{/snippet}
-			</FreeSpinGaze>
+			</FreeSpinClaws>
 		</Container>
 	{/if}
 </MainContainer>

@@ -1,7 +1,7 @@
 <script lang="ts" module>
 	// what the dragon does when the game tells it something happened
 	export type DragonReaction =
-		'nod' | 'puff' | 'flap' | 'power' | 'gaze' | 'win' | 'bigWin' | 'bonus' | 'wake' | 'stare';
+		'nod' | 'puff' | 'flap' | 'power' | 'gaze' | 'win' | 'bigWin' | 'bonus';
 
 	export type EmitterEventDragon = {
 		type: 'dragonReact';
@@ -22,7 +22,6 @@
 		EYES,
 		EYE_FIRE_DELAY,
 		EYE_FRAMES,
-		EYE_STRIP_COLUMNS,
 		EYE_STRIP_SCALE,
 		type EyeFrame,
 	} from '../game/dragonEye';
@@ -56,12 +55,7 @@
 			(_, index) =>
 				new PIXI.Texture({
 					source: strip.source,
-					frame: new PIXI.Rectangle(
-						(index % EYE_STRIP_COLUMNS) * width,
-						Math.floor(index / EYE_STRIP_COLUMNS) * height,
-						width,
-						height,
-					),
+					frame: new PIXI.Rectangle(index * width, 0, width, height),
 				}),
 		);
 		cache.set(strip.source, cut);
@@ -87,9 +81,6 @@
 		power: { frame: 'alert', ms: 900, delay: EYE_FIRE_DELAY, shake: 2 },
 		// the gaze: it looks down at the board for as long as its gaze takes to come down a reel
 		gaze: { frame: 'lookDown', ms: GAZE_ROW_MS * 5 + GAZE_FADE_MS + 300 },
-		// free spins: it wakes, then looks down at the board while its gaze crosses it
-		wake: { frame: 'alert', ms: 380 },
-		stare: { frame: 'lookDown', ms: 1700 },
 	};
 	// At rest it blinks and now and then looks aside. Times are drawn between these bounds, in ms,
 	// so it never ticks like a clock.
@@ -101,11 +92,8 @@
 			['half', 70],
 		] as const,
 	};
-	// now and then the lid comes half down and stays there a moment before it shuts and lifts: a
-	// slow blink, so the eye is seen to rest rather than tick
-	const DROWSE = { chance: 0.35, hold: [700, 1300] };
 	const GLANCE = {
-		every: [3800, 8000],
+		every: [5200, 11000],
 		hold: [700, 1300],
 		frames: ['lookLeft', 'lookRight', 'lookDown'] as const,
 	};
@@ -120,14 +108,6 @@
 	let frame = $state<EyeFrame>('open');
 	let answer: { frame: EyeFrame; until: number } | undefined;
 	let blinkAt = 0;
-	let blinkSteps: readonly (readonly [EyeFrame, number])[] = BLINK.steps;
-	const nextBlink = (now: number) => {
-		blinkAt = now + between(BLINK.every);
-		blinkSteps =
-			Math.random() < DROWSE.chance
-				? [['half', between(DROWSE.hold)], ...BLINK.steps.slice(1)]
-				: BLINK.steps;
-	};
 	let glance: { frame: EyeFrame; from: number; until: number } | undefined;
 
 	const react = (reaction: DragonReaction) => {
@@ -139,7 +119,7 @@
 	};
 
 	const restingFrame = (now: number): EyeFrame => {
-		if (!blinkAt) nextBlink(now);
+		if (!blinkAt) blinkAt = now + between(BLINK.every);
 		if (!glance) {
 			const from = now + between(GLANCE.every);
 			glance = {
@@ -150,11 +130,11 @@
 		}
 		let into = now - blinkAt;
 		if (into >= 0) {
-			for (const [step, ms] of blinkSteps) {
+			for (const [step, ms] of BLINK.steps) {
 				if (into < ms) return step;
 				into -= ms;
 			}
-			nextBlink(now);
+			blinkAt = now + between(BLINK.every);
 		}
 		if (now >= glance.until) glance = undefined;
 		else if (now >= glance.from) return glance.frame;
@@ -183,43 +163,6 @@
 	});
 
 	const texture = $derived(textures[EYE_FRAMES.indexOf(frame)]);
-
-	// The eye lights the vault round it, in the bands of the torches' pools: the light breathes
-	// slowly brighter and dimmer, on two slow waves so no breath is quite like the last, and the
-	// lid cuts it off as it closes. Sizes are in eye boxes.
-	const GLOW = {
-		tint: 0xff5000,
-		alpha: [0.05, 0.36],
-		waves: [
-			{ period: 4400, depth: 0.6 },
-			{ period: 7300, depth: 0.4 },
-		],
-		size: { width: 1.75, height: 1.8 },
-		lid: { half: 0.55, shut: 0.15 } as Partial<Record<EyeFrame, number>>,
-	};
-	const glowTexture = $derived(
-		(context.stateApp.loadedAssets.flameGlow ?? PIXI.Texture.EMPTY) as PIXI.Texture,
-	);
-	let breath = $state(0.5);
-	onMount(() => {
-		let request = 0;
-		const update = (now: number) => {
-			request = requestAnimationFrame(update);
-			breath = prefersReducedMotion.current
-				? 0.5
-				: GLOW.waves.reduce(
-						(sum, { period, depth }, wave) =>
-							sum - 0.5 * depth * Math.cos((2 * Math.PI * now) / period + wave),
-						0.5,
-					);
-		};
-		request = requestAnimationFrame(update);
-
-		return () => cancelAnimationFrame(request);
-	});
-	const glowAlpha = $derived(
-		(GLOW.alpha[0] + (GLOW.alpha[1] - GLOW.alpha[0]) * breath) * (GLOW.lid[frame] ?? 1),
-	);
 </script>
 
 <!-- the open eye is the picture itself -->
@@ -232,14 +175,3 @@
 		height={eye.height * props.scale}
 	/>
 {/if}
-<BaseSprite
-	texture={glowTexture}
-	anchor={0.5}
-	x={props.origin.x + (eye.x + eye.width * 0.5) * props.scale}
-	y={props.origin.y + (eye.y + eye.height * 0.5) * props.scale}
-	width={eye.width * GLOW.size.width * props.scale}
-	height={eye.height * GLOW.size.height * props.scale}
-	tint={GLOW.tint}
-	alpha={glowAlpha}
-	blendMode="add"
-/>

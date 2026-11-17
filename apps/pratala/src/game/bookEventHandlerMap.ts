@@ -242,13 +242,8 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		// show free spin intro
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_superfreespin' });
 		await eventEmitter.broadcastAsync({ type: 'uiHide' });
-		// the dragon wakes in the hall as it is and its gaze lights the scatters; the hall heats once
-		// the player goes on
-		eventEmitter.broadcast({
-			type: 'freeSpinIntroShow',
-			totalFreeSpins: bookEvent.totalFs,
-			scatters: bookEvent.positions,
-		});
+		// the dragon marks the board in the hall as it is; the hall heats once the player goes on
+		eventEmitter.broadcast({ type: 'freeSpinIntroShow', totalFreeSpins: bookEvent.totalFs });
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'jng_intro_fs' });
 		await eventEmitter.broadcastAsync({
 			type: 'freeSpinIntroUpdate',

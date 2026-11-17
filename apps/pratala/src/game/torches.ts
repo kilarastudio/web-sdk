@@ -7,31 +7,24 @@ import { FLAME_LIGHT } from '../pixel/textures';
 export type Torch = { x: number; y: number; width: number; height: number };
 
 export const TORCHES: Record<'Landscape' | 'Portrait', Record<'base' | 'bonus', Torch[]>> = {
-	// four torches: the front pair on the inner faces of the front pillars, the back pair smaller
-	// with distance (positions from the hall's own camera, scripts/hall-anchors.ts)
 	Landscape: {
 		base: [
-			{ x: 137.5, y: 209, width: 22, height: 60 },
-			{ x: 438.5, y: 209, width: 22, height: 60 },
-			{ x: 187, y: 208, width: 14, height: 40 },
-			{ x: 389, y: 208, width: 14, height: 40 },
+			{ x: 71.5, y: 118, width: 22, height: 60 },
+			{ x: 504.5, y: 118, width: 22, height: 60 },
 		],
 		bonus: [
-			{ x: 137.5, y: 209, width: 34, height: 70 },
-			{ x: 438.5, y: 209, width: 34, height: 70 },
-			{ x: 187, y: 208, width: 20, height: 46 },
-			{ x: 389, y: 208, width: 20, height: 46 },
+			{ x: 67.5, y: 118, width: 38, height: 72 },
+			{ x: 508, y: 118, width: 38, height: 72 },
 		],
 	},
-	// the front pillars stand outside the tall picture; its torches are the back pair
 	Portrait: {
 		base: [
-			{ x: 52.5, y: 305, width: 16, height: 44 },
-			{ x: 271.5, y: 305, width: 16, height: 44 },
+			{ x: 44, y: 59, width: 24, height: 60 },
+			{ x: 279.5, y: 59, width: 24, height: 60 },
 		],
 		bonus: [
-			{ x: 52.5, y: 305, width: 22, height: 52 },
-			{ x: 271.5, y: 305, width: 22, height: 52 },
+			{ x: 43.5, y: 59, width: 30, height: 66 },
+			{ x: 280.5, y: 59, width: 30, height: 66 },
 		],
 	},
 };

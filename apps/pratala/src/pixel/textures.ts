@@ -2,10 +2,8 @@ import * as PIXI from 'pixi.js';
 
 import { PixelCanvas } from './canvas.ts';
 import { CLEAR, INK, LIGHTER, WHITE } from './palette.ts';
+import { SYMBOL_DRAWINGS, SYMBOL_FRAME_RUNS } from './symbols.ts';
 import * as ui from './ui.ts';
-import { decodeBaked, type Baked } from './baked.ts';
-import { bakedSymbolFrames } from './bakedSymbols.ts';
-import bakedBoard from './baked/board.json';
 
 // Art pixels are drawn four screen-texture pixels wide and sampled linearly: edges stay crisp at
 // any layout scale, and nothing shimmers while the reels move at fractional speeds.
@@ -70,17 +68,15 @@ export const generateArt = ({
 }): GeneratedArt => {
 	const art: GeneratedArt = {};
 
-	// the symbols, rendered ahead of time (scripts/bake-art.ts, src/pixel/render/symbols): each
-	// still with its flash and shine, and every frame run beside it
-	for (const [key, frames] of Object.entries(bakedSymbolFrames())) {
-		if (Array.isArray(frames)) {
-			art[key] = frames.map(toTexture);
-			continue;
-		}
-		art[key] = toTexture(frames);
-		art[`${key}Flash`] = toTexture(flash(frames));
-		art[`${key}Shine`] = shineFrames(frames).map(toTexture);
+	for (const [key, draw] of Object.entries(SYMBOL_DRAWINGS)) {
+		const canvas = draw();
+		art[key] = toTexture(canvas);
+		art[`${key}Flash`] = toTexture(flash(canvas));
+		art[`${key}Shine`] = shineFrames(canvas).map(toTexture);
 	}
+
+	// what the symbols do at rest, how a win leaves them and how they go
+	for (const [key, frames] of Object.entries(SYMBOL_FRAME_RUNS())) art[key] = frames.map(toTexture);
 
 	for (const [width, height] of flames) {
 		const run = ui.flameFrames(width, height);
@@ -91,30 +87,17 @@ export const generateArt = ({
 	art.flameGlow = toTexture(ui.flameGlow());
 	art.smokeWisp = ui.smokeWispFrames().map(toTexture);
 
-	// the board: the ray-marched stone tray (src/pixel/render/board.ts), baked for 6 × 5
-	const board = decodeBaked(bakedBoard as Baked);
-	const floor = board.boardFloor;
-	const frame = board.boardFrame;
-	art.boardFloor = toTexture(
-		floor && !Array.isArray(floor) && floor.width === columns * ui.CELL ? floor : ui.boardFloor(columns, rows),
-	);
-	art.boardFrame = toTexture(
-		frame && !Array.isArray(frame) && frame.width === columns * ui.CELL + ui.FRAME.border * 2
-			? frame
-			: ui.boardFrame(columns, rows),
-	);
+	art.boardFloor = toTexture(ui.boardFloor(columns, rows));
+	art.boardFrame = toTexture(ui.boardFrame(columns, rows));
 	art.panel = toTexture(ui.panel());
 	for (const tier of [1, 2, 3, 4] as const) {
-		// the sigil tiles are ray-marched and baked (src/pixel/render/glint.ts)
-		const tile = board[`glintTile${tier}`];
-		const lit = tile && !Array.isArray(tile) ? tile : ui.glintTile(tier);
-		art[`glintTile${tier}`] = toTexture(lit);
-		art[`glintIgnite${tier}`] = ui.glintIgniteFrames(tier, lit).map(toTexture);
+		art[`glintTile${tier}`] = toTexture(ui.glintTile(tier));
+		art[`glintIgnite${tier}`] = ui.glintIgniteFrames(tier).map(toTexture);
 	}
 	art.glintIgniteFront = ui.glintIgniteFrames(0).map(toTexture);
 	art.glintPrimed = toTexture(ui.glintPrimed());
 	art.glintFlash = toTexture(ui.glintFlash());
-	art.coin = (Array.isArray(board.coin) ? board.coin : ui.coinFrames()).map(toTexture);
+	art.coin = ui.coinFrames().map(toTexture);
 	art.fireball = ui.fireballFrames().map(toTexture);
 	art.burst = ui.burstFrames().map(toTexture);
 	art.pixel = toTexture(ui.pixel());
@@ -144,4 +127,17 @@ export const fireBed = (
 ) =>
 	once(`fireBed${length}x${depth}+${under}:${seed}:${taper}:${wild}`, () =>
 		ui.fireBedFrames(length, depth, under, seed, taper, wild).map(toTexture),
+	);
+
+// the claw marks of the free spins intro: each one's scar and the glow inside it
+export const clawMarks = () =>
+	once('clawMarks', () =>
+		ui.clawMarks().map(({ scar, glow, x, y }) => ({
+			scar: toTexture(scar),
+			glow: toTexture(glow),
+			x,
+			y,
+			width: scar.width,
+			height: scar.height,
+		})),
 	);

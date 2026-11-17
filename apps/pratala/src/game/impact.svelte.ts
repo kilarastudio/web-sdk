@@ -11,8 +11,6 @@ export const impact = $state({ x: 0, y: 0, step: 0 });
 
 const BEAT = 34;
 let run = 0;
-// the shake running now: how hard it started and when it ends
-let running = { pixels: 0, until: 0 };
 
 // pixels: how far the first jolt throws the board, in art pixels
 export const shake = (pixels: number, duration = 240) => {
@@ -20,7 +18,6 @@ export const shake = (pixels: number, duration = 240) => {
 	const id = ++run;
 	const total = duration / stateBetDerived.timeScale();
 	const start = performance.now();
-	running = { pixels, until: start + total };
 	let beat = -1;
 	const tick = (now: number) => {
 		if (id !== run) return;
@@ -42,10 +39,4 @@ export const shake = (pixels: number, duration = 240) => {
 		requestAnimationFrame(tick);
 	};
 	requestAnimationFrame(tick);
-};
-
-// A light hit, such as a column landing, that never cuts short a stronger shake still running.
-export const knock = (pixels: number, duration = 120) => {
-	if (performance.now() < running.until && running.pixels > pixels) return;
-	shake(pixels, duration);
 };

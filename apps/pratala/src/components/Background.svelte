@@ -16,7 +16,6 @@
 	import { getContext } from '../game/context';
 	import { FLOOR_FIRES } from '../game/floorFires';
 	import { TORCHES } from '../game/torches';
-	import { HALL_SIZES } from '../game/dragonEye';
 	import { animate } from '../game/motion';
 	import { createHallHeat, HEAT_FROM, HEAT_TO, type HallHeat } from '../game/hallHeat';
 	import { hallMood } from '../game/hallMood.svelte';
@@ -35,7 +34,10 @@
 	// cools back out of it, pixel by pixel (game/hallHeat.ts), while each hall's eye, torches and
 	// fires fade over the other's. Anything else that sets the game type (a resumed round, a new
 	// spin) changes the hall at once.
-	const SIZES = HALL_SIZES;
+	const SIZES = {
+		Landscape: { width: 576, height: 324 },
+		Portrait: { width: 324, height: 576 },
+	};
 
 	const context = getContext();
 	const canvas = $derived(context.stateLayoutDerived.canvasSizes());
@@ -192,8 +194,6 @@
 			moodRequest = requestAnimationFrame(step);
 		});
 	});
-	// as the dragon wakes the torches gutter for a beat: their flames and light sink this far
-	const TORCH_DIP = 0.65;
 	// the torches leap from SUPER up, and the boss hall's fires burn higher from MEGA up
 	const flare = new Tween(0, { duration: 350 });
 	const surge = new Tween(0, { duration: 500 });
@@ -231,9 +231,7 @@
 {#if mix < 1}
 	<Container zIndex={-1} alpha={1 - mix}>
 		<DragonEye hall="Base" {shape} {...flameProps} />
-		<Container alpha={1 - TORCH_DIP * hallMood.dip}>
-			<Torches torches={TORCHES[shape].base} flare={flare.current} {...flameProps} />
-		</Container>
+		<Torches torches={TORCHES[shape].base} flare={flare.current} {...flameProps} />
 	</Container>
 {/if}
 {#if mix > 0}
@@ -247,9 +245,7 @@
 			surge={surge.current}
 			{...flameProps}
 		/>
-		<Container alpha={1 - TORCH_DIP * hallMood.dip}>
-			<Torches torches={TORCHES[shape].bonus} flare={flare.current} {...flameProps} />
-		</Container>
+		<Torches torches={TORCHES[shape].bonus} flare={flare.current} {...flameProps} />
 	</Container>
 {/if}
 
