@@ -29,10 +29,12 @@ export type GlintAnimation = keyof typeof GLINT_ANIMATION_MS;
 export const glintTier = (value: number): GlintTier =>
 	value >= 1024 ? 4 : value >= 128 ? 3 : value >= 16 ? 2 : 1;
 
-// The value stands centred low in the cell, its foot two art pixels (of 64 to a cell) above the
-// cell's bottom edge, over the symbol's foot (src/pixel/glintArt.ts draws it, ~17 art pixels
-// tall); the same on an empty cell. x and y are its foot's middle from the cell's middle.
-export const GLINT_VALUE_FOOT = { x: 0, y: SYMBOL_SIZE * (30 / 64) };
+// The value stands centred low in the cell, its foot clear of the panel's bottom border (7-10 art
+// pixels of 64 to a cell): sitting on the border, its lower third ran into the border's own
+// colour and the value read about ten pixels tall on a phone. Over the symbol's foot
+// (src/pixel/glintArt.ts draws it, ~17 art pixels tall); the same on an empty cell. x and y are
+// its foot's middle from the cell's middle.
+export const GLINT_VALUE_FOOT = { x: 0, y: SYMBOL_SIZE * (20 / 64) };
 // where a value's middle stands, for what flies from it (GlintEffects)
 export const glintMultiplierLayout = () => ({
 	x: GLINT_VALUE_FOOT.x,
