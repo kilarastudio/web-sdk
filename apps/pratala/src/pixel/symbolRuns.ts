@@ -1888,10 +1888,30 @@ const scatter = (): Runs => {
 		return out;
 	};
 
-	// a look to one side, held, then the other, held: five pixels each way, so the slit is seen to
-	// travel across the iris on a phone
-	const glance = [-1, -3, -5, -5, -5, -5, -5, -3, -1, 1, 3, 5, 5, 5, 5, 5, 3, 1, 0].map((by) =>
-		looked(eye, by),
+	// The whole eyeball turns: iris, hot core and slit slide together by `by` pixels inside the
+	// still opening of the lids, and the side it leaves shows the eye's dark red white. Moving the
+	// slit alone over a still iris did not read as a look (the user: only the black part moved).
+	const WHITE_OF_EYE = color(0x891e2b);
+	const WHITE_EDGE = color(0x571c27);
+	const inOpening = (x: number, y: number) => {
+		const span = opening.get(x);
+
+		return !!span && y >= span.top && y <= span.bottom;
+	};
+	const gazed = (canvas: PixelCanvas, by: number) => {
+		const out = canvas.clone();
+		for (const [x, { top, bottom }] of opening)
+			for (let y = top; y <= bottom; y++) {
+				const from = x - by;
+				if (inOpening(from, y)) out.set(x, y, canvas.get(from, y));
+				else out.set(x, y, inOpening(x - Math.sign(by), y) ? WHITE_OF_EYE : WHITE_EDGE);
+			}
+
+		return out;
+	};
+	// a look to one side, held, then the other, held
+	const glance = [-1, -2, -3, -4, -4, -4, -4, -4, -3, -1, 1, 3, 4, 4, 4, 4, 4, 3, 1, 0].map((by) =>
+		gazed(eye, by),
 	);
 	const wary = [0, 1, 2, 3, 4, 5].map((level) =>
 		looked(heated(eye, Math.round(level * 0.4), Math.round(level * 0.7)), 0, 1),
