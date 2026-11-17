@@ -87,8 +87,11 @@ writeFileSync(join(out, 'symbols.png'), sheet(symbols, { columns: 5 }));
 writeFileSync(join(out, 'symbols-1x.png'), sheet(symbols, { columns: 10, scale: 2 }));
 console.log(`wrote ${out}/symbols.png`);
 
-// the board as the game composes it: floor, lit spots, symbols, frame
+// the board as the game composes it: floor, lit spots, symbols, frame. Only the symbols drawn on
+// the board's own 40 pixel grid fit a cell here; the game scales the 64 pixel drawn ones down.
 import * as ui from '../src/pixel/ui.ts';
+
+const fitting = symbols.filter((symbol) => symbol.width <= ui.CELL);
 
 const columns = 6;
 const rows = 5;
@@ -103,7 +106,7 @@ for (let column = 0; column < columns; column++)
 		const y = ui.FRAME.border + row * ui.CELL;
 		const tier = lit[`${column},${row}`];
 		if (tier) board.blit(ui.glintTile(tier), x, y);
-		board.blit(symbols[Math.floor(next() * 9)], x, y);
+		board.blit(fitting[Math.floor(next() * fitting.length)], x, y);
 	}
 board.blit(frame);
 writeFileSync(join(out, 'board.png'), sheet([board], { scale: 4, background: 0x0e071b }));

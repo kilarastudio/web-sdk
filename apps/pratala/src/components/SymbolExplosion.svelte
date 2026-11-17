@@ -21,7 +21,7 @@
 	const context = getContext();
 
 	// A winning symbol leaves the board in its own way, drawn as a run of frames beside its art
-	// (pixel/symbols.ts, Gone): the crown melts down, a gem breaks into its facets. The run starts
+	// (pixel/symbols.ts, Gone): for now every paying symbol breaks along its cracks. The run starts
 	// from how the win left the symbol. A symbol with no run of its own breaks into its own pixels:
 	// it flashes white, then its 5 × 5 blocks fly out from the middle and fall, each held on the
 	// art-pixel grid, while a burst ring opens.

@@ -26,7 +26,8 @@ const toTexture = (canvas: PixelCanvas) => {
 
 // a band of light crossing the symbol from the top left to the bottom right: lighter toward the
 // band's edges, white at its core. Only the band is drawn, so it lies over whatever the symbol
-// shows under it.
+// shows under it. The outline stays dark: on code-drawn art it is INK, on drawn art whatever dark
+// the artist used, so the rim is left alone too.
 const shineFrames = (canvas: PixelCanvas) =>
 	Array.from({ length: SHINE_FRAMES }, (_, frame) => {
 		const at = -8 + ((canvas.width + canvas.height + 16) * frame) / (SHINE_FRAMES - 1);
@@ -35,6 +36,12 @@ const shineFrames = (canvas: PixelCanvas) =>
 			for (let x = 0; x < canvas.width; x++) {
 				const c = canvas.get(x, y);
 				if (c === CLEAR || c === INK) continue;
+				const rim =
+					canvas.get(x - 1, y) === CLEAR ||
+					canvas.get(x + 1, y) === CLEAR ||
+					canvas.get(x, y - 1) === CLEAR ||
+					canvas.get(x, y + 1) === CLEAR;
+				if (rim) continue;
 				const distance = Math.abs(x + y - at);
 				if (distance <= 1) lit.set(x, y, WHITE);
 				else if (distance <= 5) lit.set(x, y, LIGHTER[LIGHTER[c]]);

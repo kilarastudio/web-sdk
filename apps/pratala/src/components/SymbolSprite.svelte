@@ -38,8 +38,8 @@
 	// Symbols are solid objects, moved by code on every frame and never bent. Landing is the
 	// reel's own doing (one smooth curve into place); nothing is added here. A win: the symbol turns white and pulls in
 	// for a moment (the hit), bursts out, and then does its own act (game/symbolActs.ts) while a
-	// band of light crosses it. At rest a gem's light turns now and then and the dragon's eye
-	// blinks. While a column waits on a scatter, every other symbol darkens and the scatters throb.
+	// band of light crosses it. At rest a band of light slides over a symbol now and then and the
+	// dragon's eye blinks. While a column waits on a scatter, every other symbol darkens and the scatters throb.
 	const WIN = {
 		hold: { duration: 80, squeeze: 0.1 },
 		flash: { duration: 110, pop: 0.22 },

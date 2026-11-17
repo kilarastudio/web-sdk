@@ -72,9 +72,9 @@ export const BOARD_SIZES = {
 	height: SYMBOL_SIZE * BOARD_DIMENSIONS.y,
 };
 
-// One art pixel is 2.5 game units everywhere: a reel cell is 40 art pixels across. Code-drawn
-// textures and the processed image art all keep this density, so the whole screen sits on one
-// pixel grid.
+// One art pixel is 2.5 game units: a reel cell is 40 art pixels across. Code-drawn textures and
+// the processed image art keep this density. The drawn paying symbols (64 art pixels in the same
+// cell) sit on a finer grid; poses and effects still count in this unit, a fortieth of the cell.
 export const ART_PIXEL = SYMBOL_SIZE / 40;
 
 // The stone frame round the board (src/pixel/ui.ts boardFrame), drawn whole at the board's size;
@@ -198,7 +198,7 @@ export const zIndexes = {
 	},
 };
 
-// Symbols are drawn by code (src/pixel/symbols.ts) and animated by code as solid objects: one
+// Symbols come from src/pixel/symbols.ts (drawn art and art drawn by code) and are animated by code as solid objects: one
 // smooth curve into place, a win act of their own (SymbolSprite, game/symbolActs.ts) that leaves
 // the symbol hurt until it goes, and its own way of leaving the board (SymbolExplosion).
 const explosion = { type: 'explosion', assetKey: '', sizeRatios: { width: 1, height: 1 } } as const;
