@@ -102,11 +102,12 @@ export const BOARD_FRAME_SIDE = BOARD_FRAME_REACH.right;
 export const PANELS_BOTTOM = BOARD_FRAME_REACH.top * 0.5;
 
 // how far the frame and the panels above the board reach past the symbols; the panels are bigger
-// in the stacked layout. Side by side with the HUD (desktop, landscape) the layout keeps room for
-// the frame's whole foot and its carved corners, so they clear the controls; stacked (phones) the
-// board is as wide as the screen allows and its foot has room to spare below it anyway.
+// in the stacked layout. Side by side with the HUD (desktop, landscape) the board sits as low as
+// it can: its symbols stop just above the controls (the HUD's inset reaches the spin button's
+// top) and the frame's foot and corners run under the controls, as the user asked on 2026-11-17;
+// stacked (phones) the board is as wide as the screen allows and its foot has room below it.
 export const BOARD_MARGINS = {
-	normal: { top: 110, bottom: BOARD_FRAME_BANDS.corners },
+	normal: { top: 110, bottom: 4 },
 	stacked: { top: 134, bottom: BOARD_FRAME_REACH.bottom },
 };
 
