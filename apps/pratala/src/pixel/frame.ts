@@ -3,24 +3,23 @@ import { CLEAR, INK, RAMPS, color } from './palette.ts';
 import { random } from './ui.ts';
 
 // The board's frame (v2, approved 2026-11-17): heavy, dark, iron-banded stone round the board, a
-// molten inner edge whose banded light spills over the cells, a horned stone crest with the
-// dragon's burning eye at the top, and carved stone corners in the manner of a candi's relief:
+// molten inner edge whose banded light spills over the cells, and carved stone corners in the manner of a candi's relief:
 // stepped blocks with sulur (tendril) scrollwork and pointed antefix crowns. Free spins: red-hot
 // stone, heated iron, cracks glowing from the edge out. Drawn on the symbols' grid, 64 art pixels
-// to a cell, in parts: the stone, the molten edge (its own frames, so it breathes), the corners,
-// and the crest with its eye (frames too). See reports/review/pratala-2026-11-17-fx-mockups.
+// to a cell, in parts: the stone, the molten edge (its own frames, so it breathes) and the
+// corners. The horned crest with an eye over the top middle was removed on 2026-11-17 (the user
+// asked what it was and wanted it gone). See reports/review/pratala-2026-11-17-fx-mockups.
 
 export const FRAME_GRID = 64;
 export type FrameVariant = 'base' | 'fs';
 
 // band thicknesses round the opening, in art pixels
 export const FRAME_BAND = { top: 34, bottom: 40, side: 26 } as const;
-// how far the corners and the crest stand past the bands
+// how far the corners stand past the bands
 export const FRAME_PAD = { top: 40, bottom: 24, side: 5 } as const;
 // how many art pixels of molten edge there are, and how far its light spills over the cells
 export const EMBER_DEPTH = { base: 11, fs: 12 } as const;
 export const EDGE_FRAMES = 4;
-export const CREST_EYE_FRAMES = 4;
 // the light the molten edge throws over the cells: [inset from the opening's edge, alpha, colour]
 export const FRAME_SPILL = {
 	base: [
@@ -47,11 +46,6 @@ const STONE = {
 const IRON = {
 	base: [0x131313, 0x272727, 0x3d3d3d, 0x5d5d5d, 0x858585, 0xb4b4b4].map(color),
 	fs: [0x131313, 0x1c121c, 0x391f21, 0x5d2c28, 0x8a4836, 0xbf6f4a].map(color),
-};
-// pale carved stone for the horns
-const BONE = {
-	base: [0x2a2f4e, 0x424c6e, 0x657392, 0x92a1b9, 0xc7cfdd].map(color),
-	fs: [0x391f21, 0x5d2c28, 0x8a4836, 0xbf6f4a, 0xe69c69].map(color),
 };
 // the molten edge from the opening outward
 const EMBER = {
@@ -211,7 +205,7 @@ const outside = (g: ReturnType<typeof frameGeometry>, x: number, y: number) => {
 const MOULD = 3;
 
 // The stone: dressed blocks, an iron lip between them and the fire, iron straps across, and in free
-// spins the cracks. The molten edge is drawn by moltenEdge(), the corners and the crest on their own.
+// spins the cracks. The molten edge is drawn by moltenEdge(), the corners on their own.
 export const frameStone = (columns: number, rows: number, variant: FrameVariant) => {
 	const g = frameGeometry(columns, rows, variant);
 	const [ink, deep, dark, body, lit, high] = STONE[variant];
@@ -274,9 +268,8 @@ export const frameStone = (columns: number, rows: number, variant: FrameVariant)
 	canvas.rect(fx0, fy0, fx1 - fx0, 1, high);
 	canvas.rect(fx0, fy0, 1, fy1 - fy0, high);
 	box(canvas, fx0 - 1, fy0 - 1, fx1 - fx0 + 2, fy1 - fy0 + 2, ink);
-	// iron straps across the bands, leaving the middle of the top to the crest
+	// iron straps across the bands
 	for (let x = ox + 46; x < ox + g.width - 30; x += 76) {
-		if (Math.abs(x - (ox + g.width / 2)) < 60) continue;
 		ironStrap(canvas, x, fy0 + 1, 8, bt - E - MOULD - 1, variant);
 		ironStrap(canvas, x + 20, oy + g.height + E + MOULD + 1, 8, bb - E - MOULD - 2, variant);
 	}
@@ -384,93 +377,6 @@ export const moltenEdge = (columns: number, rows: number, variant: FrameVariant,
 			else canvas.set(x, y, STONE[variant][1]);
 		}
 	return canvas;
-};
-
-// The crest over the top middle: a stone shield with two great horns, the dragon's eye burning in
-// it. eye: which frame of the eye's fire (its bands step in and out).
-const CREST = { width: 150, height: 66, eye: { x: 75, y: 42, rx: 24, ry: 11 } } as const;
-
-const crestEye = (canvas: PixelCanvas, variant: FrameVariant, frame: number) => {
-	const { x: ex, y: ey, rx, ry } = CREST.eye;
-	const breathe = [0, 0.06, 0.1, 0.05][frame % 4];
-	const lims: [number, number][] = [
-		[9, INK],
-		[1.0, FIRE[2]],
-		[0.78 + breathe, FIRE[3]],
-		[0.56 + breathe, FIRE[4]],
-		[0.34 + breathe, FIRE[5]],
-		[0.16 + breathe * 1.4, variant === 'fs' || frame === 2 ? FIRE[6] : FIRE[5]],
-	];
-	const almond = (x: number, y: number) =>
-		Math.abs(y + 0.5 - ey) <= ry * Math.max(0, 1 - ((x + 0.5 - ex) / rx) ** 2) ** 0.8;
-	for (let y = ey - ry - 1; y <= ey + ry + 1; y++)
-		for (let x = ex - rx - 1; x <= ex + rx + 1; x++) {
-			if (!almond(x, y)) continue;
-			const r = Math.hypot((x + 0.5 - ex) / rx, (y + 0.5 - ey) / ry);
-			let c = INK;
-			for (const [lim, colour] of lims) if (r <= lim) c = colour;
-			const rim = !almond(x - 1, y) || !almond(x + 1, y) || !almond(x, y - 1) || !almond(x, y + 1);
-			canvas.set(x, y, rim ? INK : c);
-		}
-	// the slit pupil
-	for (let y = ey - 10; y <= ey + 10; y++) {
-		const half = Math.abs(y - ey) < 6 ? 1 : 0;
-		canvas.rect(ex - half, y, 1 + 2 * half, 1, INK);
-	}
-};
-
-export const crest = (variant: FrameVariant, frame = 0) => {
-	const { width: w, height: h } = CREST;
-	const st = STONE[variant];
-	const cx = w / 2;
-	const plate = maskOf(w, h, (x, y) => y >= 22 && Math.abs(x + 0.5 - cx) <= 34 - (y - 22) * 0.3);
-	const horns: { hx: number; hy: number; r: number }[] = [];
-	for (const side of [-1, 1])
-		for (let i = 0; i < 120; i++) {
-			const t = i / 119;
-			horns.push({
-				hx: cx + side * (28 + 40 * t ** 0.9),
-				hy: 36 - 34 * t ** 1.6,
-				r: 9.5 * (1 - t) + 0.8,
-			});
-		}
-	const horn = maskOf(
-		w,
-		h,
-		(x, y) =>
-			!plate[y * w + x] &&
-			horns.some(({ hx, hy, r }) => (x + 0.5 - hx) ** 2 + (y + 0.5 - hy) ** 2 <= r * r),
-	);
-	const canvas = new PixelCanvas(w, h);
-	canvas.blit(shaded(horn, w, h, BONE[variant]).outline(INK));
-	canvas.blit(shaded(plate, w, h, [st[1], st[2], st[3], st[4], st[5]]));
-	// the plate's rim in iron, riveted
-	const i = IRON[variant];
-	const p = (x: number, y: number) => (x >= 0 && y >= 0 && x < w && y < h ? plate[y * w + x] : 0);
-	for (let y = 0; y < h; y++)
-		for (let x = 0; x < w; x++)
-			if (p(x, y) && (!p(x - 2, y) || !p(x + 2, y) || !p(x, y + 2))) canvas.set(x, y, i[3]);
-	for (let x = cx - 30; x <= cx + 30; x += 10) rivet(canvas, x, 25, variant);
-	crestEye(canvas, variant, frame);
-	return canvas.outline(INK);
-};
-
-// just the eye's box of a crest frame, for the frames drawn over the still crest
-export const CREST_EYE_BOX = { x: 50, y: 30, width: 51, height: 25 } as const;
-export const crestEyeFrame = (variant: FrameVariant, frame: number) =>
-	new PixelCanvas(CREST_EYE_BOX.width, CREST_EYE_BOX.height).blit(
-		crest(variant, frame),
-		-CREST_EYE_BOX.x,
-		-CREST_EYE_BOX.y,
-	);
-
-// where the crest stands on the frame's canvas
-export const crestAt = (columns: number, rows: number, variant: FrameVariant) => {
-	const g = frameGeometry(columns, rows, variant);
-	return {
-		x: g.ox + g.width / 2 - CREST.width / 2,
-		y: g.oy - g.ember - CREST.height + 4,
-	};
 };
 
 // A carved corner in the manner of a candi's stone relief: a stepped block, its face cut with a

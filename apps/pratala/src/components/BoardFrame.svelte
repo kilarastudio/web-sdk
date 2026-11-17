@@ -14,7 +14,7 @@
 	import { impact } from '../game/impact.svelte';
 	import { pixelClock } from '../game/pixelClock.svelte';
 	import { frameHeat } from '../game/frameHeat.svelte';
-	import { EDGE_FRAMES, CREST_EYE_FRAMES, frameGeometry, type FrameVariant } from '../pixel/frame';
+	import { EDGE_FRAMES, frameGeometry, type FrameVariant } from '../pixel/frame';
 
 	const context = getContext();
 
@@ -28,10 +28,9 @@
 		height: board.height,
 	});
 
-	// The frame (pixel/frame.ts): heavy dark stone with a molten inner edge, carved corners and the
-	// crest with the dragon's eye. During free spins it is the red-hot frame, faded in over the
-	// other. Its molten edge and the crest's eye breathe in colour steps on the pixel clock; nothing
-	// on it moves.
+	// The frame (pixel/frame.ts): heavy dark stone with a molten inner edge and carved corners.
+	// During free spins it is the red-hot frame, faded in over the other. Its molten edge breathes
+	// in colour steps on the pixel clock; nothing on it moves.
 	const geometry = (variant: FrameVariant) =>
 		frameGeometry(BOARD_DIMENSIONS.x, BOARD_DIMENSIONS.y, variant);
 	const place = (variant: FrameVariant, dx = 0, dy = 0) => {
@@ -61,9 +60,8 @@
 
 	const textures = (key: string) => (context.stateApp.loadedAssets[key] ?? []) as PIXI.Texture[];
 	const reduced = $derived(prefersReducedMotion.current);
-	// the edge steps about five times a second, the eye a little slower
+	// the edge steps about five times a second
 	const edgeFrame = $derived(reduced ? 0 : Math.floor(pixelClock.frame / 2) % EDGE_FRAMES);
-	const eyeFrame = $derived(reduced ? 0 : Math.floor(pixelClock.frame / 3) % CREST_EYE_FRAMES);
 	const layers = $derived(
 		(['base', 'fs'] as const)
 			.map((variant) => ({ variant, alpha: variant === 'base' ? 1 : hot.current }))
@@ -73,7 +71,6 @@
 		...textures(`frame_${variant}_stone`),
 		...textures(`frame_${variant}_edge0`),
 		...textures(`frame_${variant}_corners`),
-		...textures(`frame_${variant}_crest`),
 	];
 </script>
 
@@ -94,11 +91,5 @@
 		{#each textures(`frame_${variant}_corners`) as texture}
 			<BaseSprite {texture} {...place(variant)} />
 		{/each}
-		{#each textures(`frame_${variant}_crest`) as texture}
-			<BaseSprite {texture} {...place(variant)} />
-		{/each}
-		{#if textures(`frame_${variant}_eye`)[eyeFrame]}
-			<BaseSprite texture={textures(`frame_${variant}_eye`)[eyeFrame]} {...place(variant)} />
-		{/if}
 	</Container>
 {/each}

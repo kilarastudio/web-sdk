@@ -230,7 +230,7 @@ export const generateArt = ({
 };
 
 // The board's frame (pixel/frame.ts), per variant: the stone in four parts round the opening, the
-// molten edge's frames (each in the same four parts), the corners, the crest, and the eye's frames.
+// molten edge's frames (each in the same four parts), and the corners.
 const frameArt = (columns: number, rows: number) => {
 	const art: GeneratedArt = {};
 	for (const variant of ['base', 'fs'] as const) {
@@ -254,22 +254,6 @@ const frameArt = (columns: number, rows: number) => {
 					new PixelCanvas(g.canvasWidth, g.canvasHeight).blit(corner.canvas, corner.x, corner.y),
 				),
 			);
-		const at = frame.crestAt(columns, rows, variant);
-		const crest = new PixelCanvas(g.canvasWidth, g.canvasHeight).blit(
-			frame.crest(variant),
-			at.x,
-			at.y,
-		);
-		art[`frame_${variant}_crest`] = [sharpTexture(crest)];
-		art[`frame_${variant}_eye`] = Array.from({ length: frame.CREST_EYE_FRAMES }, (_, n) =>
-			sharpTexture(
-				new PixelCanvas(g.canvasWidth, g.canvasHeight).blit(
-					frame.crestEyeFrame(variant, n),
-					at.x + frame.CREST_EYE_BOX.x,
-					at.y + frame.CREST_EYE_BOX.y,
-				),
-			),
-		);
 	}
 	return art;
 };
