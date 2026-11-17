@@ -1,14 +1,15 @@
 import { PixelCanvas, type Point } from './canvas.ts';
-import { CLEAR, INK, LIGHTER, RAMPS, WHITE } from './palette.ts';
+import { CLEAR, INK, LIGHTER, RAMPS, WHITE, color } from './palette.ts';
 import { outlined } from './shapes.ts';
 import { SYMBOL_ART, SYMBOL_ART_ALPHABET } from './symbolArt.ts';
 
 // Reel symbols. The paying symbols are drawn art, 64 × 64 art pixels (art/symbols-64, baked into
 // symbolArt.ts by scripts/bake-symbols.ts): high symbols are what the dragon's challengers left
 // behind (a crowned skull, a clawed helm, a burnt wizard's hat, a bitten axe), low symbols four
-// potions. The scatter (the dragon's eye) and the wild (its coin) are still drawn by code on a
-// 40 × 40 cell with a clear pixel round the edge for the outline. Every symbol fills the same reel
-// cell, so the drawn art sits on a finer grid than the code-drawn art.
+// potions, and the scatter is the dragon's eye. The wild (the dragon's coin, never on the reels)
+// is still drawn by code on a 40 × 40 cell with a clear pixel round the edge for the outline.
+// Every symbol fills the same reel cell, so the drawn art sits on a finer grid than the
+// code-drawn art.
 export const SYMBOL_PIXELS = 40;
 
 const cell = () => new PixelCanvas(SYMBOL_PIXELS, SYMBOL_PIXELS);
@@ -25,81 +26,104 @@ const drawn = (key: keyof typeof SYMBOL_ART) => () => {
 	return canvas;
 };
 
-// S: the dragon's eye
-// The eye in the hall's wall, small and clean: nothing but the eye and its lids. An almond opening
-// that tilts up to its outer corner, the iris filling it, a slit pupil drawn to a point at both
-// ends, a heavy upper lid and a thinner lower one. lid: how far the upper lid has come down, 0
-// open, 1 half, 2 shut. alert: the eye has seen something: the pupil narrows to a line and the
-// iris burns brighter.
-const EYE = { x: 19.5, y: 20.5, half: 15.5, up: 9.5, down: 7.5, tilt: 0.08, lids: [3.5, 3, 2.5] };
-const dragonEye = ({ lid = 0, alert = false }: { lid?: 0 | 1 | 2; alert?: boolean } = {}) => {
-	const canvas = cell();
-	const s = RAMPS.steel;
-	const f = RAMPS.fire;
-	const glow = alert ? 1 : 0;
-	// the opening's middle line and its two lids at a column; grow is how far outside the opening
-	const middle = (x: number) => EYE.y - (x - EYE.x) * EYE.tilt;
-	const arch = (x: number, half: number) => Math.max(0, 1 - ((x - EYE.x) / half) ** 2);
-	const upper = (x: number, grow = 0) =>
-		middle(x) - (EYE.up + grow * EYE.lids[0]) * arch(x, EYE.half + grow * EYE.lids[1]) ** 0.8;
-	const lower = (x: number, grow = 0) =>
-		middle(x) + (EYE.down + grow * EYE.lids[2]) * arch(x, EYE.half + grow * EYE.lids[1]);
-	const within = (x: number, y: number, grow = 0) =>
-		Math.abs(x - EYE.x) < EYE.half + grow * EYE.lids[1] &&
-		y >= upper(x, grow) &&
-		y <= lower(x, grow);
-	const open = (x: number, y: number) => within(x, y);
+// S: the dragon's eye, drawn art with SCATTER lettered into the plate under it (every language
+// shows the word as SCATTER, so it can live in the art). Its blink and its alert are worked out
+// from the art itself: the eye is the run of fire colours above the plate, the pupil the dark
+// between them.
+const dragonEye = drawn('symbolScatter');
 
-	// the lids: the upper one lit along its top, the lower one in shadow
-	for (let y = 0; y < 40; y++)
-		for (let x = 0; x < 40; x++) {
-			if (!within(x, y, 1)) continue;
-			const top = y < middle(x);
-			const rim = top ? y - upper(x, 1) : lower(x, 1) - y;
-			canvas.set(
-				x,
-				y,
-				top ? (rim < 1.2 && x < 27 ? s[5] : x > 30 ? s[3] : s[4]) : rim < 1.2 ? s[1] : s[2],
-			);
-		}
+// the iris's colours: the fire and gold steps of the art's eye, not its red rim, which the scales'
+// cracks share
+const IRIS = new Set(
+	[0xc64524, 0xff5000, 0xed7614, 0xffa214, 0xffc825, 0xea323c].map((hex) => color(hex)),
+);
 
-	// the eye: the iris fills the opening, hot at the pupil and dark under the upper lid
-	for (let y = 0; y < 40; y++)
-		for (let x = 0; x < 40; x++) {
-			if (!open(x, y)) continue;
-			const heat = Math.hypot((x - EYE.x) / 14, (y - middle(x) + 0.5) / 8.5);
-			let step = heat < 0.36 ? 5 : heat < 0.66 ? 4 : heat < 0.9 ? 3 : 2;
-			if (y < upper(x) + 2) step -= 1;
-			canvas.set(x, y, f[Math.max(1, step) + glow]);
-		}
-	// the pupil: a slit, widest in the middle, drawn to a point at each lid
-	const slit = alert ? 0.6 : 2.4;
-	canvas.paint(
-		(x, y) =>
-			open(x, y) &&
-			Math.abs(x - EYE.x + (y - EYE.y) * 0.06) <=
-				slit * Math.max(0, 1 - ((y - EYE.y + 1) / 9.5) ** 2) + 0.5,
-		INK,
-	);
-	// a dark line where the eye meets its lids
-	canvas.paint(
-		(x, y, c) => open(x, y) && c !== INK && (y < upper(x) + 1 || y > lower(x) - 1),
-		RAMPS.red[0],
-	);
-	// the wet of the eye: one block of light, up and to the left of the pupil
-	canvas.dots(WHITE, [13, 15], [14, 15], [13, 16]);
-
-	// the upper lid comes down over the eye, a dark line along its edge
-	if (lid) {
-		const edge = (x: number) => (lid === 1 ? middle(x) + 1 : lower(x) - 0.5);
-		for (let y = 0; y < 40; y++)
-			for (let x = 0; x < 40; x++) {
-				if (!open(x, y) || y >= edge(x)) continue;
-				const fold = edge(x) - y;
-				canvas.set(x, y, fold < 1 ? INK : fold < 2.2 ? s[2] : x > 30 ? s[3] : s[4]);
+// The eye's opening, column by column: from the top to the bottom of the iris joined to the
+// middle of the art, above the lettered plate. Each column's span holds the pupil too.
+const eyeOpening = (art: PixelCanvas) => {
+	const plate = Math.round(art.height * 0.62);
+	const seen = new Set<number>();
+	const start: Point[] = [];
+	for (let y = 0; y < plate; y++)
+		for (let x = 0; x < art.width; x++) if (IRIS.has(art.get(x, y))) start.push([x, y]);
+	// the biggest joined patch of iris is the eye; stray fire in the scales is not
+	let best: Point[] = [];
+	for (const [sx, sy] of start) {
+		if (seen.has(sy * art.width + sx)) continue;
+		const patch: Point[] = [];
+		const queue: Point[] = [[sx, sy]];
+		seen.add(sy * art.width + sx);
+		while (queue.length) {
+			const [x, y] = queue.pop()!;
+			patch.push([x, y]);
+			for (const [dx, dy] of [
+				[1, 0],
+				[-1, 0],
+				[0, 1],
+				[0, -1],
+				[1, 1],
+				[-1, -1],
+				[1, -1],
+				[-1, 1],
+			]) {
+				const nx = x + dx;
+				const ny = y + dy;
+				if (ny >= plate || seen.has(ny * art.width + nx) || !IRIS.has(art.get(nx, ny))) continue;
+				seen.add(ny * art.width + nx);
+				queue.push([nx, ny]);
 			}
+		}
+		if (patch.length > best.length) best = patch;
 	}
-	return outlined(canvas);
+	const columns = new Map<number, { top: number; bottom: number }>();
+	for (const [x, y] of best) {
+		const span = columns.get(x);
+		columns.set(x, { top: Math.min(span?.top ?? y, y), bottom: Math.max(span?.bottom ?? y, y) });
+	}
+
+	return columns;
+};
+
+// The lids come over the eye: the upper one down, the lower one up, each the colour of the dark
+// scales round it with an INK edge where it ends. shut: how far, 0 open to 1 closed; the lids
+// meet a little below the middle, as the v1 eye's did.
+const SCALE = { upper: color(0x3d3d3d), lower: color(0x272727), fold: color(0x1b1b1b) };
+const eyeLids = (art: PixelCanvas, shut: number) => {
+	const canvas = art.clone();
+	for (const [x, { top, bottom }] of eyeOpening(art)) {
+		const height = bottom - top + 1;
+		const upper = top + Math.round(height * 0.62 * shut);
+		const lower = bottom - Math.round(height * 0.38 * shut);
+		for (let y = top; y <= bottom; y++) {
+			if (y < upper)
+				canvas.set(x, y, y === upper - 1 ? INK : y === upper - 2 ? SCALE.fold : SCALE.upper);
+			else if (y > lower) canvas.set(x, y, y === lower + 1 ? INK : SCALE.lower);
+		}
+	}
+
+	return canvas;
+};
+
+// The eye has seen something: the iris one step brighter, the slit a pixel narrower (its right
+// side gives way to the iris beside it).
+const eyeAlert = (art: PixelCanvas) => {
+	const canvas = art.clone();
+	for (const [x, { top, bottom }] of eyeOpening(art))
+		for (let y = top; y <= bottom; y++) {
+			const c = art.get(x, y);
+			if (IRIS.has(c) && LIGHTER[c] !== WHITE) canvas.set(x, y, LIGHTER[c]);
+		}
+	// the pupil on each row: a run of the art's dark between two iris pixels
+	for (const [x, { top, bottom }] of eyeOpening(art))
+		for (let y = top; y <= bottom; y++) {
+			if (!IRIS.has(art.get(x - 1, y)) || IRIS.has(art.get(x, y)) || art.get(x, y) === CLEAR)
+				continue;
+			let end = x;
+			while (art.get(end + 1, y) === art.get(x, y)) end++;
+			if (end > x && IRIS.has(art.get(end + 1, y))) canvas.set(end, y, canvas.get(end + 1, y));
+		}
+
+	return canvas;
 };
 
 // W: the wild, the dragon's own coin
@@ -371,9 +395,10 @@ const PAYING = [
 // to it as it wins; the last frame stays until it goes) and its Gone (how it leaves the board, on
 // a wider canvas, goneSize). A symbol may lack any run: the game then shows its still art.
 export const SYMBOL_FRAME_RUNS = (): Record<string, PixelCanvas[]> => {
+	const eye = dragonEye();
 	const runs: Record<string, PixelCanvas[]> = {
-		symbolScatterBlink: [dragonEye({ lid: 1 }), dragonEye({ lid: 2 }), dragonEye({ lid: 1 })],
-		symbolScatterAlert: [dragonEye({ alert: true })],
+		symbolScatterBlink: [eyeLids(eye, 0.5), eyeLids(eye, 1), eyeLids(eye, 0.5)],
+		symbolScatterAlert: [eyeAlert(eye)],
 	};
 	PAYING.forEach((key, index) => {
 		const art = SYMBOL_DRAWINGS[key]();
