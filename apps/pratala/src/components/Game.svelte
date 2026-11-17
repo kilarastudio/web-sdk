@@ -120,9 +120,10 @@
 					<SymbolFx layer="over" />
 				</BoardContainer>
 				<!-- <TumbleAnticipations /> -->
+				<!-- the gaze's beam lies under the values, so those it has doubled stay readable -->
+				<GlintGaze />
 				<GlintSpots layer="over" />
 				<GlintEffects />
-				<GlintGaze />
 				<!-- the coins fly under every amount: the cluster amounts and the tumble win they pay into -->
 				<BoardContainer>
 					<WinCoins />

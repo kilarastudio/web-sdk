@@ -14,7 +14,7 @@
 	import { prefersReducedMotion } from 'svelte/motion';
 	import * as PIXI from 'pixi.js';
 
-	import { BaseSprite } from 'pixi-svelte';
+	import { BaseSprite, getContextParent } from 'pixi-svelte';
 	import { stateBetDerived } from 'state-shared';
 
 	import { getContext } from '../game/context';
@@ -25,7 +25,8 @@
 		EYE_STRIP_SCALE,
 		type EyeFrame,
 	} from '../game/dragonEye';
-	import { GAZE_FADE_MS, GAZE_ROW_MS } from '../game/glint';
+	import { GAZE_FADE_MS, GAZE_REACH_MS, GAZE_ROW_MS } from '../game/glint';
+	import { boardSpace } from '../game/boardSpace';
 	import { hallMood } from '../game/hallMood.svelte';
 	import { shake } from '../game/impact.svelte';
 
@@ -80,7 +81,7 @@
 		// the fire leaves once the pupil has narrowed
 		power: { frame: 'alert', ms: 900, delay: EYE_FIRE_DELAY, shake: 2 },
 		// the gaze: it looks down at the board for as long as its gaze takes to come down a reel
-		gaze: { frame: 'lookDown', ms: GAZE_ROW_MS * 5 + GAZE_FADE_MS + 300 },
+		gaze: { frame: 'lookDown', ms: GAZE_REACH_MS + GAZE_ROW_MS * 5 + GAZE_FADE_MS + 300 },
 	};
 	// At rest it blinks and now and then looks aside. Times are drawn between these bounds, in ms,
 	// so it never ticks like a clock.
@@ -163,6 +164,20 @@
 	});
 
 	const texture = $derived(textures[EYE_FRAMES.indexOf(frame)]);
+
+	// the pupil's foot, on the stage, for a gaze with no scatter on the board to leave from
+	const parent = getContextParent().parent;
+	const pupil = () =>
+		parent.toGlobal({
+			x: props.origin.x + (eye.x + eye.width / 2) * props.scale,
+			y: props.origin.y + (eye.y + eye.height * 0.62) * props.scale,
+		});
+	onMount(() => {
+		boardSpace.pupil = pupil;
+		return () => {
+			if (boardSpace.pupil === pupil) boardSpace.pupil = undefined;
+		};
+	});
 </script>
 
 <!-- the open eye is the picture itself -->

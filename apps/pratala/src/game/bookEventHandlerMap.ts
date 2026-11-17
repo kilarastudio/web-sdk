@@ -15,7 +15,7 @@ import { clearHallMood } from './hallMood.svelte';
 import { stateGame, stateGameDerived, emptyGlint } from './stateGame.svelte';
 import type { BookEvent, BookEventOfType, BookEventContext } from './typesBookEvent';
 import type { Position } from './types';
-import { GAZE_ROW_MS, gazePasses, glintChanges } from './glint';
+import { GAZE_REACH_MS, GAZE_ROW_MS, gazePasses, glintChanges } from './glint';
 import { impact, shake } from './impact.svelte';
 import { endWin } from './symbolFx.svelte';
 import { landSpin } from './spin.svelte';
@@ -318,6 +318,8 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		for (const pass of passes) {
 			eventEmitter.broadcast({ type: 'dragonReact', reaction: 'gaze' });
 			const beam = eventEmitter.broadcastAsync({ type: 'glintGazeShow', reels: pass.reels });
+			// the fire first reaches the top of the reel from the scatter it leaves (or the eye)
+			await waitForTimeout(GAZE_REACH_MS / stateBetDerived.timeScale());
 			const lit: Promise<unknown>[] = [];
 			for (let row = 0; row < pass.glint[0].length; row++) {
 				// the row the gaze has just reached takes its new values

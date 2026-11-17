@@ -9,6 +9,7 @@ import * as ui from './ui.ts';
 import * as frame from './frame.ts';
 import * as glint from './glintArt.ts';
 import { wallFrames, type WallLevel } from './anticipationArt.ts';
+import { GAZE_FLICKERS, beamRun, reelBeam, type Beam } from './gazeArt.ts';
 
 // Art pixels are drawn four screen-texture pixels wide and sampled linearly: edges stay crisp at
 // any layout scale, and nothing shimmers while the reels move at fractional speeds.
@@ -355,3 +356,23 @@ export const anticipationBed = (length: number, depth: number) =>
 		ui.edgeFireFrames({ length, depth, seed: 23, wild: 1.5, ends: [10, 10] }).map(sharpTexture),
 	);
 
+export type BeamTextures = { edge: PIXI.Texture; light: PIXI.Texture; x: number; y: number };
+const beamTextures = (beam: Beam): BeamTextures => ({
+	edge: sharpTexture(beam.edge),
+	light: sharpTexture(beam.light),
+	x: beam.x,
+	y: beam.y,
+});
+// the gaze's beam down a reel, for each row its front can be at (the last: on the floor), each in
+// its flickers (pixel/gazeArt.ts), drawn the first time the dragon gazes
+export const gazeReelBeams = (rows: number) =>
+	once(`gazeReelBeams${rows}`, () =>
+		Array.from({ length: rows + 1 }, (_, row) =>
+			Array.from({ length: GAZE_FLICKERS }, (__, flicker) =>
+				beamTextures(reelBeam(row, rows, flicker)),
+			),
+		),
+	);
+// a run of the beam drawn for one gaze only; the caller destroys it when the gaze is over
+export const beamRunTextures = (...args: Parameters<typeof beamRun>) =>
+	beamTextures(beamRun(...args));

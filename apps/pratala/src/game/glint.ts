@@ -63,6 +63,8 @@ export const glintChanges = (previous: number[][], next: number[][]): GlintChang
 
 // The dragon's gaze comes down a reel one row at a time, and each spot doubles as it is reached.
 export const GAZE_ROW_MS = 80;
+// before it comes down a reel, the gaze's fire reaches the reel's top from where it leaves
+export const GAZE_REACH_MS = 180;
 export const GAZE_FADE_MS = 260;
 
 // A gaze as the passes the player sees: every gazed reel once, then again the reels gazed at
