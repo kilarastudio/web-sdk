@@ -8,20 +8,19 @@
 	import { BaseSprite, Container, Sprite } from 'pixi-svelte';
 	import { stateBetDerived } from 'state-shared';
 
-	import { SYMBOL_SIZE } from '../game/constants';
+	import { FRAME_ART_PIXEL, SYMBOL_SIZE } from '../game/constants';
 	import {
 		GLINT_ANIMATION_MS,
 		GLINT_CAP,
 		GLINT_TIERS,
+		GLINT_VALUE_FOOT,
 		glintTier,
-		glintMultiplierLayout,
 		type GlintAnimation,
 	} from '../game/glint';
 	import { getContext } from '../game/context';
 	import { frameAt } from '../game/motion';
 	import { pixelClock } from '../game/pixelClock.svelte';
-	import { gameTextStyle } from '../game/typography';
-	import GameText from './GameText.svelte';
+	import GlintStrike from './GlintStrike.svelte';
 
 	type Props = {
 		layer: 'under' | 'over';
@@ -44,10 +43,11 @@
 	let completed = false;
 
 	const tier = $derived(glintTier(props.value));
-	const layout = $derived(glintMultiplierLayout(props.value));
-	const front = $derived(
-		(context.stateApp.loadedAssets.glintIgniteFront ?? []) as PIXI.Texture[],
+	// the value, drawn by code in its tier's colours (pixel/glintArt.ts)
+	const valueTexture = $derived(
+		context.stateApp.loadedAssets[`glintValue${props.value}`] as PIXI.Texture | undefined,
 	);
+	const front = $derived((context.stateApp.loadedAssets.glintIgniteFront ?? []) as PIXI.Texture[]);
 	const ignite = $derived(
 		(context.stateApp.loadedAssets[`glintIgnite${tier}`] ?? []) as PIXI.Texture[],
 	);
@@ -78,6 +78,10 @@
 	} as const;
 	// a spot at the cap never rests: its flash breathes on the pixel clock
 	const MAX_BREATH = [0, 0.12, 0.24, 0.36, 0.24, 0.12];
+	// every lit panel pulses gently: its border's face steps one shade lighter and back, together
+	// across the board, in held steps
+	const PULSE = [0, 0, 0.3, 0.6, 0.8, 0.6, 0.3, 0];
+	const pulse = $derived(reduced ? 0 : PULSE[Math.floor(pixelClock.frame / 2) % PULSE.length]);
 
 	const pose = $derived(frameAt(progress.current, 5));
 	const moving = $derived(playing && animation && !reduced ? POSES[animation] : undefined);
@@ -98,12 +102,23 @@
 		props.oncomplete?.();
 	};
 
+	// the value lands big and settles, in held poses: twice its size for a doubling, three times
+	// for a new tier, about its foot
+	const VALUE_POP = {
+		light: [1.4, 1.25, 1.1, 1.04, 1],
+		double: [2, 2, 1.75, 1.35, 1],
+		tier_up: [3, 3, 2.5, 1.75, 1],
+		apply: [1.2, 1.3, 1.16, 1.06, 1],
+		prime: [1, 1, 1, 1, 1],
+	} as const;
 	const multiplierScale = $derived(
-		!playing || reduced
-			? 1
-			: animation === 'light'
-				? [1.4, 1.25, 1.1, 1.04, 1][pose]
-				: [1.2, 1.3, 1.16, 1.06, 1][pose],
+		!playing || reduced || !animation ? 1 : VALUE_POP[animation][pose],
+	);
+	const striking = $derived(
+		playing &&
+			!reduced &&
+			(animation === 'double' || animation === 'tier_up') &&
+			previousValue >= 2,
 	);
 
 	onMount(() => {
@@ -140,6 +155,15 @@
 			height={tileSize}
 			alpha={tileAlpha}
 		/>
+		{#if pulse > 0 && !moving}
+			<Sprite
+				key={`glintPulse${tier}`}
+				anchor={0.5}
+				width={SYMBOL_SIZE}
+				height={SYMBOL_SIZE}
+				alpha={pulse}
+			/>
+		{/if}
 	{/if}
 	{#if flashAlpha > 0}
 		<Sprite
@@ -161,17 +185,22 @@
 			height={SYMBOL_SIZE}
 		/>
 	{/if}
-	<Container
-		x={layout.x}
-		y={layout.y}
-		scale={multiplierScale}
-		alpha={playing && animation === 'light' && !reduced && progress.current < 0.55 ? 0 : 1}
-	>
-		<GameText
-			anchor={0.5}
-			text={`×${props.value}`}
-			maxWidth={layout.maxWidth}
-			style={gameTextStyle({ fontSize: layout.fontSize, tone: 'value' })}
-		/>
-	</Container>
+	{#if striking}
+		<GlintStrike from={previousValue} to={props.value} progress={progress.current} />
+	{/if}
+	{#if valueTexture}
+		<Container
+			x={GLINT_VALUE_FOOT.x}
+			y={GLINT_VALUE_FOOT.y}
+			scale={multiplierScale}
+			alpha={playing && animation === 'light' && !reduced && progress.current < 0.55 ? 0 : 1}
+		>
+			<BaseSprite
+				texture={valueTexture}
+				anchor={{ x: 0.5, y: 1 }}
+				width={valueTexture.width * FRAME_ART_PIXEL}
+				height={valueTexture.height * FRAME_ART_PIXEL}
+			/>
+		</Container>
+	{/if}
 {/if}

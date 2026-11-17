@@ -5,8 +5,8 @@ export const GLINT_ANIMATION_MS = {
 	prime: 300,
 	apply: 500,
 	light: GLINT_LIGHT_DURATION_MS,
-	double: 350,
-	tier_up: 500,
+	double: 420,
+	tier_up: 620,
 } as const;
 // What the math sets (math-sdk/games/pratala/game_config.py): a win doubles a lit spot up to
 // GLINT_WIN_CAP, the dragon's gaze doubles it up to GLINT_CAP, SUPER and HOARD start free spins
@@ -29,18 +29,15 @@ export type GlintAnimation = keyof typeof GLINT_ANIMATION_MS;
 export const glintTier = (value: number): GlintTier =>
 	value >= 1024 ? 4 : value >= 128 ? 3 : value >= 16 ? 2 : 1;
 
-// Expand leftward for longer values, keeping the same right edge and font size, until a value is
-// wider than its room and shrinks to fit. ×1,024 to ×4,096 get the tile's whole top edge.
-export const glintMultiplierLayout = (value: number) => {
-	const maxWidth =
-		SYMBOL_SIZE * (value >= 1000 ? 0.88 : value >= 100 ? 0.74 : value >= 10 ? 0.6 : 0.42);
-	return {
-		x: SYMBOL_SIZE * 0.44 - maxWidth / 2,
-		y: -SYMBOL_SIZE * 0.32,
-		fontSize: SYMBOL_SIZE * 0.3,
-		maxWidth,
-	};
-};
+// The value stands centred low in the cell, its foot two art pixels (of 64 to a cell) above the
+// cell's bottom edge, over the symbol's foot (src/pixel/glintArt.ts draws it, ~17 art pixels
+// tall); the same on an empty cell. x and y are its foot's middle from the cell's middle.
+export const GLINT_VALUE_FOOT = { x: 0, y: SYMBOL_SIZE * (30 / 64) };
+// where a value's middle stands, for what flies from it (GlintEffects)
+export const glintMultiplierLayout = () => ({
+	x: GLINT_VALUE_FOOT.x,
+	y: GLINT_VALUE_FOOT.y - SYMBOL_SIZE * (8.5 / 64),
+});
 
 export type GlintCellPosition = { reel: number; row: number };
 export type GlintChange = GlintCellPosition & {

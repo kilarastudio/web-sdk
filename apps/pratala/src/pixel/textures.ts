@@ -7,6 +7,7 @@ import { SYMBOL_FRAME_RUNS } from './symbolRuns.ts';
 import { atRest, isPotion } from './potionLiquid.ts';
 import * as ui from './ui.ts';
 import * as frame from './frame.ts';
+import * as glint from './glintArt.ts';
 
 // Art pixels are drawn four screen-texture pixels wide and sampled linearly: edges stay crisp at
 // any layout scale, and nothing shimmers while the reels move at fractional speeds.
@@ -205,11 +206,7 @@ export const generateArt = ({
 	art.boardFloor = toTexture(ui.boardFloor(columns, rows));
 	Object.assign(art, frameArt(columns, rows));
 	art.panel = toTexture(ui.panel());
-	for (const tier of [1, 2, 3, 4] as const) {
-		art[`glintTile${tier}`] = toTexture(ui.glintTile(tier));
-		art[`glintIgnite${tier}`] = ui.glintIgniteFrames(tier).map(toTexture);
-	}
-	art.glintIgniteFront = ui.glintIgniteFrames(0).map(toTexture);
+	Object.assign(art, glintArt());
 	art.glintPrimed = toTexture(ui.glintPrimed());
 	art.glintFlash = toTexture(ui.glintFlash());
 	art.coin = ui.coinFrames().map(toTexture);
@@ -271,6 +268,45 @@ const frameArt = (columns: number, rows: number) => {
 				),
 			),
 		);
+	}
+	return art;
+};
+
+// The lit Glint Spots (pixel/glintArt.ts): each tier's panel, its pulse and its ignition, every
+// value whole and cracked in three, and what a strike throws off: rings, ember clumps, chunks.
+const glintArt = () => {
+	const art: GeneratedArt = {};
+	for (const tier of [1, 2, 3, 4] as const) {
+		art[`glintTile${tier}`] = sharpTexture(glint.glintPanel(tier));
+		art[`glintPulse${tier}`] = sharpTexture(glint.glintPanel(tier, true));
+		art[`glintIgnite${tier}`] = glint.igniteFrames(tier).map(sharpTexture);
+		art[`glintTierRing${tier}`] = sharpTexture(glint.tierRing(tier));
+		art[`glintShockRing${tier}`] = sharpTexture(glint.shockRing(tier));
+		art[`glintClump${tier}`] = glint.CLUMP_SIZES.map((size, i) =>
+			sharpTexture(glint.emberClump(size, glint.clumpColours(tier), tier * 31 + i)),
+		);
+		art[`glintChunk${tier}`] = [5, 6, 7].map((size) => sharpTexture(glint.tileChunk(tier, size)));
+	}
+	art.glintIgniteFront = glint.igniteFrames(0).map(sharpTexture);
+	art.glintStrikeRing = sharpTexture(glint.STRIKE_RING());
+	art.glintClumpFire = glint.CLUMP_FIRE.flatMap((colours, c) =>
+		glint.CLUMP_SIZES.map((size, i) => sharpTexture(glint.emberClump(size, colours, c * 7 + i))),
+	);
+	for (const value of glint.GLINT_VALUES) {
+		const whole = glint.valueArt(value);
+		art[`glintValue${value}`] = sharpTexture(whole);
+		// the cracked pieces keep their places on the whole value's canvas
+		art[`glintBroken${value}`] = glint
+			.brokenValue(value)
+			.map(({ canvas, x }) =>
+				sharpTexture(
+					new PixelCanvas(whole.width, canvas.height).blit(
+						canvas,
+						Math.round(x + whole.width / 2),
+						0,
+					),
+				),
+			);
 	}
 	return art;
 };

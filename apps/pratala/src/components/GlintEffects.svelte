@@ -1,15 +1,14 @@
 <script lang="ts">
 	import { Tween, prefersReducedMotion } from 'svelte/motion';
 	import { cubicInOut } from 'svelte/easing';
-	import { Container } from 'pixi-svelte';
+	import * as PIXI from 'pixi.js';
+	import { BaseSprite, Container } from 'pixi-svelte';
 	import { stateBetDerived } from 'state-shared';
 	import { getContext } from '../game/context';
-	import { SYMBOL_SIZE } from '../game/constants';
+	import { FRAME_ART_PIXEL, SYMBOL_SIZE } from '../game/constants';
 	import { glintMultiplierLayout } from '../game/glint';
-	import { gameTextStyle } from '../game/typography';
 	import type { GlintApplySpot } from './GlintSpots.svelte';
 	import BoardContainer from './BoardContainer.svelte';
-	import GameText from './GameText.svelte';
 
 	const context = getContext();
 	let flights: GlintApplySpot[] = $state([]);
@@ -30,7 +29,9 @@
 
 <BoardContainer>
 	{#each flights as spot}
-		{@const layout = glintMultiplierLayout(spot.value)}
+		{@const layout = glintMultiplierLayout()}
+		{@const texture = context.stateApp.loadedAssets[`glintValue${spot.value}`] as
+			PIXI.Texture | undefined}
 		{@const p = reduced ? 0 : flightProgress.current}
 		<Container
 			x={(spot.reel + 0.5) * SYMBOL_SIZE +
@@ -41,12 +42,14 @@
 				((spot.targetRow + 0.5) * SYMBOL_SIZE - ((spot.row + 0.5) * SYMBOL_SIZE + layout.y)) * p}
 			alpha={Math.sin(Math.PI * flightProgress.current)}
 		>
-			<GameText
-				text={`×${spot.value}`}
-				anchor={0.5}
-				maxWidth={layout.maxWidth}
-				style={gameTextStyle({ fontSize: 30, tone: 'value', onArt: true })}
-			/>
+			{#if texture}
+				<BaseSprite
+					{texture}
+					anchor={0.5}
+					width={texture.width * FRAME_ART_PIXEL}
+					height={texture.height * FRAME_ART_PIXEL}
+				/>
+			{/if}
 		</Container>
 	{/each}
 </BoardContainer>
