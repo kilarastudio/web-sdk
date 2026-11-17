@@ -67,14 +67,18 @@ export const SYMBOL_ACTS: Record<string, SymbolAct> = {
 // (IDLE_ACTS, game/idle.ts).
 type Rest = { suffix: string; frame: number };
 export const SYMBOL_RESTS: Record<string, { chance: number; acts: Rest[] }> = {
-	// the eye is alive: it blinks every second or two (a blink is two acts in three), sometimes
-	// glances instead
+	// the eye is alive the way the dragon's eye in the background is: a quick blink every two
+	// seconds or so, and now and then a look left, right or down, snapped to and held about a
+	// second (a one-frame run held for `frame` ms)
 	symbolScatter: {
-		chance: 1 / 14,
+		chance: 1 / 16,
 		acts: [
-			{ suffix: 'Blink', frame: 80 },
-			{ suffix: 'Blink', frame: 80 },
-			{ suffix: 'RestGlance', frame: 110 },
+			{ suffix: 'Blink', frame: 70 },
+			{ suffix: 'Blink', frame: 70 },
+			{ suffix: 'Blink', frame: 70 },
+			{ suffix: 'LookLeft', frame: 1000 },
+			{ suffix: 'LookRight', frame: 1000 },
+			{ suffix: 'LookDown', frame: 900 },
 		],
 	},
 };
@@ -240,10 +244,11 @@ export const IDLE_ACTS: Record<string, IdleAct[]> = {
 		},
 		{ suffix: 'RestBubble', frame: 70, motion: idle(FOOT, (t) => ({ rotation: rock(t, 13, 2) })) },
 	],
-	// the eye acts with the eye alone: a slow look round or a heavy double blink. It used to swell
-	// as well, and on a phone the swell was all the user saw ("seperti cuma membesar").
+	// the eye acts with the eye alone: a held look aside or a double blink. It used to swell as
+	// well, and on a phone the swell was all the user saw ("seperti cuma membesar").
 	symbolScatter: [
-		{ suffix: 'RestGlance', frame: 90, motion: idle(0, () => ({})) },
+		{ suffix: 'LookLeft', frame: 1100, motion: idle(0, () => ({})) },
+		{ suffix: 'LookRight', frame: 1100, motion: idle(0, () => ({})) },
 		{ suffix: 'Blink', frame: 110, times: 2, motion: idle(0, () => ({})) },
 	],
 };

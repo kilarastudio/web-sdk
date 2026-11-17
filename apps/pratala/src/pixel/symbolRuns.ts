@@ -1888,31 +1888,51 @@ const scatter = (): Runs => {
 		return out;
 	};
 
-	// The whole eyeball turns: iris, hot core and slit slide together by `by` pixels inside the
-	// still opening of the lids, and the side it leaves shows the eye's dark red white. Moving the
-	// slit alone over a still iris did not read as a look (the user: only the black part moved).
-	const WHITE_OF_EYE = color(0x891e2b);
-	const WHITE_EDGE = color(0x571c27);
-	const inOpening = (x: number, y: number) => {
-		const span = opening.get(x);
-
-		return !!span && y >= span.top && y <= span.bottom;
-	};
-	const gazed = (canvas: PixelCanvas, by: number) => {
-		const out = canvas.clone();
-		for (const [x, { top, bottom }] of opening)
-			for (let y = top; y <= bottom; y++) {
-				const from = x - by;
-				if (inOpening(from, y)) out.set(x, y, canvas.get(from, y));
-				else out.set(x, y, inOpening(x - Math.sign(by), y) ? WHITE_OF_EYE : WHITE_EDGE);
+	// A look the way the dragon's eye in the background looks: the slit and the bright heat round
+	// it move to one side (or down) while the dark red rim of the iris stays where it is, and the
+	// pose is held, not slid through. Each iris pixel takes the colour the iris has at its distance
+	// from the slit's new centre, so the glow travels with the slit.
+	const pupilRows = [...pupil.entries()];
+	const cx = pupilRows.reduce((sum, [, [x0, x1]]) => sum + (x0 + x1) / 2, 0) / pupilRows.length;
+	const cy = pupilRows.reduce((sum, [y]) => sum + y, 0) / pupilRows.length;
+	const opened = [...opening].flatMap(([x, { top, bottom }]) =>
+		Array.from({ length: bottom - top + 1 }, (_, i): Point => [x, top + i]),
+	);
+	const reach = (x: number, y: number, ox: number, oy: number) =>
+		Math.round(Math.hypot(x - ox, (y - oy) * 0.6));
+	const profile: number[] = [];
+	{
+		const tally = new Map<number, Map<number, number>>();
+		for (const [x, y] of iris) {
+			const d = reach(x, y, cx, cy);
+			const at = tally.get(d) ?? new Map<number, number>();
+			at.set(eye.get(x, y), (at.get(eye.get(x, y)) ?? 0) + 1);
+			tally.set(d, at);
+		}
+		const far = Math.max(...tally.keys());
+		for (let d = 0; d <= far; d++) {
+			const at = tally.get(d);
+			profile[d] = at
+				? [...at].sort((a, b) => b[1] - a[1])[0][0]
+				: (profile[d - 1] ?? eye.get(Math.round(cx) + 3, Math.round(cy)));
+		}
+	}
+	const looking = (dx: number, dy: number) => {
+		const out = eye.clone();
+		for (const [x, y] of opened) {
+			const at = eye.get(x, y);
+			const isPupil = pupil.has(y) && x >= pupil.get(y)![0] && x <= pupil.get(y)![1];
+			if (!IRIS.has(at) && !isPupil) continue;
+			out.set(x, y, profile[Math.min(reach(x, y, cx + dx, cy + dy), profile.length - 1)]);
+		}
+		for (const [y, [x0, x1]] of pupilRows)
+			for (let x = x0; x <= x1; x++) {
+				const [tx, ty] = [x + dx, y + dy];
+				if (opened.some(([ox, oy]) => ox === tx && oy === ty)) out.set(tx, ty, eye.get(x, y));
 			}
 
 		return out;
 	};
-	// a look to one side, held, then the other, held
-	const glance = [-1, -2, -3, -4, -4, -4, -4, -4, -3, -1, 1, 3, 4, 4, 4, 4, 4, 3, 1, 0].map((by) =>
-		gazed(eye, by),
-	);
 	const wary = [0, 1, 2, 3, 4, 5].map((level) =>
 		looked(heated(eye, Math.round(level * 0.4), Math.round(level * 0.7)), 0, 1),
 	);
@@ -1935,7 +1955,9 @@ const scatter = (): Runs => {
 
 	return {
 		symbolScatterBlink: [eyeLids(eye, 0.5), eyeLids(eye, 1), eyeLids(eye, 0.5)],
-		symbolScatterRestGlance: glance,
+		symbolScatterLookLeft: [looking(-4, 0)],
+		symbolScatterLookRight: [looking(4, 0)],
+		symbolScatterLookDown: [looking(0, 3)],
 		symbolScatterNarrow: [eyeLids(eye, 0.55)],
 		// it snaps open from narrowed, its iris a step hot for a moment
 		symbolScatterLand: [
