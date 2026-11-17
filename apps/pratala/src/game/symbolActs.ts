@@ -62,8 +62,10 @@ export const SYMBOL_ACTS: Record<string, SymbolAct> = {
 };
 
 // What a symbol at rest does now and then, one of its acts played once: an ember breathes, a
-// bubble rises, wax runs, the dragon's eye blinks or glances. chance is how likely one is to
-// start on any tick of the pixel clock (ten a second); frame is how long each frame holds, in ms.
+// potion beats or fills with light, bubbles rise, poison seeps, the dragon's eye blinks or
+// glances. chance is how likely one is to start on any tick of the pixel clock (ten a second);
+// frame is how long each frame holds, in ms. Rare and at random, so the board never stirs all at
+// once.
 type Rest = { suffix: string; frame: number };
 export const SYMBOL_RESTS: Record<string, { chance: number; acts: Rest[] }> = {
 	symbolH1: {
@@ -85,29 +87,29 @@ export const SYMBOL_RESTS: Record<string, { chance: number; acts: Rest[] }> = {
 	symbolL1: {
 		chance: 1 / 280,
 		acts: [
-			{ suffix: 'RestSway', frame: 130 },
+			{ suffix: 'RestBeat', frame: 110 },
 			{ suffix: 'RestBubble', frame: 100 },
 		],
 	},
 	symbolL2: {
 		chance: 1 / 280,
 		acts: [
-			{ suffix: 'RestSwirl', frame: 110 },
-			{ suffix: 'RestSway', frame: 130 },
+			{ suffix: 'RestLight', frame: 120 },
+			{ suffix: 'RestBubble', frame: 100 },
 		],
 	},
 	symbolL3: {
 		chance: 1 / 280,
 		acts: [
-			{ suffix: 'RestDrip', frame: 130 },
-			{ suffix: 'RestSway', frame: 130 },
+			{ suffix: 'RestSeep', frame: 120 },
+			{ suffix: 'RestBubble', frame: 100 },
 		],
 	},
 	symbolL4: {
 		chance: 1 / 280,
 		acts: [
-			{ suffix: 'RestBubbles', frame: 110 },
-			{ suffix: 'RestSway', frame: 130 },
+			{ suffix: 'RestLight', frame: 120 },
+			{ suffix: 'RestBubble', frame: 110 },
 		],
 	},
 	symbolScatter: {

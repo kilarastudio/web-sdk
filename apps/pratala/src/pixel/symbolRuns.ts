@@ -167,6 +167,34 @@ const despeckled = (canvas: PixelCanvas) =>
 		return near < 3;
 	}, CLEAR);
 
+// Bits smaller than `least` pixels (counted 8 ways) go: at phone size a two or three pixel crumb
+// reads as dirt on the board, not as a piece of anything.
+const cleaned = (canvas: PixelCanvas, least = 6) => {
+	const out = canvas.clone();
+	const seen = new Set<number>();
+	for (let y = 0; y < canvas.height; y++)
+		for (let x = 0; x < canvas.width; x++) {
+			if (canvas.get(x, y) === CLEAR || seen.has(key(x, y))) continue;
+			const patch: Point[] = [];
+			const queue: Point[] = [[x, y]];
+			seen.add(key(x, y));
+			while (queue.length) {
+				const [px, py] = queue.pop()!;
+				patch.push([px, py]);
+				for (let dy = -1; dy <= 1; dy++)
+					for (let dx = -1; dx <= 1; dx++) {
+						const k = key(px + dx, py + dy);
+						if (seen.has(k) || canvas.get(px + dx, py + dy) === CLEAR) continue;
+						seen.add(k);
+						queue.push([px + dx, py + dy]);
+					}
+			}
+			if (patch.length < least) for (const [px, py] of patch) out.set(px, py, CLEAR);
+		}
+
+	return out;
+};
+
 const stepped = (
 	at: number,
 	table: readonly number[] | ((at: number) => number),
@@ -225,6 +253,37 @@ const HOTTER = (() => {
 	return table;
 })();
 
+// Flames standing on a foot (an eye socket's rim, a burnt hole): the torch's heat model in small,
+// drawn in the fire bands. Heat is strongest at the foot and fades with the height; the flame
+// narrows as it climbs; the flicker is held in 2 × 2 clumps that climb two rows a frame, so
+// tongues rise without any outline swaying. strength 0 draws nothing, 1 is a full blaze.
+type Foot = { x: number; y: number; width: number; height: number };
+const flames = (
+	canvas: PixelCanvas,
+	feet: readonly Foot[],
+	strength: number,
+	time: number,
+	seed: number,
+) => {
+	if (strength <= 0) return canvas;
+	for (const { x: fx, y: fy, width, height } of feet)
+		for (let rise = 0; rise < height; rise++) {
+			const half = (width / 2) * (1 - 0.55 * (rise / height));
+			for (let x = Math.floor(fx - half); x <= Math.ceil(fx + half); x++) {
+				const y = fy - rise;
+				const across = 1 - ((x - fx) / (half + 0.5)) ** 2;
+				if (across <= 0) continue;
+				const heat =
+					strength * (1 - rise / height) * (0.55 + 0.45 * across) +
+					0.34 * (blotch(x, y + time * 2, seed) - 0.5);
+				const band = EMBER.find(([floor]) => heat >= floor);
+				if (band) canvas.set(x, y, band[1]);
+			}
+		}
+
+	return canvas;
+};
+
 // ---------------------------------------------------------------------------------------------
 // Particles: solid clumps of pixels, a lighter row on top when they have one
 
@@ -250,23 +309,6 @@ const clump = (
 		}
 
 	return canvas;
-};
-
-// a smoke or fume clump that wears down as it rises: big, then smaller, then gone
-const puffSize = (age: number, large = false) => {
-	const sizes = large
-		? [
-				[5, 4],
-				[4, 3],
-				[3, 2],
-			]
-		: [
-				[4, 3],
-				[3, 2],
-				[2, 2],
-			];
-
-	return age <= 0 || age >= 1 ? [0, 0] : sizes[age < 0.4 ? 0 : age < 0.75 ? 1 : 2];
 };
 
 // ---------------------------------------------------------------------------------------------
@@ -331,13 +373,20 @@ const breakApart = (
 	}
 	// a solid piece gets a dark edge where it was cut; a liquid's blobs do not
 	const edged = pieces.map((piece) => piece && (edges ? rimmed(piece) : piece));
+	// every piece falls past the bottom of the canvas by the last frame, however far it was told
+	// to fall: nothing may hang in the air and then blink out when the run ends
+	const tops = pieces.map(
+		(piece) => piece && pick(piece, () => true).reduce((m, [, y]) => Math.min(m, y), size),
+	);
 
 	return Array.from({ length: frames }, (_, frame) => {
 		const t = from + ((frame + 1) / frames) * (1 - from);
 		const canvas = new PixelCanvas(size, size);
 		edged.forEach((piece, index) => {
 			if (!piece) return;
-			const { x, y, start = 0, fall = 30, wear = 0.55 } = flights[index] ?? { x: 0, y: 0 };
+			const flight = flights[index] ?? { x: 0, y: 0 };
+			const { x, y, start = 0, wear = 0.55 } = flight;
+			const fall = Math.max(flight.fall ?? 30, size + 1 - tops[index] - y);
 			const local = span(t, start, 1);
 			const out = 1 - (1 - local) ** 2;
 			let shard = piece;
@@ -470,56 +519,137 @@ const lifted = (
 	return onto;
 };
 
-// the surface tipped: its ends tilt pixels up and down, the middle stays
-const tilted = (art: PixelCanvas, liquid: Liquid, tilt: number) => {
-	const half = Math.max(1, (liquid.right - liquid.left) / 2);
-	const middle = (liquid.left + liquid.right) / 2;
+// A liquid's own colours, dark to light. Light steps along it and stops at its top, so even the
+// gold, whose colours sit at the light end of the shared ramps, still has steps to climb; a
+// negative step darkens.
+type Ramp = readonly number[];
+const along = (ramp: Ramp, steps: number) => (at: number) => {
+	const index = ramp.indexOf(at);
 
-	return lifted(art, liquid, (x) => {
-		const lean = (tilt * (x - middle)) / half;
-
-		return Math.sign(lean) * Math.round(Math.abs(lean));
-	});
+	return index < 0 ? at : ramp[Math.max(0, Math.min(ramp.length - 1, index + steps))];
 };
 
-// a bubble: a 2 × 2 clump of the liquid two steps lighter, only inside the liquid
-const bubble = (canvas: PixelCanvas, art: PixelCanvas, liquid: Liquid, x: number, y: number) => {
-	for (let j = 0; j < 2; j++)
-		for (let i = 0; i < 2; i++) {
-			const px = Math.round(x) + i;
-			const py = Math.round(y) + j;
-			if (!liquid.has(px, py)) continue;
-			const under = art.get(px, py);
-			canvas.set(px, py, j === 0 ? LIGHTER[LIGHTER[under]] : LIGHTER[under]);
-		}
-
-	return canvas;
-};
-
-// one step lighter, but never to the near-whites at the end of a ramp, which read as glare
-const PALE = colours(0xffffff, 0xf9e6cf, 0xfdd2ed, 0xf6ca9f);
-const lighter = (at: number) => (PALE.has(LIGHTER[at]) ? at : LIGHTER[at]);
-
-// the liquid's own colours one or more steps lighter, where `where` says
-const brightened = (
+// the liquid `steps` along its ramp, where `where` says
+const lit = (
 	canvas: PixelCanvas,
 	liquid: Liquid,
+	ramp: Ramp,
 	steps: number,
 	where: (x: number, y: number) => boolean = () => true,
 ) => {
-	for (const [x, y] of liquid.pixels)
-		if (where(x, y)) canvas.set(x, y, stepped(canvas.get(x, y), lighter, steps));
+	if (!steps) return canvas;
+	const to = along(ramp, steps);
+	for (const [x, y] of liquid.pixels) if (where(x, y)) canvas.set(x, y, to(canvas.get(x, y)));
 
 	return canvas;
 };
 
-// Every bottle's land: the liquid sloshes, its surface tipping one way, then the other, settling.
-const slosh = (art: PixelCanvas, liquid: Liquid) =>
-	[2, -2, 1, -1].map((tilt) => tilted(art, liquid, tilt));
+// A bubble five pixels round: a ring and a core in the liquid's colours, `ring` and `core` steps
+// along its ramp from what is under them, inside the liquid only. Big enough to read as a bubble
+// in a cell 60 px across; never three across, where a round clump turns into a plus.
+const BUBBLE = ['.###.', '#ooo#', '#ooo#', '#ooo#', '.###.'];
+type Tones = { ring: number; core: number };
+const bubble = (
+	canvas: PixelCanvas,
+	art: PixelCanvas,
+	liquid: Liquid,
+	ramp: Ramp,
+	[x, y]: Point,
+	{ ring, core }: Tones,
+) => {
+	BUBBLE.forEach((row, j) =>
+		[...row].forEach((at, i) => {
+			const px = Math.round(x) + i;
+			const py = Math.round(y) + j;
+			if (at === '.' || !liquid.has(px, py)) return;
+			canvas.set(px, py, along(ramp, at === '#' ? ring : core)(art.get(px, py)));
+		}),
+	);
 
-// A rest for every bottle: the surface sways a pixel each way and back.
-const sway = (art: PixelCanvas, liquid: Liquid) =>
-	[1, 1, 1, 0, -1, -1, -1, 0].map((tilt) => tilted(art, liquid, tilt));
+	return canvas;
+};
+
+// the highest the liquid reaches over five columns from x, where a bubble comes up
+const surfaceAt = (liquid: Liquid, x: number) =>
+	Math.max(
+		...[0, 1, 2, 3, 4].map((i) => liquid.surface.get(Math.round(x) + i) ?? liquid.middle[1] - 99),
+	);
+
+// Bubbles rise one after another, stepping a pixel sideways now and then, and pop at the surface:
+// the surface over a pop jumps a pixel for a frame. starts: each bubble's column and first frame.
+const risingBubbles = (
+	art: PixelCanvas,
+	liquid: Liquid,
+	ramp: Ramp,
+	{
+		starts,
+		frames,
+		speed,
+		tones,
+	}: { starts: readonly [x: number, frame: number][]; frames: number; speed: number; tones: Tones },
+) =>
+	Array.from({ length: frames }, (_, frame) => {
+		const shown: Point[] = [];
+		const popping = new Set<number>();
+		for (const [x0, from] of starts) {
+			const age = frame - from;
+			if (age < 0) continue;
+			const x = x0 + (Math.floor(age / 3) % 2);
+			const y = liquid.bottom - 7 - age * speed;
+			const top = surfaceAt(liquid, x);
+			if (y > top + 1) shown.push([x, y]);
+			else if (y > top + 1 - speed) for (let i = 0; i < 5; i++) popping.add(x + i);
+		}
+		const canvas = lifted(art, liquid, (x) => (popping.has(x) ? -1 : 0));
+		for (const at of shown) bubble(canvas, art, liquid, ramp, at, tones);
+
+		return canvas;
+	});
+
+// Light fills the liquid from the bottom, a brighter band at its rising edge, holds full, and
+// sinks back out. Large and slow, so it reads on a phone, and only colour moves.
+const lightRise = (art: PixelCanvas, liquid: Liquid, ramp: Ramp) => {
+	const top = Math.min(...liquid.pixels.map(([, y]) => y));
+	const height = liquid.bottom - top + 1;
+	// how far up the light reaches (0 to 1), and whether its edge carries the brighter band
+	const steps: [number, boolean][] = [
+		[0.2, true],
+		[0.4, true],
+		[0.6, true],
+		[0.8, true],
+		[1, true],
+		[1, false],
+		[1, false],
+		[1, false],
+		[1, false],
+		[0.75, false],
+		[0.5, false],
+		[0.25, false],
+	];
+
+	return steps.map(([reach, band]) => {
+		const line = liquid.bottom + 1 - Math.round(reach * height);
+		const canvas = lit(art.clone(), liquid, ramp, 1, (_, y) => y >= line);
+
+		return band ? lit(canvas, liquid, ramp, 1, (_, y) => y >= line && y < line + 4) : canvas;
+	});
+};
+
+// Every bottle's land: it comes down two pixels and back as a whole, and the liquid in it keeps
+// going a moment longer, down, then up past where it rests, then home.
+const plop = (art: PixelCanvas, liquid: Liquid) =>
+	[
+		[2, 1],
+		[1, -2],
+		[0, -1],
+		[0, 1],
+	].map(([drop, lift]) =>
+		shifted(
+			lifted(art, liquid, () => lift),
+			0,
+			drop,
+		),
+	);
 
 // A part of the art picked by a box: a bottle's cork, an axe's blade.
 const inBox = (box: readonly [number, number, number, number]) => (x: number, y: number) =>
@@ -540,134 +670,198 @@ const uncorked = (art: PixelCanvas, cork: readonly Point[], up: number) => {
 	return canvas;
 };
 
-// How every bottle goes: the glass cracks from the middle and bursts into shards that fly and
-// fall; the liquid, its glass gone, breaks into blobs of itself that fly a little way and drop,
-// and gathers in a puddle under where the bottle stood, which spreads and drains away. A poison
-// also lets out a puff. ramp: the liquid's colours from dark to light.
+// A glass shard: a small solid polygon, turned, in the glass greys, lit along its top left edge
+// and dark along its bottom right, so it reads as a thick piece of glass and not a thin rim.
+const SHARDS: readonly (readonly Point[])[] = [
+	[
+		[-4, -3],
+		[4, -2],
+		[1, 4],
+	],
+	[
+		[-3, -4],
+		[3, -3],
+		[4, 3],
+		[-2, 2],
+	],
+	[
+		[-5, 0],
+		[0, -3],
+		[4, 1],
+		[-1, 3],
+	],
+	[
+		[-3, -4],
+		[3, -1],
+		[-1, 4],
+	],
+	[
+		[-4, -2],
+		[2, -3],
+		[3, 2],
+		[-3, 3],
+	],
+];
+const GLASS = { light: c(0xc7cfdd), body: c(0xb4b4b4), dark: c(0x5d5d5d) };
+
+const shard = (canvas: PixelCanvas, shape: readonly Point[], [x, y]: Point, turn: number) => {
+	// the shapes are drawn half as big again: a shard must read as a piece on a phone
+	const piece = new PixelCanvas(19, 19);
+	piece.poly(
+		0,
+		...shape.map(([px, py]): Point => [
+			9 + 1.5 * (px * Math.cos(turn) - py * Math.sin(turn)),
+			9 + 1.5 * (px * Math.sin(turn) + py * Math.cos(turn)),
+		]),
+	);
+	for (const [px, py] of pick(piece, () => true)) {
+		const lightSide = piece.get(px - 1, py) === CLEAR || piece.get(px, py - 1) === CLEAR;
+		const darkSide = piece.get(px + 1, py) === CLEAR || piece.get(px, py + 1) === CLEAR;
+		canvas.set(
+			Math.round(x) - 9 + px,
+			Math.round(y) - 9 + py,
+			darkSide ? GLASS.dark : lightSide ? GLASS.light : GLASS.body,
+		);
+	}
+
+	return canvas;
+};
+
+// a part of the art turned a quarter at a time about its middle: whole-pixel turns only, so the
+// cork stays the same solid piece
+const quarterTurned = (art: PixelCanvas, part: readonly Point[], turns: number) => {
+	const [mx, my] = middleOf(part).map(Math.round);
+	const piece = new PixelCanvas(SIZE, SIZE);
+	for (const [x, y] of part) {
+		let [dx, dy] = [x - mx, y - my];
+		for (let i = 0; i < ((turns % 4) + 4) % 4; i++) [dx, dy] = [-dy, dx];
+		piece.set(mx + dx, my + dy, art.get(x, y));
+	}
+
+	return piece;
+};
+
+// How every bottle goes. The glass cracks, then bursts: five thick shards fly out to the sides
+// and fall away, the cork tumbles off. The liquid is the hero: it drops as one mass, hits the
+// floor of the cell in a dome, splashes out into a wide puddle with a few big drops thrown up out
+// of it, and drains away to nothing. Everything has left or drained by the last frame, which is
+// empty. ramp: the liquid's colours, dark to light.
 const bottleGone = (
 	art: PixelCanvas,
 	liquid: Liquid,
-	ramp: readonly number[],
-	{
-		seed = 3,
-		frames = 12,
-		puff,
-	}: { seed?: number; frames?: number; puff?: readonly number[] } = {},
+	ramp: Ramp,
+	cork: readonly Point[],
+	{ seed }: { seed: number },
 ) => {
 	const size = goneSize(SIZE);
 	const margin = (size - SIZE) / 2;
 	const middle: Point = [Math.round(liquid.middle[0]), Math.round(liquid.middle[1])];
-	const glassBreak = struck(middle, 26, { spokes: 6, seed });
-	const glass = art.clone().paint((x, y) => liquid.has(x, y), CLEAR);
-	const body = new PixelCanvas(SIZE, SIZE);
-	for (const [x, y] of liquid.pixels) body.set(x, y, art.get(x, y));
-	// the liquid shows through the cracks first, then the shards go
+	const top = Math.min(...liquid.pixels.map(([, y]) => y));
+	const width = liquid.right - liquid.left + 1;
+	const height = liquid.bottom - top + 1;
+	const [dark, mid, light] = [ramp[1], ramp[Math.floor(ramp.length / 2)], ramp.at(-2)!];
+	const hit = along(ramp, 1);
+
+	// the cracks: a few bold lines from the middle, the liquid lit up behind them
+	const strike = struck(middle, 18, { spokes: 5, seed });
 	const cracked = (amount: number) => {
-		const canvas = art.clone();
-		for (const path of glassBreak.paths) crack(canvas, path, amount);
+		const canvas = lit(art.clone(), liquid, ramp, 1);
+		for (const path of strike.paths) {
+			crack(canvas, path, amount);
+			crack(
+				canvas,
+				path.map(([x, y]): Point => [x + 1, y]),
+				amount,
+			);
+		}
 
 		return padded(canvas, margin);
 	};
-	const flying = frames - 2;
-	const shards = breakApart(
-		glass,
-		glassBreak.owner,
-		glassBreak.ways.map((way, index) => ({
-			x: Math.cos(way) * (14 + 6 * hash(index, 1, seed)),
-			y: Math.sin(way) * (10 + 4 * hash(index, 2, seed)) - 7,
-			fall: 48,
-			wear: 0.35,
-		})),
-		{ frames: flying },
-	);
-	// the liquid parts in a few blobs that hardly spread before they pour down into the puddle
-	const blobBreak = struck(middle, 20, { spokes: 5, seed: seed + 5 });
-	const blobs = breakApart(
-		body,
-		blobBreak.owner,
-		blobBreak.ways.map((way, index) => ({
-			x: Math.cos(way) * (3 + 2 * hash(index, 3, seed)),
-			y: -2,
-			fall: 46,
-		})),
-		{ frames: flying, edges: false },
-	);
-	// and throws drops out sideways as it lands
-	const splashes = [-1, 1, -1, 1].map((side, index) => ({
-		side,
-		far: 10 + index * 4,
-		high: 7 - index,
-	}));
-	const floor = liquid.bottom + margin + 3;
-	const half = (liquid.right - liquid.left) / 2;
+
+	// the mass: the liquid and whatever the glass held inside its rows (a label), as one body
+	const mass = new PixelCanvas(SIZE, SIZE);
+	for (let y = top; y <= liquid.bottom; y++) {
+		const row = liquid.pixels.filter(([, py]) => py === y).map(([x]) => x);
+		if (!row.length) continue;
+		for (let x = Math.min(...row); x <= Math.max(...row); x++)
+			mass.set(x, y, liquid.has(x, y) ? hit(art.get(x, y)) : mid);
+	}
+
+	const floor = liquid.bottom + margin + 2;
 	const cx = middle[0] + margin;
-	const [dark, mid, light] = [
-		ramp[1],
-		ramp[Math.min(ramp.length - 1, 2)],
-		ramp[Math.min(ramp.length - 1, 3)],
+	// the splash after the burst: half width and height of the dome on the floor, per frame
+	const splash: (readonly [number, number])[] = [
+		[0.6 * width, 0.6 * height],
+		[0.75 * width, 0.42 * height],
+		[0.88 * width, 0.28 * height],
+		[0.95 * width, 7],
+		[0.92 * width, 6],
+		[0.8 * width, 5],
+		[0.6 * width, 4],
+		[0.36 * width, 3],
 	];
+	const dome = (canvas: PixelCanvas, half: number, rise: number) => {
+		for (let x = Math.round(-half); x <= Math.round(half); x++) {
+			const tall = Math.round(rise * Math.sqrt(Math.max(0, 1 - (x / (half + 0.5)) ** 2)));
+			for (let row = 0; row < Math.max(1, tall); row++)
+				canvas.set(
+					cx + x,
+					floor - row,
+					row === Math.max(1, tall) - 1 ? light : row === 0 && tall > 2 ? dark : mid,
+				);
+		}
 
-	return [
-		cracked(0.5),
-		cracked(1),
-		...shards.map((canvas, frame) => {
-			const t = (frame + 1) / flying;
-			const out = new PixelCanvas(size, size);
-			// the puddle: it gathers from the third frame, spreads, then drains to nothing
-			const gathered = span(t, 0.15, 0.45);
-			const drained = span(t, 0.55, 1);
-			const width = Math.round(half * (0.5 + 0.9 * gathered) * (1 - 0.7 * drained));
-			const depth = drained >= 1 ? 0 : Math.max(1, Math.round(3 * gathered * (1 - drained)));
-			if (gathered > 0 && depth > 0)
-				for (let row = 0; row < depth; row++) {
-					const inset = row === 0 && depth > 1 ? 2 : 0;
-					for (let x = cx - width + inset; x <= cx + width - inset; x++)
-						out.set(
-							x,
-							floor - depth + 1 + row,
-							row === 0 ? light : row === depth - 1 && depth > 2 ? dark : mid,
-						);
-				}
-			// the blobs fall into it: nothing of them shows below its top
-			const falling = blobs[frame];
-			for (const [x, y] of pick(falling, () => true))
-				if (y < floor - depth + 1) out.set(x, y, falling.get(x, y));
-			const thrown = span(t, 0.25, 0.75);
-			if (thrown > 0 && thrown < 1)
-				for (const { side, far, high } of splashes)
-					clump(
-						out,
-						cx + side * (half * 0.6 + far * thrown) - 1,
-						floor - 3 - high * 4 * thrown * (1 - thrown),
-						3,
-						2,
-						mid,
-						light,
-					);
-			out.blit(canvas);
-			// a poison's puff hangs over the breaking, in front of its shards
-			if (puff)
-				for (let index = 0; index < 6; index++) {
-					const age = span(t, index * 0.05, 0.75 + index * 0.05);
-					const [w, h] =
-						age <= 0 || age >= 1 ? [0, 0] : age < 0.35 ? [6, 5] : age < 0.7 ? [5, 4] : [3, 3];
-					if (!w) continue;
-					const angle = -Math.PI / 2 + (index - 2.5) * 0.55;
-					const far = 4 + 18 * age;
-					clump(
-						out,
-						cx + Math.cos(angle) * far - w / 2,
-						middle[1] + margin + Math.sin(angle) * far - 6 * age,
-						w,
-						h,
-						puff[0],
-						puff[1],
-					);
-				}
+		return canvas;
+	};
+	// drops thrown up out of the dome as it hits: big clumps that arc and fall back into the puddle
+	const drops = [-1, 1, -1, 1].map((side, index) => ({
+		x: side * (3 + index * 2),
+		up: 4.4 - 0.4 * index + hash(index, 4, seed),
+		out: side * (1.4 + 0.5 * index),
+		w: index < 2 ? 5 : 4,
+		h: index < 2 ? 4 : 3,
+	}));
+	// the shards leave from round the glass, out to the sides, and fall out of the cell
+	const shards = SHARDS.map((shape, index) => {
+		const angle = -Math.PI + (index * Math.PI) / 4 + (hash(index, 5, seed) - 0.5) * 0.4;
+		const side = Math.cos(angle) < 0 ? -1 : 1;
 
-			return out;
-		}),
-	];
+		return {
+			shape,
+			from: [
+				cx + Math.cos(angle) * width * 0.45,
+				middle[1] + margin + Math.sin(angle) * height * 0.45,
+			] as Point,
+			vx: side * (3.6 + 1.8 * hash(index, 6, seed)),
+			vy: -1.2 - 1.6 * hash(index, 7, seed),
+			spin: (hash(index, 8, seed) - 0.5) * 1.4,
+		};
+	});
+	const corkSide = hash(1, 9, seed) < 0.5 ? -1 : 1;
+	const GRAVITY = 3;
+
+	const burst = Array.from({ length: GONE_FRAMES - 2 }, (_, index) => {
+		// time since the burst, in frames
+		const t = index;
+		const out = new PixelCanvas(size, size);
+		if (t === 0) out.blit(mass, margin, margin + 1);
+		else if (splash[t - 1]) dome(out, ...splash[t - 1]);
+		if (t >= 1)
+			for (const { x, up, out: drift, w, h } of drops) {
+				const age = t - 1;
+				const y = floor - splash[0][1] * 0.85 - up * age + 1.5 * age * age;
+				// back in the puddle: gone into it
+				if (age > 0 && y >= floor - 1) continue;
+				clump(out, cx + x + drift * age - w / 2, y, w, h, mid, light);
+			}
+		for (const { shape, from, vx, vy, spin } of shards)
+			shard(out, shape, [from[0] + vx * t, from[1] + vy * t + 0.5 * GRAVITY * t * t], spin * t);
+		const turned = quarterTurned(art, cork, corkSide * Math.floor((t + 1) / 2));
+		out.blit(turned, margin + corkSide * 2 * t, margin - 2 * t + 0.5 * GRAVITY * t * t);
+		return out;
+	});
+
+	return [cracked(0.5), cracked(1), ...burst.slice(0, -1), new PixelCanvas(size, size)];
 };
 
 // ---------------------------------------------------------------------------------------------
@@ -695,22 +889,24 @@ const drop = (
 	[x, y]: Point,
 	[light, dark]: readonly [number, number],
 	on: (x: number, y: number) => boolean,
-) => clump(canvas, x, y, 2, 2, dark, light, on);
+) => clump(canvas, x, y, 2, 3, dark, light, on);
 
-// a drip's whole life in frames: it creeps to its length, its drop lets go and slides down, the
-// stub draws back in
+// a drip's whole life in frames: it creeps to its length and hangs there swelling, its drop lets
+// go and slides down, the stub draws back in. Long enough to read on a phone.
 const DRIP = [
 	{ length: 1 },
 	{ length: 2 },
-	{ length: 3 },
 	{ length: 4 },
 	{ length: 5 },
-	{ length: 6 },
-	{ length: 6 },
-	{ length: 3, drop: 5 },
-	{ length: 2, drop: 8 },
-	{ length: 1, drop: 11 },
-	{ length: 1, drop: 14 },
+	{ length: 7 },
+	{ length: 8 },
+	{ length: 9 },
+	{ length: 9 },
+	{ length: 9 },
+	{ length: 5, drop: 9 },
+	{ length: 3, drop: 13 },
+	{ length: 2, drop: 17 },
+	{ length: 1, drop: 21 },
 	{ length: 0 },
 ];
 
@@ -734,9 +930,6 @@ const dripFrame = (
 const SIZE = 64;
 const HURT_FRAMES = 12;
 const GONE_FRAMES = 12;
-
-// the art itself, moved down by whole pixels and back: how something heavy lands
-const thud = (art: PixelCanvas, drops: readonly number[]) => drops.map((dy) => shifted(art, 0, dy));
 
 // H1: the king's skull, the gold of his crown melted onto it. Its eye sockets hold embers and its
 // jaw is a solid piece that clacks.
@@ -783,23 +976,36 @@ const skull = (): Runs => {
 		lips.find(([x]) => x === 25) ?? lips[0],
 		lips.find(([x]) => x <= 21) ?? lips.at(-1)!,
 	];
-	const molten = [c(0xedab50), c(0xbf6f4a)] as const;
+	// the darker golds: the pale ones vanish against the bone at phone size
+	const molten = [c(0xbf6f4a), c(0x8a4836)] as const;
 	const onSkull = (x: number, y: number) => bone.has(art.get(x, y));
 
-	const glowRest = [0.3, 0.45, 0.6, 0.7, 0.7, 0.6, 0.45, 0.3].map((level, frame) =>
+	// the embers in the sockets swell to a full burn, hold it, and sink
+	const glowRest = [0.35, 0.6, 0.85, 1, 1, 1, 1, 1, 0.85, 0.6, 0.35].map((level, frame) =>
 		eyes(art.clone(), level, frame + 1),
 	);
 	const dripRest = DRIP.map((_, frame) => dripFrame(art.clone(), drips[0], frame, molten, onSkull));
 
-	// win: the jaw opens and shuts twice, a laugh, while the sockets take fire and gold runs
-	const opens = [1, 2, 2, 0, 2, 2, 0, 1, 0, 0, 0, 0];
-	const levels = [0.35, 0.55, 0.72, 0.82, 0.88, 0.88, 0.82, 0.76, 0.7, 0.66, 0.62, 0.6];
+	// win: it ducks a pixel with its sockets dark, then the sockets burst into flame that climbs
+	// over its brow while the jaw drops wide and clacks, a laugh; the fire burns down to embers
+	// and gold runs from the crown
+	const feet = sockets.map(({ middle, reach }) => ({
+		x: middle[0],
+		y: middle[1] + 1,
+		width: reach * 3.2,
+		height: 15,
+	}));
+	const opens = [0, 0, 4, 1, 4, 1, 3, 0, 2, 0, 0, 0];
+	const levels = [0, 0.3, 1, 1, 1, 1, 0.95, 0.9, 0.85, 0.8, 0.75, 0.7];
+	const fire = [0, 0, 0.85, 1, 1, 0.95, 0.85, 0.7, 0.55, 0.4, 0.25, 0];
+	const duck = [1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0];
 	const hurt = opens.map((open, frame) => {
 		const canvas = eyes(art.clone(), levels[frame], 20 + frame);
 		dripFrame(canvas, drips[0], frame - 1, molten, onSkull);
 		dripFrame(canvas, drips[1], frame - 3, molten, onSkull);
+		const laughing = flames(clacked(canvas, open), feet, fire[frame], frame, 5);
 
-		return clacked(canvas, open);
+		return duck[frame] ? shifted(laughing, 0, duck[frame]) : laughing;
 	});
 
 	// gone: a crack splits the skull, the crown melts down over it, and it drops away in halves
@@ -852,7 +1058,8 @@ const skull = (): Runs => {
 	return {
 		symbolH1RestGlow: glowRest,
 		symbolH1RestDrip: dripRest,
-		symbolH1Land: [clacked(art, 1), clacked(art, 1), art.clone()],
+		// it lands a pixel low with its jaw knocked open three, the jaw shutting as it settles
+		symbolH1Land: [shifted(clacked(art, 3), 0, 1), clacked(art, 2), clacked(art, 1)],
 		symbolH1Hurt: hurt,
 		symbolH1Gone: [...cracked, ...melting].map((canvas) => padded(canvas, margin)).concat(falling),
 	};
@@ -886,29 +1093,34 @@ const helm = (): Runs => {
 		);
 	// the eye slit: the long dark band across the visor
 	const slit = pick(art, (x, y, at) => at === SHADOW && y >= 30 && y <= 35 && x >= 9 && x <= 40);
-	const [slitX, slitY] = middleOf(slit);
+	const [slitX] = middleOf(slit);
 
-	// rest: the heat in the gashes breathes, a slow swell and fall
-	const breath = [0, 0.06, 0.12, 0.17, 0.2, 0.17, 0.12, 0.06, 0, -0.04];
+	// rest: the heat in the gashes breathes, a slow swell to a glow held a moment, and a fall
+	const breath = [0, 0.1, 0.2, 0.3, 0.38, 0.42, 0.42, 0.42, 0.36, 0.26, 0.14, 0];
 	const rest = breath.map((extra, frame) => heated(art.clone(), extra, frame + 3));
 
-	// win: the gashes flare white-hot and a puff of dark smoke leaves the eye slit
-	const flare = [0.15, 0.32, 0.45, 0.45, 0.4, 0.35, 0.3, 0.27, 0.24, 0.22, 0.2, 0.2];
-	const pad = 8;
-	const smoke = [c(0x3d3d3d), c(0x5d5d5d)];
-	const hurt = flare.map((extra, frame) => {
-		const canvas = padded(heated(art.clone(), extra, 40 + frame), pad);
-		// the puff leaves the slit along its front half and climbs, drifting forward (left)
-		for (let index = 0; index < 5; index++) {
-			const age = span(frame, 2 + index, 9 + index);
-			const [w, h] = puffSize(age, true);
-			if (!w) continue;
-			const x = slitX - 14 + index * 5 - 7 * age;
-			const y = slitY - 2 - 16 * age;
-			clump(canvas, x + pad - w / 2, y + pad, w, h, smoke[0], smoke[1]);
-		}
+	// The eyes in the dark of the slit: two points, one in each half, where a fire behind the visor
+	// shows through when it wins.
+	const eyePoints = [slit.filter(([x]) => x < slitX), slit.filter(([x]) => x >= slitX)].map(
+		middleOf,
+	);
+	const eyesLit = (canvas: PixelCanvas, level: number, seed: number) =>
+		burn(canvas, slit, (x, y) => {
+			const near = Math.min(...eyePoints.map(([ex, ey]) => Math.hypot(x - ex, (y - ey) * 1.6)));
 
-		return canvas;
+			return level * (1.05 - near / 7) + 0.18 * (blotch(x, y, seed) - 0.5);
+		});
+
+	// win: the helm sinks a pixel with its gashes gone cold and dark, then jolts up as they flare
+	// white-hot and eyes of fire light in the slit, and it all cools back down to embers. (Smoke
+	// was tried here: grey over a grey helm does not read on a phone.)
+	const flare = [-0.2, -0.12, 0.62, 0.6, 0.52, 0.46, 0.4, 0.35, 0.3, 0.26, 0.22, 0.2];
+	const glare = [0, 0, 1, 1, 0.92, 0.82, 0.72, 0.62, 0.5, 0.38, 0.24, 0];
+	const jolt = [1, 1, -1, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+	const hurt = flare.map((extra, frame) => {
+		const canvas = eyesLit(heated(art.clone(), extra, 40 + frame), glare[frame], frame);
+
+		return jolt[frame] ? shifted(canvas, 0, jolt[frame]) : canvas;
 	});
 
 	// gone: the gashes blaze, the helm splits along the middle one and the halves fall apart
@@ -928,8 +1140,13 @@ const helm = (): Runs => {
 
 	return {
 		symbolH2Rest: rest,
-		symbolH2Land: thud(art, [1, 1, 0]),
-		symbolH2Hurt: [...hurt.slice(0, -1), padded(last, pad)],
+		// a heavy clank: two pixels down and back, the gashes jolted hot
+		symbolH2Land: [
+			shifted(heated(art.clone(), 0.3, 1), 0, 2),
+			shifted(heated(art.clone(), 0.2, 2), 0, 1),
+			heated(art.clone(), 0.1, 3),
+		],
+		symbolH2Hurt: [...hurt.slice(0, -1), last],
 		symbolH2Gone: [...blazing.map((canvas) => padded(canvas, margin)), ...halves],
 	};
 };
@@ -960,21 +1177,30 @@ const hat = (): Runs => {
 
 	// rest: the holes' edges smoulder in patches; another time a thin curl of smoke rises from
 	// the lower hole
-	const glowing = [0.22, 0.32, 0.4, 0.44, 0.4, 0.34, 0.28, 0.2].map((level, frame) =>
-		smoulder(art.clone(), rings[0], level, frame + 5),
+	// the edges catch: two rings round the holes glow up to orange, hold, and die back
+	const glowing = [0.3, 0.45, 0.6, 0.72, 0.8, 0.8, 0.8, 0.8, 0.7, 0.55, 0.4, 0.28].map(
+		(level, frame) =>
+			smoulder(
+				smoulder(art.clone(), rings[1], level - 0.25, frame + 50),
+				rings[0],
+				level,
+				frame + 5,
+			),
 	);
 	const pad = 8;
 	const [holeX, holeY] = middleOf(holes.filter(([, y]) => y >= 33));
 	const curl = [0, 0, 1, 1, 1, 0, -1, -1, -1, 0, 1, 1];
-	// grey enough to read over the dark cloth
-	const smoke = [c(0x858585), c(0xb4b4b4)];
-	const smoking = Array.from({ length: 12 }, (_, frame) => {
-		const canvas = padded(smoulder(art.clone(), rings[0], 0.3, frame + 30), pad);
-		// three clumps one behind another, stepping sideways by whole pixels as they climb
+	// dark smoke: it rises over the bright purple of the hat, where a dark clump reads and a pale
+	// grey one does not
+	const smoke = [c(0x272727), c(0x3d3d3d)];
+	const smoking = Array.from({ length: 14 }, (_, frame) => {
+		const canvas = padded(smoulder(art.clone(), rings[0], 0.4, frame + 30), pad);
+		// three clumps one behind another, stepping sideways by whole pixels as they climb, worn
+		// smaller near the top and gone before the last frame
 		for (let index = 0; index < 3; index++) {
-			const rise = frame * 2 - index * 3;
-			if (rise < 0 || rise > 20) continue;
-			const [w, h] = rise > 13 ? [2, 2] : [3, 2];
+			const rise = frame * 2 - index * 4;
+			if (rise < 0 || rise > 18) continue;
+			const [w, h] = rise > 11 ? [4, 2] : [5, 3];
 			clump(
 				canvas,
 				holeX + pad - 1 + curl[Math.floor(rise / 2) % curl.length],
@@ -989,24 +1215,40 @@ const hat = (): Runs => {
 		return canvas;
 	});
 
-	// win: the burn eats outward a ring, a glowing front ahead of it, the burnt ring left dark
+	// win: the holes go dark a beat, then flames burst out of them and climb over the hat while
+	// the burn eats a ring outward, a glowing front ahead of it, the burnt ring left dark; the
+	// flames die down to the glowing edge
 	const char = SHADOW;
 	// the front is ragged: the next ring, and the one past it where the cloth is thinnest
 	const ragged = [...rings[1], ...rings[2].filter(([x, y]) => blotch(x, y, 7) > 0.55)];
+	const feet = [
+		[18, 26, 29, 38],
+		[28, 33, 40, 44],
+	].map(([left, top, right, bottom]) => ({
+		x: (left + right) / 2,
+		y: (top + bottom) / 2 + 2,
+		width: right - left,
+		height: 16,
+	}));
+	const fire = [0, 0, 0.9, 1, 1, 0.95, 0.85, 0.7, 0.55, 0.4, 0.22, 0];
 	const hurt = Array.from({ length: HURT_FRAMES }, (_, frame) => {
 		const canvas = art.clone();
-		if (frame < 4) return smoulder(canvas, rings[0], 0.5 + frame * 0.12, 60 + frame);
-		for (const [x, y] of rings[0]) canvas.set(x, y, char);
-		const cooling = 0.95 - (frame - 4) * 0.06;
+		if (frame < 2) return canvas;
+		if (frame < 4) smoulder(canvas, rings[0], 0.8, 60 + frame);
+		else {
+			for (const [x, y] of rings[0]) canvas.set(x, y, char);
+			const cooling = 0.95 - (frame - 4) * 0.06;
+			burn(
+				canvas,
+				ragged,
+				(x, y) =>
+					cooling -
+					(rings[1].some(([rx, ry]) => rx === x && ry === y) ? 0 : 0.22) +
+					0.3 * (blotch(x, y, 60 + frame) - 0.5),
+			);
+		}
 
-		return burn(
-			canvas,
-			ragged,
-			(x, y) =>
-				cooling -
-				(rings[1].some(([rx, ry]) => rx === x && ry === y) ? 0 : 0.22) +
-				0.3 * (blotch(x, y, 60 + frame) - 0.5),
-		);
+		return flames(canvas, feet, fire[frame], frame, 9);
 	});
 
 	// gone: it burns to ash from the holes outward
@@ -1022,8 +1264,10 @@ const hat = (): Runs => {
 	const ash = c(0x5d5d5d);
 	// behind the burning front: fire, then char, then ash, then nothing, each a band a few pixels
 	// deep; the front's edge is uneven in clumps
+	// the burn has passed everything by the second to last frame and the last is empty; bits
+	// too small to read as burning cloth are swept away as it goes
 	const gone = Array.from({ length: GONE_FRAMES }, (_, frame) => {
-		const reach = ((frame + 1) / GONE_FRAMES) * (farthest + 9) - 2;
+		const reach = ((frame + 1) / (GONE_FRAMES - 1)) * (farthest + 11) - 2;
 		const canvas = last.clone();
 		for (const [x, y] of pick(last, () => true)) {
 			const far = (distance.get(key(x, y)) ?? 0) + 3 * (blotch(x, y, 3) - 0.5);
@@ -1034,24 +1278,28 @@ const hat = (): Runs => {
 			else if (behind >= 0)
 				burn(canvas, [[x, y]], () => 0.42 + behind * 0.17 + 0.2 * (blotch(x, y, frame) - 0.5));
 		}
-		return padded(despeckled(canvas), margin);
+		// near the end only real pieces of the brim may still be burning: nothing small lingers
+		return padded(cleaned(despeckled(canvas), frame >= 7 ? 30 : 12), margin);
 	});
 
 	return {
 		symbolH3RestSmoulder: glowing,
 		symbolH3RestSmoke: smoking,
-		// the hat drops a pixel onto its brim, its bent tip a pixel further, and settles
+		// the hat drops two pixels onto its brim and its bent tip flops on after it, a pixel
+		// later and a pixel further, then settles
 		symbolH3Land: [
+			[2, 0],
+			[1, 2],
+			[0, 1],
+		].map(([drop, flop]) =>
 			moved(
-				shifted(art, 0, 1),
-				tipPart.map(([x, y]): Point => [x, y + 1]),
+				shifted(art, 0, drop),
+				tipPart.map(([x, y]): Point => [x, y + drop]),
 				0,
-				1,
+				flop,
 				() => SHADOW,
 			),
-			shifted(art, 0, 1),
-			art.clone(),
-		],
+		),
 		symbolH3Hurt: hurt,
 		symbolH3Gone: gone,
 	};
@@ -1079,23 +1327,55 @@ const axe = (): Runs => {
 		[42, 48],
 	];
 
-	const rest = [0, 0.1, 0.2, 0.28, 0.3, 0.26, 0.18, 0.08, 0, -0.06].map((extra, frame) =>
-		heated(art.clone(), extra, frame + 2),
+	// the steel round the bite, ring by ring outward (up to seven): how far heat has to travel
+	const steel = (_: number, __: number, at: number) => !DARKS.has(at) && !base.has(at);
+	const reached = new Map<number, number>();
+	let front: Point[] = bite;
+	for (let ring = 1; ring <= 7; ring++) {
+		front = around(art, front, (x, y, at) => x >= 38 && steel(x, y, at) && !reached.has(key(x, y)));
+		for (const [x, y] of front) reached.set(key(x, y), ring);
+	}
+	const hotSteel = [...reached.keys()].map((k): Point => [k % 256, Math.floor(k / 256)]);
+	// heat spread into the blade from the bite: the steel glows red to orange near it
+	const glowing = (canvas: PixelCanvas, level: number, seed: number) =>
+		level > 0
+			? burn(
+					canvas,
+					hotSteel,
+					(x, y) =>
+						level * (1 - (reached.get(key(x, y)) ?? 9) / 8.5) + 0.16 * (blotch(x, y, seed) - 0.5),
+				)
+			: canvas;
+
+	// rest: the bite's heat swells, holds and fades, reaching a ring or two into the steel
+	const rest = [0, 0.12, 0.24, 0.36, 0.45, 0.48, 0.48, 0.48, 0.42, 0.3, 0.16, 0].map(
+		(extra, frame) => glowing(heated(art.clone(), extra, frame + 2), extra * 1.1, frame + 2),
 	);
+	// win: the axe rises a pixel with its bite cold, comes down hard (a pixel low), the bite
+	// blazes, heat floods into the blade and a crack runs hot through it; the steel cools from the
+	// outside in and the crack goes dark behind its head
+	const lift = [-1, -1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0];
+	const bites = [-0.15, -0.15, 0.7, 0.66, 0.58, 0.5, 0.42, 0.36, 0.3, 0.26, 0.22, 0.2];
+	const spread = [0, 0, 1, 1, 0.92, 0.82, 0.7, 0.58, 0.46, 0.34, 0.2, 0];
 	const hurt = Array.from({ length: HURT_FRAMES }, (_, frame) => {
-		const flash = [0.55, 0.62, 0.5, 0.4, 0.34, 0.3, 0.28, 0.26, 0.24, 0.22, 0.2, 0.2][frame];
-		const canvas = heated(art.clone(), flash, 50 + frame);
+		const canvas = glowing(
+			heated(art.clone(), bites[frame], 50 + frame),
+			spread[frame],
+			50 + frame,
+		);
 		// the crack runs hot and cools to dark behind its head
-		const amount = span(frame, 1, 6);
+		const amount = span(frame, 1, 4);
 		const head = amount * (fault.length - 1);
-		return crack(canvas, fault, amount, (x, y) => {
+		crack(canvas, fault, amount, (x, y) => {
 			const along = fault.findIndex(([, fy]) => fy >= y);
 			return frame < 8 && Math.abs(along - head) < 1.5
-				? c(0xff5000)
+				? c(0xffa214)
 				: frame < 10 && along > head - 2
-					? c(0x8e251d)
+					? c(0xc64524)
 					: INK;
 		});
+
+		return lift[frame] ? shifted(canvas, 0, lift[frame]) : canvas;
 	});
 
 	// gone: the blades snap off the haft: the cracked one first, then the other; the haft drops
@@ -1145,7 +1425,8 @@ const axe = (): Runs => {
 	};
 };
 
-// The potions. Their liquids are found by colour; the glass, corks and labels never move.
+// The potions. Their liquids are found by colour; the glass and labels never move, corks lift
+// off as solid pieces.
 const glassColours = colours(
 	0xf6ca9f,
 	0xb4b4b4,
@@ -1158,168 +1439,253 @@ const glassColours = colours(
 	0x3d3d3d,
 );
 
-// L1: the round red flask. A bubble rises now and then; it boils when it wins and its cork pops.
+// A potion's win plays over the art on a canvas this much bigger all round, so corks, steam,
+// light and spray can rise past the top of the cell.
+const POTION_PAD = 16;
+
+// the art on the padded canvas, its cork lifted `up` pixels
+const corkedOff = (art: PixelCanvas, cork: readonly Point[], up: number) =>
+	uncorked(
+		padded(art, POTION_PAD),
+		cork.map(([x, y]): Point => [x + POTION_PAD, y + POTION_PAD]),
+		up,
+	);
+
+// where the liquid leaves the bottle: the middle of the cork's foot, on the padded canvas
+const mouthOf = (cork: readonly Point[]): Point => [
+	Math.round(middleOf(cork)[0]) + POTION_PAD,
+	Math.max(...cork.map(([, y]) => y)) + POTION_PAD,
+];
+
+// L1: the round red flask, a potion of life. At rest it beats like a heart, or big bubbles rise;
+// when it wins it boils, its cork shoots up on a burst of red steam and drops back.
 const redFlask = (): Runs => {
 	const art = SYMBOL_DRAWINGS.symbolL1();
-	const liquid = liquidOf(
-		art,
-		colours(0xf5555d, 0xea323c, 0xc42430, 0x891e2b, 0x571c27),
-		glassColours,
-	);
+	const ramp = [0x571c27, 0x891e2b, 0xc42430, 0xea323c, 0xf5555d, 0xf68187].map(c);
+	const red = new Set(ramp);
+	const liquid = liquidOf(art, red, glassColours);
 	const cork = pick(art, inBox([31, 5, 50, 12]));
-	const bubbles = (
-		canvas: PixelCanvas,
-		frame: number,
-		count: number,
-		speed: number,
-		seed: number,
-	) => {
-		for (let index = 0; index < count; index++) {
-			const x = liquid.left + 6 + hash(index, 0, seed) * (liquid.right - liquid.left - 12);
-			const start = liquid.bottom - 4 - hash(index, 1, seed) * 6;
-			const y = start - (frame - index * 1.5) * speed;
-			const top = liquid.surface.get(Math.round(x)) ?? liquid.middle[1] - 10;
-			if (frame - index * 1.5 >= 0 && y > top + 1) bubble(canvas, art, liquid, x, y);
+	const [mx, my] = liquid.middle;
+	const reach = (liquid.right - liquid.left) / 2;
+	const core = (x: number, y: number) => Math.hypot(x - mx, y - my) < reach * 0.62;
+
+	// a heartbeat: two beats, lub-dub, the middle of the liquid two steps bright on each, held
+	// apart by a rest so the rhythm reads
+	const beats = [1, 2, 2, 1, 0, 1, 2, 2, 1, 0, 0];
+	const beat = beats.map((steps) =>
+		lit(lit(art.clone(), liquid, ramp, steps ? 1 : 0), liquid, ramp, steps - 1, core),
+	);
+	const rising = risingBubbles(art, liquid, ramp, {
+		starts: [
+			[22, 0],
+			[30, 4],
+			[17, 8],
+		],
+		frames: 20,
+		speed: 2,
+		tones: { ring: 3, core: 1 },
+	});
+
+	// win: it gathers (the liquid darkens and sinks, the cork rattles), the cork shoots up on a
+	// burst of steam while the liquid boils bright, and drops back home
+	const corkUp = [0, 1, 2, 9, 13, 14, 13, 10, 5, 0, 0, 0];
+	const glow = [-1, -1, 0, 2, 2, 2, 2, 1, 1, 1, 1, 1];
+	const steam = [c(0xf5555d), c(0xf68187)];
+	const [neckX, neckY] = mouthOf(cork);
+	const hurt = corkUp.map((up, frame) => {
+		const boiling = frame >= 2 && frame <= 9;
+		const lift = (x: number) =>
+			frame < 2 ? 1 : boiling ? Math.round((blotch(x, 0, frame + 9) - 0.5) * 3) : 0;
+		const body = lifted(art, liquid, lift);
+		lit(body, liquidOf(body, red, glassColours), ramp, glow[frame]);
+		if (boiling)
+			for (let index = 0; index < 5; index++) {
+				const x = liquid.left + 4 + hash(index, 0, 17) * (liquid.right - liquid.left - 10);
+				const y = liquid.bottom - 4 - ((frame * 3 + index * 7) % 22);
+				if (y > surfaceAt(liquid, x) + 1)
+					bubble(body, art, liquid, ramp, [x, y], { ring: 3, core: 1 });
+			}
+		const canvas = corkedOff(body, cork, up);
+		// the steam: clouds that burst from the open neck and climb, wearing down
+		for (let index = 0; index < 4; index++) {
+			const age = span(frame, 3 + index * 0.6, 8.5 + index * 0.4);
+			const [w, h] =
+				age <= 0 || age >= 1 ? [0, 0] : age < 0.4 ? [7, 5] : age < 0.75 ? [6, 4] : [4, 3];
+			if (!w) continue;
+			const side = index % 2 ? 1 : -1;
+			clump(
+				canvas,
+				neckX + side * (2 + 6 * age) - w / 2,
+				neckY - 4 - 16 * age,
+				w,
+				h,
+				steam[0],
+				steam[1],
+			);
 		}
 
 		return canvas;
-	};
-	const rising = Array.from({ length: 10 }, (_, frame) => bubbles(art.clone(), frame, 1, 2.4, 4));
-
-	const pops = [0, 0, 1, 3, 4, 4, 3, 3, 3, 3, 3, 3];
-	const hurt = pops.map((up, frame) => {
-		const boil = (x: number) =>
-			frame < 10 ? Math.round((blotch(x, 0, frame + 9) - 0.5) * 2.4) : 0;
-		const canvas = lifted(art, liquid, boil);
-		bubbles(canvas, frame + 2, 6, 3, 17);
-
-		return uncorked(canvas, cork, up);
 	});
+	const last = lit(art.clone(), liquid, ramp, 1);
 
 	return {
-		symbolL1RestSway: sway(art, liquid),
+		symbolL1RestBeat: beat,
 		symbolL1RestBubble: rising,
-		symbolL1Land: slosh(art, liquid),
-		symbolL1Hurt: hurt,
-		symbolL1Gone: bottleGone(
-			hurt.at(-1)!,
-			liquidOf(
-				hurt.at(-1)!,
-				colours(0xf5555d, 0xea323c, 0xc42430, 0x891e2b, 0x571c27),
-				glassColours,
-			),
-			[c(0x571c27), c(0x891e2b), c(0xc42430), c(0xea323c), c(0xf5555d)],
-			{ seed: 11 },
-		),
+		symbolL1Land: plop(art, liquid),
+		symbolL1Hurt: [...hurt.slice(0, -1), padded(last, POTION_PAD)],
+		symbolL1Gone: bottleGone(last, liquidOf(last, red, glassColours), ramp, cork, { seed: 11 }),
 	};
 };
 
-// L2: the tall blue bottle. Light swirls slowly inside it; when it wins, bands of brighter light
-// rise through it.
+// L2: the tall blue bottle. At rest light fills it from the bottom and sinks away, or bubbles
+// rise; when it wins its cork pops and a column of light shoots out of the neck.
 const blueBottle = (): Runs => {
 	const art = SYMBOL_DRAWINGS.symbolL2();
-	const blue = colours(0x94fdff, 0x00cdf9, 0x0098dc, 0x0069aa);
+	const ramp = [0x03193f, 0x00396d, 0x0069aa, 0x0098dc, 0x00cdf9, 0x0cf1ff, 0x94fdff].map(c);
+	const blue = new Set(ramp);
 	const liquid = liquidOf(art, blue, glassColours);
-	const [cx, cy] = liquid.middle;
-	// the swirl: an arc of the liquid a step lighter, turning about the middle, wider than tall
-	const swirl = Array.from({ length: 12 }, (_, frame) => {
-		const turn = (frame / 12) * Math.PI * 2;
-
-		return brightened(art.clone(), liquid, 1, (x, y) => {
-			const dx = (x - cx) / 7;
-			const dy = (y - cy) / 12;
-			const far = Math.hypot(dx, dy);
-			const angle = Math.atan2(dy, dx);
-			const gap = Math.abs(((angle - turn + Math.PI * 3) % (Math.PI * 2)) - Math.PI);
-
-			return far > 0.35 && far < 0.95 && gap < 0.55;
-		});
+	const cork = pick(art, inBox([27, 5, 38, 12]));
+	const rising = risingBubbles(art, liquid, ramp, {
+		starts: [
+			[30, 0],
+			[25, 3],
+			[29, 7],
+		],
+		frames: 18,
+		speed: 2,
+		tones: { ring: 3, core: 1 },
 	});
-	const top = Math.min(...liquid.surface.values());
-	const hurt = Array.from({ length: HURT_FRAMES }, (_, frame) => {
-		const canvas = art.clone();
-		const glow = frame >= 3 ? 1 : 0;
-		if (glow) brightened(canvas, liquid, 1, (x, y) => liquid.has(x, y));
-		// three bands, two rows each, climb from the bottom to the surface
-		for (let band = 0; band < 3; band++) {
-			const y = liquid.bottom - (frame - band * 2.5) * 3.2;
-			if (y < top || y > liquid.bottom) continue;
-			brightened(canvas, liquid, 1, (_, py) => py >= Math.round(y) - 1 && py <= Math.round(y));
+
+	// win: the light gathers low (the liquid dims, a band climbs), the cork pops and a column of
+	// light stands out of the neck, its top cooling down the blues as it lets go and rises away
+	const [neckX, neckY] = mouthOf(cork);
+	const corkUp = [0, 0, 1, 5, 8, 9, 8, 6, 3, 0, 0, 0];
+	const glow = [-1, -1, 0, 2, 2, 2, 1, 1, 1, 1, 1, 1];
+	// the column's foot and head, in pixels above the neck
+	const beam: [number, number][] = [
+		[0, 0],
+		[0, 0],
+		[0, 0],
+		[0, 10],
+		[0, 18],
+		[0, 22],
+		[4, 24],
+		[10, 26],
+		[18, 28],
+		[25, 28],
+		[0, 0],
+		[0, 0],
+	];
+	const core = ramp.at(-1)!;
+	const hurt = corkUp.map((up, frame) => {
+		const body = lit(art.clone(), liquid, ramp, glow[frame]);
+		if (frame === 1 || frame === 2)
+			lit(body, liquid, ramp, 2, (_, y) => Math.abs(y - (liquid.bottom - 8 * frame)) < 3);
+		const canvas = corkedOff(body, cork, up);
+		const [foot, head] = beam[frame];
+		for (let rise = foot; rise < head; rise++) {
+			const y = neckY - 2 - rise;
+			// the head of the column a step cooler, its edges two
+			const fromHead = head - rise;
+			const tone = fromHead <= 2 ? ramp[4] : core;
+			for (let dx = -2; dx <= 2; dx++)
+				canvas.set(
+					neckX + dx,
+					y,
+					Math.abs(dx) === 2 ? ramp[4] : Math.abs(dx) === 1 ? ramp[5] : tone,
+				);
 		}
 
 		return canvas;
 	});
+	const last = lit(art.clone(), liquid, ramp, 1);
 
 	return {
-		symbolL2RestSwirl: swirl,
-		symbolL2RestSway: sway(art, liquid),
-		symbolL2Land: slosh(art, liquid),
-		symbolL2Hurt: hurt,
-		symbolL2Gone: bottleGone(
-			hurt.at(-1)!,
-			liquidOf(hurt.at(-1)!, blue, glassColours),
-			[c(0x03193f), c(0x00396d), c(0x0069aa), c(0x0098dc), c(0x00cdf9)],
-			{ seed: 23 },
-		),
+		symbolL2RestLight: lightRise(art, liquid, ramp),
+		symbolL2RestBubble: rising,
+		symbolL2Land: plop(art, liquid),
+		symbolL2Hurt: [...hurt.slice(0, -1), padded(last, POTION_PAD)],
+		symbolL2Gone: bottleGone(last, liquidOf(last, blue, glassColours), ramp, cork, { seed: 23 }),
 	};
 };
 
-// L3: the square green poison bottle under a wax seal. Wax runs down from the seal; when it wins,
-// green fumes rise from the neck.
+// L3: the square green poison bottle under a wax-sealed cap. At rest poison seeps out under the
+// cap and runs down the glass, or bubbles rise; when it wins the cap lifts and green fumes boil
+// out of the neck.
 const poisonBottle = (): Runs => {
 	const art = SYMBOL_DRAWINGS.symbolL3();
-	const green = colours(0x5ac54f, 0x33984b, 0x1e6f50);
+	const ramp = [0x134c4c, 0x1e6f50, 0x33984b, 0x5ac54f, 0x99e65f, 0xd3fc7e].map(c);
+	const green = new Set(ramp);
 	// the label's drop is the liquid's colour too, but stays on the label
 	const label = inBox([18, 34, 34, 47]);
 	const liquid = liquidOf(art, green, glassColours, (x, y) => !label(x, y));
-	const wax = colours(0x8a4836, 0x5d2c28, 0x391f21);
-	const seals = pick(
-		art,
-		(x, y, at) =>
-			wax.has(at) &&
-			y <= 13 &&
-			[1, 2, 3].every(
-				(down) =>
-					!wax.has(art.get(x, y + down)) &&
-					!wax.has(art.get(x + 1, y + down)) &&
-					art.get(x, y + down) !== CLEAR &&
-					art.get(x + 1, y + down) !== CLEAR,
-			),
-	);
-	const seal = seals.find(([x]) => x >= 26 && x <= 34) ?? seals[0];
-	const waxTones = [c(0x8a4836), c(0x5d2c28)] as const;
-	const onBottle = (x: number, y: number) => art.get(x, y) !== CLEAR && art.get(x, y) !== INK;
-	const running = DRIP.map((_, frame) =>
-		dripFrame(art.clone(), [seal[0], seal[1] + 1], frame, waxTones, onBottle),
-	);
+	const cap = pick(art, inBox([20, 5, 43, 13]));
 
-	const pad = 8;
+	// the seep: a bright green run creeps down the glass from under the cap and lets a drop go
+	const onBottle = (x: number, y: number) => art.get(x, y) !== CLEAR && art.get(x, y) !== INK;
+	// down the pale glass of its left edge, where green stands out: a dark green line on the
+	// pale edge and a light one on the glass beside it
+	const seepTones = [c(0x33984b), c(0x99e65f)] as const;
+	const SEEP: { length: number; drop?: number }[] = [
+		...[1, 2, 4, 6, 8, 10, 12, 14, 15, 15].map((length) => ({ length })),
+		{ length: 10, drop: 18 },
+		{ length: 6, drop: 22 },
+		{ length: 3, drop: 26 },
+		{ length: 1, drop: 30 },
+		{ length: 0 },
+	];
+	const seeping = SEEP.map(({ length, drop: falling }) => {
+		const canvas = art.clone();
+		for (let row = 0; row < length; row++)
+			for (const [dx, tone] of [
+				[0, seepTones[0]],
+				[1, seepTones[1]],
+			] as const)
+				if (onBottle(13 + dx, 25 + row)) canvas.set(13 + dx, 25 + row, tone);
+		if (falling !== undefined)
+			clump(canvas, 13, 25 + falling, 2, 3, seepTones[0], seepTones[1], onBottle);
+
+		return canvas;
+	});
+	const rising = risingBubbles(art, liquid, ramp, {
+		// in the dark green of its side, where a bubble shows best
+		starts: [
+			[43, 0],
+			[44, 6],
+			[43, 11],
+		],
+		frames: 22,
+		speed: 1.6,
+		tones: { ring: 3, core: 1 },
+	});
+
+	// win: the cap rattles, then lifts and the fumes boil out in big clouds that climb and part;
+	// the cap settles back as they thin
 	const fume = [c(0x33984b), c(0x5ac54f), c(0x99e65f)];
-	// the fumes: a column of big clumps that leave the neck one after another, climb, part to
-	// either side and wear down, fresh green turning darker as they go
+	const [neckX, neckY] = mouthOf(cap);
+	const capUp = [0, 1, 0, 4, 6, 6, 6, 5, 3, 1, 0, 0];
+	const glow = [-1, -1, 0, 2, 2, 2, 1, 1, 1, 1, 1, 1];
 	const fumeSize = (age: number) =>
 		age <= 0 || age >= 1
 			? [0, 0]
 			: age < 0.3
-				? [6, 5]
+				? [8, 6]
 				: age < 0.6
-					? [5, 4]
+					? [6, 5]
 					: age < 0.85
-						? [4, 3]
-						: [3, 2];
-	const hurt = Array.from({ length: HURT_FRAMES }, (_, frame) => {
-		const canvas = padded(brightened(art.clone(), liquid, frame >= 2 ? 1 : 0), pad);
-		for (let index = 0; index < 8; index++) {
-			const age = span(frame, index * 0.9, 5.5 + index * 0.9);
+						? [5, 4]
+						: [4, 3];
+	const hurt = capUp.map((up, frame) => {
+		const canvas = corkedOff(lit(art.clone(), liquid, ramp, glow[frame]), cap, up);
+		for (let index = 0; index < 7; index++) {
+			const age = span(frame, 3 + index * 0.6, 7.5 + index * 0.35);
 			const [w, h] = fumeSize(age);
 			if (!w) continue;
 			const side = index % 2 ? 1 : -1;
-			const x = 32 + side * (1 + 6 * age) + ((index % 3) - 1);
-			const y = 8 - 14 * age;
 			clump(
 				canvas,
-				x + pad - w / 2,
-				y + pad - h,
+				neckX + side * (1 + 9 * age) + ((index % 3) - 1) - w / 2,
+				neckY - 10 - 16 * age,
 				w,
 				h,
 				age < 0.5 ? fume[1] : fume[0],
@@ -1329,81 +1695,110 @@ const poisonBottle = (): Runs => {
 
 		return canvas;
 	});
-
-	const last = brightened(art.clone(), liquid, 1);
+	const last = lit(art.clone(), liquid, ramp, 1);
 
 	return {
-		symbolL3RestDrip: running,
-		symbolL3RestSway: sway(art, liquid),
-		symbolL3Land: slosh(art, liquid),
-		symbolL3Hurt: [...hurt.slice(0, -1), padded(last, pad)],
+		symbolL3RestSeep: seeping,
+		symbolL3RestBubble: rising,
+		symbolL3Land: plop(art, liquid),
+		symbolL3Hurt: [...hurt.slice(0, -1), padded(last, POTION_PAD)],
 		symbolL3Gone: bottleGone(
 			last,
-			liquidOf(last, colours(0x99e65f, 0x5ac54f, 0x33984b), glassColours, (x, y) => !label(x, y)),
-			[c(0x134c4c), c(0x1e6f50), c(0x33984b), c(0x5ac54f), c(0x99e65f)],
-			{
-				seed: 31,
-				puff: [fume[1], fume[2]],
-			},
+			liquidOf(last, green, glassColours, (x, y) => !label(x, y)),
+			ramp,
+			cap,
+			{ seed: 31 },
 		),
 	};
 };
 
-// L4: the triangular gold flask. Slow bubbles climb in it; when it wins, it surges and glows.
+// L4: the triangular gold flask. At rest light fills it or slow bubbles climb; when it wins its
+// cork pops and the gold leaps out of the neck in a fountain whose head breaks into drops that
+// rain back down into the flask before the cork drops home.
 const goldFlask = (): Runs => {
 	const art = SYMBOL_DRAWINGS.symbolL4();
-	const gold = colours(0xffeb57, 0xffc825, 0xedab50, 0xe07438);
+	const ramp = [0x8a4836, 0xe07438, 0xedab50, 0xffc825, 0xffeb57].map(c);
+	const gold = new Set(ramp);
 	const liquid = liquidOf(art, gold, glassColours, (_, y) => y >= 28);
-	const slow = Array.from({ length: 14 }, (_, frame) => {
-		const canvas = art.clone();
-		[
-			[24, 0],
+	const cork = pick(art, inBox([26, 8, 40, 14]));
+	// gold has no lighter colours to show a bubble with, so its bubbles are rings of the dark
+	const rising = risingBubbles(art, liquid, ramp, {
+		starts: [
+			[22, 0],
 			[34, 4],
-			[29, 8],
-		].forEach(([x, start]) => {
-			const rise = frame - start;
-			const y = liquid.bottom - 3 - rise * 1.5;
-			if (rise >= 0 && y > (liquid.surface.get(x) ?? 30) + 1) bubble(canvas, art, liquid, x, y);
-		});
+			[28, 8],
+		],
+		frames: 18,
+		speed: 1.4,
+		tones: { ring: -2, core: 1 },
+	});
+
+	const [neckX, neckY] = mouthOf(cork);
+	const corkUp = [0, 1, 2, 12, 19, 22, 23, 22, 18, 11, 0, 0];
+	const glow = [-1, -1, 0, 2, 2, 2, 2, 1, 1, 1, 1, 1];
+	// the level sinks as it gathers, and a little while the gold is out of the flask
+	const level = [1, 1, 0, -1, 0, 1, 1, 1, 1, 0, 0, 0];
+	// the spout: a column out of the neck, its foot and head in pixels above it
+	const spout: [number, number][] = [
+		[0, 0],
+		[0, 0],
+		[0, 0],
+		[0, 7],
+		[0, 12],
+		[3, 14],
+		[9, 14],
+		[0, 0],
+		[0, 0],
+		[0, 0],
+		[0, 0],
+		[0, 0],
+	];
+	const [, , mid, light, top] = ramp;
+	const hurt = corkUp.map((up, frame) => {
+		const body = lifted(art, liquid, () => level[frame]);
+		lit(
+			body,
+			liquidOf(body, gold, glassColours, (_, y) => y >= 26),
+			ramp,
+			glow[frame],
+		);
+		const canvas = corkedOff(body, cork, up);
+		const [foot, head] = spout[frame];
+		// six wide, its head a step wider still: a gush, not a rod
+		for (let rise = foot; rise < head; rise++) {
+			const head2 = rise >= head - 3;
+			for (let dx = head2 ? -4 : -3; dx <= (head2 ? 3 : 2); dx++)
+				canvas.set(
+					neckX + dx,
+					neckY - 2 - rise,
+					dx <= -3 || rise === foot ? mid : rise === head - 1 ? top : light,
+				);
+		}
+		// the head breaks into drops that fly out a little and rain back into the neck
+		for (let index = 0; index < 4; index++) {
+			const age = frame - 6 - (index >> 1) * 0.5;
+			if (age < 0) continue;
+			const side = index % 2 ? 1 : -1;
+			const out = (2.4 + (index >> 1)) * age - 0.75 * age * age;
+			const y = neckY - 15 - 2 * age + 2.2 * age * age;
+			if (y >= neckY - 3 || out < 0) continue;
+			clump(canvas, neckX + side * out - 2, y, index < 2 ? 4 : 3, index < 2 ? 3 : 2, mid, top);
+		}
 
 		return canvas;
 	});
-	const surge = [0, -1, -2, -2, -1, -1, 0, 0, 0, 0, 0, 0];
-	const glow = [0, 1, 1, 2, 2, 2, 1, 1, 1, 1, 1, 1];
-	const half = (liquid.right - liquid.left) / 2;
-	const middle = (liquid.left + liquid.right) / 2;
-	const hurt = surge.map((up, frame) => {
-		// the middle of the surface heaves up; its ends stay
-		const canvas = lifted(art, liquid, (x) =>
-			Math.abs(x - middle) < half * 0.5
-				? up
-				: Math.abs(x - middle) < half * 0.8
-					? Math.trunc(up / 2)
-					: 0,
-		);
-
-		return brightened(
-			canvas,
-			liquidOf(canvas, gold, glassColours, (_, y) => y >= 26),
-			glow[frame],
-		);
-	});
-	const last = hurt.at(-1)!;
+	const last = lit(art.clone(), liquid, ramp, 1);
 
 	return {
-		symbolL4RestBubbles: slow,
-		symbolL4RestSway: sway(art, liquid),
-		symbolL4Land: slosh(art, liquid),
-		symbolL4Hurt: hurt,
+		symbolL4RestLight: lightRise(art, liquid, ramp),
+		symbolL4RestBubble: rising,
+		symbolL4Land: plop(art, liquid),
+		symbolL4Hurt: [...hurt.slice(0, -1), padded(last, POTION_PAD)],
 		symbolL4Gone: bottleGone(
 			last,
-			liquidOf(
-				last,
-				colours(0xffeb57, 0xffc825, 0xedab50, 0xe07438, 0xf9e6cf),
-				glassColours,
-				(_, y) => y >= 26,
-			),
-			[c(0x8a4836), c(0xe07438), c(0xffc825), c(0xffeb57)],
+			liquidOf(last, gold, glassColours, (_, y) => y >= 26),
+			ramp,
+			cork,
 			{ seed: 41 },
 		),
 	};
@@ -1472,31 +1867,41 @@ const scatter = (): Runs => {
 		return out;
 	};
 
-	const glance = [-1, -1, -2, -2, -2, -2, -1, 0, 0, 1, 1, 1, 0].map((by) => looked(eye, by));
+	// a look to one side, held, then the other, held: three pixels each way, enough to read
+	const glance = [-1, -2, -3, -3, -3, -3, -3, -2, 0, 1, 2, 3, 3, 3, 3, 2, 0].map((by) =>
+		looked(eye, by),
+	);
 	const wary = [0, 1, 2, 3, 4, 5].map((level) =>
 		looked(heated(eye, Math.round(level * 0.4), Math.round(level * 0.7)), 0, 1),
 	);
+	// it narrows to a squint, then snaps wide with its slit pinched thin and the iris and seams
+	// at their hottest, and cools
 	const flare = [
-		[1, 2],
-		[2, 3],
-		[3, 4],
-		[3, 4],
-		[3, 4],
-		[2, 4],
-		[2, 3],
-		[2, 3],
-		[1, 2],
-		[1, 2],
-	].map(([irisSteps, seamSteps], frame) =>
-		looked(heated(eye, irisSteps, seamSteps), 0, frame < 7 ? 1 : 0),
-	);
+		heated(eyeLids(eye, 0.5), 1, 1),
+		heated(eyeLids(eye, 0.35), 2, 2),
+		...[
+			[3, 4, 2],
+			[3, 4, 2],
+			[3, 4, 2],
+			[3, 4, 1],
+			[2, 3, 1],
+			[2, 3, 1],
+			[2, 2, 1],
+			[1, 2, 0],
+		].map(([irisSteps, seamSteps, narrow]) => looked(heated(eye, irisSteps, seamSteps), 0, narrow)),
+	];
 
 	return {
 		symbolScatterBlink: [eyeLids(eye, 0.5), eyeLids(eye, 1), eyeLids(eye, 0.5)],
 		symbolScatterRestGlance: glance,
 		symbolScatterNarrow: [eyeLids(eye, 0.55)],
 		// it snaps open from narrowed, its iris a step hot for a moment
-		symbolScatterLand: [eyeLids(eye, 0.3), heated(eye, 1, 1), heated(eye, 1, 0)],
+		symbolScatterLand: [
+			eyeLids(eye, 0.55),
+			eyeLids(eye, 0.3),
+			heated(eye, 2, 1),
+			heated(eye, 1, 0),
+		],
 		symbolScatterWary: wary,
 		symbolScatterFlare: flare,
 	};
