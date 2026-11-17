@@ -962,7 +962,18 @@ const skull = (): Runs => {
 	};
 	// the jaw: everything under the mouth's middle row, left of the back of the skull
 	const jaw = pick(art, (x, y) => x <= 44 && y >= 53);
-	const clacked = (canvas: PixelCanvas, open: number) => moved(canvas, jaw, 0, open, () => SHADOW);
+	// what shows where the jaw has dropped away: the dark of the open mouth only across the mouth
+	// (the dark gap between the teeth runs from the skull's left edge to x 32); behind it the bone
+	// of the jaw's hinge carries on, and outside the head nothing, so no black bar cuts the cheek
+	// or sticks out past the skull
+	const MOUTH_END = 32;
+	const gap = (x: number) => {
+		const above = art.get(x, 52);
+		if (above === CLEAR) return CLEAR;
+
+		return x <= MOUTH_END ? SHADOW : above;
+	};
+	const clacked = (canvas: PixelCanvas, open: number) => moved(canvas, jaw, 0, open, gap);
 	// where the melted crown meets bare bone below it: the drips start there
 	const lips = pick(
 		art,
