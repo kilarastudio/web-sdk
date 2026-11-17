@@ -240,14 +240,11 @@ export const IDLE_ACTS: Record<string, IdleAct[]> = {
 		},
 		{ suffix: 'RestBubble', frame: 70, motion: idle(FOOT, (t) => ({ rotation: rock(t, 13, 2) })) },
 	],
+	// the eye acts with the eye alone: a slow look round or a heavy double blink. It used to swell
+	// as well, and on a phone the swell was all the user saw ("seperti cuma membesar").
 	symbolScatter: [
-		{ suffix: 'RestGlance', frame: 100, motion: idle(0, (t) => ({ scale: 1 + 0.12 * swell(t) })) },
-		{
-			suffix: 'Blink',
-			frame: 120,
-			times: 2,
-			motion: idle(0, (t) => ({ scale: 1 + 0.1 * swell(t) })),
-		},
+		{ suffix: 'RestGlance', frame: 90, motion: idle(0, () => ({})) },
+		{ suffix: 'Blink', frame: 110, times: 2, motion: idle(0, () => ({})) },
 	],
 };
 

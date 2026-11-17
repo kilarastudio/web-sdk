@@ -1887,8 +1887,9 @@ const scatter = (): Runs => {
 		return out;
 	};
 
-	// a look to one side, held, then the other, held: three pixels each way, enough to read
-	const glance = [-1, -2, -3, -3, -3, -3, -3, -2, 0, 1, 2, 3, 3, 3, 3, 2, 0].map((by) =>
+	// a look to one side, held, then the other, held: five pixels each way, so the slit is seen to
+	// travel across the iris on a phone
+	const glance = [-1, -3, -5, -5, -5, -5, -5, -3, -1, 1, 3, 5, 5, 5, 5, 5, 3, 1, 0].map((by) =>
 		looked(eye, by),
 	);
 	const wary = [0, 1, 2, 3, 4, 5].map((level) =>
