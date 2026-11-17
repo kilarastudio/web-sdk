@@ -67,10 +67,13 @@ export const SYMBOL_ACTS: Record<string, SymbolAct> = {
 // (IDLE_ACTS, game/idle.ts).
 type Rest = { suffix: string; frame: number };
 export const SYMBOL_RESTS: Record<string, { chance: number; acts: Rest[] }> = {
+	// the eye is alive: it blinks every second or two (a blink is two acts in three), sometimes
+	// glances instead
 	symbolScatter: {
-		chance: 1 / 45,
+		chance: 1 / 14,
 		acts: [
-			{ suffix: 'Blink', frame: 100 },
+			{ suffix: 'Blink', frame: 80 },
+			{ suffix: 'Blink', frame: 80 },
 			{ suffix: 'RestGlance', frame: 110 },
 		],
 	},
