@@ -6,7 +6,8 @@ import { deflateSync } from 'node:zlib';
 
 import { PixelCanvas } from '../src/pixel/canvas.ts';
 import { PALETTE } from '../src/pixel/palette.ts';
-import { SYMBOL_DRAWINGS, SYMBOL_FRAME_RUNS } from '../src/pixel/symbols.ts';
+import { SYMBOL_DRAWINGS } from '../src/pixel/symbols.ts';
+import { SYMBOL_FRAME_RUNS } from '../src/pixel/symbolRuns.ts';
 
 const out = process.argv[2] ?? '../../../output/dragon/pixel';
 mkdirSync(out, { recursive: true });
@@ -134,7 +135,7 @@ writeFileSync(
 );
 console.log('wrote board.png, ui.png');
 
-// the frame runs beside the still symbols: at rest, hurt by a win, and leaving the board
+// the frame runs beside the still symbols: at rest, landing, hurt by a win, and leaving the board
 writeFileSync(
 	join(out, 'symbol-frames.png'),
 	sheet(Object.values(SYMBOL_FRAME_RUNS()).flat(), {

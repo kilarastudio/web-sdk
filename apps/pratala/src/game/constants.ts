@@ -199,8 +199,9 @@ export const zIndexes = {
 };
 
 // Symbols come from src/pixel/symbols.ts (drawn art and art drawn by code) and are animated by code as solid objects: one
-// smooth curve into place, a win act of their own (SymbolSprite, game/symbolActs.ts) that leaves
-// the symbol hurt until it goes, and its own way of leaving the board (SymbolExplosion).
+// smooth curve into place, then frame runs of their own for every state (pixel/symbolRuns.ts): a
+// land, acts at rest, a win that leaves the symbol hurt until it goes (SymbolSprite,
+// game/symbolActs.ts), and its own way of leaving the board (SymbolExplosion).
 const explosion = { type: 'explosion', assetKey: '', sizeRatios: { width: 1, height: 1 } } as const;
 
 const kilaraSymbol = (assetKey: string) => {
@@ -212,7 +213,8 @@ const kilaraSymbol = (assetKey: string) => {
 	return {
 		explosion: { ...explosion, assetKey },
 		static: resting,
-		spin: sprite,
+		// falling into place: the dragon's eye comes in narrowed and snaps open as it lands
+		spin: { ...sprite, motion: 'fall' },
 		land: { ...sprite, motion: 'land' },
 		postWinStatic: { ...sprite, motion: 'hurt' },
 		win: { ...sprite, motion: 'win' },

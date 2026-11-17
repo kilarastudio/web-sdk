@@ -1,7 +1,7 @@
 // What each symbol does when it wins, after the hit and the white pop that every symbol shares:
-// the dragon marks it. Symbols are solid objects: they shake, swing and rock, but never bend. Distances are in
-// ART_PIXEL (a fortieth of the cell, whatever the art's own size) from the middle of the cell, angles in radians, and t runs from 0 to 1 over the
-// act.
+// the dragon marks it. Symbols are solid objects: they move by whole art pixels and never bend.
+// Distances are in ART_PIXEL (a fortieth of the cell, whatever the art's own size) from the middle
+// of the cell, angles in radians, and t runs from 0 to 1 over the act.
 export type SymbolPose = { x?: number; y?: number; rotation?: number; scale?: number };
 
 export type SymbolEffect = {
@@ -30,52 +30,96 @@ export const ACT_DURATION = 660;
 const clamp = (value: number) => Math.max(0, Math.min(1, value));
 // how far through the stretch from start to end t is
 const span = (t: number, start: number, end: number) => clamp((t - start) / (end - start));
-// a small shake that dies away, in art pixels: what a thing does while the dragon's heat, teeth
-// or claws are on it
-const tremble = (t: number, reach: number) => reach * Math.sin(Math.PI * 2 * 7 * t) * (1 - t);
 
-// What the dragon does to the symbol is drawn as its Hurt frames (pixel/symbols.ts); the last of
-// them stays until the symbol leaves the board.
-const hurt = (pivot: { x: number; y: number }, pose: SymbolAct['pose']): SymbolAct => ({
-	pivot,
-	pose,
-	frames: { suffix: 'Hurt', from: 0.1 },
-});
-
-// Every paying symbol takes the same act for now: it shakes as the dragon strikes and cracks
-// through (its Hurt frames, pixel/symbols.ts). Generic until each drawn symbol gets its own.
-const struck = hurt({ x: 0, y: 0 }, (t) => ({ x: tremble(t, 0.7) }));
+// A paying symbol's win is drawn whole in its own Hurt frames (pixel/symbolRuns.ts): the skull
+// laughs, the helm's gashes flare and it breathes smoke, the bottles boil, surge or fume. Nothing
+// is added here: any move happens inside the frames by whole art pixels. The last frame stays
+// until the symbol goes.
+const own: SymbolAct = {
+	pivot: { x: 0, y: 0 },
+	pose: () => ({}),
+	frames: { suffix: 'Hurt', from: 0.06 },
+};
 
 export const SYMBOL_ACTS: Record<string, SymbolAct> = {
-	symbolH1: struck,
-	symbolH2: struck,
-	symbolH3: struck,
-	symbolH4: struck,
-	symbolL1: struck,
-	symbolL2: struck,
-	symbolL3: struck,
-	symbolL4: struck,
-	// the dragon's eye flares wide and beats twice, throwing off a ring of fire
+	symbolH1: own,
+	symbolH2: own,
+	symbolH3: own,
+	symbolH4: own,
+	symbolL1: own,
+	symbolL2: own,
+	symbolL3: own,
+	symbolL4: own,
+	// the dragon's eye flares (its slit narrows, the iris heats, the seams round it blaze), beats
+	// twice and throws off a ring of fire
 	symbolScatter: {
 		pivot: { x: 0, y: 0 },
 		pose: (t) => ({ scale: 1 + 0.16 * Math.abs(Math.sin(Math.PI * 2 * t)) * (1 - t * 0.5) }),
 		effects: (t) =>
 			t >= 0.04 && t < 0.5 ? [{ key: 'burst', at: span(t, 0.04, 0.5), x: 0, y: 0, size: 64 }] : [],
-		frames: { suffix: 'Alert', from: 0 },
+		frames: { suffix: 'Flare', from: 0 },
 	},
 };
 
-// What a symbol at rest does now and then, as a frame run played once: a band of light slides
-// over a paying symbol, the dragon's eye blinks. chance is how likely it is to start on any tick
-// of the pixel clock (ten a second).
-export const SYMBOL_RESTS: Record<string, { suffix: string; duration: number; chance: number }> = {
-	symbolL1: { suffix: 'Rest', duration: 560, chance: 1 / 260 },
-	symbolL2: { suffix: 'Rest', duration: 560, chance: 1 / 260 },
-	symbolL3: { suffix: 'Rest', duration: 560, chance: 1 / 260 },
-	symbolL4: { suffix: 'Rest', duration: 560, chance: 1 / 260 },
-	symbolH1: { suffix: 'Rest', duration: 560, chance: 1 / 220 },
-	symbolH2: { suffix: 'Rest', duration: 560, chance: 1 / 220 },
-	symbolH3: { suffix: 'Rest', duration: 560, chance: 1 / 220 },
-	symbolH4: { suffix: 'Rest', duration: 560, chance: 1 / 220 },
-	symbolScatter: { suffix: 'Blink', duration: 300, chance: 1 / 45 },
+// What a symbol at rest does now and then, one of its acts played once: an ember breathes, a
+// bubble rises, wax runs, the dragon's eye blinks or glances. chance is how likely one is to
+// start on any tick of the pixel clock (ten a second); frame is how long each frame holds, in ms.
+type Rest = { suffix: string; frame: number };
+export const SYMBOL_RESTS: Record<string, { chance: number; acts: Rest[] }> = {
+	symbolH1: {
+		chance: 1 / 240,
+		acts: [
+			{ suffix: 'RestGlow', frame: 110 },
+			{ suffix: 'RestDrip', frame: 120 },
+		],
+	},
+	symbolH2: { chance: 1 / 240, acts: [{ suffix: 'Rest', frame: 110 }] },
+	symbolH3: {
+		chance: 1 / 240,
+		acts: [
+			{ suffix: 'RestSmoulder', frame: 120 },
+			{ suffix: 'RestSmoke', frame: 110 },
+		],
+	},
+	symbolH4: { chance: 1 / 240, acts: [{ suffix: 'Rest', frame: 110 }] },
+	symbolL1: {
+		chance: 1 / 280,
+		acts: [
+			{ suffix: 'RestSway', frame: 130 },
+			{ suffix: 'RestBubble', frame: 100 },
+		],
+	},
+	symbolL2: {
+		chance: 1 / 280,
+		acts: [
+			{ suffix: 'RestSwirl', frame: 110 },
+			{ suffix: 'RestSway', frame: 130 },
+		],
+	},
+	symbolL3: {
+		chance: 1 / 280,
+		acts: [
+			{ suffix: 'RestDrip', frame: 130 },
+			{ suffix: 'RestSway', frame: 130 },
+		],
+	},
+	symbolL4: {
+		chance: 1 / 280,
+		acts: [
+			{ suffix: 'RestBubbles', frame: 110 },
+			{ suffix: 'RestSway', frame: 130 },
+		],
+	},
+	symbolScatter: {
+		chance: 1 / 45,
+		acts: [
+			{ suffix: 'Blink', frame: 100 },
+			{ suffix: 'RestGlance', frame: 110 },
+		],
+	},
 };
+
+// How long each frame of a symbol's Land run holds, in ms: the jaw's clack, the helm's clank, the
+// slosh of a potion, the eye snapping open. It plays over the symbol as it settles and keeps
+// nothing waiting.
+export const LAND_FRAME = 70;

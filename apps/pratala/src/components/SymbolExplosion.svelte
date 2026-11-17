@@ -9,6 +9,7 @@
 	import { ART_PIXEL, SYMBOL_SIZE } from '../game/constants';
 	import { animate, frameAt } from '../game/motion';
 	import { impact } from '../game/impact.svelte';
+	import { OVER_STILL } from '../pixel/textures';
 
 	type Props = {
 		x?: number;
@@ -21,13 +22,15 @@
 	const context = getContext();
 
 	// A winning symbol leaves the board in its own way, drawn as a run of frames beside its art
-	// (pixel/symbols.ts, Gone): for now every paying symbol breaks along its cracks. The run starts
-	// from how the win left the symbol. A symbol with no run of its own breaks into its own pixels:
+	// (pixel/symbolRuns.ts, Gone): the skull splits as its crown melts over it, the helm parts along
+	// its gashes, the hat burns to ash, the axe's blades snap off, the bottles shatter and splash.
+	// The run starts from how the win left the symbol. A symbol with no run of its own breaks into its own pixels:
 	// it flashes white, then its 5 × 5 blocks fly out from the middle and fall, each held on the
 	// art-pixel grid, while a burst ring opens.
 	const CHUNKS = 5;
 	const DURATION = 460;
-	const GONE_DURATION = 480;
+	// each frame of a Gone run holds this long
+	const GONE_FRAME = 42;
 	const FLASH = 0.14;
 	const GRAVITY = 1500;
 	const chunkCache = new Map<string, PIXI.Texture[]>();
@@ -72,8 +75,14 @@
 			const gone = (context.stateApp.loadedAssets[`${props.assetKey}Gone`] ?? []) as PIXI.Texture[];
 
 			if (prefersReducedMotion.current) {
-				const still = new PIXI.Sprite({ texture: hurt.at(-1) ?? symbol, anchor: 0.5 });
-				still.setSize(SYMBOL_SIZE);
+				// how the win left it, over its still art where the frame needs that
+				const left = hurt.at(-1) ?? symbol;
+				const still = new PIXI.Container();
+				for (const texture of OVER_STILL.has(left) ? [symbol, left] : [left]) {
+					const sprite = new PIXI.Sprite({ texture, anchor: 0.5 });
+					sprite.setSize((SYMBOL_SIZE * texture.width) / symbol.width);
+					still.addChild(sprite);
+				}
 				container.addChild(still);
 				await animate(200, (progress) => alive && (still.alpha = 1 - progress));
 
@@ -85,7 +94,7 @@
 				const leaving = new PIXI.Sprite({ texture: gone[0], anchor: 0.5 });
 				leaving.setSize((SYMBOL_SIZE * gone[0].width) / symbol.width);
 				container.addChild(leaving);
-				await animate(GONE_DURATION, (progress) => {
+				await animate(gone.length * GONE_FRAME, (progress) => {
 					if (alive) leaving.texture = gone[frameAt(progress, gone.length)];
 				});
 				leaving.visible = false;

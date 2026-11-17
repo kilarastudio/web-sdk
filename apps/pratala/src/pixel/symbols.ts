@@ -30,17 +30,17 @@ const drawn = (key: keyof typeof SYMBOL_ART) => () => {
 // shows the word as SCATTER, so it can live in the art). Its blink and its alert are worked out
 // from the art itself: the eye is the run of fire colours above the plate, the pupil the dark
 // between them.
-const dragonEye = drawn('symbolScatter');
+export const dragonEye = drawn('symbolScatter');
 
 // the iris's colours: the fire and gold steps of the art's eye, not its red rim, which the scales'
 // cracks share
-const IRIS = new Set(
+export const IRIS = new Set(
 	[0xc64524, 0xff5000, 0xed7614, 0xffa214, 0xffc825, 0xea323c].map((hex) => color(hex)),
 );
 
 // The eye's opening, column by column: from the top to the bottom of the iris joined to the
 // middle of the art, above the lettered plate. Each column's span holds the pupil too.
-const eyeOpening = (art: PixelCanvas) => {
+export const eyeOpening = (art: PixelCanvas) => {
 	// the lettered plate starts three quarters down; its letters share the iris colours
 	const plate = Math.round(art.height * 0.75);
 	const seen = new Set<number>();
@@ -89,7 +89,7 @@ const eyeOpening = (art: PixelCanvas) => {
 // scales round it with an INK edge where it ends. shut: how far, 0 open to 1 closed; the lids
 // meet a little below the middle, as the v1 eye's did.
 const SCALE = { upper: color(0x3d3d3d), lower: color(0x272727), fold: color(0x1b1b1b) };
-const eyeLids = (art: PixelCanvas, shut: number) => {
+export const eyeLids = (art: PixelCanvas, shut: number) => {
 	const canvas = art.clone();
 	for (const [x, { top, bottom }] of eyeOpening(art)) {
 		const height = bottom - top + 1;
@@ -107,7 +107,7 @@ const eyeLids = (art: PixelCanvas, shut: number) => {
 
 // The eye has seen something: the iris one step brighter, the slit a pixel narrower (its right
 // side gives way to the iris beside it).
-const eyeAlert = (art: PixelCanvas) => {
+export const eyeAlert = (art: PixelCanvas) => {
 	const canvas = art.clone();
 	for (const [x, { top, bottom }] of eyeOpening(art))
 		for (let y = top; y <= bottom; y++) {
@@ -149,221 +149,7 @@ const wild = () => {
 // How a symbol leaves the board is drawn on a wider canvas, the symbol in its middle, so its
 // pieces can fly past the cell's edges: 64 art pixels round a 40 pixel symbol, and as much more
 // round a bigger one, so every symbol's pieces fly as far, measured in cells.
-const goneSize = (size: number) => size + 2 * Math.ceil((size * 12) / SYMBOL_PIXELS);
-const HURT_FRAMES = 8;
-const GONE_FRAMES = 10;
-
-const clamp = (value: number) => Math.max(0, Math.min(1, value));
-const span = (t: number, start: number, end: number) => clamp((t - start) / (end - start));
-
-// a pixel on the rim of what is drawn: the drawn art's own dark outline is there
-const onRim = (canvas: PixelCanvas, x: number, y: number) =>
-	canvas.get(x - 1, y) === CLEAR ||
-	canvas.get(x + 1, y) === CLEAR ||
-	canvas.get(x, y - 1) === CLEAR ||
-	canvas.get(x, y + 1) === CLEAR;
-
-// a pseudo-random run from a seed, so the art comes out the same on every load
-const randomFrom = (seed: number) => {
-	let state = seed;
-
-	return () => (state = (state * 16807) % 2147483647) / 2147483647;
-};
-
-// What a symbol does at rest now and then: a soft band of light slides over it from the top left
-// to the bottom right, one ramp step lighter, no white, its outline left dark. Generic for now;
-// each drawn symbol is to get its own.
-const glide = (art: PixelCanvas, frames = 8) =>
-	Array.from({ length: frames }, (_, frame) => {
-		const at = -4 + ((art.width + art.height + 8) * frame) / (frames - 1);
-
-		return art.clone().paint(
-			(x, y, c) => c !== INK && !onRim(art, x, y) && Math.abs(x + y - at) <= 2,
-			(c) => LIGHTER[c],
-		);
-	});
-
-// a crack opens from one point to another, between start and end of the win (0 to 1)
-type Crack = { from: Point; to: Point; start: number; end: number };
-// how a symbol breaks: its cracks, which piece each of its pixels belongs to, and the point the
-// pieces fly from
-type Breakage = { cracks: Crack[]; owner: (x: number, y: number) => number; middle: Point };
-
-const within = (polygon: readonly Point[], x: number, y: number) => {
-	let inside = false;
-	for (let i = 0, j = polygon.length - 1; i < polygon.length; j = i++) {
-		const [xi, yi] = polygon[i];
-		const [xj, yj] = polygon[j];
-		if (yi > y !== yj > y && x < ((xj - xi) * (y - yi)) / (yj - yi) + xi) inside = !inside;
-	}
-
-	return inside;
-};
-
-// a pixel belongs to the piece it lies in, or the nearest
-const byPieces = (pieces: Point[][]) => {
-	const centres = pieces.map((piece): Point => [
-		piece.reduce((sum, [x]) => sum + x, 0) / piece.length,
-		piece.reduce((sum, [, y]) => sum + y, 0) / piece.length,
-	]);
-
-	return (x: number, y: number) => {
-		const inside = pieces.findIndex((piece) => within(piece, x + 0.5, y + 0.5));
-		if (inside >= 0) return inside;
-
-		return centres.reduce(
-			(best, [px, py], index) =>
-				Math.hypot(px - x, py - y) < Math.hypot(centres[best][0] - x, centres[best][1] - y)
-					? index
-					: best,
-			0,
-		);
-	};
-};
-
-// Any symbol breaks the way a struck plate does, whatever its shape: cracks run from the middle of
-// what is drawn out to a bend halfway, then on past its edge, and last round between the bends.
-// The pieces are what the cracks cut out: a ring of wedges in the middle, a ring of shards
-// round them. Generic for now; each drawn symbol is to get its own way of being hurt.
-const struckBreakage = (art: PixelCanvas, { spokes = 5, seed = 7 } = {}): Breakage => {
-	let sumX = 0;
-	let sumY = 0;
-	let count = 0;
-	for (let y = 0; y < art.height; y++)
-		for (let x = 0; x < art.width; x++)
-			if (art.get(x, y) !== CLEAR) {
-				sumX += x;
-				sumY += y;
-				count++;
-			}
-	const middle: Point = [Math.round(sumX / count), Math.round(sumY / count)];
-	let reach = 0;
-	for (let y = 0; y < art.height; y++)
-		for (let x = 0; x < art.width; x++)
-			if (art.get(x, y) !== CLEAR)
-				reach = Math.max(reach, Math.hypot(x - middle[0], y - middle[1]));
-
-	const random = randomFrom(seed);
-	const turn = (Math.PI * 2) / spokes;
-	const start = -Math.PI / 2 + (random() - 0.5) * turn;
-	const at = (angle: number, far: number): Point => [
-		Math.round(middle[0] + Math.cos(angle) * far),
-		Math.round(middle[1] + Math.sin(angle) * far),
-	];
-	const angles = Array.from(
-		{ length: spokes },
-		(_, index) => start + turn * index + (random() - 0.5) * 0.5 * turn,
-	);
-	const bends = angles.map((angle) => at(angle + (random() - 0.5) * 0.3, reach * 0.5));
-	// past the edge, so the outer shards hold every drawn pixel
-	const ends = angles.map((angle) => at(angle, reach * 1.6));
-
-	const pieces: Point[][] = [];
-	const cracks: Crack[] = [];
-	angles.forEach((_, index) => {
-		const next = (index + 1) % spokes;
-		pieces.push([middle, bends[index], bends[next]]);
-		pieces.push([bends[index], ends[index], ends[next], bends[next]]);
-		cracks.push({ from: middle, to: bends[index], start: 0.1, end: 0.45 });
-		cracks.push({ from: bends[index], to: ends[index], start: 0.4, end: 0.8 });
-		cracks.push({ from: bends[index], to: bends[next], start: 0.75, end: 1 });
-	});
-
-	return { cracks, owner: byPieces(pieces), middle };
-};
-
-const partLine = (canvas: PixelCanvas, from: Point, to: Point, amount: number, c: number) =>
-	canvas.line(
-		from[0],
-		from[1],
-		from[0] + (to[0] - from[0]) * amount,
-		from[1] + (to[1] - from[1]) * amount,
-		c,
-	);
-
-// winning: the cracks open one after another, each with a lip two steps lighter than what it
-// splits; at the end every piece stands apart
-const cracking = (art: PixelCanvas, { cracks }: Breakage) =>
-	Array.from({ length: HURT_FRAMES }, (_, frame) => {
-		const t = (frame + 1) / HURT_FRAMES;
-		const canvas = art.clone();
-		for (const { from, to, start, end } of cracks) {
-			const amount = span(t, start, end);
-			if (amount <= 0) continue;
-			const lip = new PixelCanvas(art.width, art.height);
-			partLine(lip, [from[0] - 1, from[1]], [to[0] - 1, to[1]], amount, INK);
-			canvas.paint(
-				(x, y, c) => lip.get(x, y) !== CLEAR && c !== INK && !onRim(art, x, y),
-				(c) => LIGHTER[LIGHTER[c]],
-			);
-			const dark = new PixelCanvas(art.width, art.height);
-			partLine(dark, from, to, amount, INK);
-			canvas.paint((x, y) => dark.get(x, y) !== CLEAR, INK);
-		}
-
-		return canvas;
-	});
-
-// going: the pieces fly out from the middle and fall, each a solid shard that wears away. Distances
-// are given for a 40 pixel symbol and grow with a bigger one. reach: how far they fly, in pixels.
-const shattering = (
-	art: PixelCanvas,
-	{ owner, middle }: Breakage,
-	{ seed = 5, reach = 9 } = {},
-) => {
-	const size = goneSize(art.width);
-	const margin = (size - art.width) / 2;
-	const grow = art.width / SYMBOL_PIXELS;
-	const parts: PixelCanvas[] = [];
-	const sums: { x: number; y: number; count: number }[] = [];
-	for (let y = 0; y < art.height; y++)
-		for (let x = 0; x < art.width; x++) {
-			const c = art.get(x, y);
-			if (c === CLEAR) continue;
-			const index = owner(x, y);
-			parts[index] ??= new PixelCanvas(size, size);
-			sums[index] ??= { x: 0, y: 0, count: 0 };
-			parts[index].set(x + margin, y + margin, c);
-			sums[index].x += x;
-			sums[index].y += y;
-			sums[index].count++;
-		}
-	const random = randomFrom(seed);
-	const flights = sums.map((sum) => {
-		const angle =
-			Math.atan2(sum.y / sum.count - middle[1], sum.x / sum.count - middle[0]) +
-			(random() - 0.5) * 0.5;
-		const far = reach * grow * (1 + random());
-
-		return {
-			x: Math.cos(angle) * far,
-			y: Math.sin(angle) * far - 4 * grow,
-			wear: 0.45 + random() * 0.2,
-		};
-	});
-	// a piece with its outermost pixels gone
-	const worn = (canvas: PixelCanvas) => canvas.clone().paint((x, y) => onRim(canvas, x, y), CLEAR);
-	const wearSteps = Math.round(5 * grow);
-
-	return Array.from({ length: GONE_FRAMES }, (_, frame) => {
-		const t = (frame + 1) / GONE_FRAMES;
-		const canvas = new PixelCanvas(size, size);
-		parts.forEach((piece, index) => {
-			const flight = flights[index];
-			const out = 1 - (1 - t) ** 2;
-			let shard = piece;
-			const wears = Math.floor(span(t, flight.wear, 1) * wearSteps);
-			for (let wear = 0; wear < wears; wear++) shard = worn(shard);
-			canvas.blit(
-				outlined(shard.clone()),
-				Math.round(flight.x * out),
-				Math.round(flight.y * out + 16 * grow * t * t),
-			);
-		});
-
-		return canvas;
-	});
-};
+export const goneSize = (size: number) => size + 2 * Math.ceil((size * 12) / SYMBOL_PIXELS);
 
 export const SYMBOL_DRAWINGS = {
 	symbolL1: drawn('symbolL1'),
@@ -379,38 +165,3 @@ export const SYMBOL_DRAWINGS = {
 } as const;
 
 export type SymbolKey = keyof typeof SYMBOL_DRAWINGS;
-
-const PAYING = [
-	'symbolH1',
-	'symbolH2',
-	'symbolH3',
-	'symbolH4',
-	'symbolL1',
-	'symbolL2',
-	'symbolL3',
-	'symbolL4',
-] as const;
-
-// Frame runs beside the still art, keyed like the symbols with a suffix: the scatter's Blink and
-// Alert, a symbol's Rest (what it does now and then on the board), its Hurt (what the dragon does
-// to it as it wins; the last frame stays until it goes) and its Gone (how it leaves the board, on
-// a wider canvas, goneSize). A symbol may lack any run: the game then shows its still art.
-export const SYMBOL_FRAME_RUNS = (): Record<string, PixelCanvas[]> => {
-	const eye = dragonEye();
-	const runs: Record<string, PixelCanvas[]> = {
-		symbolScatterBlink: [eyeLids(eye, 0.5), eyeLids(eye, 1), eyeLids(eye, 0.5)],
-		symbolScatterAlert: [eyeAlert(eye)],
-	};
-	PAYING.forEach((key, index) => {
-		const art = SYMBOL_DRAWINGS[key]();
-		const breakage = struckBreakage(art, { seed: 7 + index * 13 });
-		runs[`${key}Rest`] = glide(art);
-		runs[`${key}Hurt`] = cracking(art, breakage);
-		// it breaks from where the win left it: cracked through
-		runs[`${key}Gone`] = shattering(runs[`${key}Hurt`].at(-1) ?? art, breakage, {
-			seed: 5 + index,
-		});
-	});
-
-	return runs;
-};

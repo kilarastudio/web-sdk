@@ -2,7 +2,8 @@ import * as PIXI from 'pixi.js';
 
 import { PixelCanvas } from './canvas.ts';
 import { CLEAR, INK, LIGHTER, WHITE } from './palette.ts';
-import { SYMBOL_DRAWINGS, SYMBOL_FRAME_RUNS } from './symbols.ts';
+import { SYMBOL_DRAWINGS } from './symbols.ts';
+import { SYMBOL_FRAME_RUNS } from './symbolRuns.ts';
 import * as ui from './ui.ts';
 
 // Art pixels are drawn four screen-texture pixels wide and sampled linearly: edges stay crisp at
@@ -12,15 +13,84 @@ export const PIXEL_SCALE = 4;
 // enough steps for the band of light to cross a symbol without jumping
 export const SHINE_FRAMES = 12;
 
-const toTexture = (canvas: PixelCanvas) => {
+const sourceOf = (canvas: PixelCanvas) => {
 	const { width, height, data } = canvas.toRGBA(PIXEL_SCALE);
 	const element = document.createElement('canvas');
 	element.width = width;
 	element.height = height;
 	element.getContext('2d')?.putImageData(new ImageData(data, width, height), 0, 0);
 
+	return new PIXI.ImageSource({ resource: element, autoGenerateMipmaps: true });
+};
+
+const toTexture = (canvas: PixelCanvas) => new PIXI.Texture({ source: sourceOf(canvas) });
+
+type Box = { x: number; y: number; width: number; height: number };
+
+// the smallest box round the art pixels that pass the test
+const boxOf = (width: number, height: number, test: (x: number, y: number) => boolean): Box => {
+	let left = width;
+	let top = height;
+	let right = -1;
+	let bottom = -1;
+	for (let y = 0; y < height; y++)
+		for (let x = 0; x < width; x++) {
+			if (!test(x, y)) continue;
+			left = Math.min(left, x);
+			right = Math.max(right, x);
+			top = Math.min(top, y);
+			bottom = Math.max(bottom, y);
+		}
+	// nothing at all: one clear pixel stands for it
+	if (right < 0) return { x: 0, y: 0, width: 1, height: 1 };
+
+	return { x: left, y: top, width: right - left + 1, height: bottom - top + 1 };
+};
+
+// Only the box is stored; `orig` keeps the whole frame's size and `trim` where the box sits in it,
+// so a sprite sizes and places the texture as if it were whole.
+const croppedTexture = (canvas: PixelCanvas, box: Box) => {
+	const part = new PixelCanvas(box.width, box.height).blit(canvas, -box.x, -box.y);
+	const source = sourceOf(part);
+
 	return new PIXI.Texture({
-		source: new PIXI.ImageSource({ resource: element, autoGenerateMipmaps: true }),
+		source,
+		frame: new PIXI.Rectangle(0, 0, source.width, source.height),
+		orig: new PIXI.Rectangle(0, 0, canvas.width * PIXEL_SCALE, canvas.height * PIXEL_SCALE),
+		trim: new PIXI.Rectangle(box.x * PIXEL_SCALE, box.y * PIXEL_SCALE, source.width, source.height),
+	});
+};
+
+// Frames that only change the still art in places (an ember, a liquid's surface, an eye) are drawn
+// over it: their texture holds just the box where they differ. The game draws the still art
+// under any texture in this set.
+export const OVER_STILL = new WeakSet<PIXI.Texture>();
+
+// A run of frames, each stored as small as it can be: over the still art where that is enough,
+// else cropped to what is drawn. A frame the same as one before shares its texture.
+const runTextures = (frames: PixelCanvas[], still?: PixelCanvas) => {
+	const made = new Map<string, PIXI.Texture>();
+
+	return frames.map((frame) => {
+		const id = frame.data.join(',');
+		const known = made.get(id);
+		if (known) return known;
+		const margin = still ? (frame.width - still.width) / 2 : 0;
+		const under = (x: number, y: number) => (still ? still.get(x - margin, y - margin) : CLEAR);
+		let erases = false;
+		const changed = boxOf(frame.width, frame.height, (x, y) => {
+			const differs = frame.get(x, y) !== under(x, y);
+			if (differs && frame.get(x, y) === CLEAR) erases = true;
+
+			return differs;
+		});
+		const drawn = boxOf(frame.width, frame.height, (x, y) => frame.get(x, y) !== CLEAR);
+		const over = still && !erases && changed.width * changed.height < drawn.width * drawn.height;
+		const texture = croppedTexture(frame, over ? changed : drawn);
+		if (over) OVER_STILL.add(texture);
+		made.set(id, texture);
+
+		return texture;
 	});
 };
 
@@ -79,11 +149,16 @@ export const generateArt = ({
 		const canvas = draw();
 		art[key] = toTexture(canvas);
 		art[`${key}Flash`] = toTexture(flash(canvas));
-		art[`${key}Shine`] = shineFrames(canvas).map(toTexture);
+		art[`${key}Shine`] = runTextures(shineFrames(canvas));
 	}
 
-	// what the symbols do at rest, how a win leaves them and how they go
-	for (const [key, frames] of Object.entries(SYMBOL_FRAME_RUNS())) art[key] = frames.map(toTexture);
+	// What the symbols do in every state (pixel/symbolRuns.ts). Every run but Gone is drawn over its
+	// symbol's still art where it can be; Gone starts from where the win left the symbol.
+	const stills = Object.keys(SYMBOL_DRAWINGS).sort((a, b) => b.length - a.length);
+	for (const [key, frames] of Object.entries(SYMBOL_FRAME_RUNS())) {
+		const symbol = stills.find((still) => key.startsWith(still)) as keyof typeof SYMBOL_DRAWINGS;
+		art[key] = runTextures(frames, key.endsWith('Gone') ? undefined : SYMBOL_DRAWINGS[symbol]());
+	}
 
 	for (const [width, height] of flames) {
 		const run = ui.flameFrames(width, height);

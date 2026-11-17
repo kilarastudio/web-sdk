@@ -13,6 +13,7 @@
 	import { SYMBOL_SIZE } from '../game/constants';
 	import { SYMBOL_RESTS } from '../game/symbolActs';
 	import { frameAt } from '../game/motion';
+	import { OVER_STILL } from '../pixel/textures';
 	import type { RawSymbol, SymbolState } from '../game/types';
 
 	// A page for looking at the symbols, not part of the game (dev server only, ?symbols): every
@@ -34,7 +35,14 @@
 	const COLUMNS = 3;
 	const ROWS = Math.ceil(SYMBOLS.length / COLUMNS);
 	const HOLD = { still: 700, hurt: 600, gone: 500 };
-	const LABELS = { still: 'diam', rest: 'diam', win: 'menang', hurt: 'rusak', explosion: 'hilang', gone: '' };
+	const LABELS = {
+		still: 'diam',
+		rest: 'diam',
+		win: 'menang',
+		hurt: 'rusak',
+		explosion: 'hilang',
+		gone: '',
+	};
 
 	type Phase = keyof typeof LABELS;
 	const STATES: Partial<Record<Phase, SymbolState>> = {
@@ -52,17 +60,21 @@
 	const wait = (duration: number) => new Promise((resolve) => setTimeout(resolve, duration));
 	const finished = (index: number) => new Promise<void>((resolve) => (done[index] = resolve));
 
-	// what the symbol does at rest, played once
+	// what the symbol does at rest, one of its acts in turn, played once
+	const restsPlayed = SYMBOLS.map(() => 0);
 	const rest = async (index: number) => {
 		const stir = SYMBOL_RESTS[SYMBOLS[index].key];
-		const frames = stir
-			? ((context.stateApp.loadedAssets[`${SYMBOLS[index].key}${stir.suffix}`] ?? []) as PIXI.Texture[])
+		const act = stir?.acts[restsPlayed[index]++ % stir.acts.length];
+		const frames = act
+			? ((context.stateApp.loadedAssets[`${SYMBOLS[index].key}${act.suffix}`] ??
+					[]) as PIXI.Texture[])
 			: [];
-		if (!stir || !frames.length) return;
+		if (!act || !frames.length) return;
+		const duration = frames.length * act.frame;
 		const start = performance.now();
 		phases[index] = 'rest';
 		for (;;) {
-			const progress = (performance.now() - start) / stir.duration;
+			const progress = (performance.now() - start) / duration;
 			if (progress >= 1) break;
 			restFrames[index] = frames[frameAt(progress, frames.length)];
 			await new Promise(requestAnimationFrame);
@@ -121,11 +133,16 @@
 			{@const state = STATES[phase]}
 			<Container {x} {y} {scale}>
 				{#if phase === 'rest'}
+					{@const frame = restFrames[index] ?? PIXI.Texture.EMPTY}
+					{@const still = context.stateApp.loadedAssets[symbol.key] as PIXI.Texture}
+					{#if OVER_STILL.has(frame)}
+						<BaseSprite texture={still} anchor={0.5} width={SYMBOL_SIZE} height={SYMBOL_SIZE} />
+					{/if}
 					<BaseSprite
-						texture={restFrames[index] ?? PIXI.Texture.EMPTY}
+						texture={frame}
 						anchor={0.5}
-						width={SYMBOL_SIZE}
-						height={SYMBOL_SIZE}
+						width={(SYMBOL_SIZE * frame.width) / still.width}
+						height={(SYMBOL_SIZE * frame.height) / still.height}
 					/>
 				{:else if state}
 					{#key state}

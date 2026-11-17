@@ -17,11 +17,13 @@
 	import { anticipation, anticipationDim } from '../game/anticipation.svelte';
 	import {
 		ACT_DURATION,
+		LAND_FRAME,
 		SYMBOL_ACTS,
 		SYMBOL_RESTS,
 		type SymbolEffect,
 		type SymbolPose,
 	} from '../game/symbolActs';
+	import { OVER_STILL } from '../pixel/textures';
 
 	type Props = {
 		x?: number;
@@ -35,11 +37,14 @@
 	const props: Props = $props();
 	const context = getContext();
 
-	// Symbols are solid objects, moved by code on every frame and never bent. Landing is the
-	// reel's own doing (one smooth curve into place); nothing is added here. A win: the symbol turns white and pulls in
-	// for a moment (the hit), bursts out, and then does its own act (game/symbolActs.ts) while a
-	// band of light crosses it. At rest a band of light slides over a symbol now and then and the
-	// dragon's eye blinks. While a column waits on a scatter, every other symbol darkens and the scatters throb.
+	// Symbols are solid objects, never bent: every move is drawn into their frame runs
+	// (pixel/symbolRuns.ts) by whole art pixels. The reel brings a symbol into place on one smooth
+	// curve; as it arrives it plays its Land run (a jaw clacks, a potion sloshes, the dragon's eye,
+	// narrowed as it fell, snaps open) without keeping the reel waiting. A win: the symbol turns
+	// white and pulls in for a moment (the hit), bursts out, and then does its own act
+	// (game/symbolActs.ts) while a band of light crosses it. At rest a symbol now and then plays
+	// one of its rest acts. While a column waits on a scatter, every other symbol darkens and the
+	// scatters throb, their slits narrowed and their seams glowing with the beat.
 	const WIN = {
 		hold: { duration: 80, squeeze: 0.1 },
 		flash: { duration: 110, pop: 0.22 },
@@ -59,13 +64,18 @@
 	let overlay = $state<PIXI.Texture>();
 	// a frame standing in for the symbol's art
 	let stand = $state<PIXI.Texture>();
+	// the frame of its landing, which outlives the land state: the reel calls a symbol landed at
+	// once, and the run plays on over it at rest
+	let landing = $state<PIXI.Texture>();
 	let run = 0;
+	let landRun = 0;
 	let resting = false;
 
 	const reduced = $derived(prefersReducedMotion.current);
 	const assetKey = $derived(props.symbolInfo.assetKey);
 	const act = $derived(SYMBOL_ACTS[assetKey]);
-	const atRest = $derived('motion' in props.symbolInfo && props.symbolInfo.motion === 'rest');
+	const motion = $derived('motion' in props.symbolInfo ? props.symbolInfo.motion : undefined);
+	const atRest = $derived(motion === 'rest');
 	const scatter = $derived(assetKey === 'symbolScatter');
 
 	const texture = (key: string) =>
@@ -78,6 +88,17 @@
 			? frames(`${assetKey}Hurt`).at(-1)
 			: undefined,
 	);
+
+	const land = (key: string) => {
+		const id = ++landRun;
+		const settle = frames(`${key}Land`);
+		if (!settle.length || prefersReducedMotion.current) return;
+		animate(settle.length * LAND_FRAME, (progress) => {
+			if (id === landRun) landing = settle[frameAt(progress, settle.length)];
+		}).then(() => {
+			if (id === landRun) landing = undefined;
+		});
+	};
 
 	const win = async (id: number, key: string) => {
 		if (prefersReducedMotion.current) {
@@ -134,6 +155,12 @@
 			resting = false;
 			clear();
 			if ('motion' in symbolInfo) {
+				if (symbolInfo.motion === 'land') land(symbolInfo.assetKey);
+				// a win, a fall or a new symbol in the cell ends a landing still playing
+				else if (symbolInfo.motion !== 'rest') {
+					landRun++;
+					landing = undefined;
+				}
 				if (symbolInfo.motion === 'win') await win(id, symbolInfo.assetKey);
 			}
 			if (id === run) clear();
@@ -146,14 +173,15 @@
 		void pixelClock.frame;
 		untrack(() => {
 			const rest = SYMBOL_RESTS[assetKey];
-			if (!rest || !atRest || resting || reduced || anticipationDim.current > 0) return;
+			if (!rest || !atRest || resting || landing || reduced || anticipationDim.current > 0) return;
 			if (Math.random() >= rest.chance) return;
-			const stir = frames(`${assetKey}${rest.suffix}`);
+			const act = rest.acts[Math.floor(Math.random() * rest.acts.length)];
+			const stir = frames(`${assetKey}${act.suffix}`);
 			if (!stir.length) return;
 			const id = run;
 			resting = true;
 			animate(
-				rest.duration,
+				stir.length * act.frame,
 				(progress) => {
 					if (id === run) stand = stir[frameAt(progress, stir.length)];
 				},
@@ -183,11 +211,22 @@
 			? Math.round(lerp(255, HUSHED, anticipation.hush)) * 0x010101
 			: 0xffffff,
 	);
+	// awake, the eye beats with the waiting: its frames run from cool to hot and back (held at
+	// the middle one for reduced motion)
+	const wary = $derived(frames(`${assetKey}Wary`));
+	const still = $derived(texture(assetKey));
 	const art = $derived(
 		stand ??
+			landing ??
 			hurt ??
-			(awake ? (frames(`${assetKey}Alert`)[0] ?? texture(assetKey)) : texture(assetKey)),
+			(awake && wary.length
+				? wary[reduced ? Math.floor(wary.length / 2) : frameAt(anticipation.pulse, wary.length)]
+				: undefined) ??
+			(motion === 'fall' ? frames(`${assetKey}Narrow`)[0] : undefined) ??
+			still,
 	);
+	// a frame that only changes the art in places is drawn over the still art (pixel/textures.ts)
+	const overStill = $derived(art !== still && OVER_STILL.has(art));
 
 	const pivot = $derived({
 		x: (act?.pivot.x ?? 0) * ART_PIXEL,
@@ -197,6 +236,13 @@
 		anchor: 0.5,
 		width: SYMBOL_SIZE * props.symbolInfo.sizeRatios.width,
 		height: SYMBOL_SIZE * props.symbolInfo.sizeRatios.height,
+	});
+	// a frame drawn on a bigger canvas than the art (smoke and fumes rise past its edge) is drawn
+	// at the art's own scale
+	const artProps = $derived({
+		...spriteProps,
+		width: (spriteProps.width * art.width) / (still.width || 1),
+		height: (spriteProps.height * art.height) / (still.height || 1),
 	});
 
 	const effectTexture = (effect: SymbolEffect) => {
@@ -216,7 +262,10 @@
 		rotation={pose.rotation ?? 0}
 		scale={pose.scale ?? 1}
 	>
-		<BaseSprite texture={art} {...spriteProps} {tint} />
+		{#if overStill}
+			<BaseSprite texture={still} {...spriteProps} {tint} />
+		{/if}
+		<BaseSprite texture={art} {...artProps} {tint} />
 		{#if overlay}
 			<BaseSprite texture={overlay} {...spriteProps} />
 		{/if}
