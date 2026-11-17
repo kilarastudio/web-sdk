@@ -41,7 +41,8 @@ const IRIS = new Set(
 // The eye's opening, column by column: from the top to the bottom of the iris joined to the
 // middle of the art, above the lettered plate. Each column's span holds the pupil too.
 const eyeOpening = (art: PixelCanvas) => {
-	const plate = Math.round(art.height * 0.62);
+	// the lettered plate starts three quarters down; its letters share the iris colours
+	const plate = Math.round(art.height * 0.75);
 	const seen = new Set<number>();
 	const start: Point[] = [];
 	for (let y = 0; y < plate; y++)
