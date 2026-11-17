@@ -76,8 +76,17 @@ export const BOARD_SIZES = {
 // cell) sit on a finer grid; poses and effects still count in this unit, a fortieth of the cell.
 export const ART_PIXEL = SYMBOL_SIZE / 40;
 
-// The stone frame round the board (src/pixel/ui.ts boardFrame), drawn whole at the board's size;
-// border is its thickness in game units.
+// The board's frame (src/pixel/frame.ts) is drawn on the symbols' grid, 64 art pixels to a cell.
+export const FRAME_ART_PIXEL = SYMBOL_SIZE / 64;
+// its bands round the board, in game units, and how far its carved corners reach below the board
+export const BOARD_FRAME_BANDS = {
+	top: 34 * FRAME_ART_PIXEL,
+	bottom: 40 * FRAME_ART_PIXEL,
+	side: 26 * FRAME_ART_PIXEL,
+	corners: 62 * FRAME_ART_PIXEL,
+};
+// the thickness the layout counts on: the frame's sides reach past it into the margin the board
+// keeps from the screen's edge (as in the approved mockup, 2026-11-17), so the board keeps its size
 export const BOARD_FRAME = { border: 14 * ART_PIXEL };
 
 // how far the frame reaches past the symbols on each side
@@ -93,9 +102,11 @@ export const BOARD_FRAME_SIDE = BOARD_FRAME_REACH.right;
 export const PANELS_BOTTOM = BOARD_FRAME_REACH.top * 0.5;
 
 // how far the frame and the panels above the board reach past the symbols; the panels are bigger
-// in the stacked layout
+// in the stacked layout. Side by side with the HUD (desktop, landscape) the layout keeps room for
+// the frame's whole foot and its carved corners, so they clear the controls; stacked (phones) the
+// board is as wide as the screen allows and its foot has room to spare below it anyway.
 export const BOARD_MARGINS = {
-	normal: { top: 110, bottom: BOARD_FRAME_REACH.bottom },
+	normal: { top: 110, bottom: BOARD_FRAME_BANDS.corners },
 	stacked: { top: 134, bottom: BOARD_FRAME_REACH.bottom },
 };
 

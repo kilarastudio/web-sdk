@@ -6,6 +6,7 @@ import { SYMBOL_DRAWINGS, SYMBOL_GLOW } from './symbols.ts';
 import { SYMBOL_FRAME_RUNS } from './symbolRuns.ts';
 import { atRest, isPotion } from './potionLiquid.ts';
 import * as ui from './ui.ts';
+import * as frame from './frame.ts';
 
 // Art pixels are drawn four screen-texture pixels wide and sampled linearly: edges stay crisp at
 // any layout scale, and nothing shimmers while the reels move at fractional speeds.
@@ -14,14 +15,19 @@ export const PIXEL_SCALE = 4;
 // enough steps for the band of light to cross a symbol without jumping
 export const SHINE_FRAMES = 12;
 
-const sourceOf = (canvas: PixelCanvas) => {
-	const { width, height, data } = canvas.toRGBA(PIXEL_SCALE);
+const sourceOf = (canvas: PixelCanvas, sharp = false) => {
+	const { width, height, data } = canvas.toRGBA(sharp ? 1 : PIXEL_SCALE);
 	const element = document.createElement('canvas');
 	element.width = width;
 	element.height = height;
 	element.getContext('2d')?.putImageData(new ImageData(data, width, height), 0, 0);
 
-	return new PIXI.ImageSource({ resource: element, autoGenerateMipmaps: true });
+	// Big still art (the board's frame, fire walls, the gaze's beam) is stored one texture pixel to
+	// an art pixel and scaled up by nearest neighbour: a sixteenth of the memory, and still whole
+	// art pixels. It does not move at fractional speeds, so it does not shimmer.
+	return sharp
+		? new PIXI.ImageSource({ resource: element, scaleMode: 'nearest', autoGenerateMipmaps: false })
+		: new PIXI.ImageSource({ resource: element, autoGenerateMipmaps: true });
 };
 
 const toTexture = (canvas: PixelCanvas) => new PIXI.Texture({ source: sourceOf(canvas) });
@@ -50,17 +56,39 @@ const boxOf = (width: number, height: number, test: (x: number, y: number) => bo
 
 // Only the box is stored; `orig` keeps the whole frame's size and `trim` where the box sits in it,
 // so a sprite sizes and places the texture as if it were whole.
-const croppedTexture = (canvas: PixelCanvas, box: Box) => {
+const croppedTexture = (canvas: PixelCanvas, box: Box, sharp = false) => {
 	const part = new PixelCanvas(box.width, box.height).blit(canvas, -box.x, -box.y);
-	const source = sourceOf(part);
+	const source = sourceOf(part, sharp);
+	const scale = sharp ? 1 : PIXEL_SCALE;
 
 	return new PIXI.Texture({
 		source,
 		frame: new PIXI.Rectangle(0, 0, source.width, source.height),
-		orig: new PIXI.Rectangle(0, 0, canvas.width * PIXEL_SCALE, canvas.height * PIXEL_SCALE),
-		trim: new PIXI.Rectangle(box.x * PIXEL_SCALE, box.y * PIXEL_SCALE, source.width, source.height),
+		orig: new PIXI.Rectangle(0, 0, canvas.width * scale, canvas.height * scale),
+		trim: new PIXI.Rectangle(box.x * scale, box.y * scale, source.width, source.height),
 	});
 };
+
+// Art kept one texture pixel to an art pixel (see sourceOf), cropped to what is drawn inside each
+// of the boxes, every part keeping the whole canvas's size so they all stand where it would.
+export const sharpParts = (canvas: PixelCanvas, boxes: Box[]) =>
+	boxes.map((box) =>
+		croppedTexture(
+			canvas,
+			boxOf(canvas.width, canvas.height, (x, y) => {
+				const inside = x >= box.x && y >= box.y && x < box.x + box.width && y < box.y + box.height;
+				return inside && canvas.get(x, y) !== CLEAR;
+			}),
+			true,
+		),
+	);
+export const sharpTexture = (canvas: PixelCanvas) => sharpParts(canvas, [whole(canvas)])[0];
+const whole = (canvas: PixelCanvas): Box => ({
+	x: 0,
+	y: 0,
+	width: canvas.width,
+	height: canvas.height,
+});
 
 // Frames that only change the still art in places (an ember, a liquid's surface, an eye) are drawn
 // over it: their texture holds just the box where they differ. The game draws the still art
@@ -175,7 +203,7 @@ export const generateArt = ({
 	art.smokeWisp = ui.smokeWispFrames().map(toTexture);
 
 	art.boardFloor = toTexture(ui.boardFloor(columns, rows));
-	art.boardFrame = toTexture(ui.boardFrame(columns, rows));
+	Object.assign(art, frameArt(columns, rows));
 	art.panel = toTexture(ui.panel());
 	for (const tier of [1, 2, 3, 4] as const) {
 		art[`glintTile${tier}`] = toTexture(ui.glintTile(tier));
@@ -199,6 +227,51 @@ export const generateArt = ({
 	art.gazeBeam = ui.gazeBeamFrames(false).map(toTexture);
 	art.gazeBeamHead = ui.gazeBeamFrames(true).map(toTexture);
 
+	return art;
+};
+
+// The board's frame (pixel/frame.ts), per variant: the stone in four parts round the opening, the
+// molten edge's frames (each in the same four parts), the corners, the crest, and the eye's frames.
+const frameArt = (columns: number, rows: number) => {
+	const art: GeneratedArt = {};
+	for (const variant of ['base', 'fs'] as const) {
+		const g = frame.frameGeometry(columns, rows, variant);
+		const sides: Box[] = [
+			{ x: 0, y: 0, width: g.canvasWidth, height: g.oy },
+			{ x: 0, y: g.oy + g.height, width: g.canvasWidth, height: g.canvasHeight - g.oy - g.height },
+			{ x: 0, y: g.oy, width: g.ox, height: g.height },
+			{ x: g.ox + g.width, y: g.oy, width: g.ox, height: g.height },
+		];
+		art[`frame_${variant}_stone`] = sharpParts(frame.frameStone(columns, rows, variant), sides);
+		for (let n = 0; n < frame.EDGE_FRAMES; n++)
+			art[`frame_${variant}_edge${n}`] = sharpParts(
+				frame.moltenEdge(columns, rows, variant, n),
+				sides,
+			);
+		art[`frame_${variant}_corners`] = frame
+			.frameCorners(columns, rows, variant)
+			.map((corner) =>
+				sharpTexture(
+					new PixelCanvas(g.canvasWidth, g.canvasHeight).blit(corner.canvas, corner.x, corner.y),
+				),
+			);
+		const at = frame.crestAt(columns, rows, variant);
+		const crest = new PixelCanvas(g.canvasWidth, g.canvasHeight).blit(
+			frame.crest(variant),
+			at.x,
+			at.y,
+		);
+		art[`frame_${variant}_crest`] = [sharpTexture(crest)];
+		art[`frame_${variant}_eye`] = Array.from({ length: frame.CREST_EYE_FRAMES }, (_, n) =>
+			sharpTexture(
+				new PixelCanvas(g.canvasWidth, g.canvasHeight).blit(
+					frame.crestEyeFrame(variant, n),
+					at.x + frame.CREST_EYE_BOX.x,
+					at.y + frame.CREST_EYE_BOX.y,
+				),
+			),
+		);
+	}
 	return art;
 };
 
@@ -235,3 +308,4 @@ export const clawMarks = () =>
 			height: scar.height,
 		})),
 	);
+

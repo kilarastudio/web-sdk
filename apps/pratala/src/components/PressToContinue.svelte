@@ -6,7 +6,7 @@
 
 	import { getContext } from '../game/context';
 	import { gameTextStyle } from '../game/typography';
-	import { BOARD_FRAME_REACH } from '../game/constants';
+	import { BOARD_FRAME_BANDS } from '../game/constants';
 
 	type Props = {
 		// what the prompt says; "press anywhere to continue" unless given
@@ -33,7 +33,7 @@
 	// under the board's frame, and never past the screen's bottom edge
 	const underBoardY = $derived(
 		Math.min(
-			board.y + board.height * 0.5 + BOARD_FRAME_REACH.bottom + 16 / layout.scale,
+			board.y + board.height * 0.5 + BOARD_FRAME_BANDS.corners + 16 / layout.scale,
 			layout.height * 0.5 + (canvas.height * 0.5 - 8) / layout.scale - fontSize * 1.35,
 		),
 	);

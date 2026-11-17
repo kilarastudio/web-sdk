@@ -24,6 +24,7 @@
 	import LoadingScreen from './LoadingScreen.svelte';
 	import BoardFrame from './BoardFrame.svelte';
 	import Board from './Board.svelte';
+	import BoardSpill from './BoardSpill.svelte';
 	import Anticipations from './Anticipations.svelte';
 	import ClusterWinAmounts from './ClusterWinAmounts.svelte';
 	import BoardContainer from './BoardContainer.svelte';
@@ -107,6 +108,8 @@
 					<SymbolFx layer="under" />
 				</BoardContainer>
 				<Board />
+				<!-- the molten edge's light over the cells next to it -->
+				<BoardSpill />
 				<Anticipations />
 			</MainContainer>
 

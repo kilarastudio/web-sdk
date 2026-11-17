@@ -7,7 +7,7 @@
 	// The art drawn by code joins the loaded assets under its own keys, before anything renders.
 	const context = getContext();
 
-	if (!context.stateApp.loadedAssets.boardFrame)
+	if (!context.stateApp.loadedAssets.boardFloor)
 		context.stateApp.loadedAssets = {
 			...context.stateApp.loadedAssets,
 			...generateArt({
