@@ -1425,7 +1425,7 @@ const axe = (): Runs => {
 	};
 };
 
-// The potions. Their liquids are found by colour; the glass and labels never move, corks lift
+// The potions. Their liquids are found by colour; the glass never moves, corks lift
 // off as solid pieces.
 const glassColours = colours(
 	0xf6ca9f,
@@ -1616,9 +1616,8 @@ const poisonBottle = (): Runs => {
 	const art = SYMBOL_DRAWINGS.symbolL3();
 	const ramp = [0x134c4c, 0x1e6f50, 0x33984b, 0x5ac54f, 0x99e65f, 0xd3fc7e].map(c);
 	const green = new Set(ramp);
-	// the label's drop is the liquid's colour too, but stays on the label
-	const label = inBox([18, 34, 34, 47]);
-	const liquid = liquidOf(art, green, glassColours, (x, y) => !label(x, y));
+	// no label: the whole green body is liquid, like the other potions
+	const liquid = liquidOf(art, green, glassColours);
 	const cap = pick(art, inBox([20, 5, 43, 13]));
 
 	// the seep: a bright green run creeps down the glass from under the cap and lets a drop go
@@ -1702,13 +1701,7 @@ const poisonBottle = (): Runs => {
 		symbolL3RestBubble: rising,
 		symbolL3Land: plop(art, liquid),
 		symbolL3Hurt: [...hurt.slice(0, -1), padded(last, POTION_PAD)],
-		symbolL3Gone: bottleGone(
-			last,
-			liquidOf(last, green, glassColours, (x, y) => !label(x, y)),
-			ramp,
-			cap,
-			{ seed: 31 },
-		),
+		symbolL3Gone: bottleGone(last, liquidOf(last, green, glassColours), ramp, cap, { seed: 31 }),
 	};
 };
 

@@ -28,6 +28,7 @@
 	import ClusterWinAmounts from './ClusterWinAmounts.svelte';
 	import BoardContainer from './BoardContainer.svelte';
 	import WinCoins from './WinCoins.svelte';
+	import SymbolFx from './SymbolFx.svelte';
 	import TumbleBoard from './TumbleBoard.svelte';
 	import TumbleWinAmount from './TumbleWinAmount.svelte';
 	import GlintSpots from './GlintSpots.svelte';
@@ -101,12 +102,20 @@
 
 			<MainContainer>
 				<GlintSpots layer="under" />
+				<!-- the light behind each winning symbol, under every symbol -->
+				<BoardContainer>
+					<SymbolFx layer="under" />
+				</BoardContainer>
 				<Board />
 				<Anticipations />
 			</MainContainer>
 
 			<MainContainer>
 				<TumbleBoard />
+				<!-- the dust landing symbols throw up, over every symbol -->
+				<BoardContainer>
+					<SymbolFx layer="over" />
+				</BoardContainer>
 				<!-- <TumbleAnticipations /> -->
 				<GlintSpots layer="over" />
 				<GlintEffects />

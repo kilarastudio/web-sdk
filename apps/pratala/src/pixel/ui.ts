@@ -1,5 +1,5 @@
 import { PixelCanvas } from './canvas.ts';
-import { CLEAR, INK, RAMPS, WHITE, color } from './palette.ts';
+import { CLEAR, INK, RAMPS, WHITE, color, type RampName } from './palette.ts';
 
 // Board, frame, panels, Glint Spots and particles, all drawn by code on the same art-pixel grid as
 // the symbols (40 art pixels to a reel cell).
@@ -970,3 +970,135 @@ export const gazeBeamFrames = (head: boolean) =>
 		}
 		return canvas;
 	});
+
+// The light behind a winning symbol, on the board's grid (40 art pixels to a cell). A round-cornered
+// square a little bigger than the cell, so it shows round the grown symbol and in the gaps between
+// its neighbours: bands step from the ramp's dark at the edge to its light at the middle, with a
+// lit rim. Round, so it never reads as one of the square Glint Spot tiles.
+export const WIN_GLOW_SIZE = 48;
+const squircle = (x: number, y: number) => {
+	const middle = (WIN_GLOW_SIZE - 1) / 2;
+	const dx = Math.abs(x - middle);
+	const dy = Math.abs(y - middle);
+
+	return (dx ** 3 + dy ** 3) ** (1 / 3);
+};
+const WIN_GLOW_BANDS = [
+	{ reach: 23.4, step: 1 },
+	{ reach: 19, step: 2 },
+	{ reach: 14, step: 3 },
+	{ reach: 9, step: 4 },
+];
+export const winGlow = (ramp: RampName) => {
+	const canvas = new PixelCanvas(WIN_GLOW_SIZE, WIN_GLOW_SIZE);
+	const r = RAMPS[ramp];
+	for (let y = 0; y < WIN_GLOW_SIZE; y++)
+		for (let x = 0; x < WIN_GLOW_SIZE; x++) {
+			const d = squircle(x, y);
+			if (d > WIN_GLOW_BANDS[0].reach) continue;
+			// the innermost band the pixel is in
+			const band = WIN_GLOW_BANDS.filter(({ reach }) => d <= reach).at(-1) ?? WIN_GLOW_BANDS[0];
+			// the rim: the outermost pixel of the light, a step brighter than the band inside it
+			canvas.set(x, y, d > WIN_GLOW_BANDS[0].reach - 1.2 ? r[3] : r[band.step]);
+		}
+
+	return canvas;
+};
+// the beat of the light: a band two pixels wide runs from the middle out to the rim and is gone,
+// drawn white for the game to tint with the ramp's light (white tinted is exactly that colour)
+export const WIN_GLOW_WAVES = 6;
+export const winGlowWaves = () =>
+	Array.from({ length: WIN_GLOW_WAVES }, (_, frame) => {
+		const canvas = new PixelCanvas(WIN_GLOW_SIZE, WIN_GLOW_SIZE);
+		const reach = 9 + frame * 2.9;
+		const width = frame === WIN_GLOW_WAVES - 1 ? 1 : 2;
+		for (let y = 0; y < WIN_GLOW_SIZE; y++)
+			for (let x = 0; x < WIN_GLOW_SIZE; x++) {
+				const d = squircle(x, y);
+				if (d <= reach && d > reach - width && d <= WIN_GLOW_BANDS[0].reach)
+					canvas.set(x, y, WHITE);
+			}
+
+		return canvas;
+	});
+// the hit: the whole light white for a moment
+export const winGlowFlash = () => {
+	const canvas = new PixelCanvas(WIN_GLOW_SIZE, WIN_GLOW_SIZE);
+	for (let y = 0; y < WIN_GLOW_SIZE; y++)
+		for (let x = 0; x < WIN_GLOW_SIZE; x++)
+			if (squircle(x, y) <= WIN_GLOW_BANDS[0].reach) canvas.set(x, y, WHITE);
+
+	return canvas;
+};
+
+// What a symbol throws up as it lands, on the board's grid: a cloud of dust to each side of its
+// foot, made of a few round solid clumps (lit on top in the stone's pale blue-greys) that swell,
+// drift out and up, then break small and darken into the board. A heavy symbol also knocks out two
+// embers each side in fire colours. Drawn 64 x 20, its foot at the bottom middle.
+export const LAND_PUFF = { width: 64, height: 20 };
+export const LAND_PUFF_FRAMES = 6;
+export const landPuffFrames = (embers: boolean) => {
+	const s = RAMPS.steel;
+	const f = RAMPS.fire;
+	const middle = (LAND_PUFF.width - 1) / 2;
+	const foot = LAND_PUFF.height - 2;
+	// each clump per frame: how far out from the middle, how high its centre, and its radius
+	const CLUMPS = [
+		{
+			out: [8, 11, 14, 16, 18, 19],
+			up: [2, 3, 4, 5, 6, 7],
+			radius: [2.6, 3.4, 3.6, 3.1, 2.4, 1.5],
+		},
+		{
+			out: [12, 16, 20, 23, 25, 26],
+			up: [1, 2, 2, 3, 3, 4],
+			radius: [2.1, 2.7, 2.9, 2.5, 1.9, 1.2],
+		},
+		{ out: [5, 6, 8, 9, 10, 10], up: [4, 6, 8, 10, 11, 12], radius: [1.7, 2.3, 2.5, 2.1, 1.6, 1] },
+	];
+	const EMBERS = [
+		{ out: [6, 9, 11, 13, 14, 15], up: [5, 9, 12, 14, 15, 15] },
+		{ out: [14, 19, 23, 26, 28, 29], up: [3, 6, 8, 9, 9, 8] },
+	];
+	const round = (canvas: PixelCanvas, cx: number, cy: number, radius: number, frame: number) => {
+		const late = frame >= LAND_PUFF_FRAMES - 2;
+		for (let y = Math.floor(cy - radius); y <= Math.ceil(cy + radius); y++)
+			for (let x = Math.floor(cx - radius); x <= Math.ceil(cx + radius); x++) {
+				const dx = x - cx;
+				const dy = y - cy;
+				if (dx * dx + dy * dy > radius * radius) continue;
+				// lit from above: the top of the clump pale, its body mid, its underside shaded
+				const tone = dy < -radius * 0.35 ? s[5] : dy > radius * 0.45 ? s[3] : s[4];
+				canvas.set(x, y, late ? DARKER_STEEL(tone) : tone);
+			}
+	};
+
+	return Array.from({ length: LAND_PUFF_FRAMES }, (_, frame) => {
+		const canvas = new PixelCanvas(LAND_PUFF.width, LAND_PUFF.height);
+		for (const side of [-1, 1]) {
+			for (const clump of CLUMPS)
+				round(
+					canvas,
+					middle + side * clump.out[frame],
+					foot - clump.up[frame],
+					clump.radius[frame],
+					frame,
+				);
+			if (embers)
+				for (const ember of EMBERS) {
+					const size = frame < 4 ? 2 : 1;
+					const x = Math.round(middle + side * ember.out[frame] - size / 2);
+					const y = foot - ember.up[frame];
+					canvas.rect(x, y, size, size, frame < 2 ? f[5] : frame < 4 ? f[4] : f[3]);
+				}
+		}
+
+		return canvas;
+	});
+};
+// a step down the steel ramp, as dust settles into the board
+const DARKER_STEEL = (tone: number) => {
+	const ramp = RAMPS.steel as readonly number[];
+
+	return ramp[Math.max(0, ramp.indexOf(tone) - 1)];
+};

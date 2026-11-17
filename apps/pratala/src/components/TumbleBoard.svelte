@@ -29,6 +29,7 @@
 	import { getSymbolY } from '../game/utils';
 	import { SYMBOL_SIZE, settleEasing } from '../game/constants';
 	import { getContext } from '../game/context';
+	import { closeWinLights, endWin } from '../game/symbolFx.svelte';
 
 	const context = getContext();
 
@@ -91,6 +92,8 @@
 			context.stateGame.tumbleBoardBase = [];
 		},
 		tumbleBoardExplode: async ({ explodingPositions }) => {
+			// the winners' lights shrink away as they break
+			closeWinLights(160 / stateBetDerived.timeScale());
 			const getPromises = () =>
 				explodingPositions.map(async (position) => {
 					const tumbleSymbol = context.stateGame.tumbleBoardBase[position.reel][position.row];
@@ -101,6 +104,8 @@
 			await Promise.all(getPromises());
 		},
 		tumbleBoardRemoveExploded: () => {
+			// the winners have gone: their lights go out and the board comes back up as it tumbles
+			endWin();
 			context.stateGame.tumbleBoardBase.forEach((tumbleReel, reelIndex) => {
 				context.stateGame.tumbleBoardBase[reelIndex] = tumbleReel.filter(
 					(tumbleSymbol) => tumbleSymbol.symbolState !== 'explosion',

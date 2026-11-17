@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js';
 
 import { PixelCanvas } from './canvas.ts';
 import { CLEAR, INK, LIGHTER, WHITE } from './palette.ts';
-import { SYMBOL_DRAWINGS } from './symbols.ts';
+import { SYMBOL_DRAWINGS, SYMBOL_GLOW } from './symbols.ts';
 import { SYMBOL_FRAME_RUNS } from './symbolRuns.ts';
 import * as ui from './ui.ts';
 
@@ -182,6 +182,13 @@ export const generateArt = ({
 	art.coin = ui.coinFrames().map(toTexture);
 	art.fireball = ui.fireballFrames().map(toTexture);
 	art.burst = ui.burstFrames().map(toTexture);
+	// a win's light behind the symbol, one base per colour; its beat and its hit are white, tinted
+	for (const ramp of new Set(Object.values(SYMBOL_GLOW)))
+		art[`winGlow_${ramp}`] = toTexture(ui.winGlow(ramp));
+	art.winGlowWave = ui.winGlowWaves().map(toTexture);
+	art.winGlowFlash = toTexture(ui.winGlowFlash());
+	art.landDust = ui.landPuffFrames(false).map(toTexture);
+	art.landEmbers = ui.landPuffFrames(true).map(toTexture);
 	art.pixel = toTexture(ui.pixel());
 	art.anticipationBeam = toTexture(ui.anticipationBeam());
 	art.gazeBeam = ui.gazeBeamFrames(false).map(toTexture);

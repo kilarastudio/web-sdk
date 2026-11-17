@@ -17,6 +17,7 @@ import type { BookEvent, BookEventOfType, BookEventContext } from './typesBookEv
 import type { Position } from './types';
 import { GAZE_ROW_MS, gazePasses, glintChanges } from './glint';
 import { impact, shake } from './impact.svelte';
+import { endWin } from './symbolFx.svelte';
 import type { GlintApplySpot } from '../components/GlintSpots.svelte';
 
 // how many wins the current spin's tumbles have paid so far, for the rising win sound
@@ -130,6 +131,7 @@ const animateSymbols = async ({ positions }: { positions: Position[] }) => {
 export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContext> = {
 	reveal: async (bookEvent: BookEventOfType<'reveal'>, { bookEvents }: BookEventContext) => {
 		eventEmitter.broadcast({ type: 'tumbleWinAmountReset' });
+		endWin();
 		winStep = 0;
 		impact.step = 0;
 		const isBonusGame = checkIsMultipleRevealEvents({ bookEvents });
@@ -239,6 +241,7 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_scatter_win_v2' });
 		eventEmitter.broadcast({ type: 'dragonReact', reaction: 'bonus' });
 		await animateSymbols({ positions: bookEvent.positions });
+		endWin();
 		// show free spin intro
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_superfreespin' });
 		await eventEmitter.broadcastAsync({ type: 'uiHide' });
@@ -274,6 +277,7 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		eventEmitter.broadcast({ type: 'soundOnce', name: 'sfx_scatter_win_v2' });
 		eventEmitter.broadcast({ type: 'dragonReact', reaction: 'bonus' });
 		await animateSymbols({ positions: bookEvent.positions });
+		endWin();
 		stateUi.freeSpinCounterTotal = bookEvent.totalFs;
 	},
 	wincap: async () => {

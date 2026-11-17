@@ -11,7 +11,9 @@
 	import { getContext } from '../game/context';
 	import { loaderHtml } from '../game/loader';
 	import { SYMBOL_SIZE } from '../game/constants';
-	import { SYMBOL_RESTS } from '../game/symbolActs';
+	import { IDLE_ACTS } from '../game/symbolActs';
+	import { closeWinLights, endWin, showWin, symbolFx } from '../game/symbolFx.svelte';
+	import SymbolFx from '../components/SymbolFx.svelte';
 	import { frameAt } from '../game/motion';
 	import { OVER_STILL } from '../pixel/textures';
 	import type { RawSymbol, SymbolState } from '../game/types';
@@ -32,9 +34,11 @@
 		{ rawSymbol: { name: 'L4' }, key: 'symbolL4' },
 		{ rawSymbol: { name: 'S', scatter: true }, key: 'symbolScatter' },
 	];
+	// every symbol takes its turn to win here: none is a loser to dim
+	symbolFx.dimOthers = false;
 	const COLUMNS = 3;
 	const ROWS = Math.ceil(SYMBOLS.length / COLUMNS);
-	const HOLD = { still: 700, hurt: 600, gone: 500 };
+	const HOLD = { still: 700, hurt: 1200, gone: 500 };
 	const LABELS = {
 		still: 'diam',
 		rest: 'diam',
@@ -60,11 +64,12 @@
 	const wait = (duration: number) => new Promise((resolve) => setTimeout(resolve, duration));
 	const finished = (index: number) => new Promise<void>((resolve) => (done[index] = resolve));
 
-	// what the symbol does at rest, one of its acts in turn, played once
+	// what the symbol does at rest, one of its acts in turn, played once (its frames only: in the
+	// game the whole symbol also moves, and the board cues these acts by itself, game/idle.ts)
 	const restsPlayed = SYMBOLS.map(() => 0);
 	const rest = async (index: number) => {
-		const stir = SYMBOL_RESTS[SYMBOLS[index].key];
-		const act = stir?.acts[restsPlayed[index]++ % stir.acts.length];
+		const acts = IDLE_ACTS[SYMBOLS[index].key];
+		const act = acts?.[restsPlayed[index]++ % acts.length];
 		const frames = act
 			? ((context.stateApp.loadedAssets[`${SYMBOLS[index].key}${act.suffix}`] ??
 					[]) as PIXI.Texture[])
@@ -93,17 +98,21 @@
 				await rest(index);
 				phases[index] = 'still';
 				await wait(HOLD.still);
+				// its light behind it, as on the board (SymbolFx)
+				showWin([{ x: 0, y: 0, key: symbol.key }], symbol.key);
 				phases[index] = 'win';
 				await finished(index);
 				phases[index] = 'hurt';
 				await wait(HOLD.hurt);
 				// the scatter never leaves the board
 				if (symbol.rawSymbol.name !== 'S') {
+					closeWinLights(160, symbol.key);
 					phases[index] = 'explosion';
 					await finished(index);
+					endWin(symbol.key);
 					phases[index] = 'gone';
 					await wait(HOLD.gone);
-				}
+				} else endWin(symbol.key);
 			}
 		});
 
@@ -132,6 +141,7 @@
 			{@const phase = phases[index]}
 			{@const state = STATES[phase]}
 			<Container {x} {y} {scale}>
+				<SymbolFx layer="under" scope={symbol.key} />
 				{#if phase === 'rest'}
 					{@const frame = restFrames[index] ?? PIXI.Texture.EMPTY}
 					{@const still = context.stateApp.loadedAssets[symbol.key] as PIXI.Texture}

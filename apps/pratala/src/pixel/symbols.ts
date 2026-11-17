@@ -1,5 +1,5 @@
 import { PixelCanvas, type Point } from './canvas.ts';
-import { CLEAR, INK, LIGHTER, RAMPS, WHITE, color } from './palette.ts';
+import { CLEAR, INK, LIGHTER, RAMPS, WHITE, color, type RampName } from './palette.ts';
 import { outlined } from './shapes.ts';
 import { SYMBOL_ART, SYMBOL_ART_ALPHABET } from './symbolArt.ts';
 
@@ -165,3 +165,20 @@ export const SYMBOL_DRAWINGS = {
 } as const;
 
 export type SymbolKey = keyof typeof SYMBOL_DRAWINGS;
+
+// The colour of the light behind a symbol when it wins (pixel/ui.ts winGlow): the colour it is
+// known by, so a win reads by colour before the shape: the skull's crown and the gold flask in
+// gold, the helm's burning gashes and the dragon's eye in fire, the hat's purple, the red-hot axe,
+// each potion its liquid.
+export const SYMBOL_GLOW: Partial<Record<SymbolKey, RampName>> = {
+	symbolH1: 'gold',
+	symbolH2: 'fire',
+	symbolH3: 'pink',
+	symbolH4: 'red',
+	symbolL1: 'red',
+	symbolL2: 'blue',
+	symbolL3: 'green',
+	symbolL4: 'gold',
+	symbolScatter: 'fire',
+	symbolWild: 'gold',
+};

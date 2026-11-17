@@ -17,6 +17,8 @@
 	import { BoardContext } from 'components-shared';
 
 	import { getContext } from '../game/context';
+	import { getSymbolInfo, getSymbolX } from '../game/utils';
+	import { showWin } from '../game/symbolFx.svelte';
 	import BoardContainer from './BoardContainer.svelte';
 	import BoardMask from './BoardMask.svelte';
 	import BoardBase from './BoardBase.svelte';
@@ -31,6 +33,18 @@
 		boardShow: () => (show = true),
 		boardHide: () => (show = false),
 		boardWithAnimateSymbols: async ({ symbolPositions }) => {
+			// the winners light up and the rest of the board steps back, until they go
+			showWin(
+				symbolPositions.map((position) => {
+					const reelSymbol = context.stateGame.board[position.reel].reelState.symbols[position.row];
+
+					return {
+						x: getSymbolX(position.reel),
+						y: reelSymbol.symbolY.current,
+						key: getSymbolInfo({ rawSymbol: reelSymbol.rawSymbol, state: 'win' }).assetKey,
+					};
+				}),
+			);
 			const getPromises = () =>
 				symbolPositions.map(async (position) => {
 					const reelSymbol = context.stateGame.board[position.reel].reelState.symbols[position.row];
