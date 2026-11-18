@@ -119,6 +119,12 @@
 	// where the floor starts in each composition, in art pixels: the wall above it breaks away, the
 	// floor's cracks below it open
 	const FLOOR = { Landscape: 285, Portrait: 390 };
+	// the painted brick courses, so the wall breaks along its own bricks: a mortar line low on the
+	// back wall and the courses' height, both in art pixels, measured from the base halls
+	const COURSES = {
+		Landscape: { at: 99, height: 21.29 },
+		Portrait: { at: 157, height: 21.7 },
+	};
 
 	// 0 in the hall, 1 in the boss hall; between them while the hall changes
 	let mix = $state(context.stateGame.gameType === 'freegame' ? 1 : 0);
@@ -185,7 +191,7 @@
 		if (!base?.source?.resource || !bonus?.source?.resource) return undefined;
 		if (!breaks.has(shape)) {
 			const { width, height } = SIZES[shape];
-			breaks.set(shape, createHallBreak(base, bonus, width, height, FLOOR[shape]));
+			breaks.set(shape, createHallBreak(base, bonus, width, height, FLOOR[shape], COURSES[shape]));
 		}
 
 		return breaks.get(shape);
@@ -226,9 +232,9 @@
 	};
 
 	// Free spins start, in BREAK.total: the eye snaps alert, the board jolts and the torches gutter;
-	// the cracks race out of the breach (from 0.3 s); the wall gives way, chunks dropping and the
+	// the cracks race out of the breach (from 0.3 s); the wall gives way brick by brick, bricks dropping and the
 	// floor's cracks spitting embers (from 1 s); then the torches leap up as the boss hall's and the
-	// hall flashes red (at 1.9 s).
+	// hall flashes red for a blink (at 1.9 s).
 	const breakOpen = async (picture: HallBreak) => {
 		context.eventEmitter.broadcast({ type: 'dragonReact', reaction: 'wake' });
 		shake(5, 420);
@@ -265,7 +271,7 @@
 					fires: 1,
 					dim: ms < 400 ? 1 - 0.7 * Math.sin((Math.PI * ms) / 400) : 1,
 					flare: ms < 1900 ? 0 : ms < 2050 ? (ms - 1900) / 150 : Math.max(0, 1 - (ms - 2050) / 550),
-					flash: ms >= 1900 && ms < 2020 ? 0.22 * (1 - (ms - 1900) / 120) : 0,
+					flash: ms >= 1900 && ms < 1980 ? 0.12 : 0,
 				};
 				if (fires) fires.heat = ms / BREAK.total;
 			},
