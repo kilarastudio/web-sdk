@@ -23,7 +23,7 @@
 		BREAK,
 		COOL,
 		createHallBreak,
-		createHallDebris,
+		createHallEmbers,
 		type HallBreak,
 	} from '../game/hallBreak';
 	import { shake } from '../game/impact.svelte';
@@ -116,15 +116,9 @@
 	const baseKey = $derived(`backgroundBase${shape}`);
 	const bonusKey = $derived(`backgroundBonus${shape}`);
 
-	// where the floor starts in each composition, in art pixels: the wall above it breaks away, the
-	// floor's cracks below it open
+	// where the floor starts in each composition, in art pixels: the wall's cracks above it race
+	// out first, the floor's cracks below it throw embers as the burning crosses them
 	const FLOOR = { Landscape: 285, Portrait: 390 };
-	// the painted brick courses, so the wall breaks along its own bricks: a mortar line low on the
-	// back wall and the courses' height, both in art pixels, measured from the base halls
-	const COURSES = {
-		Landscape: { at: 99, height: 21.29 },
-		Portrait: { at: 157, height: 21.7 },
-	};
 
 	// 0 in the hall, 1 in the boss hall; between them while the hall changes
 	let mix = $state(context.stateGame.gameType === 'freegame' ? 1 : 0);
@@ -137,7 +131,7 @@
 	// the picture breaking open or cooling, while the hall changes
 	let breaking = $state<HallBreak>();
 	// while it does, how much each hall's eye, torches and fires show (`dim` gutters both halls'
-	// torches, `flare` makes them leap, `flash` reddens the hall), and where the floor fires are
+	// torches, `flare` makes them leap), and where the floor fires are
 	type Look = {
 		baseEye: number;
 		bonusEye: number;
@@ -146,7 +140,6 @@
 		fires: number;
 		dim: number;
 		flare: number;
-		flash: number;
 	};
 	let cut = $state<Look>();
 	let fires = $state<{ heat: number; starts: number[] }>();
@@ -169,7 +162,6 @@
 			fires: Math.min(1, mix * 1.5),
 			dim: 1,
 			flare: 0,
-			flash: 0,
 		},
 	);
 
@@ -191,7 +183,7 @@
 		if (!base?.source?.resource || !bonus?.source?.resource) return undefined;
 		if (!breaks.has(shape)) {
 			const { width, height } = SIZES[shape];
-			breaks.set(shape, createHallBreak(base, bonus, width, height, FLOOR[shape], COURSES[shape]));
+			breaks.set(shape, createHallBreak(base, bonus, width, height, FLOOR[shape]));
 		}
 
 		return breaks.get(shape);
@@ -220,10 +212,10 @@
 		return () => timers.forEach(clearTimeout);
 	});
 
-	// what flies off the wall as it breaks: over the hall, behind the eye, torches and fires
-	const debrisLayer = new PIXI.Container({ zIndex: -1.5 });
-	getContextParent().addToParent(debrisLayer);
-	const debris = createHallDebris(debrisLayer);
+	// the embers the burning throws up: over the hall, behind the eye, torches and fires
+	const emberLayer = new PIXI.Container({ zIndex: -1.5 });
+	getContextParent().addToParent(emberLayer);
+	const embers = createHallEmbers(emberLayer);
 
 	const smooth = (value: number) => {
 		const at = Math.max(0, Math.min(1, value));
@@ -232,33 +224,23 @@
 	};
 
 	// Free spins start, in BREAK.total: the eye snaps alert, the board jolts and the torches gutter;
-	// the cracks race out of the breach (from 0.3 s); the wall gives way brick by brick, bricks dropping and the
-	// floor's cracks spitting embers (from 1 s); then the torches leap up as the boss hall's and the
-	// hall flashes red for a blink (at 1.9 s).
+	// the cracks race out of the breach (from 0.3 s); the boss hall burns through behind a front
+	// spreading from the breach, the floor's cracks throwing embers as it crosses them, and the
+	// board jolts again (from 1 s); then the torches leap up as the boss hall's (at 1.9 s).
 	const breakOpen = async (picture: HallBreak) => {
 		context.eventEmitter.broadcast({ type: 'dragonReact', reaction: 'wake' });
 		shake(5, 420);
-		const { x: fromX } = breach();
 		let last = 0;
 		let jolted = false;
 		await animate(
 			BREAK.total,
 			(progress) => {
 				const ms = progress * BREAK.total;
-				const { width } = SIZES[shape];
-				for (const cell of picture.breaking(last, ms)) {
-					const chunk = cell.falls ? picture.chunkTexture(cell) : undefined;
-					if (chunk) debris.chunk(cell, chunk, fromX);
-					const embers = Math.min(3, Math.ceil(cell.embers.length / 6));
-					for (let ember = 0; ember < embers; ember++) {
-						const index = cell.embers[Math.floor(Math.random() * cell.embers.length)];
-						debris.ember(index % width, Math.floor(index / width));
-					}
-				}
-				debris.step(ms - last, flameProps);
+				for (const { x, y } of picture.sparksBetween(last, ms)) embers.throw(x, y);
+				embers.step(ms - last, flameProps);
 				last = ms;
 				picture.drawBreak(ms);
-				if (!jolted && ms >= BREAK.wall[0]) {
+				if (!jolted && ms >= BREAK.burn[0]) {
 					jolted = true;
 					shake(3, 360);
 				}
@@ -271,23 +253,22 @@
 					fires: 1,
 					dim: ms < 400 ? 1 - 0.7 * Math.sin((Math.PI * ms) / 400) : 1,
 					flare: ms < 1900 ? 0 : ms < 2050 ? (ms - 1900) / 150 : Math.max(0, 1 - (ms - 2050) / 550),
-					flash: ms >= 1900 && ms < 1980 ? 0.12 : 0,
 				};
 				if (fires) fires.heat = ms / BREAK.total;
 			},
 			{ timeScaled: false },
 		);
-		// the last pieces finish falling over the boss hall
+		// the last embers die over the boss hall
 		await animate(
 			500,
 			(progress) => {
 				const ms = BREAK.total + progress * 500;
-				debris.step(ms - last, flameProps);
+				embers.step(ms - last, flameProps);
 				last = ms;
 			},
 			{ timeScaled: false },
 		);
-		debris.clear();
+		embers.clear();
 	};
 
 	// Free spins end, in COOL.total: the glow dies from the far edges in toward the breach, the
@@ -308,7 +289,6 @@
 					fires: 1,
 					dim: 1,
 					flare: 0,
-					flash: 0,
 				};
 				if (fires) fires.heat = 1 - ms / COOL.total;
 			},
@@ -487,9 +467,6 @@
 			</Container>
 		{/if}
 	</Container>
-{/if}
-{#if look.flash > 0}
-	<Rectangle {...canvas} backgroundColor={0xff3a10} alpha={look.flash} zIndex={-0.9} />
 {/if}
 
 <Container zIndex={-1}>
