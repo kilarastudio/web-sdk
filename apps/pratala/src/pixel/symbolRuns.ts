@@ -959,36 +959,40 @@ const skull = (): Runs => {
 
 		return canvas;
 	};
-	// the jaw: everything under the mouth's middle row, left of the back of the skull
-	const jaw = pick(art, (x, y) => x <= 44 && y >= 53);
-	// what shows where the jaw has dropped away: the dark of the open mouth only across the mouth
-	// (the dark gap between the teeth runs from the skull's left edge to x 32); behind it the bone
-	// of the jaw's hinge carries on, and outside the head nothing, so no black bar cuts the cheek
-	// or sticks out past the skull
+	// The jaw: across the mouth (from the skull's left edge to x 32) everything under the dark
+	// gap between the teeth, so the lower teeth go with it; that gap climbs toward the chin, and
+	// a straight cut through it left the front lower teeth behind on the skull. Behind the
+	// mouth, back to the hinge, everything under the mouth's middle row.
 	const MOUTH_END = 32;
+	const cut = (x: number) => {
+		if (x > MOUTH_END) return 53;
+		let bottom = 52;
+		for (let y = 44; y <= 55; y++) if (art.get(x, y) === SHADOW) bottom = y;
+
+		return bottom + 1;
+	};
+	const jaw = pick(art, (x, y) => x <= 44 && y >= cut(x));
+	// what shows where the jaw has dropped away: across the mouth its dark carries on, behind it
+	// the bone of the jaw's hinge, and outside the head nothing, so nothing sticks out past it
 	const gap = (x: number) => {
-		const above = art.get(x, 52);
+		const above = art.get(x, cut(x) - 1);
 		if (above === CLEAR) return CLEAR;
 
 		return x <= MOUTH_END ? SHADOW : above;
 	};
-	// The jaw swings on its hinge at the back of the skull: it drops `open` pixels at the chin and
-	// less toward the hinge, nothing behind it, so the mouth opens as a wedge. Dropping it straight
-	// read as a black slit cut right across the face.
-	const HINGE = 40;
-	const CHIN = 3;
-	const drop = (x: number, open: number) =>
-		Math.max(0, Math.round((open * (HINGE - x)) / (HINGE - CHIN)));
+	// The jaw drops as one solid piece, `open` pixels. Shearing it into a wedge, each column
+	// dropped a different amount, broke its outline and teeth into steps. The art has only two
+	// clear rows under the chin, so a wider laugh tips the head up instead (`lift`), the jaw
+	// still `open` below it.
 	const clacked = (canvas: PixelCanvas, open: number) => {
+		if (!open) return canvas.clone();
 		const onto = canvas.clone();
-		for (const [x, y] of jaw) if (drop(x, open)) onto.set(x, y, gap(x));
-		for (const [x, y] of jaw) {
-			const down = drop(x, open);
-			if (down) onto.set(x, y + down, canvas.get(x, y));
-		}
+		for (const [x, y] of jaw) onto.set(x, y, gap(x));
+		for (const [x, y] of jaw) onto.set(x, y + open, canvas.get(x, y));
 
 		return onto;
 	};
+	const lift = (open: number) => Math.max(0, open - 2);
 	// where the melted crown meets bare bone below it: the drips start there
 	const lips = pick(
 		art,
@@ -1030,8 +1034,9 @@ const skull = (): Runs => {
 		dripFrame(canvas, drips[0], frame - 1, molten, onSkull);
 		dripFrame(canvas, drips[1], frame - 3, molten, onSkull);
 		const laughing = flames(clacked(canvas, open), feet, fire[frame], frame, 5);
+		const dy = duck[frame] - lift(open);
 
-		return duck[frame] ? shifted(laughing, 0, duck[frame]) : laughing;
+		return dy ? shifted(laughing, 0, dy) : laughing;
 	});
 
 	// gone: a crack splits the skull, the crown melts down over it, and it drops away in halves
@@ -1084,8 +1089,8 @@ const skull = (): Runs => {
 	return {
 		symbolH1RestGlow: glowRest,
 		symbolH1RestDrip: dripRest,
-		// it lands a pixel low with its jaw knocked open three, the jaw shutting as it settles
-		symbolH1Land: [shifted(clacked(art, 3), 0, 1), clacked(art, 2), clacked(art, 1)],
+		// it lands a pixel low, and the jaw, a beat behind, knocks open and shuts as it settles
+		symbolH1Land: [shifted(clacked(art, 1), 0, 1), clacked(art, 2), clacked(art, 1)],
 		symbolH1Hurt: hurt,
 		symbolH1Gone: [...cracked, ...melting].map((canvas) => padded(canvas, margin)).concat(falling),
 	};
