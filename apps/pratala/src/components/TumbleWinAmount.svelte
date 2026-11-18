@@ -17,18 +17,12 @@
 	const context = getContext();
 
 	let show = $state(false);
-	// on phones the tumble win burns on the floor under the board, where the big win's "press to
-	// continue" stands: it steps aside while the big win (the same amount, bigger) is up
-	let bigWin = $state(false);
-	const stepAside = $derived(bigWin && context.stateLayoutDerived.isStacked());
 	let amount = $state(0);
 	let animate = $state(false);
 	let oncomplete = $state(() => {});
 
 	context.eventEmitter.subscribeOnMount({
 		tumbleWinAmountShow: () => (show = true),
-		winShow: () => (bigWin = true),
-		winHide: () => (bigWin = false),
 		tumbleWinAmountHide: () => (show = false),
 		tumbleWinAmountReset: () => {
 			amount = 0;
@@ -45,7 +39,7 @@
 	});
 </script>
 
-<TumbleWinAmountWrap show={show && !stepAside}>
+<TumbleWinAmountWrap {show}>
 	<TumbleWinAmountFrame lit={show} {amount}>
 		{#snippet children({ face })}
 			<TumbleWinAmountText {face} {amount} {animate} {oncomplete} />

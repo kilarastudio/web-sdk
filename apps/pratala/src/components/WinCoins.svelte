@@ -14,7 +14,7 @@
 	import { stateBetDerived } from 'state-shared';
 
 	import { getContext } from '../game/context';
-	import { ART_PIXEL, BOARD_SIZES, SYMBOL_SIZE } from '../game/constants';
+	import { ART_PIXEL, SYMBOL_SIZE } from '../game/constants';
 	import { tumblePanelPlace } from './TumbleWinAmountWrap.svelte';
 	import { TUMBLE_WIN } from './TumbleWinAmountFrame.svelte';
 
@@ -100,9 +100,6 @@
 			const timeScale = stateBetDerived.timeScale();
 			const place = tumblePanelPlace({
 				stacked: context.stateLayoutDerived.isStacked(),
-				floor:
-					context.stateGameDerived.freeArea().bottom -
-					(context.stateGameDerived.boardLayout().y - BOARD_SIZES.height / 2),
 			});
 			// one coin a symbol, two from the third win of a spin on, up to the most the screen takes
 			const perSymbol = step >= 3 ? 2 : 1;
