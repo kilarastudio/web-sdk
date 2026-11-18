@@ -17,6 +17,7 @@
 	import { FLOOR_FIRES } from '../game/floorFires';
 	import { TORCHES } from '../game/torches';
 	import { EYES } from '../game/dragonEye';
+	import { eyePlace } from '../game/eyePlace.svelte';
 	import { FRAME_ART_PIXEL } from '../game/constants';
 	import { animate } from '../game/motion';
 	import { createHallHeat, HEAT_FROM, HEAT_TO, type HallHeat } from '../game/hallHeat';
@@ -83,6 +84,8 @@
 	// screen's top edge, its broken rim just past it. Only when even that does not fit does it shrink.
 	const TUCK = 0.3;
 	const MAX_TUCK = 0.45;
+	// on phones the user wanted the eye higher (2026-11-18)
+	const STACKED_TUCK = 0.08;
 	const RIM_PAST_TOP = 0.08;
 	// the eye's layer: its own origin and art pixel, so the breach and the eye's frames land on it
 	const eyeLayer = $derived.by(() => {
@@ -98,7 +101,9 @@
 		const painted = eye.height * flameProps.scale;
 		const height = Math.max(0.2 * eye.height, Math.min(painted, fits(MAX_TUCK)));
 		// as little behind the band as the room allows, from TUCK up to MAX_TUCK
-		const tuck = Math.min(MAX_TUCK, Math.max(TUCK, 1 - RIM_PAST_TOP - bandTop / height));
+		// phones have room above the board: the eye stands almost wholly over the frame there
+		const least = context.stateLayoutDerived.isStacked() ? STACKED_TUCK : TUCK;
+		const tuck = Math.min(MAX_TUCK, Math.max(least, 1 - RIM_PAST_TOP - bandTop / height));
 		const scale = height / eye.height;
 		const bottom = bandTop + height * tuck;
 		return {
@@ -108,6 +113,11 @@
 				y: bottom - (eye.y + eye.height) * scale,
 			},
 		};
+	});
+	$effect(() => {
+		const eye = EYES[shape];
+		eyePlace.top = eyeLayer.origin.y + eye.y * eyeLayer.scale;
+		eyePlace.bottom = eyeLayer.origin.y + (eye.y + eye.height) * eyeLayer.scale;
 	});
 	const baseKey = $derived(`backgroundBase${shape}`);
 	const bonusKey = $derived(`backgroundBonus${shape}`);

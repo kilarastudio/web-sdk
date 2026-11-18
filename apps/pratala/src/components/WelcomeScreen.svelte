@@ -7,6 +7,7 @@
 	import { GLINT_CAP } from '../game/glint';
 	import { LOADING_LOGO, SYMBOL_SIZE } from '../game/constants';
 	import { panelLayout, panelTextStyle } from '../game/panels';
+	import { eyePlace } from '../game/eyePlace.svelte';
 	import GameText from './GameText.svelte';
 	import Panel from './Panel.svelte';
 
@@ -18,18 +19,30 @@
 	const wide = $derived(canvas.width >= canvas.height * 1.2);
 	// The screen is laid out in a design box of game units, then scaled to fit the canvas with
 	// room left at the bottom for the prompt.
-	const design = $derived(wide ? { width: 1260, height: 720 } : { width: 800, height: 1240 });
+	const portraitHeight = $derived.by(() => {
+		const scale = Math.min(
+			1,
+			(800 - 40) / panelLayout({ key: 'welcomeRow', scale: 1 }).sizes.width,
+		);
+		const row = panelLayout({ key: 'welcomeRow', scale }).sizes;
+		const logoHeight = (LOADING_LOGO.width * 0.72) / LOADING_LOGO.ratio;
+		return 4 + logoHeight + 70 + row.height / 2 + 2 * (row.height + 18) + row.height / 2 + 8;
+	});
+	const design = $derived(
+		wide ? { width: 1260, height: 720 } : { width: 800, height: portraitHeight },
+	);
+	// It starts under the dragon's eye, which stands where it does in play and as big (the user,
+	// 2026-11-18: the title must not cover the eye), and is centred in the room left below it.
 	const fit = $derived.by(() => {
 		const prompt = Math.min(90, canvas.height * 0.14);
-		const scale = Math.min(
-			(canvas.width - 24) / design.width,
-			(canvas.height - prompt - 12) / design.height,
-		);
+		const top = Math.max(6, eyePlace.bottom + 6);
+		const room = canvas.height - prompt - 12 - top;
+		const scale = Math.min((canvas.width - 24) / design.width, room / design.height);
 
 		return {
 			scale,
 			x: (canvas.width - design.width * scale) / 2,
-			y: Math.max(6, (canvas.height - prompt - design.height * scale) / 2),
+			y: top + Math.max(0, (room - design.height * scale) / 2),
 		};
 	});
 	const main = $derived(design);
@@ -78,18 +91,18 @@
 			(main.width - 40) / panelLayout({ key: 'welcomeRow', scale: 1 }).sizes.width,
 		);
 		const row = panelLayout({ key: 'welcomeRow', scale }).sizes;
-		const logoWidth = LOADING_LOGO.width;
+		// compact, to fit under the dragon's eye: a smaller title and the rows close together
+		const logoWidth = LOADING_LOGO.width * 0.72;
 		const logoHeight = logoWidth / LOADING_LOGO.ratio;
-		const top = 10;
-		const first = top + logoHeight + 96 + row.height / 2;
-		const room = main.height - first - row.height / 2;
-		const step = Math.min(row.height + 34, room / 2);
+		const top = 4;
+		const first = top + logoHeight + 70 + row.height / 2;
+		const step = row.height + 18;
 
 		return {
 			key: 'welcomeRow' as const,
 			scale,
 			logo: { width: logoWidth, height: logoHeight, y: top + logoHeight / 2 },
-			tagline: { y: top + logoHeight + 40, fontSize: 38 },
+			tagline: { y: top + logoHeight + 32, fontSize: 34 },
 			cards: features.map((_, index) => ({ x: main.width / 2, y: first + index * step })),
 		};
 	});

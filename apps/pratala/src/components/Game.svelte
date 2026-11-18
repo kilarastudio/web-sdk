@@ -7,7 +7,7 @@
 	import { EnableHotkey } from 'components-shared';
 	import { MainContainer } from 'components-layout';
 	import { App, Container } from 'pixi-svelte';
-	import { stateMeta, stateModal, stateUrlDerived } from 'state-shared';
+	import { stateConfig, stateMeta, stateModal, stateUrlDerived } from 'state-shared';
 
 	import { UI, UiGameName, GameVersion, Modals } from 'components-ui-html';
 
@@ -63,6 +63,25 @@
 	);
 
 	onMount(() => (context.stateLayout.showLoadingScreen = true));
+
+	// The HUD is mounted from the welcome screen on, hidden and inert, so the board (and the
+	// dragon's eye over it) is laid out round it from the first frame: the eye on the welcome
+	// screen stands where, and as big as, it does in play (the user, 2026-11-18). Meanwhile Space
+	// only leaves the welcome screen: the spin button's Space is held off until play.
+	let spacebarHeld: { jurisdiction: object; was: boolean } | undefined;
+	$effect(() => {
+		const jurisdiction = stateConfig.jurisdiction;
+		if (context.stateLayout.showLoadingScreen) {
+			if (spacebarHeld?.jurisdiction !== jurisdiction) {
+				spacebarHeld = { jurisdiction, was: jurisdiction.disabledSpacebar };
+				jurisdiction.disabledSpacebar = true;
+			}
+		} else if (spacebarHeld) {
+			if (spacebarHeld.jurisdiction === jurisdiction)
+				jurisdiction.disabledSpacebar = spacebarHeld.was;
+			spacebarHeld = undefined;
+		}
+	});
 
 	context.eventEmitter.subscribeOnMount({
 		buyBonusConfirm: () => {
@@ -139,13 +158,17 @@
 	{/if}
 </App>
 
-{#if !context.stateLayout.showLoadingScreen}
+<div
+	class="hud"
+	class:waiting={context.stateLayout.showLoadingScreen}
+	inert={context.stateLayout.showLoadingScreen}
+>
 	<UI>
 		{#snippet gameName()}
 			<UiGameName name="PRATALA" />
 		{/snippet}
 	</UI>
-{/if}
+</div>
 
 <Modals>
 	{#snippet payTable()}
@@ -158,3 +181,10 @@
 		<GameVersion version={gameVersion} />
 	{/snippet}
 </Modals>
+
+<style>
+	/* laid out (so its size is known) but not seen while the welcome screen shows */
+	.hud.waiting {
+		visibility: hidden;
+	}
+</style>

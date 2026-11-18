@@ -29,6 +29,8 @@
 	);
 	// Short landscape screens need the prompt closer to the HUD to clear the panel.
 	const bottomGap = $derived(canvas.height < 360 ? 4 : 32);
+	// the HUD is laid out but hidden behind the welcome screen: the prompt stands at the bottom
+	const hudBottom = $derived(context.stateLayout.showLoadingScreen ? 0 : stateUi.hudInset.bottom);
 	const board = $derived(context.stateGameDerived.boardLayout());
 	// under the board's frame, and never past the screen's bottom edge
 	const underBoardY = $derived(
@@ -62,9 +64,9 @@
 		{@render prompt(underBoardY, 0)}
 	</MainContainer>
 {:else}
-	<!-- sits on top of the HUD's controls, so they never cover it -->
+	<!-- sits on top of the HUD's controls (when they show), so they never cover it -->
 	<MainContainer alignVertical="bottom">
-		{@render prompt(layout.height - (stateUi.hudInset.bottom + bottomGap) / layout.scale, 1)}
+		{@render prompt(layout.height - (hudBottom + bottomGap) / layout.scale, 1)}
 	</MainContainer>
 {/if}
 <OnHotkey hotkey="Space" onpress={() => props.onpress()} />
