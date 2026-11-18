@@ -175,12 +175,7 @@
 			x: props.origin.x + (eye.x + eye.width / 2) * props.scale,
 			y: props.origin.y + (eye.y + eye.height * 0.62) * props.scale,
 		});
-	onMount(() => {
-		boardSpace.pupil = pupil;
-		return () => {
-			if (boardSpace.pupil === pupil) boardSpace.pupil = undefined;
-		};
-	});
+	onMount(() => boardSpace.addPupil(pupil));
 </script>
 
 <!-- the eye in its breach, every frame from the strip (the hall is painted without it) -->

@@ -139,16 +139,19 @@
 					<SymbolFx layer="over" />
 				</BoardContainer>
 				<!-- <TumbleAnticipations /> -->
+				<!-- the coins fly under every amount: the spots' values, the cluster amounts and the
+				     tumble win they pay into -->
+				<BoardContainer>
+					<WinCoins />
+				</BoardContainer>
+				<!-- the tumble win burns on the frame's top edge under the gaze: on phones the eye stands
+				     over it, and the beam must be seen leaving the eye, not the tumble win -->
+				<TumbleWinAmount />
 				<!-- the gaze's beam lies under the values, so those it has doubled stay readable -->
 				<GlintGaze />
 				<GlintSpots layer="over" />
 				<GlintEffects />
-				<!-- the coins fly under every amount: the cluster amounts and the tumble win they pay into -->
-				<BoardContainer>
-					<WinCoins />
-				</BoardContainer>
 				<ClusterWinAmounts />
-				<TumbleWinAmount />
 			</MainContainer>
 		</Container>
 
