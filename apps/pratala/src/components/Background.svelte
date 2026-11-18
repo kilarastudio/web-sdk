@@ -9,8 +9,9 @@
 	import { onMount, untrack } from 'svelte';
 	import { prefersReducedMotion, Tween } from 'svelte/motion';
 	import * as PIXI from 'pixi.js';
+	import { asset } from '$app/paths';
 
-	import { BaseSprite, Container, getContextParent, Rectangle, Sprite } from 'pixi-svelte';
+	import { BaseSprite, Container, Rectangle, Sprite } from 'pixi-svelte';
 
 	import { getContext } from '../game/context';
 	import { FLOOR_FIRES } from '../game/floorFires';
@@ -19,13 +20,7 @@
 	import { FRAME_ART_PIXEL } from '../game/constants';
 	import { animate } from '../game/motion';
 	import { createHallHeat, HEAT_FROM, HEAT_TO, type HallHeat } from '../game/hallHeat';
-	import {
-		BREAK,
-		COOL,
-		createHallBreak,
-		createHallEmbers,
-		type HallBreak,
-	} from '../game/hallBreak';
+	import { COOL, createHallCool, type HallCool } from '../game/hallCool';
 	import { shake } from '../game/impact.svelte';
 	import { hallMood } from '../game/hallMood.svelte';
 	import DragonEye from './DragonEye.svelte';
@@ -40,11 +35,12 @@
 	// Its torches are painted without their flames, which burn over the picture (Torches); in the
 	// bonus hall fires burn on the floor too (FloorFires).
 	// Each covers the canvas; the tall one is used where the screen is taller than it is wide.
-	// The halls change in view and nothing covers the screen: when free spins start the wall cracks
-	// open from the eye's breach and breaks away into the boss hall, and when they end the boss hall
-	// cools back through ash, pixel by pixel (game/hallBreak.ts), while each hall's eye, torches and
-	// fires give way to the other's. Anything else that sets the game type (a resumed round, a new
-	// spin) changes the hall at once. A big win heats the hall for a while (game/hallHeat.ts).
+	// The halls change in view and nothing covers the screen: when free spins start a painted
+	// animation plays in the hall's place, fire catching on the floor and climbing the walls until
+	// the hall is the boss hall; when they end the boss hall cools back through ash, pixel by pixel
+	// (game/hallCool.ts). Meanwhile each hall's eye, torches and fires give way to the other's.
+	// Anything else that sets the game type (a resumed round, a new spin) changes the hall at once.
+	// A big win heats the hall for a while (game/hallHeat.ts).
 	const SIZES = {
 		Landscape: { width: 640, height: 360 },
 		Portrait: { width: 360, height: 640 },
@@ -116,10 +112,6 @@
 	const baseKey = $derived(`backgroundBase${shape}`);
 	const bonusKey = $derived(`backgroundBonus${shape}`);
 
-	// where the floor starts in each composition, in art pixels: the wall's cracks above it race
-	// out first, the floor's cracks below it throw embers as the burning crosses them
-	const FLOOR = { Landscape: 285, Portrait: 390 };
-
 	// 0 in the hall, 1 in the boss hall; between them while the hall changes
 	let mix = $state(context.stateGame.gameType === 'freegame' ? 1 : 0);
 	// which picture lies under the changing one
@@ -128,8 +120,9 @@
 	let changing = $state<HallHeat>();
 	let shown = $state(0);
 	let heat = $state(HEAT_TO);
-	// the picture breaking open or cooling, while the hall changes
-	let breaking = $state<HallBreak>();
+	// the picture cooling, or the animation of the hall catching fire, while the hall changes
+	let cooling = $state<HallCool>();
+	let burnTexture = $state<PIXI.Texture>();
 	// while it does, how much each hall's eye, torches and fires show (`dim` gutters both halls'
 	// torches, `flare` makes them leap), and where the floor fires are
 	type Look = {
@@ -165,7 +158,7 @@
 		},
 	);
 
-	// the heat's path and the break's are worked out once, a little after the game opens
+	// the heat's path and the cooling's are worked out once, a little after the game opens
 	const heats = new Map<string, HallHeat>();
 	const hallHeat = () => {
 		const base = context.stateApp.loadedAssets[baseKey] as PIXI.Texture | undefined;
@@ -176,17 +169,15 @@
 
 		return heats.get(shape);
 	};
-	const breaks = new Map<string, HallBreak>();
-	const hallBreak = () => {
+	const cools = new Map<string, HallCool>();
+	const hallCool = () => {
 		const base = context.stateApp.loadedAssets[baseKey] as PIXI.Texture | undefined;
 		const bonus = context.stateApp.loadedAssets[bonusKey] as PIXI.Texture | undefined;
 		if (!base?.source?.resource || !bonus?.source?.resource) return undefined;
-		if (!breaks.has(shape)) {
-			const { width, height } = SIZES[shape];
-			breaks.set(shape, createHallBreak(base, bonus, width, height, FLOOR[shape]));
-		}
+		if (!cools.has(shape))
+			cools.set(shape, createHallCool(base, bonus, SIZES[shape].width, SIZES[shape].height));
 
-		return breaks.get(shape);
+		return cools.get(shape);
 	};
 	// the middle of the eye's breach as it is on screen, in the hall's art pixels: the eye's layer
 	// follows the board, so the breach is wherever the board has put it
@@ -200,22 +191,73 @@
 			y: (y - flameProps.origin.y) / flameProps.scale,
 		};
 	};
+	// The hall catching fire, painted frame by frame (static/assets/backgrounds/burn-*.mp4, made in
+	// workspace output/dragon/bg-2026-11-18/video): 49 frames at 12 fps, one video pixel to one art
+	// pixel of the hall, its first frame the hall and its last the boss hall, its own torch flames
+	// dimmed so the game's cover them. It loads once the game is idle, for the screen's shape, and
+	// again only when the shape changes; it plays once and is let go, and the next one loads.
+	const BURN_VIDEOS = {
+		Landscape: asset('assets/backgrounds/burn-landscape.mp4'),
+		Portrait: asset('assets/backgrounds/burn-portrait.mp4'),
+	};
+	type Burn = {
+		shape: 'Landscape' | 'Portrait';
+		video: HTMLVideoElement;
+		source: PIXI.VideoSource;
+		ready: boolean;
+	};
+	let burn: Burn | undefined;
+	const dropBurn = () => {
+		burn?.source.destroy();
+		burn = undefined;
+	};
+	const loadBurn = (want: 'Landscape' | 'Portrait') => {
+		if (burn?.shape === want) return;
+		dropBurn();
+		const video = document.createElement('video');
+		// muted and inline, so phones (iOS Safari above all) let it play without a tap of its own
+		video.muted = true;
+		video.defaultMuted = true;
+		video.playsInline = true;
+		video.setAttribute('muted', '');
+		video.setAttribute('playsinline', '');
+		video.loop = false;
+		video.preload = 'auto';
+		video.src = BURN_VIDEOS[want];
+		const source = new PIXI.VideoSource({ resource: video, autoPlay: false, scaleMode: 'nearest' });
+		const loading: Burn = { shape: want, video, source, ready: false };
+		burn = loading;
+		source
+			.load()
+			.then(() => (loading.ready = true))
+			.catch(() => {
+				if (burn === loading) dropBurn();
+			});
+	};
+	let burnLoadTimer = 0;
 	onMount(() => {
 		const timers = [
 			setTimeout(hallHeat, 4000),
 			setTimeout(() => {
 				const { x, y } = breach();
-				hallBreak()?.aim(x, y);
+				hallCool()?.aim(x, y);
 			}, 4600),
 		];
+		burnLoadTimer = window.setTimeout(() => loadBurn(shape), 5200);
 
-		return () => timers.forEach(clearTimeout);
+		return () => {
+			timers.forEach(clearTimeout);
+			clearTimeout(burnLoadTimer);
+			dropBurn();
+		};
 	});
-
-	// the embers the burning throws up: over the hall, behind the eye, torches and fires
-	const emberLayer = new PIXI.Container({ zIndex: -1.5 });
-	getContextParent().addToParent(emberLayer);
-	const embers = createHallEmbers(emberLayer);
+	// the screen turned: the other shape's animation, if one was loaded
+	$effect(() => {
+		const want = shape;
+		untrack(() => {
+			if (burn && burn.shape !== want && !burnTexture) loadBurn(want);
+		});
+	});
 
 	const smooth = (value: number) => {
 		const at = Math.max(0, Math.min(1, value));
@@ -223,62 +265,83 @@
 		return at * at * (3 - 2 * at);
 	};
 
-	// Free spins start, in BREAK.total: the eye snaps alert, the board jolts and the torches gutter;
-	// the cracks race out of the breach (from 0.3 s); the boss hall burns through behind a front
-	// spreading from the breach, the floor's cracks throwing embers as it crosses them, and the
-	// board jolts again (from 1 s); then the torches leap up as the boss hall's (at 1.9 s).
-	const breakOpen = async (picture: HallBreak) => {
+	// Free spins start: the animation plays in the hall's place, and resolves true when it has
+	// played (false when it was not ready or the browser would not play it, for a plain fade
+	// instead). Over it the eye snaps alert and the board jolts, and jolts again as the stones fall
+	// (about 2 s in); the hall's torches die over the first 1.5 s, and in the last second the boss
+	// hall's leap up, its floor fires catching, and the eye turns to the boss hall's.
+	const burnIn = async () => {
+		const playing = burn;
+		if (!playing?.ready || playing.shape !== shape) return false;
+		const { video, source } = playing;
+		video.currentTime = 0;
+		// its first frame is the hall as it stands, so it can show before it plays
+		const texture = new PIXI.Texture({ source });
+		burnTexture = texture;
+		changing = undefined;
+		shown = 0;
+		const done = () => {
+			burnTexture = undefined;
+			texture.destroy();
+			dropBurn();
+			burnLoadTimer = window.setTimeout(() => loadBurn(shape), 1500);
+		};
+		try {
+			await video.play();
+		} catch {
+			done();
+
+			return false;
+		}
+		const total = (Number.isFinite(video.duration) ? video.duration : 4.1) * 1000;
 		context.eventEmitter.broadcast({ type: 'dragonReact', reaction: 'wake' });
 		shake(5, 420);
-		let last = 0;
 		let jolted = false;
-		await animate(
-			BREAK.total,
-			(progress) => {
-				const ms = progress * BREAK.total;
-				for (const { x, y } of picture.sparksBetween(last, ms)) embers.throw(x, y);
-				embers.step(ms - last, flameProps);
-				last = ms;
-				picture.drawBreak(ms);
-				if (!jolted && ms >= BREAK.burn[0]) {
+		const starts = FLOOR_FIRES[shape].map((_, index) => index * 0.04);
+		const grow = 0.3 + 0.04 * (starts.length - 1);
+		fires = { heat: 0, starts };
+		const started = performance.now();
+		await new Promise<void>((resolve) => {
+			const tick = () => {
+				// a stalled video never holds up the round
+				const late = performance.now() - started > total + 2000;
+				const ms = video.ended || late ? total : video.currentTime * 1000;
+				if (!jolted && ms >= 2000) {
 					jolted = true;
 					shake(3, 360);
 				}
-				const rise = (ms - 1900) / 400;
+				const end = total - ms;
+				const eye = end < 500 ? 1 : 0;
 				cut = {
-					baseEye: 1 - smooth(rise),
-					bonusEye: smooth(rise),
-					baseTorches: 1 - smooth((ms - 1900) / 200),
-					bonusTorches: smooth((ms - 1900) / 200),
+					baseEye: 1 - eye,
+					bonusEye: eye,
+					baseTorches: 1 - smooth(ms / 1500),
+					bonusTorches: smooth((1000 - end) / 600),
 					fires: 1,
-					dim: ms < 400 ? 1 - 0.7 * Math.sin((Math.PI * ms) / 400) : 1,
-					flare: ms < 1900 ? 0 : ms < 2050 ? (ms - 1900) / 150 : Math.max(0, 1 - (ms - 2050) / 550),
+					dim: 1,
+					flare: end > 1000 ? 0 : end > 400 ? (1000 - end) / 600 : end / 400,
 				};
-				if (fires) fires.heat = ms / BREAK.total;
-			},
-			{ timeScaled: false },
-		);
-		// the last embers die over the boss hall
-		await animate(
-			500,
-			(progress) => {
-				const ms = BREAK.total + progress * 500;
-				embers.step(ms - last, flameProps);
-				last = ms;
-			},
-			{ timeScaled: false },
-		);
-		embers.clear();
+				if (fires) fires.heat = smooth((1200 - end) / 1200) * grow;
+				if (video.ended || late) resolve();
+				else requestAnimationFrame(tick);
+			};
+			requestAnimationFrame(tick);
+		});
+		boss = true;
+		mix = 1;
+		done();
+
+		return true;
 	};
 
 	// Free spins end, in COOL.total: the glow dies from the far edges in toward the breach, the
 	// boss hall's eye and torches last of all.
-	const coolDown = async (picture: HallBreak) => {
+	const coolDown = async (picture: HallCool) => {
 		await animate(
 			COOL.total,
 			(progress) => {
 				const ms = progress * COOL.total;
-				picture.drawCool(ms);
+				picture.draw(ms);
 				const torches = smooth((ms - 500) / 900);
 				const eye = smooth((ms - 1100) / 600);
 				cut = {
@@ -302,40 +365,40 @@
 			if (context.stateGame.gameType === gameType) return;
 			busy = true;
 			cancelAnimationFrame(moodRequest);
-			const picture = prefersReducedMotion.current ? undefined : hallBreak();
-			if (!picture) {
-				// no break to show: the boss hall fades over the hall, or away from it
+			const still = prefersReducedMotion.current;
+			let shownInView = false;
+			if (!still && free) shownInView = await burnIn();
+			const picture = !still && !free ? hallCool() : undefined;
+			if (picture) {
+				const { x, y } = breach();
+				picture.aim(x, y);
+				// each floor fire dies as the cooling reaches its stone
+				fires = {
+					heat: 1,
+					starts: FLOOR_FIRES[shape].map(
+						(fire) => 1 - (picture.coolAt(fire.x, fire.y) + COOL.pass) / COOL.total,
+					),
+				};
+				picture.draw(0);
+				cooling = picture;
+				changing = undefined;
+				shown = 0;
+				await coolDown(picture);
+				cooling = undefined;
+				shownInView = true;
+			}
+			if (!shownInView) {
+				// nothing to show it with: the boss hall fades over the hall, or away from it
 				boss = true;
 				await animate(400, (progress) => (mix = free ? progress : 1 - progress), {
 					timeScaled: false,
 				});
-			} else {
-				const { x, y } = breach();
-				picture.aim(x, y);
-				// each floor fire catches as the break reaches its stone, and dies as it cools
-				fires = {
-					heat: free ? 0 : 1,
-					starts: FLOOR_FIRES[shape].map((fire) =>
-						free
-							? (picture.breakAt(fire.x, fire.y) - 400) / BREAK.total
-							: 1 - (picture.coolAt(fire.x, fire.y) + COOL.pass) / COOL.total,
-					),
-				};
-				if (free) picture.drawBreak(0);
-				else picture.drawCool(0);
-				breaking = picture;
-				// a big win may have left the hall part heated: the break starts from the cold hall
-				changing = undefined;
-				shown = 0;
-				if (free) await breakOpen(picture);
-				else await coolDown(picture);
-				boss = free;
-				mix = free ? 1 : 0;
-				heat = free ? HEAT_TO : HEAT_FROM;
-				breaking = undefined;
-				cut = undefined;
-				fires = undefined;
 			}
+			boss = free;
+			mix = free ? 1 : 0;
+			heat = free ? HEAT_TO : HEAT_FROM;
+			cut = undefined;
+			fires = undefined;
 			busy = false;
 			context.stateGame.gameType = gameType;
 		},
@@ -416,12 +479,15 @@
 {#if changing}
 	<BaseSprite texture={changing.texture} {...backgroundProps} zIndex={-2} alpha={shown} />
 {/if}
-{#if breaking}
-	<BaseSprite texture={breaking.texture} {...backgroundProps} zIndex={-1.95} />
+{#if cooling}
+	<BaseSprite texture={cooling.texture} {...backgroundProps} zIndex={-1.95} />
+{/if}
+{#if burnTexture}
+	<BaseSprite texture={burnTexture} {...backgroundProps} zIndex={-1.95} />
 {/if}
 
 <!-- what moves over the pictures: each hall's eye and torches, and the boss hall's floor fires;
-     while the hall breaks open both eyes stay, so the boss hall's opens alert too -->
+     while the hall catches fire both eyes stay, so the boss hall's opens alert too -->
 {#if look.baseEye > 0 || look.baseTorches > 0}
 	<Container zIndex={-1}>
 		{#if look.baseEye > 0}
@@ -440,7 +506,7 @@
 		{/if}
 	</Container>
 {/if}
-{#if breaking || look.bonusEye > 0 || look.bonusTorches > 0 || look.fires > 0}
+{#if cooling || burnTexture || look.bonusEye > 0 || look.bonusTorches > 0 || look.fires > 0}
 	<Container zIndex={-1}>
 		<Container alpha={look.bonusEye}>
 			<DragonEye hall="Bonus" {shape} {...eyeLayer} />

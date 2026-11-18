@@ -78,9 +78,9 @@
 		// BIG: it looks down at the board; from EPIC up the pupil stays narrowed (hallMood)
 		bigWin: { frame: 'lookDown', ms: 1800, shake: 2 },
 		bonus: { frame: 'alert', ms: 1600, shake: 2 },
-		// the hall breaks open into the boss hall: it stares while the wall gives way (the hall
-		// shakes the board itself)
-		wake: { frame: 'alert', ms: 2400 },
+		// the hall catches fire into the boss hall: it stares for as long as the hall burns (the
+		// hall shakes the board itself)
+		wake: { frame: 'alert', ms: 4200 },
 		// the fire leaves once the pupil has narrowed
 		power: { frame: 'alert', ms: 900, delay: EYE_FIRE_DELAY, shake: 2 },
 		// the gaze: it looks down at the board for as long as its gaze takes to come down a reel
