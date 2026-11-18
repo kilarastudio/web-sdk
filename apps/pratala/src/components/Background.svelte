@@ -25,6 +25,8 @@
 	import { shake } from '../game/impact.svelte';
 	import { hallMood } from '../game/hallMood.svelte';
 	import DragonEye from './DragonEye.svelte';
+	import { TUMBLE_WIN } from './TumbleWinAmountFrame.svelte';
+	import { tumblePanelPlace } from './TumbleWinAmountWrap.svelte';
 	import HallDust from './HallDust.svelte';
 	import FloorFires from './FloorFires.svelte';
 	import Torches from './Torches.svelte';
@@ -82,37 +84,49 @@
 	// board is short it sinks further behind the band, up to MAX_TUCK so the iris (the middle of
 	// the breach) still shows, and may rise past the header, which is clear in the middle, to the
 	// screen's top edge, its broken rim just past it. Only when even that does not fit does it shrink.
+	// On phones (stacked) the eye stands clear of the board instead: its broken rim ends above the
+	// tumble win, which burns on the frame's top edge, so the win never covers the eye (the user,
+	// 2026-11-18), and it shrinks only when the room above that does not take it.
 	const TUCK = 0.3;
 	const MAX_TUCK = 0.45;
-	// on phones the user wanted the eye higher (2026-11-18)
-	const STACKED_TUCK = 0.08;
 	const RIM_PAST_TOP = 0.08;
+	// screen px between the tumble win's label and the eye's rim
+	const STACKED_GAP = 6;
+	// the tumble win's label top above its fire's foot, at scale 1 (the label's half height on top)
+	const TUMBLE_LABEL_TOP = TUMBLE_WIN.label + 14;
 	// the eye's layer: its own origin and art pixel, so the breach and the eye's frames land on it
 	const eyeLayer = $derived.by(() => {
 		const main = context.stateLayoutDerived.mainLayout();
 		const board = context.stateGameDerived.boardLayout();
 		const toX = (u: number) => main.x + (u - 0.5 * main.width) * main.scale;
 		const toY = (u: number) => main.y + (u - 0.5 * main.height) * main.scale;
-		const bandTop = toY(board.y - board.height / 2 - 34 * FRAME_ART_PIXEL);
+		const boardTop = board.y - board.height / 2;
+		const bandTop = toY(boardTop - 34 * FRAME_ART_PIXEL);
 		const centre = toX(board.x);
 		const eye = EYES[shape];
+		const painted = eye.height * flameProps.scale;
+		const least = 0.2 * eye.height;
+		const place = (height: number, bottom: number) => {
+			const scale = height / eye.height;
+			return {
+				scale,
+				origin: {
+					x: centre - (eye.x + eye.width / 2) * scale,
+					y: bottom - (eye.y + eye.height) * scale,
+				},
+			};
+		};
+		if (context.stateLayoutDerived.isStacked()) {
+			const tumble = tumblePanelPlace({ stacked: true });
+			const bottom = toY(boardTop + tumble.y - TUMBLE_LABEL_TOP * tumble.scale) - STACKED_GAP;
+			return place(Math.max(least, Math.min(painted, bottom / (1 - RIM_PAST_TOP))), bottom);
+		}
 		// how tall the breach may be with `tuck` of it behind the band and its top at the limit
 		const fits = (tuck: number) => bandTop / (1 - tuck - RIM_PAST_TOP);
-		const painted = eye.height * flameProps.scale;
-		const height = Math.max(0.2 * eye.height, Math.min(painted, fits(MAX_TUCK)));
+		const height = Math.max(least, Math.min(painted, fits(MAX_TUCK)));
 		// as little behind the band as the room allows, from TUCK up to MAX_TUCK
-		// phones have room above the board: the eye stands almost wholly over the frame there
-		const least = context.stateLayoutDerived.isStacked() ? STACKED_TUCK : TUCK;
-		const tuck = Math.min(MAX_TUCK, Math.max(least, 1 - RIM_PAST_TOP - bandTop / height));
-		const scale = height / eye.height;
-		const bottom = bandTop + height * tuck;
-		return {
-			scale,
-			origin: {
-				x: centre - (eye.x + eye.width / 2) * scale,
-				y: bottom - (eye.y + eye.height) * scale,
-			},
-		};
+		const tuck = Math.min(MAX_TUCK, Math.max(TUCK, 1 - RIM_PAST_TOP - bandTop / height));
+		return place(height, bandTop + height * tuck);
 	});
 	$effect(() => {
 		const eye = EYES[shape];
