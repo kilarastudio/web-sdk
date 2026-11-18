@@ -14,13 +14,11 @@ export const EYE_FRAMES = [
 
 export type EyeFrame = (typeof EYE_FRAMES)[number];
 
-// the breach's box in each composition, the same in the base and the bonus hall: the eye drawn
-// big (2026-11-18, the user: a small eye loses the dread), each strip frame this many hall art
-// pixels (workspace output/dragon/bg-2026-11-18 bigeye.py and eyeframes.py). x and y only say
-// where it would stand in the hall; the layer is placed over the board (components/Background).
+// the breach's box in each composition, where it was painted, the same in the base and the bonus
+// hall (workspace output/dragon/bg-2026-11-18/compose.py cut it out)
 export const EYES = {
-	Landscape: { x: 185, y: 12, width: 270, height: 152 },
-	Portrait: { x: 70, y: 40, width: 220, height: 124 },
+	Landscape: { x: 240, y: 12, width: 164, height: 106 },
+	Portrait: { x: 110, y: 58, width: 145, height: 78 },
 } as const;
 
 // the strips are drawn four strip pixels to an art pixel
