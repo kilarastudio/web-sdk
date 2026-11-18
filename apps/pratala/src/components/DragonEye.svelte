@@ -180,8 +180,8 @@
 	});
 </script>
 
-<!-- the open eye is the picture itself -->
-{#if texture && frame !== 'open'}
+<!-- the eye in its breach, every frame from the strip (the hall is painted without it) -->
+{#if texture}
 	<BaseSprite
 		{texture}
 		x={props.origin.x + eye.x * props.scale}

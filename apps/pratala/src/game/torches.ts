@@ -9,22 +9,22 @@ export type Torch = { x: number; y: number; width: number; height: number };
 export const TORCHES: Record<'Landscape' | 'Portrait', Record<'base' | 'bonus', Torch[]>> = {
 	Landscape: {
 		base: [
-			{ x: 71.5, y: 118, width: 22, height: 60 },
-			{ x: 504.5, y: 118, width: 22, height: 60 },
+			{ x: 124, y: 185, width: 24, height: 64 },
+			{ x: 514, y: 185, width: 24, height: 64 },
 		],
 		bonus: [
-			{ x: 67.5, y: 118, width: 38, height: 72 },
-			{ x: 508, y: 118, width: 38, height: 72 },
+			{ x: 124, y: 185, width: 38, height: 78 },
+			{ x: 514, y: 185, width: 38, height: 78 },
 		],
 	},
 	Portrait: {
 		base: [
-			{ x: 44, y: 59, width: 24, height: 60 },
-			{ x: 279.5, y: 59, width: 24, height: 60 },
+			{ x: 33, y: 138, width: 20, height: 54 },
+			{ x: 335, y: 138, width: 20, height: 54 },
 		],
 		bonus: [
-			{ x: 43.5, y: 59, width: 30, height: 66 },
-			{ x: 280.5, y: 59, width: 30, height: 66 },
+			{ x: 33, y: 147, width: 28, height: 64 },
+			{ x: 330, y: 147, width: 28, height: 64 },
 		],
 	},
 };

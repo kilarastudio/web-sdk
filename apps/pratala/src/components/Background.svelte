@@ -16,6 +16,9 @@
 	import { getContext } from '../game/context';
 	import { FLOOR_FIRES } from '../game/floorFires';
 	import { TORCHES } from '../game/torches';
+	import { EYES } from '../game/dragonEye';
+	import { FRAME_ART_PIXEL } from '../game/constants';
+	import { stateUi } from 'state-shared';
 	import { animate } from '../game/motion';
 	import { createHallHeat, HEAT_FROM, HEAT_TO, type HallHeat } from '../game/hallHeat';
 	import { hallMood } from '../game/hallMood.svelte';
@@ -24,9 +27,10 @@
 	import FloorFires from './FloorFires.svelte';
 	import Torches from './Torches.svelte';
 
-	// The dragon's hall, in a wide and a tall composition (576 × 324 and 324 × 576 art pixels).
-	// The dragon's eye looks out of the broken back wall; its blinks and glances are drawn over the
-	// picture (DragonEye).
+	// The dragon's hall, in a wide and a tall composition (640 × 360 and 360 × 640 art pixels), one
+	// room: a cold stone hall, and the same hall burnt and broken for free spins (remade 2026-11-18,
+	// workspace output/dragon/bg-2026-11-18). The dragon's eye looks out of a breach in the back
+	// wall, a layer that follows the board (DragonEye, below).
 	// Its torches are painted without their flames, which burn over the picture (Torches); in the
 	// bonus hall fires burn on the floor too (FloorFires).
 	// Each covers the canvas; the tall one is used where the screen is taller than it is wide.
@@ -35,8 +39,8 @@
 	// fires fade over the other's. Anything else that sets the game type (a resumed round, a new
 	// spin) changes the hall at once.
 	const SIZES = {
-		Landscape: { width: 576, height: 324 },
-		Portrait: { width: 324, height: 576 },
+		Landscape: { width: 640, height: 360 },
+		Portrait: { width: 360, height: 640 },
 	};
 
 	const context = getContext();
@@ -64,6 +68,32 @@
 			origin: {
 				x: canvas.width * 0.5 - sizes.width * scale * 0.5,
 				y: canvas.height * 0.5 - sizes.height * scale * 0.5,
+			},
+		};
+	});
+	// The eye in its breach is a layer of its own that follows the board, so it shows whatever the
+	// screen's shape: centred over the board, between the header and the frame's top band, its
+	// lower TUCK behind the band, as big as that gap allows and never bigger than painted. The user
+	// picked 30% from a prototype (2026-11-17): at half, the frame hid half the iris on desktops.
+	const TUCK = 0.3;
+	// the eye's layer: its own origin and art pixel, so the breach and the eye's frames land on it
+	const eyeLayer = $derived.by(() => {
+		const main = context.stateLayoutDerived.mainLayout();
+		const board = context.stateGameDerived.boardLayout();
+		const toX = (u: number) => main.x + (u - 0.5 * main.width) * main.scale;
+		const toY = (u: number) => main.y + (u - 0.5 * main.height) * main.scale;
+		const bandTop = toY(board.y - board.height / 2 - 34 * FRAME_ART_PIXEL);
+		const centre = toX(board.x);
+		const headerBottom = stateUi.hudInset.top + 4;
+		const eye = EYES[shape];
+		const room = (bandTop - headerBottom) / (1 - TUCK);
+		const scale = Math.max(0.2, Math.min(flameProps.scale, room / eye.height));
+		const bottom = bandTop + eye.height * scale * TUCK;
+		return {
+			scale,
+			origin: {
+				x: centre - (eye.x + eye.width / 2) * scale,
+				y: bottom - (eye.y + eye.height) * scale,
 			},
 		};
 	});
@@ -230,13 +260,13 @@
 <!-- what moves over the pictures: each hall's eye and torches, and the boss hall's floor fires -->
 {#if mix < 1}
 	<Container zIndex={-1} alpha={1 - mix}>
-		<DragonEye hall="Base" {shape} {...flameProps} />
+		<DragonEye hall="Base" {shape} {...eyeLayer} />
 		<Torches torches={TORCHES[shape].base} flare={flare.current} {...flameProps} />
 	</Container>
 {/if}
 {#if mix > 0}
 	<Container zIndex={-1} alpha={Math.min(1, mix * 1.5)}>
-		<DragonEye hall="Bonus" {shape} {...flameProps} />
+		<DragonEye hall="Bonus" {shape} {...eyeLayer} />
 		<FloorFires
 			fires={FLOOR_FIRES[shape]}
 			burning

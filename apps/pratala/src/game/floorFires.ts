@@ -16,35 +16,18 @@ export const FLOOR_FIRE_KINDS = {
 export type FloorFire = { kind: keyof typeof FLOOR_FIRE_KINDS; x: number; y: number; flip?: boolean };
 
 export const FLOOR_FIRES: Record<'Landscape' | 'Portrait', FloorFire[]> = {
-	// the floor starts at y 262
+	// the halls remade on 2026-11-18 have their own lava in the floor's cracks: only a few small
+	// fires lick up from them, near the sides (the floor starts at y 285 wide, 390 tall)
 	Landscape: [
-		{ kind: 'lick', x: 150, y: 264 },
-		{ kind: 'lick', x: 426, y: 265, flip: true },
-		{ kind: 'patch', x: 28, y: 267 },
-		{ kind: 'patch', x: 552, y: 268, flip: true },
-		{ kind: 'tall', x: 474, y: 271 },
-		{ kind: 'creep', x: 92, y: 275 },
-		{ kind: 'bed', x: 528, y: 286, flip: true },
-		{ kind: 'lick', x: 122, y: 290 },
-		{ kind: 'patch', x: 352, y: 292 },
-		{ kind: 'run', x: 436, y: 298 },
-		{ kind: 'bed', x: 186, y: 302 },
-		{ kind: 'patch', x: 66, y: 306, flip: true },
-		{ kind: 'lick', x: 506, y: 312 },
-		{ kind: 'creep', x: 300, y: 316, flip: true },
+		{ kind: 'lick', x: 40, y: 298 },
+		{ kind: 'lick', x: 600, y: 300, flip: true },
+		{ kind: 'patch', x: 150, y: 318 },
+		{ kind: 'patch', x: 492, y: 316, flip: true },
 	],
-	// the floor starts at y 405
 	Portrait: [
-		{ kind: 'patch', x: 62, y: 412 },
-		{ kind: 'lick', x: 250, y: 414, flip: true },
-		{ kind: 'creep', x: 122, y: 424 },
-		{ kind: 'tall', x: 214, y: 444 },
-		{ kind: 'lick', x: 160, y: 458 },
-		{ kind: 'run', x: 238, y: 482, flip: true },
-		{ kind: 'bed', x: 74, y: 494 },
-		{ kind: 'patch', x: 300, y: 508, flip: true },
-		{ kind: 'lick', x: 28, y: 522 },
-		{ kind: 'creep', x: 176, y: 534, flip: true },
-		{ kind: 'patch', x: 96, y: 556 },
+		{ kind: 'lick', x: 40, y: 420 },
+		{ kind: 'lick', x: 322, y: 418, flip: true },
+		{ kind: 'patch', x: 108, y: 456 },
+		{ kind: 'patch', x: 252, y: 452, flip: true },
 	],
 };

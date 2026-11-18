@@ -34,8 +34,8 @@
 	const LIGHT = {
 		tint: 0xffa214,
 		// the pool across, in flame heights, and how strongly it adds to the picture
-		size: 2.2,
-		alpha: 0.6,
+		size: 1.8,
+		alpha: 0.3,
 		// how far the flame's heat swings the pool's size and strength
 		swell: 0.12,
 		flicker: 1,
