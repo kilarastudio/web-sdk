@@ -86,14 +86,16 @@ const appliedSpots = (wins: BookEventOfType<'winInfo'>['wins']): GlintApplySpot[
 const roundCost = () =>
 	(stateBetDerived.activeBetMode()?.costMultiplier ?? 1) * BOOK_AMOUNT_MULTIPLIER;
 
-// The math picks a win's level from the base bet, so an ANTE spin or a bought round would get a
-// fanfare or a BIG WIN panel while paying back less than it cost. The game picks the level from
-// what the round cost instead: a win at or below it is a loss in disguise, with no celebration.
+// A win's level is measured against the base bet in every mode, as the math's winLevel is: a
+// bought bonus celebrates what its free spins pay, the same as one the reels gave (winLevelMap.ts).
+const BET = BOOK_AMOUNT_MULTIPLIER;
 const MAX_WIN = config.betModes.base.max_win * BOOK_AMOUNT_MULTIPLIER;
 const roundWinLevelData = ({ amount }: { amount: number }) =>
-	winLevelFor({ amount, cost: roundCost(), maxWin: MAX_WIN });
+	winLevelFor({ amount, cost: BET, maxWin: MAX_WIN });
 
-// the character only celebrates a win above what the round cost, and a big win the most
+// The character celebrates a win above what the spin cost, and a big win the most: a base game
+// spin costs the round's cost (3x the bet in ANTE); free spins, bought or not, the base bet, the
+// measure of their levels.
 const dragonReactToWin = ({
 	amount,
 	winLevelData,
@@ -101,7 +103,7 @@ const dragonReactToWin = ({
 	amount: number;
 	winLevelData: WinLevelData;
 }) => {
-	if (amount <= roundCost()) return;
+	if (amount <= (stateGame.gameType === 'freegame' ? BET : roundCost())) return;
 
 	eventEmitter.broadcast({
 		type: 'dragonReact',
@@ -115,7 +117,7 @@ const dragonReactToWin = ({
 // spin costs the round's cost (3x the bet in ANTE); a free spin is measured against the base bet.
 const STEP_REACTIONS = ['nod', 'puff', 'flap', 'win'] as const;
 const dragonReactToStep = ({ step, earned }: { step: number; earned: number }) => {
-	const cost = stateGame.gameType === 'freegame' ? BOOK_AMOUNT_MULTIPLIER : roundCost();
+	const cost = stateGame.gameType === 'freegame' ? BET : roundCost();
 	const level = earned > cost ? Math.min(STEP_REACTIONS.length, step) : 1;
 
 	eventEmitter.broadcast({ type: 'dragonReact', reaction: STEP_REACTIONS[level - 1] });
@@ -363,7 +365,7 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		await eventEmitter.broadcastAsync({
 			type: 'freeSpinOutroCountUp',
 			amount: bookEvent.amount,
-			cost: roundCost(),
+			cost: BET,
 			winLevelData,
 		});
 		winLevelSoundsStop({ music: 'bgm_main' });
@@ -405,15 +407,20 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 	},
 	setWin: async (bookEvent: BookEventOfType<'setWin'>) => {
 		const winLevelData = roundWinLevelData(bookEvent);
+		// a single free spin's win shows quicker than a base game spin's: the bonus goes on
+		const quick = stateGame.gameType === 'freegame';
 
+		// a big win's count is the one number on screen: the tumble win it counts up again leaves
+		if (winLevelData.type === 'big') eventEmitter.broadcast({ type: 'tumbleWinAmountHide' });
 		eventEmitter.broadcast({ type: 'winShow' });
 		dragonReactToWin({ amount: bookEvent.amount, winLevelData });
 		winLevelSoundsPlay({ winLevelData });
 		await eventEmitter.broadcastAsync({
 			type: 'winUpdate',
 			amount: bookEvent.amount,
-			cost: roundCost(),
+			cost: BET,
 			winLevelData,
+			quick,
 		});
 		winLevelSoundsStop();
 		eventEmitter.broadcast({ type: 'winHide' });

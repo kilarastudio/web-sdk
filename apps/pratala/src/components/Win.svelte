@@ -4,7 +4,14 @@
 	export type EmitterEventWin =
 		| { type: 'winShow' }
 		| { type: 'winHide' }
-		| { type: 'winUpdate'; amount: number; cost: number; winLevelData: WinLevelData };
+		| {
+				type: 'winUpdate';
+				amount: number;
+				cost: number;
+				winLevelData: WinLevelData;
+				// a single free spin's win: it shows quicker, the bonus goes on
+				quick?: boolean;
+		  };
 </script>
 
 <script lang="ts">
@@ -20,6 +27,7 @@
 	import WinAnimation from './WinAnimation.svelte';
 	import PressToContinue from './PressToContinue.svelte';
 	import CoinShower from './CoinShower.svelte';
+	import CoinBurst from './CoinBurst.svelte';
 	import WinPunch from './WinPunch.svelte';
 	import Slam from './Slam.svelte';
 	import { BOARD_FIT, BOARD_SIZES, SYMBOL_SIZE, countUpEasing } from '../game/constants';
@@ -43,6 +51,7 @@
 	let amount = $state(0);
 	let cost = $state(0);
 	let winLevelData = $state<WinLevelData>();
+	let quick = $state(false);
 	let oncomplete = $state(() => {});
 
 	context.eventEmitter.subscribeOnMount({
@@ -52,6 +61,7 @@
 			amount = emitterEvent.amount;
 			cost = emitterEvent.cost;
 			winLevelData = emitterEvent.winLevelData;
+			quick = emitterEvent.quick ?? false;
 			await waitForResolve((resolve) => (oncomplete = resolve));
 		},
 	});
@@ -60,11 +70,13 @@
 <FadeContainer {show}>
 	{#if winLevelData}
 		{@const isBigWin = winLevelData.type === 'big'}
-		{@const climb = winClimb({ amount, cost, level: winLevelData })}
+		{@const climb = winClimb({ amount, cost, level: winLevelData, quick })}
+		{@const medium = winLevelData.type === 'medium' ? winLevelData : undefined}
+		{@const present = quick ? winLevelData.presentDuration * 0.6 : winLevelData.presentDuration}
 		<!-- a normal win races up and eases into its amount; a big win climbs its levels -->
 		<WinCountUpProvider
 			{amount}
-			duration={isBigWin ? climb.duration : winLevelData.presentDuration}
+			duration={isBigWin ? climb.duration : present}
 			easing={isBigWin ? climb.easing : countUpEasing}
 			oncomplete={() => winCountUpSoundsEnd({ winLevelData })}
 		>
@@ -79,7 +91,9 @@
 					onmount={async () => {
 						await startCountUp();
 						// long enough for the amount's final swell, and for the last level to be seen
-						await waitForTimeout(isBigWin ? (winLevelData?.alias === 'max' ? 3000 : 1500) : 500);
+						await waitForTimeout(
+							isBigWin ? (winLevelData?.alias === 'max' ? 3000 : quick ? 900 : 1500) : 500,
+						);
 						oncomplete();
 					}}
 				/>
@@ -114,6 +128,14 @@
 								{/snippet}
 							</WinAnimation>
 						{:else}
+							<!-- a win over twice the bet throws a few coins up from behind its amount -->
+							{#if medium}
+								<CoinBurst
+									level={medium.level}
+									count={medium.alias === 'substantial' ? 12 : 6}
+									width={context.stateGameDerived.boardLayout().width * 0.5}
+								/>
+							{/if}
 							<WinPunch appear completed={countUpCompleted}>
 								<GameText
 									anchor={0.5}
