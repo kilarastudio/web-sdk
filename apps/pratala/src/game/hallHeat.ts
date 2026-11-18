@@ -16,7 +16,8 @@ const GLOW = [120, 52, 6];
 export const HEAT_FROM = -WARM - 0.02;
 export const HEAT_TO = 1 + SETTLE + 0.02;
 
-const pixels = (texture: PIXI.Texture, width: number, height: number) => {
+// the picture's colours, one art pixel each
+export const pixels = (texture: PIXI.Texture, width: number, height: number) => {
 	const canvas = document.createElement('canvas');
 	canvas.width = width;
 	canvas.height = height;
