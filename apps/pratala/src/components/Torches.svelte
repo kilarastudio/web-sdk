@@ -34,12 +34,16 @@
 	const LIGHT = {
 		tint: 0xffa214,
 		// the pool across, in flame heights, and how strongly it adds to the picture
-		size: 1.8,
+		size: 2.3,
 		alpha: 0.3,
 		// how far the flame's heat swings the pool's size and strength
-		swell: 0.12,
+		swell: 0.3,
 		flicker: 1,
 	};
+	// The same light falls on the floor in front of the torch (Torch.floor), wide and shallow, and
+	// it is what a player sees move most: it brightens and dims with the flame, swings a little
+	// sideways on the draught, and grows when the flames leap.
+	const FLOOR = { alpha: 0.3, flicker: 1.7, swell: 0.22, sway: 9 };
 
 	const frames = (key: string) => (context.stateApp.loadedAssets[key] ?? []) as PIXI.Texture[];
 	const glow = $derived(
@@ -73,6 +77,18 @@
 	{@const light = torchLight(torch, tick, index)}
 	{@const x = props.origin.x + torch.x * props.scale}
 	{@const y = props.origin.y + torch.y * props.scale}
+	{@const floorSize = 1 + (light - 1) * FLOOR.swell + 0.4 * flare}
+	<BaseSprite
+		texture={glow}
+		anchor={0.5}
+		x={x + (light - 1) * FLOOR.sway * props.scale}
+		y={props.origin.y + torch.floor.y * props.scale}
+		width={torch.floor.width * props.scale * floorSize}
+		height={torch.floor.height * props.scale * floorSize}
+		tint={LIGHT.tint}
+		alpha={Math.min(0.9, Math.max(0, FLOOR.alpha * (1 + (light - 1) * FLOOR.flicker)))}
+		blendMode="add"
+	/>
 	<BaseSprite
 		texture={glow}
 		anchor={0.5}

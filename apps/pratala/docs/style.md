@@ -89,9 +89,15 @@ mode_pictures.py`; rebuild them whenever a symbol's art changes): ANTE is the sc
   a pool of light in four bands that swells and dims with how far its flame's tongues reach,
   carried on a slow draught so it never repeats with the flame's loop; dark soot, burned the same
   way, climbs behind each flame.
-- At rest the eye blinks every 2.6 to 6.2 seconds and looks left, right or down every 5 to 11
-  seconds, at times drawn between those bounds so it never ticks like a clock. With reduced motion
-  it stays open.
+- At rest the eye blinks every 2.6 to 6.2 seconds and looks left, right or down, or lets its lids
+  droop half shut, every 3 to 6 seconds (every 1.3 to 2.7 on the welcome screen, where it sizes up
+  the newcomer), at times drawn between those bounds so it never ticks like a clock. Its own fire
+  lights the wall round the breach, swelling and ebbing over 4.2 s like a breath and burning
+  brighter while the pupil is narrowed. With reduced motion it stays open and the light steady.
+- Each torch also throws a wide, shallow pool of light on the floor in front of it, which
+  brightens, dims and swings a little sideways with the flame. Measured idle motion at
+  1280×800 (2026-11-19, 16 pairs 1.5 s apart): base 2.0, welcome 1.6; at 412×915 base 2.9,
+  welcome 1.9. Engine's reviewers tagged v1 (base 1.0) for poor animations twice.
 - In free spins the board frame does not burn (2026-11-13: its fire clashed with the tumble
   win's): separate fires burn scattered on the hall's floor round the board, never in one
   straight line, and the frame takes the heat, its stone and gold turned toward red with a slow

@@ -96,11 +96,16 @@
 			['half', 70],
 		] as const,
 	};
+	// it looks about every 3 to 6 s (once every 5 to 11 s left the hall still for too long: Engine's
+	// reviewers tagged v1 for poor animations), and now and then its lids droop half shut a while,
+	// like a slow breath, and open again
 	const GLANCE = {
-		every: [5200, 11000],
-		hold: [700, 1300],
-		frames: ['lookLeft', 'lookRight', 'lookDown'] as const,
+		every: [2800, 5800],
+		hold: [700, 1400],
+		frames: ['lookLeft', 'lookRight', 'lookDown', 'lookLeft', 'lookRight', 'half'] as const,
 	};
+	// on the welcome screen it is sizing up the newcomer: it looks about twice as often
+	const WELCOME_GLANCE = [1300, 2700];
 
 	const between = ([low, high]: readonly [number, number] | number[]) =>
 		low + Math.random() * (high - low);
@@ -110,6 +115,10 @@
 	);
 
 	let frame = $state<EyeFrame>('open');
+	// The eye's own fire lights the wall round its breach, and the dragon breathes: the light swells
+	// and ebbs over BREATH.period, and burns brighter while the pupil is narrowed. 0 to 1.
+	const BREATH = { period: 4200, least: 0.1, most: 0.34, alert: 0.42, tint: 0xff5a10 };
+	let breath = $state(0);
 	let answer: { frame: EyeFrame; until: number } | undefined;
 	let blinkAt = 0;
 	let glance: { frame: EyeFrame; from: number; until: number } | undefined;
@@ -125,7 +134,8 @@
 	const restingFrame = (now: number): EyeFrame => {
 		if (!blinkAt) blinkAt = now + between(BLINK.every);
 		if (!glance) {
-			const from = now + between(GLANCE.every);
+			const from =
+				now + between(context.stateLayout.showLoadingScreen ? WELCOME_GLANCE : GLANCE.every);
 			glance = {
 				frame: GLANCE.frames[Math.floor(Math.random() * GLANCE.frames.length)],
 				from,
@@ -156,6 +166,11 @@
 			else if (anticipating || hallMood.tier >= 4) next = 'alert';
 			else next = restingFrame(now);
 			if (next !== frame) frame = next;
+			const swell = prefersReducedMotion.current
+				? 0.5
+				: 0.5 - 0.5 * Math.cos((2 * Math.PI * now) / BREATH.period);
+			const target = next === 'alert' ? 1 : swell;
+			breath += (target - breath) * 0.08;
 		};
 		request = requestAnimationFrame(tick);
 
@@ -178,6 +193,18 @@
 	onMount(() => boardSpace.addPupil(pupil));
 </script>
 
+<!-- the eye's light on the wall round the breach, under the eye -->
+<BaseSprite
+	texture={(context.stateApp.loadedAssets.flameGlow ?? PIXI.Texture.EMPTY) as PIXI.Texture}
+	anchor={0.5}
+	x={props.origin.x + (eye.x + eye.width / 2) * props.scale}
+	y={props.origin.y + (eye.y + eye.height / 2) * props.scale}
+	width={eye.width * 2.2 * props.scale}
+	height={eye.height * 2.1 * props.scale}
+	tint={BREATH.tint}
+	alpha={BREATH.least + (frame === 'alert' ? BREATH.alert : BREATH.most - BREATH.least) * breath}
+	blendMode="add"
+/>
 <!-- the eye in its breach, every frame from the strip (the hall is painted without it) -->
 {#if texture}
 	<BaseSprite
