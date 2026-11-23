@@ -1,7 +1,7 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 
-	import { stateUi, stateBet, stateReplay } from 'state-shared';
+	import { stateUi, stateBet, stateReplay, stateModal } from 'state-shared';
 	import { numberToCurrencyString } from 'utils-shared/amount';
 
 	import UiFadeContainer from './UiFadeContainer.svelte';
@@ -28,6 +28,15 @@
 	const context = getContext();
 	// portrait is too narrow for PLAY inside the bar, so it sits above it
 	const portrait = $derived(context.stateLayoutDerived.layoutType() === 'portrait');
+
+	// once the game is entered, the replay's summary opens before anything plays (ModalReplay)
+	let summaryShown = false;
+	$effect(() => {
+		if (summaryShown || context.stateLayout.showLoadingScreen) return;
+		if (!stateReplay.bet || stateReplay.phase !== 'ready') return;
+		summaryShown = true;
+		stateModal.modal = { name: 'replay' };
+	});
 </script>
 
 <UiFadeContainer>

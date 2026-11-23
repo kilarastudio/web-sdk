@@ -110,7 +110,7 @@ Mandatory for new games. Reviewers request event IDs per mode for: normal win, b
 - Play the round exactly like normal play (all animations and sounds), keep the result visible.
 - **Play Again** restarts the same event.
 - Hide/disable all betting controls; no balance; no wallet or session calls; no way into normal play.
-- Show the bet, the mode cost multiplier and the real cost, e.g. `BONUS: 1.00 SC · REAL COST: 100.00 SC`. A replay with no amount anywhere fails.
+- Before Start, show a summary: mode (game name and math name), base bet, cost multiplier, total cost (`amount × costMultiplier`), payout multiplier and total win, with social wording under `social=true` (`TOTAL PLAY`, never `REAL COST`). Kilara SDK: `ModalReplay` opens it once the game is entered. A replay with no amount anywhere fails.
 - Apply `currency`, `lang`, `amount`; missing or invalid values fall back sensibly (USD, English, a default bet) and never break.
 - Fetch failure → visible error message.
 - Works and fits at Popout S (400×225).

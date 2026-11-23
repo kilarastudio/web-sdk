@@ -85,7 +85,22 @@ export const i18nDerived = {
 	play: () => stateI18nDerived.translate('PLAY'),
 	playing: () => stateI18nDerived.translate('PLAYING'),
 	playAgain: () => stateI18nDerived.translate('PLAY AGAIN'),
-	realCost: () => stateI18nDerived.translate('REAL COST'),
+	// the replay's summary, before it plays: social play has no "bet", "cost" or "pay"
+	replay: () => stateI18nDerived.translate('REPLAY'),
+	replayStart: () => stateI18nDerived.translate('START REPLAY'),
+	replayMode: () => stateI18nDerived.translate('MODE'),
+	replayBaseBet: () =>
+		stateUrlDerived.social() ? 'PLAY AMOUNT' : stateI18nDerived.translate('BASE BET'),
+	replayCostMultiplier: () =>
+		stateUrlDerived.social() ? 'MODE MULTIPLIER' : stateI18nDerived.translate('COST MULTIPLIER'),
+	replayWinMultiplier: () => stateI18nDerived.translate('WIN MULTIPLIER'),
+	replayTotalWin: () => stateI18nDerived.translate('TOTAL WIN'),
+	replayNote: () =>
+		stateI18nDerived.translate('A replay of an earlier round. Your balance is not used.'),
+	// what the round takes from the balance, bet × mode multiplier; social play has no "cost" and
+	// says it the way Stake replaces "total bet"
+	realCost: () =>
+		stateUrlDerived.social() ? 'TOTAL PLAY' : stateI18nDerived.translate('REAL COST'),
 	// menus
 	rtp: () => stateI18nDerived.translate('RTP'),
 	maxWin: () => stateI18nDerived.translate('MAX WIN'),

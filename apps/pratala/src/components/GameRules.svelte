@@ -178,7 +178,8 @@
 		<thead>
 			<tr>
 				<th>{t('MODE')}</th>
-				<th>{t('COST')}</th>
+				<!-- the price of a mode as a multiple of the bet; social play has no "cost" -->
+				<th>{social ? 'PLAY AMOUNT' : t('COST')}</th>
 				<th>{i18nDerived.rtp()}</th>
 				<th>{i18nDerived.maxWin()}</th>
 			</tr>

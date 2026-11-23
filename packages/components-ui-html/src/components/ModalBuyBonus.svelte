@@ -16,6 +16,7 @@
 	import './font.css';
 	import './tokens.css';
 	import UiStepper from './UiStepper.svelte';
+	import { fitText } from './fitText';
 	import { KILARA_ICONS } from './kilaraIcons';
 	import { stateBonus } from '../stateBonus.svelte';
 	import { i18nDerived } from '../i18n/i18nDerived';
@@ -97,7 +98,8 @@
 			</button>
 		</header>
 
-		<div class="cards">
+		<!-- every price shrinks to its card, all by the same amount, so the largest bet stays whole -->
+		<div class="cards" use:fitText={{ smallest: 0.4, items: '.cost' }}>
 			{#each modes as mode, index (mode.mode)}
 				<button
 					type="button"
@@ -329,22 +331,32 @@
 		white-space: nowrap;
 	}
 
+	/*
+		The price takes the card's whole width and shrinks to it (fitText), the multiplier under it.
+		Text that is too wide for its line starts at the line's start, so an overflow always shows
+		in scrollWidth, which fitText measures.
+	*/
 	.cost {
-		display: flex;
-		align-items: baseline;
-		gap: 0.4em;
+		align-self: stretch;
+		min-width: 0;
 		margin-top: 0.2em;
+		overflow: hidden;
 		color: var(--ui-accent);
+		font-size: calc(1em * var(--ui-fit, 1));
+		line-height: 1.15;
+		text-align: center;
 		white-space: nowrap;
 	}
 
 	.amount {
+		display: block;
 		font-size: 1.45em;
 		font-weight: 800;
 		font-variant-numeric: tabular-nums;
 	}
 
 	.times {
+		display: block;
 		color: var(--ui-text-muted);
 		font-size: 0.85em;
 		font-weight: 600;
@@ -421,17 +433,20 @@
 			--columns: 1;
 		}
 
+		/* every card as tall as the tallest, so the rows line up */
 		.cards {
+			grid-auto-rows: 1fr;
 			width: min(100%, calc(var(--u) * 34));
 		}
 
 		.card {
 			display: grid;
-			grid-template-columns: auto minmax(0, 1fr) 8em;
+			/* the name as wide as it is, the price in the rest of its row, shrunk to it */
+			grid-template-columns: auto max-content minmax(0, 1fr) 8em;
 			grid-template-areas:
-				'img title cost'
-				'img description action'
-				'img facts action';
+				'img title cost cost'
+				'img description description action'
+				'img facts facts action';
 			align-items: center;
 			column-gap: 0.9em;
 			row-gap: 0.25em;
@@ -463,19 +478,28 @@
 
 		.cost {
 			grid-area: cost;
-			justify-content: flex-end;
 			margin: 0;
+			text-align: right;
 		}
 
+		.amount,
+		.times {
+			display: inline;
+		}
+
+		.times {
+			margin-left: 0.4em;
+		}
+
+		/* one height for every call to action, whatever the text beside it */
 		.action {
 			grid-area: action;
-			align-self: stretch;
-			height: auto;
-			min-height: 2.6em;
+			align-self: center;
+			height: 3.2em;
 		}
 	}
 
-	/* short and wide (a phone on its side, the mini player): flatter cards, the text kept brief */
+	/* short and wide (a phone on its side, the mini player): flatter cards, every word still shown */
 	@media (max-height: 499px) and (min-aspect-ratio: 1/1) {
 		.bonus-scene {
 			--u: clamp(7px, 2.7vh + 1px, 13px);
@@ -499,14 +523,6 @@
 		.facts {
 			font-size: 0.66em;
 			white-space: normal;
-		}
-
-		.description {
-			display: -webkit-box;
-			overflow: hidden;
-			-webkit-box-orient: vertical;
-			-webkit-line-clamp: 2;
-			line-clamp: 2;
 		}
 	}
 

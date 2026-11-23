@@ -75,10 +75,10 @@ const modeData = (row: (typeof MODES)[number], social: boolean): BetModeData => 
 	const { cost, max_win: maxWin, rtp } = config.betModes[row.mode];
 	const words = modeWords(social);
 	const t = stateI18nDerived.translate;
-	const price = t('Costs {cost} the {amount}.', {
-		cost: stateI18nDerived.times(cost),
-		amount: words.amount,
-	});
+	// social play has no "cost": Stake's own wording for it, in English like all of social play
+	const price = social
+		? `Can be played for ${stateI18nDerived.times(cost)} the play amount.`
+		: t('Costs {cost} the {amount}.', { cost: stateI18nDerived.times(cost), amount: words.amount });
 	const stays =
 		row.type === 'activate'
 			? ` ${t('{mode} stays on until you turn it off.', { mode: row.key })}`

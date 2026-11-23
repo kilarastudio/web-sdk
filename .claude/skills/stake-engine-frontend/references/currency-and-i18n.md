@@ -119,6 +119,7 @@ buyBonus: () => (stateUrlDerived.social() ? 'PLAY BONUS' : stateI18nDerived.tran
 - Mode names must avoid restricted words ("BONUS BUY", "BUY FEATURE", "SUPER BET" all fail) and be named the same in the game, the replay and the math files.
 - Common misses: "Bet" on the main button, "Bet Amount", "Auto Bet", "Number of Bets", "Total Bet", "Buy" on bonus buttons and confirmations, insufficient-funds errors, and **"Paytable" / "Pay table"** (use e.g. "Win table" or "Symbol wins").
 - Matching is whole-word and case-insensitive.
+- Reviewers go beyond the table: "REAL COST" failed a social replay (2026-11-23). Keep "cost", "costs" and "real" out of social text ("TOTAL PLAY", "Can be played for 100× the play amount.", "PLAY AMOUNT").
 
 ## 7. Restricted phrases
 
