@@ -45,7 +45,7 @@ export default {
 	WIN: 'ВЫИГРЫШ',
 	STOP: 'СТОП',
 	'BUY BONUS': 'КУПИТЬ БОНУС',
-	DISABLE: 'ОТКЛЮЧИТЬ',
+	DISABLE: 'ОТКЛЮ\u00ADЧИТЬ',
 	'FREE SPINS': 'ФРИСПИНЫ',
 	'-': '-',
 	'+': '+',

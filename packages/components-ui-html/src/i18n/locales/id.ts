@@ -45,7 +45,7 @@ export default {
 	WIN: 'MENANG',
 	STOP: 'STOP',
 	'BUY BONUS': 'BELI BONUS',
-	DISABLE: 'NONAKTIFKAN',
+	DISABLE: 'NONAK\u00ADTIFKAN',
 	'FREE SPINS': 'PUTARAN GRATIS',
 	'-': '-',
 	'+': '+',

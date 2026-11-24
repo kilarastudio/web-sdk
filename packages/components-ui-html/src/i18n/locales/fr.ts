@@ -45,7 +45,7 @@ export default {
 	WIN: 'GAIN',
 	STOP: 'STOP',
 	'BUY BONUS': 'ACHETER BONUS',
-	DISABLE: 'DÉSACTIVER',
+	DISABLE: 'DÉSAC\u00ADTIVER',
 	'FREE SPINS': 'TOURS GRATUITS',
 	'-': '-',
 	'+': '+',
