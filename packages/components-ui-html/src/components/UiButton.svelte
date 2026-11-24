@@ -2,6 +2,7 @@
 	import type { Snippet } from 'svelte';
 
 	import UiIcon, { type UiIconName } from './UiIcon.svelte';
+	import { fitText } from './fitText';
 
 	type Props = {
 		// shown as text, or as the accessible name and tooltip when the button only has an icon
@@ -103,7 +104,10 @@
 			<UiIcon name={icon} rotation={iconRotation} />
 		</span>
 	{/if}
-	{#if !iconOnly}
+	{#if kind === 'feature'}
+		<!-- the badge is a fixed square: a long word or a third line shrinks the text (fitText) -->
+		<span class="ui-button-label" use:fitText={{ height: true }}>{label}</span>
+	{:else if !iconOnly}
 		<span class="ui-button-label">{label}</span>
 	{/if}
 	{@render children?.()}
@@ -292,8 +296,18 @@
 		line-height: 1.05;
 		letter-spacing: 0.03em;
 
+		/*
+			A fixed box, two full-size lines tall, under the Kilau dot: the label shrinks to fit it
+			(fitText sets --ui-fit) so every language stays inside the square.
+		*/
 		.ui-button-label {
-			max-width: calc(var(--size) * 0.82);
+			box-sizing: border-box;
+			display: block;
+			width: calc(var(--size) * 0.8);
+			max-height: calc(var(--size) * 0.18 * 1.05 * 2);
+			margin-top: calc(var(--size) * 0.06);
+			font-size: calc(var(--size) * 0.18 * var(--ui-fit, 1));
+			overflow-wrap: normal;
 			text-wrap: balance;
 			transition: transform 0.24s cubic-bezier(0.34, 1.56, 0.64, 1);
 		}
