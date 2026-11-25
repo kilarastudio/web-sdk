@@ -3,17 +3,21 @@
 	import { type Snippet } from 'svelte';
 
 	import { createInterruptible } from 'utils-shared/interruptible';
+	import { bookEventAmountToCountUpCurrencyString, countUpEasing } from 'utils-shared/amount';
 
 	type Props = {
 		amount: number;
 		duration: number;
-		// how the amount climbs over the duration; linear when not given
+		// how the amount climbs over the duration; the studio's countUpEasing when not given
 		easing?: (t: number) => number;
 		oncomplete: () => void;
 		children: Snippet<
 			[
 				{
 					countUpAmount: number;
+					// the amount to show: whole currency units (cents) while it climbs, never above the
+					// win, and the exact win once it has arrived. Show this, not countUpAmount.
+					countUpText: string;
 					startCountUp: () => Promise<void>;
 					finishCountUp: () => void;
 					countUpCompleted: boolean;
@@ -31,7 +35,7 @@
 	const countUp = () =>
 		countUpAmount.set(props.amount, {
 			duration: props.duration,
-			...(props.easing ? { easing: props.easing } : {}),
+			easing: props.easing ?? countUpEasing,
 		});
 	const resetCountUp = () => countUpAmount.set(props.amount, { duration: 0 });
 	const finishCountUp = () => interruptible.interrupt();
@@ -46,6 +50,7 @@
 
 {@render props.children({
 	countUpAmount: countUpAmount.current,
+	countUpText: bookEventAmountToCountUpCurrencyString(countUpAmount.current, props.amount),
 	startCountUp,
 	finishCountUp,
 	countUpCompleted,

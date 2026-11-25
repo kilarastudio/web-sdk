@@ -68,6 +68,12 @@ style, characters) is in `apps/<game>/docs/style.md`. How the work is done is in
 - A run of wins escalates: each one a note higher, a stronger hit, more from the character.
 - Amounts count up eased (fast, then slow into the final digits), in whole currency units while
   counting, exact when they arrive.
+- In code: a count-up inside `WinCountUpProvider` shows its `countUpText`, never a formatted or
+  rounded `countUpAmount`, and climbs on `countUpEasing` (`utils-shared/amount`) unless the game
+  passes its own `easing`. Any other climbing amount (a tween) uses the same `countUpEasing` and
+  shows `bookEventAmountToCountUpCurrencyString(current, target)`. Rounding book amounts ties the step
+  to the bet: at a small bet extra decimals flicker and the width jumps, at a large bet the cents
+  stay at 0.
 - Celebration is for wins above the bet. A win below the bet is acknowledged, not celebrated.
 
 ## Sound

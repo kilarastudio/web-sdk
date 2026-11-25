@@ -63,3 +63,7 @@ export const bookEventAmountToCountUpCurrencyString = (
 
 	return numberToCurrencyString(Math.floor(normalisedAmount * unit + 1e-6) / unit);
 };
+
+// The studio's count-up curve: a win amount races up and slows into its final value, so the
+// last digits can be read.
+export const countUpEasing = (t: number) => 1 - (1 - t) ** 2.4;
