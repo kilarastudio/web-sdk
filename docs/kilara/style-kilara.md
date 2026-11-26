@@ -7,7 +7,7 @@ style, characters) is in `apps/<game>/docs/style.md`. How the work is done is in
 
 ## The HUD
 
-- One HUD for every game, in HTML over the canvas (`packages/components-ui-html`). Clean and
+- One HUD for every slot game (burst games: see The burst HUD), in HTML over the canvas (`packages/components-ui-html`). Clean and
   app-like: flat surfaces, no borders, no glow, one shadow level.
 - Colours: Kilau `#ffc53d` (gold), Malam `#0e1014` (near black), Kertas `#f3f4f6` (text),
   Kabut `#8a92a0` (muted), Langit `#7ab8ff` (switched on). Kilau is kept for the Kilau dot, wins
@@ -19,6 +19,40 @@ style, characters) is in `apps/<game>/docs/style.md`. How the work is done is in
   any picture, bright or dark.
 - The reels are the focus: the board is as large as the layout allows; a character is smaller
   than the reels.
+
+## The burst HUD
+
+- Burst games (keno and the like) do not use the slot HUD's controls. They use `UiBurst`: the
+  same tokens, buttons, labels, menus and sheets, laid out for a game with choices before a round.
+- **Familiar first.** A burst game's players come from Stake's own games (Keno, Mines, Plinko), so
+  a Kilara burst game keeps the frame they know and is different in a few chosen places only:
+  - Keep the frame: the board, the bet panel, the level selector, random pick, autoplay and the
+    win per result, each where that kind of game usually has it.
+  - Be different in three places only: the game's own mechanic (in keno, the streak meter), the
+    light and sound of a hit, and Kilara's identity (colour, type, motion).
+  - Do not move habits: where the play button is, the order of the controls, and what the colours
+    of the pieces mean stay as players know them.
+- The reference is Stake's Keno as it stood on 2026-11-26 (read from the live page). Phone: board,
+  win per hits, Bet, amount, random pick and clear, difficulty, manual/auto. Desktop: a panel left
+  of the board with manual/auto, amount, difficulty, random pick and clear, and Bet at its foot;
+  the win per hits under the board.
+- No dock, no round button, no feature badge. A top bar (menu, the game's name over the clock,
+  win, balance) and the game. Tall screens: the play bar (with autoplay and turbo) straight under
+  the game, then the amount (− amount +) with the game's small actions beside it, then the
+  game's choices. Wide screens: a panel left of the game with the amount, the choices, the small
+  actions, and the play bar at its foot. On a long screen the game stands on the play bar and the
+  spare room stays above it.
+- The burst HUD carries no Kilara logo: the game's name is the title, in Kertas, where the logo
+  would stand (the studio shows itself in the intro and the loading screen). The slot HUD keeps
+  its logo.
+- The play bar is the one main action: filled Kertas, the word PLAY and what the round takes from
+  the balance. While a round runs it is the stop bar on the dark surface. While a choice is
+  missing it is dimmed and a press says what is missing.
+- A mode that costs more than the amount shows its cost on its own choice and on the play bar;
+  it is armed (Langit) through the same confirmation as in the slot HUD.
+- A game supplies three snippets (`game`, `choices`, `actions`) drawn in em; the HUD picks the
+  unit so the whole screen fits without scrolling, tall (one column) or wide (controls in a panel
+  left of the game).
 
 ## Menus
 
