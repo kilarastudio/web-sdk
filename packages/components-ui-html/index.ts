@@ -1,4 +1,5 @@
 import UI from './src/components/UI.svelte';
+import UiBurst from './src/components/UiBurst.svelte';
 import UiGameName from './src/components/UiGameName.svelte';
 import UiLogo from './src/components/UiLogo.svelte';
 import StudioIntro from './src/components/StudioIntro.svelte';
@@ -41,6 +42,7 @@ export {
 	messagesMap,
 	i18nDerived,
 	UI,
+	UiBurst,
 	UiGameName,
 	UiLogo,
 	StudioIntro,

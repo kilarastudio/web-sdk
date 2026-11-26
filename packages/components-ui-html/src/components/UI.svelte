@@ -9,8 +9,11 @@
 	import UIReplay from './UIReplay.svelte';
 
 	type Props = {
-		gameName: Snippet;
+		// the slot HUD's header; a HUD of its own (children) shows the name itself
+		gameName?: Snippet;
 		logo?: Snippet;
+		// a HUD of its own in place of the slot one (UiBurst), on the same tokens and layer
+		children?: Snippet;
 	};
 
 	const props: Props = $props();
@@ -25,7 +28,11 @@
 
 <!-- HUD rendered in HTML on top of the Pixi canvas, below the modals -->
 <div class="ui" style:z-index={zIndex.ui}>
-	<UIComponent gameName={props.gameName} logo={props.logo} />
+	{#if props.children}
+		{@render props.children()}
+	{:else if props.gameName}
+		<UIComponent gameName={props.gameName} logo={props.logo} />
+	{/if}
 </div>
 
 <style lang="scss">

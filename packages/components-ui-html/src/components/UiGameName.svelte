@@ -1,33 +1,15 @@
 <script lang="ts">
-	import { SvelteDate } from 'svelte/reactivity';
+	import UiClock from './UiClock.svelte';
 
 	type Props = {
 		name: string;
 	};
 
 	const props: Props = $props();
-	const reactiveDate = new SvelteDate();
-	const clock = $derived(
-		reactiveDate.toLocaleTimeString('en-US', {
-			hour: 'numeric',
-			minute: 'numeric',
-			hour12: false,
-		}),
-	);
-
-	$effect(() => {
-		const interval = setInterval(() => {
-			reactiveDate.setTime(Date.now());
-		}, 1000);
-
-		return () => {
-			clearInterval(interval);
-		};
-	});
 </script>
 
 <span class="ui-game-name">
-	<time>{clock}</time>
+	<UiClock />
 	<span>{props.name}</span>
 </span>
 
@@ -37,13 +19,9 @@
 		gap: 0.6em;
 	}
 
-	time {
-		font-variant-numeric: tabular-nums;
-
-		&::after {
-			content: '|';
-			margin-left: 0.6em;
-			opacity: 0.6;
-		}
+	.ui-game-name :global(time)::after {
+		content: '|';
+		margin-left: 0.6em;
+		opacity: 0.6;
 	}
 </style>
