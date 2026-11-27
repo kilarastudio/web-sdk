@@ -116,7 +116,7 @@ export default {
 	'Wins light the floor. In FREE SPINS every SCATTER doubles its reel of spots, up to {cap}.':
 		'Chiến thắng thắp sáng mặt sàn. Trong VÒNG QUAY MIỄN PHÍ, mỗi SCATTER nhân đôi các ô trên cuộn của nó, tối đa {cap}.',
 	'Dragon fire lights 3 to 6 spots.': 'Lửa rồng thắp sáng 3 đến 6 ô.',
-	'4 or more SCATTERS wake the dragon. Spots stay lit all feature.':
+	'4 or more SCATTERS wake the dragon. Spots stay lit for the whole feature.':
 		'4 SCATTER trở lên đánh thức rồng. Các ô giữ sáng suốt tính năng.',
 	'TUMBLE WIN': 'THẮNG LIÊN HOÀN',
 	'YOU WON': 'BẠN THẮNG',

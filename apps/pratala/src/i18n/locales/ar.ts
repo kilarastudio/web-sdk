@@ -113,7 +113,7 @@ export default {
 	'Wins light the floor. In FREE SPINS every SCATTER doubles its reel of spots, up to {cap}.':
 		'الأرباح تضيء الأرضية. في اللفات المجانية يضاعف كل SCATTER خانات بكرته حتى {cap}.',
 	'Dragon fire lights 3 to 6 spots.': 'تضيء نار التنين من 3 إلى 6 خانات.',
-	'4 or more SCATTERS wake the dragon. Spots stay lit all feature.':
+	'4 or more SCATTERS wake the dragon. Spots stay lit for the whole feature.':
 		'4 أو أكثر من SCATTERS توقظ التنين. وتبقى الخانات مضاءة طوال الميزة.',
 	'TUMBLE WIN': 'فوز التتالي',
 	'YOU WON': 'ربحت',

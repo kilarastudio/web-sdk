@@ -118,7 +118,7 @@ export default {
 	'Wins light the floor. In FREE SPINS every SCATTER doubles its reel of spots, up to {cap}.':
 		'Wygrane rozświetlają podłogę. W DARMOWYCH SPINACH każdy SCATTER podwaja pola swojego bębna, maksymalnie do {cap}.',
 	'Dragon fire lights 3 to 6 spots.': 'Ogień smoka zapala od 3 do 6 pól.',
-	'4 or more SCATTERS wake the dragon. Spots stay lit all feature.':
+	'4 or more SCATTERS wake the dragon. Spots stay lit for the whole feature.':
 		'4 lub więcej symboli SCATTER budzi smoka. Pola pozostają zapalone przez całą funkcję.',
 	'TUMBLE WIN': 'WYGRANA KASKADOWA',
 	'YOU WON': 'TWOJA WYGRANA',

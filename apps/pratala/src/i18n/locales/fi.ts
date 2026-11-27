@@ -117,7 +117,7 @@ export default {
 	'Wins light the floor. In FREE SPINS every SCATTER doubles its reel of spots, up to {cap}.':
 		'Voitot sytyttävät lattian. ILMAISKIERROSTEN aikana jokainen SCATTER tuplaa rullansa kohdat, enintään arvoon {cap}.',
 	'Dragon fire lights 3 to 6 spots.': 'Lohikäärmeen tuli sytyttää 3–6 kohtaa.',
-	'4 or more SCATTERS wake the dragon. Spots stay lit all feature.':
+	'4 or more SCATTERS wake the dragon. Spots stay lit for the whole feature.':
 		'Vähintään 4 SCATTER-symbolia herättää lohikäärmeen. Kohdat pysyvät syttyneinä koko ominaisuuden ajan.',
 	'TUMBLE WIN': 'PUDOTUSVOITTO',
 	'YOU WON': 'VOITIT',

@@ -115,7 +115,7 @@ export default {
 	'Wins light the floor. In FREE SPINS every SCATTER doubles its reel of spots, up to {cap}.':
 		'Kazançlar zemini aydınlatır. BEDAVA DÖNÜŞ sırasında her SCATTER kendi makarasındaki spotları {cap} değerine kadar ikiye katlar.',
 	'Dragon fire lights 3 to 6 spots.': 'Ejderha ateşi 3 ila 6 spotu yakar.',
-	'4 or more SCATTERS wake the dragon. Spots stay lit all feature.':
+	'4 or more SCATTERS wake the dragon. Spots stay lit for the whole feature.':
 		'4 veya daha fazla SCATTER ejderhayı uyandırır. Spotlar özellik boyunca yanar halde kalır.',
 	'TUMBLE WIN': 'DÜŞÜŞ KAZANCI',
 	'YOU WON': 'KAZANDINIZ',

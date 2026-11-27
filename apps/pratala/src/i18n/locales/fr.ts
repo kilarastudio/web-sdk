@@ -120,7 +120,7 @@ export default {
 	'Wins light the floor. In FREE SPINS every SCATTER doubles its reel of spots, up to {cap}.':
 		'Les gains illuminent le sol. Pendant les TOURS GRATUITS, chaque SCATTER double les spots de son rouleau, jusqu’à {cap}.',
 	'Dragon fire lights 3 to 6 spots.': 'Le feu du dragon allume 3 à 6 spots.',
-	'4 or more SCATTERS wake the dragon. Spots stay lit all feature.':
+	'4 or more SCATTERS wake the dragon. Spots stay lit for the whole feature.':
 		'4 SCATTERS ou plus réveillent le dragon. Les spots restent allumés pendant toute la fonction.',
 	'TUMBLE WIN': 'GAIN EN CASCADE',
 	'YOU WON': 'VOUS AVEZ GAGNÉ',

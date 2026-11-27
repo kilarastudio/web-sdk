@@ -113,7 +113,7 @@ export default {
 	'Wins light the floor. In FREE SPINS every SCATTER doubles its reel of spots, up to {cap}.':
 		'당첨이 바닥을 밝힙니다. 프리 스핀에서는 SCATTER마다 그 릴의 스팟이 두 배가 되며, 최대 {cap}까지입니다.',
 	'Dragon fire lights 3 to 6 spots.': '드래곤의 불길이 스팟 3~6개를 켭니다.',
-	'4 or more SCATTERS wake the dragon. Spots stay lit all feature.':
+	'4 or more SCATTERS wake the dragon. Spots stay lit for the whole feature.':
 		'SCATTER 4개 이상이면 드래곤이 깨어납니다. 스팟은 피처 내내 켜져 있습니다.',
 	'TUMBLE WIN': '텀블 당첨',
 	'YOU WON': '당첨 금액',

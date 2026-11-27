@@ -19,7 +19,7 @@ export const i18nDerived = {
 	welcomeStrikeTitle: () => t('GLINT STRIKE'),
 	welcomeStrikeText: () => t('Dragon fire lights 3 to 6 spots.'),
 	welcomeFreeSpinsTitle: () => t('FREE SPINS'),
-	welcomeFreeSpinsText: () => t('4 or more SCATTERS wake the dragon. Spots stay lit all feature.'),
+	welcomeFreeSpinsText: () => t('4 or more SCATTERS wake the dragon. Spots stay lit for the whole feature.'),
 	// panels
 	tumbleWin: () => t('TUMBLE WIN'),
 	youWon: () => t('YOU WON'),

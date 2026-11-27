@@ -116,7 +116,7 @@ export default {
 	'Wins light the floor. In FREE SPINS every SCATTER doubles its reel of spots, up to {cap}.':
 		'Kemenangan menyalakan lantai. Dalam PUTARAN GRATIS, setiap SCATTER menggandakan titik di gulungannya, hingga {cap}.',
 	'Dragon fire lights 3 to 6 spots.': 'Api naga menyalakan 3 hingga 6 titik.',
-	'4 or more SCATTERS wake the dragon. Spots stay lit all feature.':
+	'4 or more SCATTERS wake the dragon. Spots stay lit for the whole feature.':
 		'4 SCATTERS atau lebih membangunkan naga. Titik tetap menyala sepanjang fitur.',
 	'TUMBLE WIN': 'MENANG TUMBLE',
 	'YOU WON': 'ANDA MENANG',

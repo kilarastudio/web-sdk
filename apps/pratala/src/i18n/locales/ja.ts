@@ -116,7 +116,7 @@ export default {
 	'Wins light the floor. In FREE SPINS every SCATTER doubles its reel of spots, up to {cap}.':
 		'配当が床を照らします。フリースピンでは、SCATTERごとにそのリールのスポットが倍になり、最大{cap}までです。',
 	'Dragon fire lights 3 to 6 spots.': 'ドラゴンの炎が3〜6個のスポットを点灯させます。',
-	'4 or more SCATTERS wake the dragon. Spots stay lit all feature.':
+	'4 or more SCATTERS wake the dragon. Spots stay lit for the whole feature.':
 		'SCATTERが4個以上でドラゴンが目覚めます。スポットはフィーチャー中ずっと点灯したままです。',
 	'TUMBLE WIN': 'タンブル配当',
 	'YOU WON': '獲得配当',

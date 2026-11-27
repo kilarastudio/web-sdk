@@ -114,7 +114,7 @@ export default {
 	'Wins light the floor. In FREE SPINS every SCATTER doubles its reel of spots, up to {cap}.':
 		'जीत फ़र्श को रोशन करती है। फ्री स्पिन में हर SCATTER अपनी रील के स्पॉट {cap} तक दोगुने करता है।',
 	'Dragon fire lights 3 to 6 spots.': 'ड्रैगन की आग 3 से 6 स्पॉट जलाती है।',
-	'4 or more SCATTERS wake the dragon. Spots stay lit all feature.':
+	'4 or more SCATTERS wake the dragon. Spots stay lit for the whole feature.':
 		'4 या अधिक SCATTERS ड्रैगन को जगाते हैं। पूरे फ़ीचर में स्पॉट जले रहते हैं।',
 	'TUMBLE WIN': 'टम्बल जीत',
 	'YOU WON': 'आप जीते',

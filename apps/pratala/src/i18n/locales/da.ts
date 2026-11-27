@@ -116,7 +116,7 @@ export default {
 	'Wins light the floor. In FREE SPINS every SCATTER doubles its reel of spots, up to {cap}.':
 		'Gevinster tænder gulvet. Under GRATIS SPINS fordobler hver SCATTER spottene på sit hjul, op til {cap}.',
 	'Dragon fire lights 3 to 6 spots.': 'Dragens ild tænder 3 til 6 spots.',
-	'4 or more SCATTERS wake the dragon. Spots stay lit all feature.':
+	'4 or more SCATTERS wake the dragon. Spots stay lit for the whole feature.':
 		'4 eller flere SCATTERS vækker dragen. Spottene forbliver tændt under hele funktionen.',
 	'TUMBLE WIN': 'KASKADEGEVINST',
 	'YOU WON': 'DU VANDT',

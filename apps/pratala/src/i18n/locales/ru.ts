@@ -115,7 +115,7 @@ export default {
 	'Wins light the floor. In FREE SPINS every SCATTER doubles its reel of spots, up to {cap}.':
 		'Выигрыши зажигают пол. Во ФРИСПИНАХ каждый SCATTER удваивает ячейки своего барабана, вплоть до {cap}.',
 	'Dragon fire lights 3 to 6 spots.': 'Огонь дракона зажигает от 3 до 6 ячеек.',
-	'4 or more SCATTERS wake the dragon. Spots stay lit all feature.':
+	'4 or more SCATTERS wake the dragon. Spots stay lit for the whole feature.':
 		'4 или более SCATTERS будят дракона. Ячейки горят до конца бонуса.',
 	'TUMBLE WIN': 'ВЫИГРЫШ КАСКАДА',
 	'YOU WON': 'ВЫ ВЫИГРАЛИ',

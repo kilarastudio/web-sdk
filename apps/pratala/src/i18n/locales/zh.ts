@@ -110,7 +110,7 @@ export default {
 	'Wins light the floor. In FREE SPINS every SCATTER doubles its reel of spots, up to {cap}.':
 		'获奖会点亮地面。免费旋转中，每个SCATTER使其所在转轴的点位翻倍，最高至{cap}。',
 	'Dragon fire lights 3 to 6 spots.': '巨龙之火点亮3至6个点位。',
-	'4 or more SCATTERS wake the dragon. Spots stay lit all feature.':
+	'4 or more SCATTERS wake the dragon. Spots stay lit for the whole feature.':
 		'4个或以上SCATTER唤醒巨龙。点位在整个特色游戏期间保持点亮。',
 	'TUMBLE WIN': '连消赢得',
 	'YOU WON': '您赢得',

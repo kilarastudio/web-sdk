@@ -8,6 +8,7 @@
 	import { LOADING_LOGO, SYMBOL_SIZE } from '../game/constants';
 	import { panelLayout, panelTextStyle } from '../game/panels';
 	import { eyePlace } from '../game/eyePlace.svelte';
+	import { supportsGameFont } from '../game/typography';
 	import GameText from './GameText.svelte';
 	import Panel from './Panel.svelte';
 
@@ -65,6 +66,9 @@
 			text: context.i18nDerived.welcomeFreeSpinsText(),
 		},
 	]);
+	// the three descriptions keep to one font: where one of them has a letter the pixel font lacks
+	// (German ä, Portuguese ã), all three use the fallback
+	const textFallback = $derived(!features.every((feature) => supportsGameFont(feature.text)));
 
 	const layout = $derived.by(() => {
 		if (wide) {
@@ -164,6 +168,7 @@
 							anchor={{ x: 0.5, y: 0 }}
 							y={face.height * 0.22}
 							text={feature.text}
+							maxHeight={face.height * 0.26}
 							style={{
 								...panelTextStyle({ fontSize: 17, tone: 'hint' }),
 								wordWrap: true,
@@ -193,6 +198,8 @@
 							x={-face.width * 0.2}
 							y={-face.height * 0.1}
 							text={feature.text}
+							maxHeight={face.height * 0.56}
+							fallback={textFallback}
 							style={{
 								...panelTextStyle({ fontSize: 27 * layout.scale, tone: 'hint' }),
 								align: 'left',
