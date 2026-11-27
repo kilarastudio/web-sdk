@@ -11,16 +11,19 @@ type BookEventDraw = {
 	draws: number;
 	// the book's own picks, ascending
 	selected: number[];
-	// the book's Kilau numbers (marked numbers that were not picked), ascending
+	// the book's lucky numbers (marked numbers that were not picked), ascending
 	kilau: number[];
+	// a level that marks 1 lucky number marks 3 in this round (never in Chain Max, which always
+	// marks 3)
+	kilauRound: boolean;
 	// the numbers drawn, in order
 	numbers: number[];
-	// 1 = hit, 2 = Kilau ball, 0 = miss, in draw order
+	// 1 = hit, 2 = lucky ball, 0 = miss, in draw order
 	pattern: number[];
 	hits: number;
 	// the best run of hits
 	streak: number;
-	// Kilau balls drawn: each adds one meter step
+	// Lucky balls drawn: each adds one meter step
 	kilauHits: number;
 	multiplier: number;
 	// hundredths of the base bet, before the multiplier

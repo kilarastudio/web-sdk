@@ -4,8 +4,8 @@ Run after the math changes, from web-sdk:
     python3 apps/kilara-keno/scripts/sync_math_config.py && pnpm --filter kilara-keno format
 
 Reads, from math-sdk/games/kilara_keno:
-- game_config.py: the board, pick sizes and Kilau numbers per level, draws, the ladder and every pay
-  table (the same object the books were made with);
+- game_config.py: the board, pick sizes and Kilau numbers per level, the Kilau rounds, draws, the
+  ladder and every pay table (the same object the books were made with);
 - library/publish_files: each mode's cost (index.json), and its exact RTP and top prize, worked
   out from its lookup table (the weights the RGS draws with), not from the nominal 96.7% target.
 So costs, pay tables, RTP and max win can never drift from the books the game plays.
@@ -33,7 +33,7 @@ index = json.load(open(os.path.join(PUBLISH, "index.json"), encoding="UTF-8"))
 bet_modes = {}
 for entry in index["modes"]:
     name = entry["name"]
-    level, picks, draws, kilau = math.mode_parts(name)
+    level, picks, draws, options = math.mode_parts(name)
     total_weight = 0
     total_pay = 0
     top = 0
@@ -47,8 +47,10 @@ for entry in index["modes"]:
         "level": level,
         "picks": picks,
         "draws": draws,
-        # numbers the player did not pick that are marked before the draw
-        "kilau": kilau,
+        # numbers the player did not pick that are marked before the draw: in most rounds, and in
+        # the round that marks the most (a Kilau round)
+        "kilau": math.level_kilau[level],
+        "kilauMost": max(kilau for kilau, _ in options),
         "cost": entry["cost"],
         # the exact return of the published lookup table, to 6 decimals
         "rtp": round(float(rtp), 6),
@@ -67,6 +69,12 @@ config = {
     "premiumLevels": [level for level in math.levels if math.level_cost[level] > 1],
     "levelPicks": math.level_picks,
     "levelKilau": math.level_kilau,
+    # Kilau round: in these levels `share[0]` rounds in `share[1]` mark `numbers` Kilau numbers
+    "kilauRound": {
+        "levels": [level for level in math.levels if level in math.kilau_round_levels],
+        "numbers": math.kilau_round_numbers,
+        "share": list(math.kilau_round_share),
+    },
     "levelDraws": math.level_draws,
     "levelCost": math.level_cost,
     # multiplier for streak level 1, 2, ... top; every level above the top pays the top

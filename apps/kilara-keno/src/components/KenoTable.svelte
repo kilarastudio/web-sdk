@@ -41,12 +41,15 @@
 		}
 		if (replay) return t('REPLAY: THE ROUND IS SHOWN WITH ITS OWN NUMBERS');
 		const missing = picks - context.stateGame.picked.length;
-		if (missing === picks) return t('PICK {count} NUMBERS', { count: picks });
+		// Low plays a single number: its lines say NUMBER
+		if (missing === picks) {
+			return picks === 1 ? t('PICK 1 NUMBER') : t('PICK {count} NUMBERS', { count: picks });
+		}
 		if (missing > 0) return t('PICK {count} MORE', { count: missing });
-		return t('READY: {count} NUMBERS, {level}', {
-			count: picks,
-			level: LEVEL_NAMES[context.stateGameDerived.level()],
-		});
+		const level = LEVEL_NAMES[context.stateGameDerived.level()];
+		return picks === 1
+			? t('READY: 1 NUMBER, {level}', { level })
+			: t('READY: {count} NUMBERS, {level}', { count: picks, level });
 	});
 
 	// the shell's "BASE" (before the first choice, or Chain switched off from the HUD) becomes a
@@ -99,8 +102,8 @@
 		<div class="keno-vars"><KenoChoices {disabled} stacked={!tall} /></div>
 	{/snippet}
 
-	{#snippet actions({ disabled })}
-		<div class="keno-vars"><KenoActions {disabled} /></div>
+	{#snippet actions({ tall, disabled })}
+		<div class="keno-vars"><KenoActions {disabled} {tall} /></div>
 	{/snippet}
 </UiBurst>
 

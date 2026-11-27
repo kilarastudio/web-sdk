@@ -23,15 +23,23 @@ export const stakeWord = (social: boolean) =>
 	stateI18nDerived.translate(social ? 'play amount' : 'bet');
 
 const modeData = (name: ModeName, social: boolean): BetModeData => {
-	const { level, picks, draws, kilau, cost, maxWin, rtp } = config.betModes[name];
+	const { level, picks, draws, kilau, kilauMost, cost, maxWin, rtp } = config.betModes[name];
 	const t = stateI18nDerived.translate;
 	const title = modeTitle(name);
 	const chain = isPremium(level as Level);
 	const levelName = LEVEL_NAMES[level as Level];
-	const rules = t(
-		'{picks} numbers, {draws} drawn, {kilau} Kilau numbers. A hit raises the streak one step, a miss lowers it one step.',
-		{ picks, draws, kilau },
-	);
+	const [one, every] = config.kilauRound.share;
+	// Chain marks 1 lucky number and 3 in a lucky round; Chain Max marks 3 in every round
+	const rules =
+		kilauMost > kilau
+			? t(
+					'{picks} numbers, {draws} drawn. Lucky numbers: {kilau}, or {most} in a lucky round ({one} round in {every}). A hit raises the streak one step, a miss lowers it one step.',
+					{ picks, draws, kilau, most: kilauMost, one, every },
+				)
+			: t(
+					'{picks} numbers, {draws} drawn, {kilau} lucky numbers in every round. A hit raises the streak one step, a miss lowers it one step.',
+					{ picks, draws, kilau },
+				);
 	// social play has no "cost": Engine's own wording for it, in English like all of social play
 	const price = social
 		? `Can be played for ${stateI18nDerived.times(cost)} the play amount.`

@@ -4,7 +4,7 @@
 
 	import config from '../game/config';
 	import { LEVEL_NAMES, modeTitle, stakeWord } from '../game/betModeMeta';
-	import { isPremium, type Level, type ModeName } from '../game/keno';
+	import { isPremium, ladderMultiplier, topLevel, type Level, type ModeName } from '../game/keno';
 
 	// The rules, as the math implements them (math-sdk/games/kilara_keno/readme.txt). Costs, the
 	// top prizes, the return and the ladder come from the game's config, not from this text.
@@ -35,13 +35,29 @@
 		return picks.length > 1 ? `${picks[0]}–${picks[picks.length - 1]}` : `${picks[0]}`;
 	};
 
+	const levelName = (level: string) => LEVEL_NAMES[level as Level];
+	const usualKilau = config.levelKilau.low;
+	const [one, every] = config.kilauRound.share;
+	const roundLevels = list(config.kilauRound.levels.map(levelName));
+	const always = config.levels.filter(
+		(level) => !(config.kilauRound.levels as readonly string[]).includes(level),
+	);
+	// the pick sizes whose top multiplier needs a lucky round, with that multiplier: "1: ×5, …"
+	const needRound = Object.values(config.betModes)
+		.filter((mode) => mode.level === 'low')
+		.filter((mode) => topLevel(mode.picks, mode.kilauMost) > topLevel(mode.picks, mode.kilau))
+		.map(
+			(mode) => `${mode.picks}: ${times(ladderMultiplier(topLevel(mode.picks, mode.kilauMost)))}`,
+		)
+		.join(', ');
+
 	const sections = [
 		{
 			title: t('HOW TO PLAY'),
 			lines: [
 				t(
-					'The board has 40 numbers. Before a round choose a level ({levels}), how many numbers to play and your numbers; QUICK PICK fills the numbers still open at random.',
-					{ levels: list(names) },
+					'The board has {board} numbers. Before a round choose a level ({levels}), how many numbers to play and your numbers; QUICK PICK fills the numbers still open at random, CLEAR frees them.',
+					{ board: config.boardNumbers, levels: list(names) },
 				),
 				...basic.map((level) =>
 					t('{level}: {sizes} numbers, {draws} drawn, one at a time, without repeats.', {
@@ -49,6 +65,10 @@
 						sizes: sizes(level as Level),
 						draws: config.levelDraws[level],
 					}),
+				),
+				t(
+					'Only {level} plays fewer than {min} numbers: choosing {other} with fewer numbers sets {min}, choosing fewer numbers with {other} on switches to {level}.',
+					{ level: levelName('low'), other: levelName('high'), min: config.levelPicks.high[0] },
 				),
 				t('A drawn number you chose is a hit.'),
 				t(
@@ -58,17 +78,37 @@
 			],
 		},
 		{
-			title: t('KILAU NUMBERS'),
+			title: t('LUCKY NUMBERS'),
 			lines: [
 				t(
-					'When a round starts, the game marks Kilau numbers among the numbers you did not choose: {basic} and CHAIN mark 1, CHAIN MAX marks {max}.',
+					'When a round starts, the game marks lucky numbers among the numbers you did not choose: {basic} mark {usual}, {always} marks {max}.',
 					{
-						basic: list(basic.map((level) => LEVEL_NAMES[level as Level])),
+						basic: roundLevels,
+						usual: usualKilau,
+						always: list(always.map(levelName)),
 						max: config.levelKilau.chainmax,
 					},
 				),
 				t(
-					'A Kilau number that is drawn is a Kilau ball. Each Kilau ball raises the meter by one level for the round and does not end a run of hits.',
+					'Lucky round: in {levels}, {one} round in {every} marks {numbers} lucky numbers instead of {usual}, one after another, and shows LUCKY ROUND. Which rounds are lucky rounds is decided by the game server, like the draw. {always} marks {max} in every round and has no lucky rounds.',
+					{
+						levels: roundLevels,
+						one,
+						every,
+						numbers: config.kilauRound.numbers,
+						usual: usualKilau,
+						always: list(always.map(levelName)),
+						max: config.levelKilau.chainmax,
+					},
+				),
+				t(
+					'A lucky number that is drawn is a lucky ball. Each lucky ball raises the meter by one level for the round and does not end a run of hits.',
+				),
+				t(
+					"Your own lucky number: press LUCKY, then a number you did not choose. One of the round's lucky numbers then stands on that number; in a round that marks more, the others are placed by the game. Press LUCKY again to go back to AUTO, where the game places it. Tapping your lucky number between rounds makes it one of your numbers.",
+				),
+				t(
+					'Choosing your lucky number changes no chance and no win: like your own numbers, it only decides where the numbers stand on the board.',
 				),
 			],
 		},
@@ -76,7 +116,7 @@
 			title: t('MULTIPLIER'),
 			lines: [
 				t(
-					'Meter level = the best run of hits + the Kilau balls drawn. {basic}: a run is hits drawn one after another; a miss ends the run.',
+					'Meter level = the best run of hits + the lucky balls drawn. {basic}: a run is hits drawn one after another; a miss ends the run.',
 					{ basic: list(basic.map((level) => LEVEL_NAMES[level as Level])) },
 				),
 				t(
@@ -84,7 +124,11 @@
 					{ ladder },
 				),
 				t(
-					'The meter shows only the levels the numbers in play can reach: the highest level is the numbers played plus the Kilau numbers.',
+					'The meter shows only the levels the numbers in play can reach: the highest level is the numbers played plus the lucky numbers marked. Levels only a lucky round can reach are outlined until a lucky round starts.',
+				),
+				t(
+					'With few numbers the top multipliers need a lucky round. Highest multiplier by how many numbers you play: {list}.',
+					{ list: needRound },
 				),
 			],
 		},
@@ -95,7 +139,7 @@
 				title: name,
 				lines: [
 					t(
-						'{name} plays {sizes} numbers and draws {draws}. A hit raises the run by one; a miss lowers it by one, never below zero; a Kilau ball leaves it. The highest run reached counts, on the same ladder: a miss moves the run, never the multiplier already reached.',
+						'{name} plays {sizes} numbers and draws {draws}. A hit raises the run by one; a miss lowers it by one, never below zero; a lucky ball leaves it. The highest run reached counts, on the same ladder: a miss moves the run, never the multiplier already reached.',
 						{ name, sizes: sizes(level as Level), draws: config.levelDraws[level] },
 					),
 					social
@@ -120,7 +164,7 @@
 	const general = [
 		t('The highest win is {max} the base {amount}.', { max: times(config.wincap), amount }),
 		t(
-			"The draw and the Kilau numbers are decided by the game server. Your numbers stand in for the ones the server played: hits, Kilau balls, their order and the win are the server's.",
+			"The draw, the lucky numbers and the lucky rounds are decided by the game server. Your numbers and your own lucky number stand in for the ones the server played: hits, lucky balls, their order and the win are the server's.",
 		),
 		t(
 			'A replay, or a round resumed after a reload, shows the round with the numbers the server played, which can differ from the numbers chosen. Hits, their order, the multiplier and the win are the same.',

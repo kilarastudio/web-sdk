@@ -1,3 +1,5 @@
+import _ from 'lodash';
+
 import { type BookEventHandlerMap } from 'utils-book';
 import { stateBet, stateBetDerived, stateConfig, stateUrlDerived } from 'state-shared';
 import { waitForTimeout } from 'utils-shared/wait';
@@ -21,6 +23,10 @@ import type { BookEventContext, BookEvent, BookEventOfType } from './typesBookEv
 const DRAW_INTERVAL = 250;
 const HOLD_AFTER_DRAW = 300;
 const KILAU_MARK = 450;
+// a lucky round marks its 3 numbers one after another and gives them longer before the first
+// ball, so the round reads as a different one
+const KILAU_ROUND_STAGGER = 120;
+const KILAU_ROUND_MARK = 900;
 
 // a wait between draws that the stop button cuts short
 let cutShort = () => {};
@@ -32,7 +38,7 @@ const pause = async (ms: number) => {
 	});
 };
 
-// The book's own numbers must give its draw order, run, Kilau balls and multiplier; a board that does
+// The book's own numbers must give its draw order, run, lucky balls and multiplier; a board that does
 // not is a bug in this file, not a round to show.
 const check = (
 	bookEvent: BookEventOfType<'draw'>,
@@ -49,7 +55,7 @@ const check = (
 			'hit count differs',
 		last.bestRun !== bookEvent.streak && `run ${last.bestRun} vs ${bookEvent.streak}`,
 		last.kilauHits !== bookEvent.kilauHits &&
-			`Kilau balls ${last.kilauHits} vs ${bookEvent.kilauHits}`,
+			`Lucky balls ${last.kilauHits} vs ${bookEvent.kilauHits}`,
 		ladderMultiplier(last.best) !== bookEvent.multiplier &&
 			`multiplier ${ladderMultiplier(last.best)} vs ${bookEvent.multiplier}`,
 	].filter(Boolean);
@@ -64,13 +70,14 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		const bookBoard = stateUrlDerived.replay() || stateGame.resuming;
 		const shown = bookBoard
 			? { selected: bookEvent.selected, kilau: bookEvent.kilau, numbers: bookEvent.numbers }
-			: relabel(bookEvent, stateGame.picked);
+			: relabel(bookEvent, stateGame.picked, stateGame.kilauPick);
 		const steps = check(bookEvent, shown);
 
 		stateGame.round = {
 			mode: modeName(bookEvent.level, bookEvent.picks as Picks),
 			selected: shown.selected,
-			kilau: shown.kilau,
+			kilau: [],
+			kilauRound: !!bookEvent.kilauRound,
 			drawn: [],
 			pattern: [],
 			draws: bookEvent.draws,
@@ -81,8 +88,20 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 			best: 0,
 			done: false,
 		};
-		// the Kilau numbers are marked on the board before the first ball
-		await pause(KILAU_MARK);
+		// the lucky numbers are marked on the board before the first ball: at once in an ordinary
+		// round; in a lucky round one by one, the player's own first, and the first ball waits
+		// longer (KILAU_ROUND_MARK from the first mark)
+		const marks = _.sortBy(shown.kilau, (n) => (n === stateGame.kilauPick && !bookBoard ? 0 : n));
+		if (stateGame.round.kilauRound) {
+			for (const [i, n] of marks.entries()) {
+				if (i > 0) await pause(KILAU_ROUND_STAGGER);
+				stateGame.round!.kilau.push(n);
+			}
+			await pause(KILAU_ROUND_MARK - KILAU_ROUND_STAGGER * (marks.length - 1));
+		} else {
+			stateGame.round.kilau.push(...marks);
+			await pause(KILAU_MARK);
+		}
 		for (const [i, n] of shown.numbers.entries()) {
 			if (i > 0) await pause(DRAW_INTERVAL);
 			const round = stateGame.round!;

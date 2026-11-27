@@ -16,12 +16,17 @@
 
 	// What a tile shows, with the meanings players know from Stake's Keno: picked by the player (or
 	// the book, in a replay) is violet; drawn and picked (a hit) stays violet and shows its number
-	// in green on a dark ball; drawn and not picked (a miss) sinks dark; or nothing yet. A Kilau
+	// in green on a dark ball; drawn and not picked (a miss) sinks dark; or nothing yet. A lucky
 	// number (marked for the round, never one of the picks) carries a frame in the win colour and,
 	// once drawn, a ball in that colour.
 	const selected = $derived(context.stateGame.round?.selected ?? context.stateGame.picked);
 	const drawn = $derived(context.stateGame.round?.drawn ?? []);
-	const kilau = $derived(context.stateGame.round?.kilau ?? []);
+	// between rounds the player's own lucky number, if they named one, carries the frame
+	const kilau = $derived(
+		context.stateGame.round?.kilau ??
+			(context.stateGame.kilauPick === null ? [] : [context.stateGame.kilauPick]),
+	);
+	const choosing = $derived(props.editable && context.stateGame.choosingKilau);
 	const last = $derived(drawn[drawn.length - 1]);
 
 	const tileState = (n: number) => {
@@ -36,13 +41,19 @@
 		hit: 'hit',
 		miss: 'drawn',
 		picked: 'picked',
-		kilau: 'Kilau number',
-		glow: 'Kilau number, drawn',
+		kilau: 'Lucky number',
+		glow: 'Lucky number, drawn',
 		untouched: '',
 	} as const;
 </script>
 
-<div class="board" style:--columns={props.columns} class:editable={props.editable}>
+<div
+	class="board"
+	style:--columns={props.columns}
+	class:editable={props.editable}
+	class:choosing
+	data-test="board"
+>
 	{#each NUMBERS as n (n)}
 		{@const state = tileState(n)}
 		<button
@@ -114,6 +125,18 @@
 		}
 	}
 
+	/* choosing the own lucky number: a number that can take it shows the lucky number's frame under the
+	   pointer */
+	.choosing .tile.untouched {
+		@media (hover: hover) {
+			&:hover {
+				background-color: var(--keno-tile);
+				box-shadow: inset 0 0 0 0.12em var(--keno-win);
+				color: var(--keno-win);
+			}
+		}
+	}
+
 	.number {
 		position: relative;
 	}
@@ -150,7 +173,7 @@
 		}
 	}
 
-	/* a Kilau number: a square frame in the win colour; drawn, its ball takes that colour */
+	/* a lucky number: a square frame in the win colour; drawn, its ball takes that colour */
 	.tile.kilau,
 	.tile.glow {
 		box-shadow: inset 0 0 0 0.12em var(--keno-win);

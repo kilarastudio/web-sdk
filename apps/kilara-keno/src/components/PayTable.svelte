@@ -14,6 +14,10 @@
 	const { times } = stateI18nDerived;
 	const amount = stakeWord(stateUrlDerived.social());
 	const maxPicks = Math.max(...config.pickSizes);
+	const [one, every] = config.kilauRound.share;
+	const roundLevels = config.kilauRound.levels
+		.map((level) => LEVEL_NAMES[level as Level])
+		.join(', ');
 	const value = (level: Level, picks: Picks, hits: number) => {
 		if (hits > picks) return '';
 		const win = config.betModes[modeName(level, picks)].payTable[hits];
@@ -59,7 +63,13 @@
 
 <UiInfoSection title={t('MULTIPLIER')}>
 	<p>
-		{t('Meter level = best run of hits + Kilau balls drawn. A round with no hit wins nothing.')}
+		{t('Meter level = best run of hits + lucky balls drawn. A round with no hit wins nothing.')}
+	</p>
+	<p>
+		{t(
+			'The highest level is the numbers played plus the lucky numbers marked, so with few numbers the top levels need a lucky round ({one} round in {every} in {levels}).',
+			{ one, every, levels: roundLevels },
+		)}
 	</p>
 	<table>
 		<thead>

@@ -7,7 +7,7 @@
 	import { getContext } from '../game/context';
 
 	// The draw in order: one slot per number the round draws (10, or 12 in Chain), filled as each
-	// number comes out, a hit in green, a Kilau ball in the win colour. The two counters keep the room of their widest value (a
+	// number comes out, a hit in green, a lucky ball in the win colour. The two counters keep the room of their widest value (a
 	// hidden copy of it), so the strip between them never moves while the numbers change.
 	const context = getContext();
 	const round = $derived(context.stateGame.round);

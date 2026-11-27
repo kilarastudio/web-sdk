@@ -3,7 +3,9 @@ import { stateBet, stateI18nDerived, stateModal, stateUrlDerived } from 'state-s
 import { stateBonus } from 'components-ui-html/src/stateBonus.svelte';
 
 import config from './config';
+import { LEVEL_NAMES } from './betModeMeta';
 import {
+	isMode,
 	isPremium,
 	levelPicks,
 	modeName,
@@ -15,12 +17,15 @@ import {
 } from './keno';
 
 // What the board shows of a round: the numbers played (the player's, or the book's own in a
-// replay or a resumed round), its Kilau numbers, the numbers drawn so far and the meter after the
+// replay or a resumed round), its lucky numbers, the numbers drawn so far and the meter after the
 // last one.
 export type Round = {
 	mode: ModeName;
 	selected: number[];
+	// the lucky numbers marked so far (all of them before the first ball)
 	kilau: number[];
+	// this round marks 3 lucky numbers in a level that usually marks 1
+	kilauRound: boolean;
 	drawn: number[];
 	pattern: number[];
 	draws: number;
@@ -37,6 +42,10 @@ const DEFAULT = { level: 'low' as Level, picks: 5 as Picks };
 export const stateGame = $state({
 	// the player's numbers, in the order they were picked
 	picked: [] as number[],
+	// the player's own lucky number, a number they did not pick; null: the game places it (AUTO)
+	kilauPick: null as number | null,
+	// the next tap on the board names the player's own lucky number
+	choosingKilau: false,
 	round: null as Round | null,
 	// the round about to play was resumed after a reload: it shows the book's own board
 	resuming: false,
@@ -63,6 +72,12 @@ const picks = () => current().picks;
 const ready = () => stateGame.picked.length === picks();
 
 const setMode = (next: Level, size: Picks) => {
+	// a mode the math does not publish would be refused by the RGS; the callers never ask for one,
+	// this keeps it that way if one ever does
+	if (!isMode(next, size)) {
+		console.error(`no mode ${modeName(next, size)}: playing LOW instead`);
+		next = 'low';
+	}
 	if (!isPremium(next)) stateGame.lastLevel = next;
 	stateGame.lastPicks = size;
 	stateBet.activeBetModeKey = modeName(next, size);
@@ -77,7 +92,7 @@ const settleMode = () => {
 		stateGame.lastPicks = picks();
 		return;
 	}
-	setMode(stateGame.lastLevel, picks());
+	setMode(isMode(stateGame.lastLevel, picks()) ? stateGame.lastLevel : 'low', picks());
 };
 
 const notify = (text: string) => {
@@ -91,7 +106,45 @@ const editSelection = (picked: number[]) => {
 	stateGame.picked = picked;
 };
 
+const t = (text: string, values?: Record<string, string | number>) =>
+	stateI18nDerived.translate(text, values);
+
+const notifyChooseKilau = () =>
+	notify(t('TAP A NUMBER YOU DID NOT PICK TO MAKE IT YOUR LUCKY NUMBER.'));
+
+// a level's range of numbers, from the math, e.g. "HIGH PLAYS 3 TO 10 NUMBERS."
+const notifyRange = (next: Level) => {
+	const sizes = levelPicks(next);
+	notify(
+		t('{level} PLAYS {min} TO {max} NUMBERS.', {
+			level: LEVEL_NAMES[next],
+			min: sizes[0],
+			max: sizes[sizes.length - 1],
+		}),
+	);
+};
+
 const toggle = (n: number) => {
+	if (stateGame.choosingKilau) {
+		if (stateGame.picked.includes(n)) {
+			notifyChooseKilau();
+			return;
+		}
+		stateGame.choosingKilau = false;
+		stateGame.kilauPick = n;
+		stateGame.round = null;
+		notify(t('{number} IS YOUR LUCKY NUMBER.', { number: n }));
+		return;
+	}
+	// the own lucky number tapped: it becomes one of the player's numbers, if there is room
+	if (n === stateGame.kilauPick && stateGame.picked.length < picks()) {
+		editSelection([...stateGame.picked, n]);
+		stateGame.kilauPick = null;
+		notify(
+			t('{number} IS NOW ONE OF YOUR NUMBERS. YOUR LUCKY NUMBER IS BACK ON AUTO.', { number: n }),
+		);
+		return;
+	}
 	if (stateGame.picked.includes(n)) {
 		editSelection(stateGame.picked.filter((p) => p !== n));
 	} else if (stateGame.picked.length < picks()) {
@@ -99,19 +152,25 @@ const toggle = (n: number) => {
 	} else {
 		stateGame.round = null;
 		notify(
-			stateI18nDerived.translate('ALL {picks} PICKED. TAP ONE OF YOURS TO FREE IT.', {
-				picks: picks(),
-			}),
+			picks() === 1
+				? t('YOUR NUMBER IS PICKED. TAP IT TO FREE IT.')
+				: t('ALL {picks} PICKED. TAP ONE OF YOURS TO FREE IT.', { picks: picks() }),
 		);
 	}
 };
 
 // a smaller pick size keeps the numbers picked first; a larger one keeps them all
 // a pick size the current level does not play (the premium levels play 10 only) goes back to the
-// last 1× level
+// last 1× level; one that level does not play either (High has no 1 or 2) goes to Low, and says so
 const setPicks = (size: Picks) => {
 	editSelection(stateGame.picked.slice(0, size));
-	setMode(levelPicks(level()).includes(size) ? level() : stateGame.lastLevel, size);
+	const wanted = levelPicks(level()).includes(size) ? level() : stateGame.lastLevel;
+	if (isMode(wanted, size)) {
+		setMode(wanted, size);
+		return;
+	}
+	setMode('low', size);
+	notifyRange(wanted);
 };
 
 // Chain costs 10× the bet and Chain Max 100×, so each is armed only through the shell's
@@ -123,7 +182,14 @@ const setLevel = (next: Level) => {
 	stateGame.round = null;
 	if (next === level()) return;
 	if (!isPremium(next)) {
-		setMode(next, picks());
+		// a size the level does not play (High with 1 or 2) becomes its smallest; the numbers
+		// already picked stay, as arming Chain sets 10
+		if (isMode(next, picks())) {
+			setMode(next, picks());
+		} else {
+			setMode(next, levelPicks(next)[0]);
+			notifyRange(next);
+		}
 		return;
 	}
 	const chain = modeName(next, levelPicks(next)[0]);
@@ -144,8 +210,23 @@ const settleChainConfirm = () => {
 	if (stateModal.modal?.name === 'buyBonus') stateModal.modal = null;
 };
 
-const quick = () => editSelection(quickPick(stateGame.picked, picks()));
+const quick = () => editSelection(quickPick(stateGame.picked, picks(), stateGame.kilauPick));
+// clear frees the picks only: the own lucky number is a choice of its own
 const clear = () => editSelection([]);
+
+// LUCKY: on AUTO, a press starts choosing (the next tap on a number not picked names it) and a
+// second press stops with nothing changed; with a number named, a press goes back to AUTO.
+const kilau = () => {
+	stateGame.round = null;
+	if (stateGame.kilauPick !== null) {
+		stateGame.kilauPick = null;
+		stateGame.notice = '';
+		return;
+	}
+	stateGame.choosingKilau = !stateGame.choosingKilau;
+	if (stateGame.choosingKilau) notifyChooseKilau();
+	else stateGame.notice = '';
+};
 
 export const stateGameDerived = {
 	mode,
@@ -160,4 +241,5 @@ export const stateGameDerived = {
 	setLevel,
 	quick,
 	clear,
+	kilau,
 };
