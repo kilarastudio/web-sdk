@@ -1,6 +1,12 @@
 <script lang="ts">
 	import { OnHotkey } from 'components-shared';
-	import { stateBetDerived, stateConfig, stateReplay, stateReplayDerived } from 'state-shared';
+	import {
+		stateBetDerived,
+		stateConfig,
+		stateReplay,
+		stateReplayDerived,
+		stateUrlDerived,
+	} from 'state-shared';
 	import { i18nDerived } from 'components-ui-html';
 	// the shell's own play logic (what a press does in each state); the package does not export it
 	import ButtonBetProvider from 'components-ui-html/src/components/ButtonBetProvider.svelte';
@@ -18,7 +24,9 @@
 
 	const props: Props = $props();
 	const context = getContext();
-	const sentence = (word: string) => word.charAt(0) + word.slice(1).toLowerCase();
+	// the UI's PLAY in sentence case, by the language's own rules (Turkish I lowers to ı)
+	const sentence = (word: string) =>
+		word.charAt(0) + word.slice(1).toLocaleLowerCase(stateUrlDerived.lang());
 
 	const replayDisabled = $derived(
 		!stateReplay.bet || stateReplay.phase === 'playing' || !context.stateXstateDerived.isIdle(),

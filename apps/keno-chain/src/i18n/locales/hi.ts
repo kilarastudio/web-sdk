@@ -1,0 +1,132 @@
+export default {
+	'{list} and {last}': '{list} और {last}',
+	'{list} or {last}': '{list} या {last}',
+	'Pick {sizes} of the {board} numbers on the board. {draws} numbers are drawn, one at a time, without repeats: every drawn number you chose is a hit. The round wins the value for its number of hits ({table}) × the streak multiplier. Values are times the base {amount}; a round with no hit wins nothing. The highest win is {max} ({top}).':
+		'बोर्ड के {board} नंबरों में से {sizes} नंबर चुनें। {draws} नंबर एक-एक करके, बिना दोहराए, ड्रॉ होते हैं: आपका चुना हुआ हर ड्रॉ हुआ नंबर एक हिट है। राउंड अपने हिट की संख्या का मान ({table}) × स्ट्रीक गुणक जीतता है। मान मूल {amount} के गुणज हैं; बिना हिट वाला राउंड कुछ नहीं जीतता। सबसे बड़ी जीत {max} ({top}) है।',
+	"The base bet is the bet before a bonus mode's cost.":
+		'मूल दांव, बोनस मोड की लागत जोड़ने से पहले का दांव है।',
+	'Your number': 'आपका नंबर',
+	Hit: 'हिट',
+	Miss: 'मिस',
+	'Lucky number': 'लकी नंबर',
+	'Lucky ball': 'लकी बॉल',
+	'Streak level = your best run of hits in a row + the lucky balls drawn.':
+		'स्ट्रीक लेवल = लगातार हिट की आपकी सबसे लंबी चेन + ड्रॉ हुई लकी बॉल।',
+	'In {levels} a miss ends the run, never the streak level already reached. The order of the draw decides the multiplier.':
+		'{levels} में मिस चेन तोड़ देता है, पर पहले से पाया गया स्ट्रीक लेवल कभी नहीं घटता। गुणक ड्रॉ के क्रम से तय होता है।',
+	'The highest streak level is the numbers played plus the lucky numbers marked, so with few numbers the top streak levels need a lucky round.':
+		'सबसे ऊँचा स्ट्रीक लेवल = खेले गए नंबर + चिह्नित लकी नंबर, इसलिए कम नंबरों के साथ ऊपरी स्ट्रीक लेवल के लिए लकी राउंड चाहिए।',
+	'Before the draw the game marks {usual} lucky number among the numbers you did not choose. If it is drawn it is a lucky ball: the streak level goes up by one and the run goes on.':
+		'ड्रॉ से पहले गेम उन नंबरों में से {usual} लकी नंबर चिह्नित करता है जिन्हें आपने नहीं चुना। अगर वह ड्रॉ होता है, तो वह लकी बॉल है: स्ट्रीक लेवल एक बढ़ जाता है और चेन जारी रहती है।',
+	'Lucky round: {one} round in {every} marks {numbers} lucky numbers ({levels}). The game server decides which rounds.':
+		'लकी राउंड: हर {every} में से {one} राउंड में {numbers} लकी नंबर चिह्नित होते हैं ({levels})। कौन-से राउंड, यह गेम सर्वर तय करता है।',
+	'Can be played for {cost} the play amount.': 'प्ले राशि के {cost} पर खेला जा सकता है।',
+	'Costs {cost} the {amount}.': 'लागत: {amount} का {cost}।',
+	'{count} lucky numbers in every round.': 'हर राउंड में {count} लकी नंबर।',
+	'{size} numbers, {draws} drawn. A miss lowers the run by one, never below zero, and does not end it.':
+		'{size} नंबर, {draws} ड्रॉ। मिस चेन को एक घटाता है, शून्य से नीचे कभी नहीं, और उसे तोड़ता नहीं।',
+	'Own win table. Stays on until you choose a risk.':
+		'अपनी अलग जीत तालिका। जब तक आप जोखिम नहीं चुनते, चालू रहता है।',
+	'Lower or raise the {amount}.': '{amount} घटाएँ या बढ़ाएँ।',
+	Risk: 'जोखिम',
+	'Choose {levels}.': '{levels} चुनें।',
+	Bonus: 'बोनस',
+	'Open the bonus modes: {modes}.': 'बोनस मोड खोलें: {modes}।',
+	'Random Pick': 'रैंडम चुनें',
+	'Pick a fresh set of numbers at random.': 'रैंडम तरीके से नंबरों का नया सेट चुनें।',
+	Clear: 'साफ़ करें',
+	'Clear all your numbers.': 'अपने सारे नंबर हटाएँ।',
+	Play: 'खेलें',
+	'Play a round.': 'एक राउंड खेलें।',
+	'Play a round. The space bar does the same.': 'एक राउंड खेलें। स्पेसबार से भी यही होता है।',
+	Autoplay: 'ऑटोप्ले',
+	'Play a chosen number of rounds one after another.':
+		'चुनी गई संख्या में राउंड एक के बाद एक खेलें।',
+	Turbo: 'टर्बो',
+	'Show the draw faster.': 'ड्रॉ तेज़ी से दिखाएँ।',
+	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.":
+		'ड्रॉ, लकी नंबर और लकी राउंड गेम सर्वर तय करता है। आपके नंबर सर्वर द्वारा खेले गए नंबरों की जगह लेते हैं; हिट, लकी बॉल, उनका क्रम और जीत सर्वर के ही होते हैं। रीप्ले, या रीलोड के बाद फिर से शुरू हुआ राउंड, सर्वर के अपने नंबर दिखाता है, जो आपके नंबरों से अलग हो सकते हैं; परिणाम वही रहता है।',
+	'Malfunction voids all wins and plays. A consistent internet connection is required. In the event of a disconnection, reload the game to finish any uncompleted rounds. The expected return is calculated over many plays. The game display is not representative of any physical device and is for illustrative purposes only. Winnings are settled according to the amount received from the Remote Game Server and not from events within the web browser. TM and © 2026 Engine.':
+		'खराबी की स्थिति में सभी जीत और खेल रद्द हो जाते हैं। एक स्थिर इंटरनेट कनेक्शन आवश्यक है। कनेक्शन टूटने पर, अधूरे राउंड पूरे करने के लिए गेम रीलोड करें। अपेक्षित रिटर्न बहुत सारे खेलों के आधार पर निकाला जाता है। गेम का डिस्प्ले किसी भौतिक उपकरण का प्रतिनिधित्व नहीं करता और केवल उदाहरण के लिए है। जीत का निपटान रिमोट गेम सर्वर (Remote Game Server) से प्राप्त राशि के अनुसार होता है, वेब ब्राउज़र के भीतर की घटनाओं के अनुसार नहीं। TM and © 2026 Engine.',
+	ABOUT: 'गेम के बारे में',
+	'THE BOARD': 'बोर्ड',
+	RISK: 'जोखिम',
+	'{max} max win': 'अधिकतम जीत {max}',
+	'The chance of every number of hits is the same in all three; only the win table differs. {first} wins more often and smaller, {last} less often and larger.':
+		'हिट की हर संख्या की संभावना तीनों में एक जैसी है; केवल जीत तालिका अलग है। {first} ज़्यादा बार और छोटी जीत देता है, {last} कम बार और बड़ी।',
+	'STREAK MULTIPLIER': 'स्ट्रीक गुणक',
+	'LUCKY NUMBERS': 'लकी नंबर',
+	'BONUS MODES': 'बोनस मोड',
+	'HOW TO PLAY': 'कैसे खेलें',
+	NUMBERS: 'नंबर',
+	'RTP AND MAX WIN': 'RTP और अधिकतम जीत',
+	RTP: 'RTP',
+	'MAX WIN': 'अधिकतम जीत',
+	'A mode is its risk and its numbers: {example}. {chain} is {chainMode}, {chainmax} is {chainmaxMode}.':
+		'मोड का नाम उसका जोखिम और उसके नंबर हैं: {example}। {chain} का नाम {chainMode} है, {chainmax} का {chainmaxMode}।',
+	GENERAL: 'सामान्य',
+	'GENERAL DISCLAIMER': 'सामान्य अस्वीकरण',
+	hit: 'हिट',
+	miss: 'मिस',
+	'your number': 'आपका नंबर',
+	'lucky number': 'लकी नंबर',
+	'lucky ball': 'लकी बॉल',
+	'Recent results': 'हाल के परिणाम',
+	'STREAK LEVEL': 'स्ट्रीक लेवल',
+	'WIN UP TO {amount}': '{amount} तक जीतें',
+	'PICK YOUR NUMBERS': 'अपने नंबर चुनें',
+	'Play {min} to {max} numbers at the risk you choose: {levels}.':
+		'अपने चुने हुए जोखिम पर {min} से {max} नंबर खेलें: {levels}।',
+	'CHAIN YOUR HITS': 'हिट की चेन बनाएँ',
+	'Hits in a row raise the multiplier, up to {top}.': 'लगातार हिट गुणक को {top} तक बढ़ाते हैं।',
+	'A lucky ball adds a streak level and never breaks the chain.':
+		'लकी बॉल एक स्ट्रीक लेवल जोड़ती है और चेन कभी नहीं तोड़ती।',
+	'PRESS TO START': 'शुरू करने के लिए दबाएँ',
+	'Replay: the round is shown with its own numbers':
+		'रीप्ले: राउंड उसके अपने नंबरों के साथ दिखाया गया है',
+	'{level} plays {max} numbers': '{level} में {max} नंबर खेले जाते हैं',
+	'Pick {sizes} or {max} numbers': '{sizes} या {max} नंबर चुनें',
+	'pick {count} more': '{count} और चुनें',
+	'Win = value for the hits × multiplier': 'जीत = हिट का मान × गुणक',
+	HITS: 'हिट',
+	'value in the win table': 'जीत तालिका में मान',
+	MULTIPLIER: 'गुणक',
+	'from the streak': 'स्ट्रीक से',
+	WIN: 'जीत',
+	'× the base {amount}': '× मूल {amount}',
+	'{draws} numbers drawn': '{draws} नंबर ड्रॉ',
+	'{cost} the play amount': 'प्ले राशि का {cost}',
+	'costs {cost} the {amount}': 'लागत: {amount} का {cost}',
+	'IN PLAY': 'खेल में',
+	'NUMBERS PLAYED': 'खेले गए नंबर',
+	'Your {count} numbers': 'आपके {count} नंबर',
+	'{hits} hits': '{hits} हिट',
+	'Plays {count} numbers.': '{count} नंबर खेलता है।',
+	'Streak level': 'स्ट्रीक लेवल',
+	'= your best run of hits in a row + the lucky balls drawn.':
+		'= लगातार हिट की आपकी सबसे लंबी चेन + ड्रॉ हुई लकी बॉल।',
+	'Example:': 'उदाहरण:',
+	'{level}, {picks} numbers, {picks} hits: the win table gives {value}. With a best run of {run} hits the multiplier is {multiplier}, so the round wins {win}.':
+		'{level}, {picks} नंबर, {picks} हिट: जीत तालिका {value} देती है। {run} हिट की सबसे लंबी चेन के साथ गुणक {multiplier} है, इसलिए राउंड {win} जीतता है।',
+	'A round with no hit wins nothing.': 'बिना हिट वाला राउंड कुछ नहीं जीतता।',
+	'The highest streak level is the numbers played plus the lucky numbers marked, so with few numbers the top streak levels need a lucky round ({one} round in {every} in {levels}).':
+		'सबसे ऊँचा स्ट्रीक लेवल = खेले गए नंबर + चिह्नित लकी नंबर, इसलिए कम नंबरों के साथ ऊपरी स्ट्रीक लेवल के लिए लकी राउंड चाहिए ({levels} में हर {every} में से {one} राउंड)।',
+	'{hits} OF {picks} HIT': '{picks} में से {hits} हिट',
+	STREAK: 'स्ट्रीक',
+	'LUCKY ROUND': 'लकी राउंड',
+	'play amount': 'प्ले राशि',
+	bet: 'दांव',
+	'{picks} numbers, {draws} drawn. Lucky numbers: {kilau}, or {most} in a lucky round ({one} round in {every}). A hit raises the run by one, a miss lowers it by one, never below zero; the best run counts.':
+		'{picks} नंबर, {draws} ड्रॉ। लकी नंबर: {kilau}, या लकी राउंड में {most} (हर {every} में से {one} राउंड)। हिट चेन को एक बढ़ाता है, मिस एक घटाता है, शून्य से नीचे कभी नहीं; सबसे लंबी चेन गिनी जाती है।',
+	'{picks} numbers, {draws} drawn, {kilau} lucky numbers in every round. A hit raises the run by one, a miss lowers it by one, never below zero; the best run counts.':
+		'{picks} नंबर, {draws} ड्रॉ, हर राउंड में {kilau} लकी नंबर। हिट चेन को एक बढ़ाता है, मिस एक घटाता है, शून्य से नीचे कभी नहीं; सबसे लंबी चेन गिनी जाती है।',
+	'{level} stays on until you choose a risk.': 'जब तक आप जोखिम नहीं चुनते, {level} चालू रहता है।',
+	ACTIVATE: 'चालू करें',
+	'{level} IS ACTIVE': '{level} सक्रिय है',
+	// a keno round is played, not spun: the shared UI's slot words, in this game's words
+	PLAY: 'खेलें',
+	PLAYING: 'खेल जारी',
+	'PLAY AGAIN': 'फिर खेलें',
+	'AUTO SPINS': 'ऑटोप्ले',
+	'AUTO SPIN': 'ऑटोप्ले',
+};

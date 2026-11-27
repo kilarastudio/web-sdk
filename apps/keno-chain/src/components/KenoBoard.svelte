@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { stateI18nDerived } from 'state-shared';
+	import { i18nKey } from 'utils-shared/i18n';
 
 	import { NUMBERS, chains, parseMode } from '../game/keno';
 	import { getContext } from '../game/context';
@@ -47,11 +48,11 @@
 	};
 
 	const LABELS = {
-		hit: 'hit',
-		miss: 'miss',
-		picked: 'your number',
-		kilau: 'lucky number',
-		glow: 'lucky ball',
+		hit: i18nKey('hit'),
+		miss: i18nKey('miss'),
+		picked: i18nKey('your number'),
+		kilau: i18nKey('lucky number'),
+		glow: i18nKey('lucky ball'),
 		untouched: '',
 	} as const;
 

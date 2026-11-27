@@ -1,0 +1,132 @@
+export default {
+	'{list} and {last}': '{list}と{last}',
+	'{list} or {last}': '{list}または{last}',
+	'Pick {sizes} of the {board} numbers on the board. {draws} numbers are drawn, one at a time, without repeats: every drawn number you chose is a hit. The round wins the value for its number of hits ({table}) × the streak multiplier. Values are times the base {amount}; a round with no hit wins nothing. The highest win is {max} ({top}).':
+		'ボード上の{board}個の数字から{sizes}個を選びます。{draws}個の数字が重複なしで1つずつ抽選され、選んだ数字が抽選されるとヒットです。ラウンドの配当は、ヒット数に応じた値（{table}）× ストリーク倍率です。値は基本{amount}の倍数で、ヒットのないラウンドは配当なしです。最高配当は{max}（{top}）です。',
+	"The base bet is the bet before a bonus mode's cost.":
+		'基本ベットとは、ボーナスモードの費用を含まないベットです。',
+	'Your number': '選んだ数字',
+	Hit: 'ヒット',
+	Miss: 'ミス',
+	'Lucky number': 'ラッキーナンバー',
+	'Lucky ball': 'ラッキーボール',
+	'Streak level = your best run of hits in a row + the lucky balls drawn.':
+		'ストリークレベル = 最高連続ヒット数 + 抽選されたラッキーボールの数。',
+	'In {levels} a miss ends the run, never the streak level already reached. The order of the draw decides the multiplier.':
+		'{levels}では、ミスで連続ヒットは途切れますが、到達したストリークレベルが下がることはありません。抽選の順番が倍率を決めます。',
+	'The highest streak level is the numbers played plus the lucky numbers marked, so with few numbers the top streak levels need a lucky round.':
+		'最高ストリークレベルは、プレイする数字の数とマークされたラッキーナンバーの数の合計です。そのため、数字が少ないと上位のストリークレベルにはラッキーラウンドが必要です。',
+	'Before the draw the game marks {usual} lucky number among the numbers you did not choose. If it is drawn it is a lucky ball: the streak level goes up by one and the run goes on.':
+		'抽選の前に、ゲームが選んでいない数字の中からラッキーナンバーを{usual}個マークします。それが抽選されるとラッキーボールになり、ストリークレベルが1上がり、連続ヒットは続きます。',
+	'Lucky round: {one} round in {every} marks {numbers} lucky numbers ({levels}). The game server decides which rounds.':
+		'ラッキーラウンド：{every}ラウンドに{one}回、ラッキーナンバーが{numbers}個マークされます（{levels}）。どのラウンドかはゲームサーバーが決定します。',
+	'Can be played for {cost} the play amount.': 'プレイ額の{cost}でプレイできます。',
+	'Costs {cost} the {amount}.': '費用は{amount}の{cost}です。',
+	'{count} lucky numbers in every round.':
+		'すべてのラウンドでラッキーナンバーが{count}個マークされます。',
+	'{size} numbers, {draws} drawn. A miss lowers the run by one, never below zero, and does not end it.':
+		'数字{size}個、{draws}個を抽選。ミスで連続ヒット数が1減りますが、0未満にはならず、途切れることもありません。',
+	'Own win table. Stays on until you choose a risk.':
+		'専用の配当表。リスクを選ぶまで有効のままです。',
+	'Lower or raise the {amount}.': '{amount}額を下げたり上げたりします。',
+	Risk: 'リスク',
+	'Choose {levels}.': '{levels}のいずれかを選びます。',
+	Bonus: 'ボーナス',
+	'Open the bonus modes: {modes}.': 'ボーナスモードを開きます：{modes}。',
+	'Random Pick': 'ランダム選択',
+	'Pick a fresh set of numbers at random.': '数字を新たにランダムで選びます。',
+	Clear: 'クリア',
+	'Clear all your numbers.': '選んだ数字をすべてクリアします。',
+	Play: 'プレイ',
+	'Play a round.': '1ラウンドをプレイします。',
+	'Play a round. The space bar does the same.':
+		'1ラウンドをプレイします。スペースキーでも同じ操作ができます。',
+	Autoplay: 'オートプレイ',
+	'Play a chosen number of rounds one after another.':
+		'指定した回数のラウンドを続けてプレイします。',
+	Turbo: 'ターボ',
+	'Show the draw faster.': '抽選を速く表示します。',
+	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.":
+		'抽選、ラッキーナンバー、ラッキーラウンドはゲームサーバーが決定します。選んだ数字は、サーバーがプレイした数字の代わりに表示されます。ヒット、ラッキーボール、その順番、配当はサーバーのものです。リプレイや再読み込み後に再開されたラウンドでは、サーバー自身の数字が表示され、選んだ数字と異なる場合がありますが、結果は同じです。',
+	'Malfunction voids all wins and plays. A consistent internet connection is required. In the event of a disconnection, reload the game to finish any uncompleted rounds. The expected return is calculated over many plays. The game display is not representative of any physical device and is for illustrative purposes only. Winnings are settled according to the amount received from the Remote Game Server and not from events within the web browser. TM and © 2026 Engine.':
+		'誤作動が発生した場合、すべての配当とプレイは無効になります。安定したインターネット接続が必要です。接続が切れた場合は、ゲームを再読み込みして未完了のラウンドを終了してください。期待還元率は多数のプレイに基づいて計算されます。ゲームの表示は実在の機器を表すものではなく、説明のみを目的としています。配当は、Webブラウザ内の事象ではなく、リモートゲームサーバーから受け取った金額に基づいて精算されます。TM and © 2026 Engine.',
+	ABOUT: 'ゲーム概要',
+	'THE BOARD': 'ボード',
+	RISK: 'リスク',
+	'{max} max win': '最大配当{max}',
+	'The chance of every number of hits is the same in all three; only the win table differs. {first} wins more often and smaller, {last} less often and larger.':
+		'3つのリスクすべてで、各ヒット数の確率は同じです。異なるのは配当表だけです。{first}は小さな配当が頻繁に、{last}は大きな配当がまれに出ます。',
+	'STREAK MULTIPLIER': 'ストリーク倍率',
+	'LUCKY NUMBERS': 'ラッキーナンバー',
+	'BONUS MODES': 'ボーナスモード',
+	'HOW TO PLAY': '遊び方',
+	NUMBERS: '数字の数',
+	'RTP AND MAX WIN': 'RTPと最大配当',
+	RTP: 'RTP',
+	'MAX WIN': '最大配当',
+	'A mode is its risk and its numbers: {example}. {chain} is {chainMode}, {chainmax} is {chainmaxMode}.':
+		'モードはリスクと数字の数で表されます：{example}。{chain}は{chainMode}、{chainmax}は{chainmaxMode}です。',
+	GENERAL: '一般',
+	'GENERAL DISCLAIMER': '一般免責事項',
+	hit: 'ヒット',
+	miss: 'ミス',
+	'your number': '選んだ数字',
+	'lucky number': 'ラッキーナンバー',
+	'lucky ball': 'ラッキーボール',
+	'Recent results': '最近の結果',
+	'STREAK LEVEL': 'ストリークレベル',
+	'WIN UP TO {amount}': '最大{amount}の配当',
+	'PICK YOUR NUMBERS': '数字を選ぼう',
+	'Play {min} to {max} numbers at the risk you choose: {levels}.':
+		'{min}〜{max}個の数字を、選んだリスクでプレイ：{levels}。',
+	'CHAIN YOUR HITS': 'ヒットをつなげよう',
+	'Hits in a row raise the multiplier, up to {top}.': '連続ヒットで倍率アップ、最大{top}。',
+	'A lucky ball adds a streak level and never breaks the chain.':
+		'ラッキーボールはストリークレベルを1上げ、連続ヒットを途切れさせません。',
+	'PRESS TO START': '押してスタート',
+	'Replay: the round is shown with its own numbers': 'リプレイ：ラウンド本来の数字で表示しています',
+	'{level} plays {max} numbers': '{level}は{max}個の数字をプレイ',
+	'Pick {sizes} or {max} numbers': '{sizes}または{max}個の数字を選択',
+	'pick {count} more': 'あと{count}個選択',
+	'Win = value for the hits × multiplier': '配当 = ヒット数の値 × 倍率',
+	HITS: 'ヒット数',
+	'value in the win table': '配当表の値',
+	MULTIPLIER: '倍率',
+	'from the streak': 'ストリークから',
+	WIN: '配当',
+	'× the base {amount}': '× 基本{amount}',
+	'{draws} numbers drawn': '{draws}個を抽選',
+	'{cost} the play amount': 'プレイ額の{cost}',
+	'costs {cost} the {amount}': '費用は{amount}の{cost}',
+	'IN PLAY': 'プレイ中',
+	'NUMBERS PLAYED': 'プレイする数字の数',
+	'Your {count} numbers': '選んだ数字{count}個',
+	'{hits} hits': '{hits}ヒット',
+	'Plays {count} numbers.': '{count}個の数字をプレイします。',
+	'Streak level': 'ストリークレベル',
+	'= your best run of hits in a row + the lucky balls drawn.':
+		'= 最高連続ヒット数 + 抽選されたラッキーボールの数。',
+	'Example:': '例：',
+	'{level}, {picks} numbers, {picks} hits: the win table gives {value}. With a best run of {run} hits the multiplier is {multiplier}, so the round wins {win}.':
+		'{level}、数字{picks}個、{picks}ヒット：配当表の値は{value}です。最高連続ヒット数が{run}なら倍率は{multiplier}で、ラウンドの配当は{win}です。',
+	'A round with no hit wins nothing.': 'ヒットのないラウンドは配当なしです。',
+	'The highest streak level is the numbers played plus the lucky numbers marked, so with few numbers the top streak levels need a lucky round ({one} round in {every} in {levels}).':
+		'最高ストリークレベルは、プレイする数字の数とマークされたラッキーナンバーの数の合計です。そのため、数字が少ないと上位のストリークレベルにはラッキーラウンドが必要です（{levels}では{every}ラウンドに{one}回）。',
+	'{hits} OF {picks} HIT': '{picks}個中{hits}ヒット',
+	STREAK: 'ストリーク',
+	'LUCKY ROUND': 'ラッキーラウンド',
+	'play amount': 'プレイ額',
+	bet: 'ベット',
+	'{picks} numbers, {draws} drawn. Lucky numbers: {kilau}, or {most} in a lucky round ({one} round in {every}). A hit raises the run by one, a miss lowers it by one, never below zero; the best run counts.':
+		'数字{picks}個、{draws}個を抽選。ラッキーナンバーは{kilau}個、ラッキーラウンドでは{most}個（{every}ラウンドに{one}回）。ヒットで連続ヒット数が1増え、ミスで1減ります（0未満にはなりません）。最高連続ヒット数が使われます。',
+	'{picks} numbers, {draws} drawn, {kilau} lucky numbers in every round. A hit raises the run by one, a miss lowers it by one, never below zero; the best run counts.':
+		'数字{picks}個、{draws}個を抽選、すべてのラウンドでラッキーナンバー{kilau}個。ヒットで連続ヒット数が1増え、ミスで1減ります（0未満にはなりません）。最高連続ヒット数が使われます。',
+	'{level} stays on until you choose a risk.': '{level}はリスクを選ぶまで有効のままです。',
+	ACTIVATE: '有効化',
+	'{level} IS ACTIVE': '{level}有効中',
+	PLAY: 'プレイ',
+	PLAYING: 'プレイ中',
+	'PLAY AGAIN': 'もう一度プレイ',
+	'AUTO SPINS': 'オートプレイ',
+	'AUTO SPIN': 'オートプレイ',
+};
