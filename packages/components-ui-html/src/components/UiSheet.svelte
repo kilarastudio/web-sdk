@@ -280,7 +280,10 @@
 		}
 	}
 
-	/* short: the panel takes the full height, and everything in it is a size smaller */
+	/* short (a phone on its side): everything is a size smaller, and the panel may use the full
+	   height. It still only grows as tall as its content, so a short sheet (a confirmation, a
+	   message) stands in the middle with its action under its text, not at the foot of the
+	   screen; a long one fills the height and scrolls. */
 	@media (max-height: 499px) {
 		.ui-sheet {
 			--sheet-pad: 14px;
@@ -289,7 +292,7 @@
 			--sheet-control: 38px;
 			--sheet-font: 13px;
 
-			align-items: stretch;
+			align-items: center;
 			padding: 0;
 		}
 
@@ -297,7 +300,7 @@
 		.panel.small,
 		.panel.medium,
 		.panel.large {
-			max-height: none;
+			max-height: 100%;
 			animation-name: panel-in;
 		}
 
