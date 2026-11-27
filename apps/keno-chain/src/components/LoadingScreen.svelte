@@ -6,6 +6,7 @@
 	import config from '../game/config';
 	import { getContext } from '../game/context';
 	import { isPremium, levelPicks, type Level } from '../game/keno';
+	import { LEVEL_LABELS } from '../game/betModeMeta';
 	import { loaderHtml } from '../game/loader';
 	import { sound } from '../game/sound';
 
@@ -68,7 +69,7 @@
 						{t('Play {min} to {max} numbers at the risk you choose: {levels}.', {
 							min: sizes[0],
 							max: sizes[sizes.length - 1],
-							levels: 'Calm, Bold, Wild',
+							levels: basic.map((level) => LEVEL_LABELS[level]).join(', '),
 						})}
 					</span>
 				</span>
@@ -90,7 +91,7 @@
 					</span>
 					<span class="title">{t('LUCKY NUMBERS')}</span>
 					<span class="text">
-						{t('A lucky ball adds a step and never breaks the chain.')}
+						{t('A lucky ball adds a streak level and never breaks the chain.')}
 					</span>
 				</span>
 			</span>

@@ -48,10 +48,10 @@
 
 	const LABELS = {
 		hit: 'hit',
-		miss: 'drawn',
-		picked: 'picked',
-		kilau: 'Lucky number',
-		glow: 'Lucky number, drawn',
+		miss: 'miss',
+		picked: 'your number',
+		kilau: 'lucky number',
+		glow: 'lucky ball',
 		untouched: '',
 	} as const;
 

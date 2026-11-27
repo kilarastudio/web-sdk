@@ -53,6 +53,8 @@
 	// without scrolling; on a long phone the tiles take the room left over.
 	const context = getContext();
 	const replay = stateUrlDerived.replay();
+	// the shell's bet label reads "SPIN" in social play; keno has no spin, so it is the play amount
+	const betLabel = $derived(stateUrlDerived.social() ? 'PLAY AMOUNT' : i18nDerived.bet());
 
 	const idle = $derived(context.stateXstateDerived.isIdle());
 	const editable = $derived(idle && !replay);
@@ -276,7 +278,7 @@
 				}}
 			>
 				<span class="name">
-					{i18nDerived.bet()}
+					{betLabel}
 					{#if modeCost > 1}<b>{stateI18nDerived.times(modeCost)}</b>{/if}
 				</span>
 				<span class="value">{numberToCurrencyString(stateBet.betAmount)}</span>
@@ -290,7 +292,7 @@
 	<div class="replay-labels" use:fitText>
 		<UiLabel
 			stacked
-			label={i18nDerived.bet()}
+			label={betLabel}
 			value={numberToCurrencyString(stateBet.wageredBetAmount)}
 		/>
 		<UiLabel

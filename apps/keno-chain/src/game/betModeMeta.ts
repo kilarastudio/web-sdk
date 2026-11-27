@@ -59,11 +59,11 @@ const modeData = (name: ModeName, social: boolean): BetModeData => {
 	const rules =
 		kilauMost > kilau
 			? t(
-					'{picks} numbers, {draws} drawn. Lucky numbers: {kilau}, or {most} in a lucky round ({one} round in {every}). A hit raises the streak one step, a miss lowers it one step.',
+					'{picks} numbers, {draws} drawn. Lucky numbers: {kilau}, or {most} in a lucky round ({one} round in {every}). A hit raises the run by one, a miss lowers it by one, never below zero; the best run counts.',
 					{ picks, draws, kilau, most: kilauMost, one, every },
 				)
 			: t(
-					'{picks} numbers, {draws} drawn, {kilau} lucky numbers in every round. A hit raises the streak one step, a miss lowers it one step.',
+					'{picks} numbers, {draws} drawn, {kilau} lucky numbers in every round. A hit raises the run by one, a miss lowers it by one, never below zero; the best run counts.',
 					{ picks, draws, kilau },
 				);
 	// social play has no "cost": Engine's own wording for it, in English like all of social play
@@ -83,7 +83,7 @@ const modeData = (name: ModeName, social: boolean): BetModeData => {
 		text: {
 			title,
 			dialog: chain
-				? `${rules} ${price} ${t('{level} stays on until you turn it off.', { level: levelName })}`
+				? `${rules} ${price} ${t('{level} stays on until you choose a risk.', { level: LEVEL_LABELS[level as Level] })}`
 				: '',
 			description: chain ? rules : '',
 			button: chain ? t('ACTIVATE') : '',

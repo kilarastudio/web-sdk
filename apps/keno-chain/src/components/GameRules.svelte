@@ -3,7 +3,7 @@
 	import { UiInfoSection, i18nDerived } from 'components-ui-html';
 
 	import config from '../game/config';
-	import { LEVEL_NAMES, stakeWord } from '../game/betModeMeta';
+	import { LEVEL_LABELS, LEVEL_NAMES, stakeWord } from '../game/betModeMeta';
 	import { isPremium, modeName, type Level, type Picks } from '../game/keno';
 	import LadderStairs from './LadderStairs.svelte';
 
@@ -17,7 +17,16 @@
 	const { times, percent } = stateI18nDerived;
 
 	const levelName = (level: string) => LEVEL_NAMES[level as Level];
+	// a name inside a sentence: Calm, not CALM
+	const levelLabel = (level: string) => LEVEL_LABELS[level as Level];
 	const list = (items: string[]) => items.join(', ');
+	// a list in a sentence: "Calm, Bold and Wild", "Calm, Bold or Wild"
+	const joined = (items: string[], word: 'and' | 'or') =>
+		items.length < 2
+			? list(items)
+			: word === 'and'
+				? t('{list} and {last}', { list: list(items.slice(0, -1)), last: items[items.length - 1] })
+				: t('{list} or {last}', { list: list(items.slice(0, -1)), last: items[items.length - 1] });
 	const basic = config.levels.filter((level) => !isPremium(level as Level)) as Level[];
 	const premium = config.levels.filter((level) => isPremium(level as Level)) as Level[];
 	// the sizes a level plays, written out: they have gaps (3, 4, 5, 6, 8, 10)
@@ -30,10 +39,13 @@
 	const topWin = (level: Level) =>
 		Math.max(...config.levelPicks[level].map((size) => mode(level, size as Picks).maxWin));
 	const [one, every] = config.kilauRound.share;
-	const roundLevels = list(config.kilauRound.levels.map(levelName));
+	const roundLevels = list(config.kilauRound.levels.map(levelLabel));
+	// the mode that reaches the game's highest win
+	const topLevel =
+		premium.find((level) => topWin(level) === config.wincap) ?? premium[premium.length - 1];
 
 	const about = t(
-		'Pick {sizes} of the {board} numbers on the board. {draws} numbers are drawn, one at a time, without repeats: every drawn number you chose is a hit. The round wins the value for its number of hits ({table}) × the streak multiplier. Values are multiples of the base {amount}; a round with no hit wins nothing. The highest win is {max}.',
+		'Pick {sizes} of the {board} numbers on the board. {draws} numbers are drawn, one at a time, without repeats: every drawn number you chose is a hit. The round wins the value for its number of hits ({table}) × the streak multiplier. Values are times the base {amount}; a round with no hit wins nothing. The highest win is {max} ({top}).',
 		{
 			sizes,
 			board: config.boardNumbers,
@@ -41,8 +53,11 @@
 			table: i18nDerived.payTable(),
 			amount,
 			max: times(config.wincap),
+			top: levelLabel(topLevel),
 		},
 	);
+	// social play has no "cost": the base is then simply the play amount
+	const base = social ? '' : t("The base bet is the bet before a bonus mode's cost.");
 
 	// the board's tiles, drawn as the board draws them
 	const TOKEN = 'M11.72 0h16.56L40 11.72v16.56L28.28 40H11.72L0 28.28V11.72z';
@@ -57,16 +72,17 @@
 	const streak = [
 		t('Streak level = your best run of hits in a row + the lucky balls drawn.'),
 		t(
-			'A miss ends the run, never the level already reached. The order of the draw decides the multiplier.',
+			'In {levels} a miss ends the run, never the streak level already reached. The order of the draw decides the multiplier.',
+			{ levels: joined(basic.map(levelLabel), 'and') },
 		),
 		t(
-			'The highest level is the numbers played plus the lucky numbers marked, so with few numbers the top multipliers need a lucky round.',
+			'The highest streak level is the numbers played plus the lucky numbers marked, so with few numbers the top streak levels need a lucky round.',
 		),
 	];
 
 	const lucky = [
 		t(
-			'Before the draw the game marks {usual} lucky number among the numbers you did not choose. If it is drawn it is a lucky ball: the streak goes up one level and the run goes on.',
+			'Before the draw the game marks {usual} lucky number among the numbers you did not choose. If it is drawn it is a lucky ball: the streak level goes up by one and the run goes on.',
 			{ usual: config.levelKilau[basic[0]] },
 		),
 		t(
@@ -95,7 +111,7 @@
 				),
 				marks,
 				price(level),
-				t('Own win table. Stays on until you choose another level.'),
+				t('Own win table. Stays on until you choose a risk.'),
 			]
 				.filter(Boolean)
 				.join(' '),
@@ -105,16 +121,16 @@
 	// the screen's buttons, by the words they carry
 	const buttons = [
 		{ label: '− +', text: t('Lower or raise the {amount}.', { amount }) },
-		{ label: t('Risk'), text: t('Choose {levels}.', { levels: list(basic.map(levelName)) }) },
+		{ label: t('Risk'), text: t('Choose {levels}.', { levels: joined(basic.map(levelLabel), 'or') }) },
 		{
 			label: t('Bonus'),
-			text: t('Open the bonus modes: {modes}.', { modes: list(premium.map(levelName)) }),
+			text: t('Open the bonus modes: {modes}.', { modes: joined(premium.map(levelLabel), 'and') }),
 		},
 		{
 			label: t('Random Pick'),
 			text: t('Pick a fresh set of numbers at random.'),
 		},
-		{ label: t('Clear'), text: t('Free every number.') },
+		{ label: t('Clear'), text: t('Clear all your numbers.') },
 		{
 			label: t('Play'),
 			text: stateConfig.jurisdiction.disabledSpacebar
@@ -127,7 +143,7 @@
 
 	// what is this game's own: the player's numbers stand in for the server's
 	const server = t(
-		"The draw, the lucky numbers and the lucky rounds are decided by the game server; your numbers stand in for the ones the server played, and hits, lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the numbers the server played, which can differ from the numbers chosen; the result is the same.",
+		"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.",
 	);
 	// Engine's template disclaimer, word for word: reviewers check that every point of it is there
 	const disclaimer = t(
@@ -137,6 +153,7 @@
 
 <UiInfoSection title={t('ABOUT')}>
 	<p>{about}</p>
+	{#if base}<p class="quiet">{base}</p>{/if}
 </UiInfoSection>
 
 <UiInfoSection title={t('THE BOARD')}>
@@ -172,7 +189,7 @@
 	<p class="quiet">
 		{t(
 			'The chance of every number of hits is the same in all three; only the win table differs. {first} wins more often and smaller, {last} less often and larger.',
-			{ first: levelName(basic[0]), last: levelName(basic[basic.length - 1]) },
+			{ first: levelLabel(basic[0]), last: levelLabel(basic[basic.length - 1]) },
 		)}
 	</p>
 </UiInfoSection>
@@ -255,9 +272,9 @@
 			'A mode is its risk and its numbers: {example}. {chain} is {chainMode}, {chainmax} is {chainmaxMode}.',
 			{
 				example: `${modeName(basic[0], picks[0]).toUpperCase()}, ${modeName(basic[basic.length - 1], picks[picks.length - 1]).toUpperCase()}`,
-				chain: levelName(premium[0]),
+				chain: levelLabel(premium[0]),
 				chainMode: modeName(premium[0], config.levelPicks[premium[0]][0] as Picks).toUpperCase(),
-				chainmax: levelName(premium[1]),
+				chainmax: levelLabel(premium[1]),
 				chainmaxMode: modeName(
 					premium[1],
 					config.levelPicks[premium[1]][0] as Picks,

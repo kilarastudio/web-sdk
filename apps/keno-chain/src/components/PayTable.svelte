@@ -5,7 +5,7 @@
 	import { UiInfoSection } from 'components-ui-html';
 
 	import config from '../game/config';
-	import { LEVEL_NAMES, stakeWord } from '../game/betModeMeta';
+	import { LEVEL_LABELS, LEVEL_NAMES, stakeWord } from '../game/betModeMeta';
 	import { isPremium, ladderMultiplier, modeName, type Level, type Picks } from '../game/keno';
 	import { getContext } from '../game/context';
 	import LadderStairs from './LadderStairs.svelte';
@@ -44,7 +44,7 @@
 
 	const [one, every] = config.kilauRound.share;
 	const roundLevels = config.kilauRound.levels
-		.map((level) => LEVEL_NAMES[level as Level])
+		.map((level) => LEVEL_LABELS[level as Level])
 		.join(', ');
 
 	// a worked round, from the first level's own table: every number hit, a run of three
@@ -56,7 +56,7 @@
 <div class="formula" aria-label={t('Win = value for the hits × multiplier')}>
 	<div>
 		<b>{t('HITS')}</b>
-		<span>{t('value in the table')}</span>
+		<span>{t('value in the win table')}</span>
 	</div>
 	<i>×</i>
 	<div class="gold">
@@ -155,9 +155,9 @@
 		<li>
 			<strong>{t('Example:')}</strong>
 			{t(
-				'{level}, {picks} numbers, {picks} hits: the table gives {value}. With a best run of {run} hits the multiplier is {multiplier}, so the round wins {win}.',
+				'{level}, {picks} numbers, {picks} hits: the win table gives {value}. With a best run of {run} hits the multiplier is {multiplier}, so the round wins {win}.',
 				{
-					level: LEVEL_NAMES[levels[0]],
+					level: LEVEL_LABELS[levels[0]],
 					picks: sample.picks,
 					value: times(sampleValue),
 					run: sampleLevel,
@@ -169,7 +169,7 @@
 		<li>{t('A round with no hit wins nothing.')}</li>
 		<li>
 			{t(
-				'The highest level is the numbers played plus the lucky numbers marked, so with few numbers the top levels need a lucky round ({one} round in {every} in {levels}).',
+				'The highest streak level is the numbers played plus the lucky numbers marked, so with few numbers the top streak levels need a lucky round ({one} round in {every} in {levels}).',
 				{ one, every, levels: roundLevels },
 			)}
 		</li>
