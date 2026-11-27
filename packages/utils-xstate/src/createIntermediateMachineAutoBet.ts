@@ -46,6 +46,17 @@ const checkIfSingleWinLimit = fromPromise(async () => {
 	throw Error('End auto bet with singleWinLimitReached');
 });
 
+// the balance gained since autoplay started; only a game that offers the limit sets it
+const checkProfitLimit = fromPromise(async () => {
+	if (stateBet.autoSpinsProfitLimitAmount === Infinity) return 'continue';
+	const profit = Math.round((stateBet.balanceAmount - oldbalanceAmount) * 100) / 100;
+	if (stateBet.autoSpinsProfitLimitAmount > profit) return 'continue';
+
+	stateBet.autoSpinsCounter = 0;
+	stateModal.modal = { name: 'autoSpinMessage', message: 'profitLimitReached' };
+	throw Error('End auto bet with profitLimitReached');
+});
+
 const checkAutoSpinsCounter = fromPromise(async () => {
 	if (stateBet.autoSpinsCounter > 0) return 'continue';
 
@@ -69,6 +80,7 @@ export const createIntermediateMachineAutoBet = ({ bet }: { bet: IntermediateMac
 				checkInsufficientFunds,
 				checkLossLimit,
 				checkIfSingleWinLimit,
+				checkProfitLimit,
 				checkAutoSpinsCounter,
 				bet,
 				updateAutoSpinsCounter,
@@ -106,6 +118,14 @@ export const createIntermediateMachineAutoBet = ({ bet }: { bet: IntermediateMac
 					invoke: {
 						id: 'checkIfSingleWinLimit',
 						src: 'checkIfSingleWinLimit',
+						onDone: 'checkProfitLimit',
+						onError: 'end',
+					},
+				},
+				checkProfitLimit: {
+					invoke: {
+						id: 'checkProfitLimit',
+						src: 'checkProfitLimit',
 						onDone: 'checkAutoSpinsCounter',
 						onError: 'end',
 					},

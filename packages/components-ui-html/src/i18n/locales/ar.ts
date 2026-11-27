@@ -76,4 +76,6 @@ export default {
 	Close: 'إغلاق',
 	Decrease: 'تقليل',
 	Increase: 'زيادة',
+	'PROFIT LIMIT': 'حد الربح',
+	'PROFIT LIMIT REACHED': 'بلوغ حد الربح',
 };

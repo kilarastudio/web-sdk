@@ -41,8 +41,6 @@ export default {
 	'Play a round. The space bar does the same.':
 		'Spielt eine Runde. Die Leertaste bewirkt dasselbe.',
 	Autoplay: 'Autoplay',
-	'Play a chosen number of rounds one after another.':
-		'Spielt eine gewählte Anzahl Runden nacheinander.',
 	Turbo: 'Turbo',
 	'Show the draw faster.': 'Zeigt die Ziehung schneller.',
 	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.":
@@ -131,4 +129,10 @@ export default {
 	'PLAY AGAIN': 'ERNEUT SPIELEN',
 	'AUTO SPINS': 'AUTOPLAY',
 	'AUTO SPIN': 'AUTOPLAY',
+	'NUMBERS EACH ROUND': 'ZAHLEN JE RUNDE',
+	'Same numbers': 'Gleiche Zahlen',
+	'New Random Pick': 'Neue Zufallswahl',
+	'Numbers still to pick: {count}': 'Noch zu wählen: {count}',
+	'Play a chosen number of rounds one after another, with the same numbers or a new Random Pick each round. Autoplay stops at the loss, win or profit limit chosen, in the bonus modes too.':
+		'Spielt eine gewählte Anzahl Runden nacheinander, mit denselben Zahlen oder einer neuen Zufallswahl in jeder Runde. Autoplay stoppt am gewählten Verlust-, Gewinn- oder Profitlimit, auch in den Bonusmodi.',
 };

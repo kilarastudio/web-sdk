@@ -36,6 +36,8 @@ export const i18nDerived = {
 		),
 	lossLimitReached: () => stateI18nDerived.translate('LOSS LIMIT REACHED'),
 	singleWinLimitReached: () => stateI18nDerived.translate('SINGLE WIN LIMIT REACHED'),
+	profitLimit: () => stateI18nDerived.translate('PROFIT LIMIT'),
+	profitLimitReached: () => stateI18nDerived.translate('PROFIT LIMIT REACHED'),
 	settings: () => stateI18nDerived.translate('SETTINGS'),
 	// error messages: no restricted social words (bet, money, gamble), so one text serves both
 	// modes; an error can come before the language loads, so these fall back to the English key

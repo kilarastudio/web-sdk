@@ -53,12 +53,25 @@ export const AUTO_SPINS_SINGLE_WIN_LIMIT_MULTIPLIER_MAP = {
 	[INFINITY_MARK]: Infinity,
 };
 
+// Stop on profit: a game opts in (Modals' autoplay option); the rest never set it, so it stays ∞.
+export const PROFIT_LIMIT_TEXT_OPTIONS = ['10×', '25×', '50×', '100×', '1000×', INFINITY_MARK] as const;
+export type ProfitLimitText = (typeof PROFIT_LIMIT_TEXT_OPTIONS)[number];
+export const AUTO_SPINS_PROFIT_LIMIT_MULTIPLIER_MAP = {
+	'10×': 10,
+	'25×': 25,
+	'50×': 50,
+	'100×': 100,
+	'1000×': 1000,
+	[INFINITY_MARK]: Infinity,
+};
+
 export type UIConfigMode = 'default' | 'replay';
 
 export const stateUi = $state({
 	autoSpinsText: '10' as AutoSpinsText,
 	autoSpinsLossLimitText: INFINITY_MARK as LossLimitText,
 	autoSpinsSingleWinLimitText: INFINITY_MARK as SingleWinLimitText,
+	autoSpinsProfitLimitText: INFINITY_MARK as ProfitLimitText,
 	freeSpinCounterShow: false,
 	freeSpinCounterCurrent: 0,
 	freeSpinCounterTotal: 0,

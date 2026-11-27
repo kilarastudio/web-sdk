@@ -40,7 +40,6 @@ export default {
 	'Play a round.': 'Spil en runde.',
 	'Play a round. The space bar does the same.': 'Spil en runde. Mellemrumstasten gør det samme.',
 	Autoplay: 'Autospil',
-	'Play a chosen number of rounds one after another.': 'Spil et valgt antal runder efter hinanden.',
 	Turbo: 'Turbo',
 	'Show the draw faster.': 'Vis trækningen hurtigere.',
 	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.":
@@ -129,4 +128,10 @@ export default {
 	'PLAY AGAIN': 'SPIL IGEN',
 	'AUTO SPINS': 'AUTOSPIL',
 	'AUTO SPIN': 'AUTOSPIL',
+	'NUMBERS EACH ROUND': 'TAL HVER RUNDE',
+	'Same numbers': 'Samme tal',
+	'New Random Pick': 'Nyt tilfældigt valg',
+	'Numbers still to pick: {count}': 'Tal tilbage at vælge: {count}',
+	'Play a chosen number of rounds one after another, with the same numbers or a new Random Pick each round. Autoplay stops at the loss, win or profit limit chosen, in the bonus modes too.':
+		'Spil et valgt antal runder efter hinanden, med de samme tal eller et nyt tilfældigt valg hver runde. Autospil stopper ved den valgte tabs-, gevinst- eller profitgrænse, også i bonustilstandene.',
 };

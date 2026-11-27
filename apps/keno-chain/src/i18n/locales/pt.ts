@@ -40,8 +40,6 @@ export default {
 	'Play a round.': 'Jogue uma rodada.',
 	'Play a round. The space bar does the same.': 'Jogue uma rodada. A barra de espaço faz o mesmo.',
 	Autoplay: 'Jogo auto',
-	'Play a chosen number of rounds one after another.':
-		'Jogue um número escolhido de rodadas seguidas.',
 	Turbo: 'Turbo',
 	'Show the draw faster.': 'Acelere a exibição do sorteio.',
 	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.":
@@ -130,4 +128,10 @@ export default {
 	'PLAY AGAIN': 'JOGAR DE NOVO',
 	'AUTO SPINS': 'JOGO AUTOMÁTICO',
 	'AUTO SPIN': 'JOGO AUTO',
+	'NUMBERS EACH ROUND': 'NÚMEROS EM CADA RODADA',
+	'Same numbers': 'Mesmos números',
+	'New Random Pick': 'Novo aleatório',
+	'Numbers still to pick: {count}': 'Números a escolher: {count}',
+	'Play a chosen number of rounds one after another, with the same numbers or a new Random Pick each round. Autoplay stops at the loss, win or profit limit chosen, in the bonus modes too.':
+		'Jogue um número escolhido de rodadas seguidas, com os mesmos números ou uma nova escolha aleatória a cada rodada. O jogo auto para no limite de perda, de ganho ou de lucro escolhido, também nos modos bônus.',
 };

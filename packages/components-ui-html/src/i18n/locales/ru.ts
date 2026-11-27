@@ -77,4 +77,6 @@ export default {
 	Close: 'Закрыть',
 	Decrease: 'Уменьшить',
 	Increase: 'Увеличить',
+	'PROFIT LIMIT': 'ЛИМИТ ПРИБЫЛИ',
+	'PROFIT LIMIT REACHED': 'ДОСТИГНУТ ЛИМИТ ПРИБЫЛИ',
 };

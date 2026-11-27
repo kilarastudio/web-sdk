@@ -10,6 +10,10 @@
 	import { i18nDerived } from '../i18n/i18nDerived';
 	import type { EmitterEventModal } from '../types';
 
+	// keepLimits: the game's autoplay limits also hold in an armed mode (Modals' autoplay option)
+	type Props = { keepLimits?: boolean };
+
+	const props: Props = $props();
 	const { eventEmitter } = getContextEventEmitter<EmitterEventModal>();
 
 	const mode = $derived(stateBonusDerived.selectedBetModeData());
@@ -22,10 +26,12 @@
 			eventEmitter.broadcast({ type: 'bet' });
 		}
 
-		if (mode.type === 'activate') {
-			eventEmitter.broadcast({ type: 'soundBetMode', betModeKey: stateBonus.selectedBetModeKey });
+		if (mode.type === 'activate' && !props.keepLimits) {
 			stateUi.autoSpinsLossLimitText = INFINITY_MARK;
 			stateUi.autoSpinsSingleWinLimitText = INFINITY_MARK;
+		}
+		if (mode.type === 'activate') {
+			eventEmitter.broadcast({ type: 'soundBetMode', betModeKey: stateBonus.selectedBetModeKey });
 		}
 
 		eventEmitter.broadcast({ type: 'soundPressGeneral' });

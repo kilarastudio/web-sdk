@@ -6,6 +6,7 @@
 	import ModalBuyBonus from './ModalBuyBonus.svelte';
 	import ModalBuyBonusConfirm from './ModalBuyBonusConfirm.svelte';
 	import ModalAutoSpin from './ModalAutoSpin.svelte';
+	import type { AutoplayOptions } from '../types';
 	import ModalAutoSpinMessage from './ModalAutoSpinMessage.svelte';
 	import ModalPayTable from './ModalPayTable.svelte';
 	import ModalGameRules from './ModalGameRules.svelte';
@@ -18,6 +19,8 @@
 		payTable?: Snippet;
 		gameRules?: Snippet;
 		gameRulesSize?: 'medium' | 'large';
+		// what the game adds to the autoplay sheet (ModalAutoSpin); nothing keeps it as it was
+		autoplay?: AutoplayOptions;
 	};
 
 	const props: Props = $props();
@@ -26,8 +29,8 @@
 <ModalError />
 <ModalBetMenu />
 <ModalBuyBonus />
-<ModalBuyBonusConfirm />
-<ModalAutoSpin />
+<ModalBuyBonusConfirm keepLimits={props.autoplay?.limitsInModes} />
+<ModalAutoSpin options={props.autoplay} />
 <ModalAutoSpinMessage />
 <ModalPayTable>
 	{@render props.payTable?.()}

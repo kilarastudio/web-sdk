@@ -40,7 +40,6 @@ export default {
 	'Play a round.': 'Bir tur oynayın.',
 	'Play a round. The space bar does the same.': 'Bir tur oynayın. Boşluk tuşu da aynısını yapar.',
 	Autoplay: 'Oto oyun',
-	'Play a chosen number of rounds one after another.': 'Seçtiğiniz sayıda turu art arda oynayın.',
 	Turbo: 'Turbo',
 	'Show the draw faster.': 'Çekilişi hızlandırın.',
 	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.":
@@ -128,4 +127,10 @@ export default {
 	'PLAY AGAIN': 'TEKRAR OYNA',
 	'AUTO SPINS': 'OTOMATİK OYUN',
 	'AUTO SPIN': 'OTO OYUN',
+	'NUMBERS EACH ROUND': 'HER TURDA SAYILAR',
+	'Same numbers': 'Aynı sayılar',
+	'New Random Pick': 'Yeni rastgele seçim',
+	'Numbers still to pick: {count}': 'Seçilecek sayı: {count}',
+	'Play a chosen number of rounds one after another, with the same numbers or a new Random Pick each round. Autoplay stops at the loss, win or profit limit chosen, in the bonus modes too.':
+		'Seçtiğiniz sayıda turu art arda oynayın; her turda aynı sayılarla ya da yeni bir rastgele seçimle. Oto oyun, seçtiğiniz kayıp, kazanç veya kâr limitinde durur; bonus modlarında da.',
 };

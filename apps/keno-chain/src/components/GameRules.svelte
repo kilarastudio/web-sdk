@@ -121,7 +121,10 @@
 	// the screen's buttons, by the words they carry
 	const buttons = [
 		{ label: '− +', text: t('Lower or raise the {amount}.', { amount }) },
-		{ label: t('Risk'), text: t('Choose {levels}.', { levels: joined(basic.map(levelLabel), 'or') }) },
+		{
+			label: t('Risk'),
+			text: t('Choose {levels}.', { levels: joined(basic.map(levelLabel), 'or') }),
+		},
 		{
 			label: t('Bonus'),
 			text: t('Open the bonus modes: {modes}.', { modes: joined(premium.map(levelLabel), 'and') }),
@@ -137,7 +140,12 @@
 				? t('Play a round.')
 				: t('Play a round. The space bar does the same.'),
 		},
-		{ label: t('Autoplay'), text: t('Play a chosen number of rounds one after another.') },
+		{
+			label: t('Autoplay'),
+			text: t(
+				'Play a chosen number of rounds one after another, with the same numbers or a new Random Pick each round. Autoplay stops at the loss, win or profit limit chosen, in the bonus modes too.',
+			),
+		},
 		{ label: t('Turbo'), text: t('Show the draw faster.') },
 	];
 
@@ -275,10 +283,7 @@
 				chain: levelLabel(premium[0]),
 				chainMode: modeName(premium[0], config.levelPicks[premium[0]][0] as Picks).toUpperCase(),
 				chainmax: levelLabel(premium[1]),
-				chainmaxMode: modeName(
-					premium[1],
-					config.levelPicks[premium[1]][0] as Picks,
-				).toUpperCase(),
+				chainmaxMode: modeName(premium[1], config.levelPicks[premium[1]][0] as Picks).toUpperCase(),
 			},
 		)}
 	</p>
@@ -406,8 +411,7 @@
 
 			.face {
 				inset: 0.24em 0 0 0;
-				background: #080c16 repeating-conic-gradient(#111829 0 25%, transparent 0 50%) 0 0 / 4px
-					4px;
+				background: #080c16 repeating-conic-gradient(#111829 0 25%, transparent 0 50%) 0 0 / 4px 4px;
 				color: #ff5d62;
 			}
 		}

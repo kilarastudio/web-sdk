@@ -41,8 +41,6 @@ export default {
 	'Play a round. The space bar does the same.':
 		'Mainkan satu ronde. Bisa juga dengan tombol spasi.',
 	Autoplay: 'Main Otomatis',
-	'Play a chosen number of rounds one after another.':
-		'Mainkan sejumlah ronde pilihan secara berturut-turut.',
 	Turbo: 'Turbo',
 	'Show the draw faster.': 'Tampilkan undian lebih cepat.',
 	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.":
@@ -131,4 +129,10 @@ export default {
 	'PLAY AGAIN': 'MAIN LAGI',
 	'AUTO SPINS': 'MAIN OTOMATIS',
 	'AUTO SPIN': 'MAIN OTOMATIS',
+	'NUMBERS EACH ROUND': 'ANGKA TIAP RONDE',
+	'Same numbers': 'Angka yang sama',
+	'New Random Pick': 'Pilih Acak baru',
+	'Numbers still to pick: {count}': 'Angka yang masih perlu dipilih: {count}',
+	'Play a chosen number of rounds one after another, with the same numbers or a new Random Pick each round. Autoplay stops at the loss, win or profit limit chosen, in the bonus modes too.':
+		'Mainkan sejumlah ronde pilihan secara berturut-turut, dengan angka yang sama atau Pilih Acak baru tiap ronde. Main otomatis berhenti di batas kekalahan, kemenangan, atau keuntungan yang dipilih, juga di mode bonus.',
 };

@@ -4,9 +4,9 @@
 	import { EnablePixiExtension } from 'components-pixi';
 	import { EnableHotkey } from 'components-shared';
 	import { App } from 'pixi-svelte';
-	import { stateMeta, stateModal, stateUrlDerived } from 'state-shared';
+	import { stateI18nDerived, stateMeta, stateModal, stateUrlDerived } from 'state-shared';
 
-	import { GameVersion, Modals } from 'components-ui-html';
+	import { GameVersion, Modals, UiChoiceGrid, UiSheetSection } from 'components-ui-html';
 
 	import { version as gameVersion } from '../../package.json';
 	import { getContext } from '../game/context';
@@ -26,6 +26,22 @@
 	stateMeta.betModeMeta = betModeMeta(stateUrlDerived.social());
 
 	onMount(() => (context.stateLayout.showLoadingScreen = true));
+
+	// Autoplay, as keno players know it: the numbers of each round (the same set, or a fresh
+	// Random Pick each time) and a stop on profit beside the shell's limits. The limits also hold
+	// in Unbroken Chain and Golden Chain, counted in what their rounds really cost, and autoplay
+	// waits until the board holds a set the level plays.
+	const t = stateI18nDerived.translate;
+	const AUTO_NUMBERS = ['same', 'random'] as const;
+	const autoNumbersLabel = (option: (typeof AUTO_NUMBERS)[number]) =>
+		option === 'same' ? t('Same numbers') : t('New Random Pick');
+	const autoplayBlocked = $derived(
+		context.stateGameDerived.ready()
+			? ''
+			: t('Numbers still to pick: {count}', {
+					count: Math.max(1, context.stateGameDerived.missing()),
+				}),
+	);
 
 	// the shell's mode scene (its feature button lists the Chain modes) asks the game to open the
 	// confirmation of the card that was chosen
@@ -54,7 +70,31 @@
 	<KenoTable />
 {/if}
 
-<Modals gameRulesSize="large">
+{#snippet autoNumbers()}
+	<UiSheetSection label={t('NUMBERS EACH ROUND')}>
+		<UiChoiceGrid
+			data-test="auto-numbers"
+			value={context.stateGame.autoNumbers}
+			options={AUTO_NUMBERS}
+			format={autoNumbersLabel}
+			min={130}
+			onchange={(value) => {
+				context.stateGame.autoNumbers = value;
+				context.eventEmitter.broadcast({ type: 'soundPressGeneral' });
+			}}
+		/>
+	</UiSheetSection>
+{/snippet}
+
+<Modals
+	gameRulesSize="large"
+	autoplay={{
+		extra: autoNumbers,
+		profitLimit: true,
+		limitsInModes: true,
+		blocked: autoplayBlocked,
+	}}
+>
 	{#snippet payTable()}
 		<PayTable />
 	{/snippet}

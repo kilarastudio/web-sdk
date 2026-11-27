@@ -1,4 +1,5 @@
-import { stateBet, stateUrlDerived } from 'state-shared';
+import _ from 'lodash';
+import { stateBet, stateBetDerived, stateUrlDerived } from 'state-shared';
 
 import config from './config';
 import {
@@ -6,6 +7,7 @@ import {
 	isPremium,
 	levelPicks,
 	modeName,
+	NUMBERS,
 	parseMode,
 	playedSize,
 	randomPick,
@@ -67,6 +69,8 @@ export const stateGame = $state({
 	nudges: 0,
 	// the 1× level to go back to when a premium level is switched off from the HUD
 	lastLevel: 'calm' as Level,
+	// autoplay's numbers: the same set every round, or a fresh Random Pick before each one
+	autoNumbers: 'same' as 'same' | 'random',
 });
 
 // The mode is the one the RGS is asked to play: stateBet.activeBetModeKey, e.g. "wild_8". Its
@@ -163,6 +167,14 @@ const random = () => {
 
 const clear = () => editSelection([]);
 
+// Autoplay with a fresh set each round: as many numbers as now, chosen at once (the round starts
+// right after), and only a complete set is replaced, so the mode the RGS plays stays the same.
+const autoPick = () => {
+	if (stateGame.autoNumbers !== 'random' || !stateBetDerived.hasAutoBetCounter() || !ready())
+		return;
+	editSelection(_.shuffle(NUMBERS).slice(0, count()));
+};
+
 // a round is about to play: the whole selection shows
 const showSelection = () => {
 	showing += 1;
@@ -187,6 +199,7 @@ export const stateGameDerived = {
 	setLevel,
 	random,
 	clear,
+	autoPick,
 	showSelection,
 	addRecent,
 };

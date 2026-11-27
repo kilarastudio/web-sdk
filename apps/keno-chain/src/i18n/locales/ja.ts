@@ -42,8 +42,6 @@ export default {
 	'Play a round. The space bar does the same.':
 		'1ラウンドをプレイします。スペースキーでも同じ操作ができます。',
 	Autoplay: 'オートプレイ',
-	'Play a chosen number of rounds one after another.':
-		'指定した回数のラウンドを続けてプレイします。',
 	Turbo: 'ターボ',
 	'Show the draw faster.': '抽選を速く表示します。',
 	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.":
@@ -129,4 +127,10 @@ export default {
 	'PLAY AGAIN': 'もう一度プレイ',
 	'AUTO SPINS': 'オートプレイ',
 	'AUTO SPIN': 'オートプレイ',
+	'NUMBERS EACH ROUND': '各ラウンドの数字',
+	'Same numbers': '同じ数字',
+	'New Random Pick': '新しくランダム選択',
+	'Numbers still to pick: {count}': '残りの選択数：{count}',
+	'Play a chosen number of rounds one after another, with the same numbers or a new Random Pick each round. Autoplay stops at the loss, win or profit limit chosen, in the bonus modes too.':
+		'指定した回数のラウンドを続けてプレイします。数字は毎回同じか、毎ラウンド新しくランダム選択します。オートプレイは選んだ損失・配当・利益の上限で停止し、ボーナスモードでも同様です。',
 };

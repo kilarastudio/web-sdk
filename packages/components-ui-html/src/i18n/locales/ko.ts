@@ -76,4 +76,6 @@ export default {
 	Close: '닫기',
 	Decrease: '줄이기',
 	Increase: '늘리기',
+	'PROFIT LIMIT': '수익 한도',
+	'PROFIT LIMIT REACHED': '수익 한도에 도달했습니다',
 };

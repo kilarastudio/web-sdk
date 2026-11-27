@@ -77,4 +77,6 @@ export default {
 	Close: 'Tutup',
 	Decrease: 'Kurangi',
 	Increase: 'Tambah',
+	'PROFIT LIMIT': 'BATAS KEUNTUNGAN',
+	'PROFIT LIMIT REACHED': 'BATAS KEUNTUNGAN TERCAPAI',
 };

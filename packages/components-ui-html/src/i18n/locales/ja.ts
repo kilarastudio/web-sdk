@@ -77,4 +77,6 @@ export default {
 	Close: '閉じる',
 	Decrease: '減らす',
 	Increase: '増やす',
+	'PROFIT LIMIT': '利益上限',
+	'PROFIT LIMIT REACHED': '利益上限に達しました',
 };

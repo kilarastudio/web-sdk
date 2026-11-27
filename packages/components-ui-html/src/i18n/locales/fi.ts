@@ -77,4 +77,6 @@ export default {
 	Close: 'Sulje',
 	Decrease: 'Pienennä',
 	Increase: 'Suurenna',
+	'PROFIT LIMIT': 'TUOTTORAJA',
+	'PROFIT LIMIT REACHED': 'TUOTTORAJA SAAVUTETTU',
 };

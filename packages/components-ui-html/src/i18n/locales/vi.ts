@@ -77,4 +77,6 @@ export default {
 	Close: 'Đóng',
 	Decrease: 'Giảm',
 	Increase: 'Tăng',
+	'PROFIT LIMIT': 'GIỚI HẠN LỢI NHUẬN',
+	'PROFIT LIMIT REACHED': 'ĐÃ ĐẠT GIỚI HẠN LỢI NHUẬN',
 };

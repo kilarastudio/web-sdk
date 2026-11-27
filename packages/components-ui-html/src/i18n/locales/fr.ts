@@ -77,4 +77,6 @@ export default {
 	Close: 'Fermer',
 	Decrease: 'Diminuer',
 	Increase: 'Augmenter',
+	'PROFIT LIMIT': 'LIMITE DE BÉNÉFICE',
+	'PROFIT LIMIT REACHED': 'LIMITE DE BÉNÉFICE ATTEINTE',
 };

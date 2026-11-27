@@ -77,4 +77,6 @@ export default {
 	Close: 'बंद करें',
 	Decrease: 'घटाएँ',
 	Increase: 'बढ़ाएँ',
+	'PROFIT LIMIT': 'मुनाफ़ा सीमा',
+	'PROFIT LIMIT REACHED': 'मुनाफ़ा सीमा पूरी हुई',
 };

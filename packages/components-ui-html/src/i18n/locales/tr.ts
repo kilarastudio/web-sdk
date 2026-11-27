@@ -77,4 +77,6 @@ export default {
 	Close: 'Kapat',
 	Decrease: 'Azalt',
 	Increase: 'Artır',
+	'PROFIT LIMIT': 'KÂR LİMİTİ',
+	'PROFIT LIMIT REACHED': 'KÂR LİMİTİNE ULAŞILDI',
 };

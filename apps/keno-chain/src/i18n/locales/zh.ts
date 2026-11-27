@@ -38,7 +38,6 @@ export default {
 	'Play a round.': '进行一局。',
 	'Play a round. The space bar does the same.': '进行一局。按空格键效果相同。',
 	Autoplay: '自动游戏',
-	'Play a chosen number of rounds one after another.': '连续进行所选局数的游戏。',
 	Turbo: '极速',
 	'Show the draw faster.': '加快开奖显示。',
 	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.":
@@ -123,4 +122,10 @@ export default {
 	'PLAY AGAIN': '再玩一局',
 	'AUTO SPINS': '自动游戏',
 	'AUTO SPIN': '自动游戏',
+	'NUMBERS EACH ROUND': '每局号码',
+	'Same numbers': '相同号码',
+	'New Random Pick': '重新随机选号',
+	'Numbers still to pick: {count}': '还需选择：{count}',
+	'Play a chosen number of rounds one after another, with the same numbers or a new Random Pick each round. Autoplay stops at the loss, win or profit limit chosen, in the bonus modes too.':
+		'连续进行所选局数的游戏，每局使用相同号码或重新随机选号。自动游戏会在所选的亏损、赢奖或盈利上限处停止，奖励模式中同样适用。',
 };

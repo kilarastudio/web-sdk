@@ -77,4 +77,6 @@ export default {
 	Close: 'Fechar',
 	Decrease: 'Diminuir',
 	Increase: 'Aumentar',
+	'PROFIT LIMIT': 'LIMITE DE LUCRO',
+	'PROFIT LIMIT REACHED': 'LIMITE DE LUCRO ATINGIDO',
 };

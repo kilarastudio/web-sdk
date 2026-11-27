@@ -40,8 +40,6 @@ export default {
 	'Play a round.': 'एक राउंड खेलें।',
 	'Play a round. The space bar does the same.': 'एक राउंड खेलें। स्पेसबार से भी यही होता है।',
 	Autoplay: 'ऑटोप्ले',
-	'Play a chosen number of rounds one after another.':
-		'चुनी गई संख्या में राउंड एक के बाद एक खेलें।',
 	Turbo: 'टर्बो',
 	'Show the draw faster.': 'ड्रॉ तेज़ी से दिखाएँ।',
 	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.":
@@ -129,4 +127,10 @@ export default {
 	'PLAY AGAIN': 'फिर खेलें',
 	'AUTO SPINS': 'ऑटोप्ले',
 	'AUTO SPIN': 'ऑटोप्ले',
+	'NUMBERS EACH ROUND': 'हर राउंड के नंबर',
+	'Same numbers': 'वही नंबर',
+	'New Random Pick': 'नया रैंडम चुनें',
+	'Numbers still to pick: {count}': 'चुनने बाकी नंबर: {count}',
+	'Play a chosen number of rounds one after another, with the same numbers or a new Random Pick each round. Autoplay stops at the loss, win or profit limit chosen, in the bonus modes too.':
+		'चुनी गई संख्या में राउंड एक के बाद एक खेलें, हर राउंड में वही नंबर या नया रैंडम चुनाव। ऑटोप्ले चुनी गई हानि, जीत या मुनाफ़ा सीमा पर रुक जाता है, बोनस मोड में भी।',
 };

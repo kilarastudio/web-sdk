@@ -41,8 +41,6 @@ export default {
 	'Play a round. The space bar does the same.':
 		'Сыграйте раунд. То же самое делает клавиша «Пробел».',
 	Autoplay: 'Автоигра',
-	'Play a chosen number of rounds one after another.':
-		'Сыграйте выбранное количество раундов подряд.',
 	Turbo: 'Турбо',
 	'Show the draw faster.': 'Ускорьте показ розыгрыша.',
 	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.":
@@ -132,4 +130,10 @@ export default {
 	'PLAY AGAIN': 'ИГРАТЬ СНОВА',
 	'AUTO SPINS': 'АВТОИГРА',
 	'AUTO SPIN': 'АВТОИГРА',
+	'NUMBERS EACH ROUND': 'ЧИСЛА В КАЖДОМ РАУНДЕ',
+	'Same numbers': 'Те же числа',
+	'New Random Pick': 'Новый случайный выбор',
+	'Numbers still to pick: {count}': 'Осталось выбрать: {count}',
+	'Play a chosen number of rounds one after another, with the same numbers or a new Random Pick each round. Autoplay stops at the loss, win or profit limit chosen, in the bonus modes too.':
+		'Сыграйте выбранное количество раундов подряд — с теми же числами или с новым случайным выбором в каждом раунде. Автоигра останавливается на выбранном лимите проигрыша, выигрыша или прибыли, в том числе в бонусных режимах.',
 };

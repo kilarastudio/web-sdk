@@ -77,4 +77,6 @@ export default {
 	Close: 'Luk',
 	Decrease: 'Sænk',
 	Increase: 'Hæv',
+	'PROFIT LIMIT': 'PROFITGRÆNSE',
+	'PROFIT LIMIT REACHED': 'PROFITGRÆNSE NÅET',
 };

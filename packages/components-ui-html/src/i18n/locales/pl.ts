@@ -77,4 +77,6 @@ export default {
 	Close: 'Zamknij',
 	Decrease: 'Zmniejsz',
 	Increase: 'Zwiększ',
+	'PROFIT LIMIT': 'LIMIT ZYSKU',
+	'PROFIT LIMIT REACHED': 'OSIĄGNIĘTO LIMIT ZYSKU',
 };

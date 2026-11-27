@@ -76,4 +76,6 @@ export default {
 	Close: '关闭',
 	Decrease: '减少',
 	Increase: '增加',
+	'PROFIT LIMIT': '盈利上限',
+	'PROFIT LIMIT REACHED': '已达到盈利上限',
 };

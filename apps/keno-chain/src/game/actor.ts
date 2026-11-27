@@ -3,7 +3,7 @@ import { createPrimaryMachines, createIntermediateMachines, createGameActor } fr
 
 import type { Bet } from './typesBookEvent';
 import { playBet } from './utils';
-import { stateGame } from './stateGame.svelte';
+import { stateGame, stateGameDerived } from './stateGame.svelte';
 
 // A keno round is one draw: no bonus rounds, nothing to rebuild on resume.
 const primaryMachines = createPrimaryMachines<Bet>({
@@ -18,6 +18,8 @@ const primaryMachines = createPrimaryMachines<Bet>({
 		stateGame.round = null;
 		// cleared before the round is fetched, so a stop pressed while it is fetched still counts
 		stateGame.skip = false;
+		// autoplay with a fresh set each round picks it here, before the round is asked for
+		stateGameDerived.autoPick();
 	},
 	onNewGameError: () => {},
 	onPlayGame: async (bet) => await playBet(bet),

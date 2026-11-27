@@ -40,7 +40,6 @@ export default {
 	'Play a round.': 'Pelaa kierros.',
 	'Play a round. The space bar does the same.': 'Pelaa kierros. Välilyönti tekee saman.',
 	Autoplay: 'Autopeli',
-	'Play a chosen number of rounds one after another.': 'Pelaa valittu määrä kierroksia peräkkäin.',
 	Turbo: 'Turbo',
 	'Show the draw faster.': 'Näytä arvonta nopeammin.',
 	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.":
@@ -129,4 +128,10 @@ export default {
 	'PLAY AGAIN': 'PELAA UUDELLEEN',
 	'AUTO SPINS': 'AUTOPELI',
 	'AUTO SPIN': 'AUTOPELI',
+	'NUMBERS EACH ROUND': 'NUMEROT JOKA KIERROKSELLA',
+	'Same numbers': 'Samat numerot',
+	'New Random Pick': 'Uusi satunnaisvalinta',
+	'Numbers still to pick: {count}': 'Valittavia numeroita jäljellä: {count}',
+	'Play a chosen number of rounds one after another, with the same numbers or a new Random Pick each round. Autoplay stops at the loss, win or profit limit chosen, in the bonus modes too.':
+		'Pelaa valittu määrä kierroksia peräkkäin samoilla numeroilla tai uudella satunnaisvalinnalla joka kierroksella. Autopeli pysähtyy valittuun tappio-, voitto- tai tuottorajaan, myös bonustiloissa.',
 };

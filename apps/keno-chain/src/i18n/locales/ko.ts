@@ -41,8 +41,6 @@ export default {
 	'Play a round. The space bar does the same.':
 		'라운드를 1회 플레이합니다. 스페이스 바로도 할 수 있습니다.',
 	Autoplay: '자동 플레이',
-	'Play a chosen number of rounds one after another.':
-		'정한 횟수만큼 라운드를 연속으로 플레이합니다.',
 	Turbo: '터보',
 	'Show the draw faster.': '추첨을 더 빠르게 보여 줍니다.',
 	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.":
@@ -130,4 +128,10 @@ export default {
 	'PLAY AGAIN': '다시 플레이',
 	'AUTO SPINS': '자동 플레이',
 	'AUTO SPIN': '자동 플레이',
+	'NUMBERS EACH ROUND': '라운드별 번호',
+	'Same numbers': '같은 번호',
+	'New Random Pick': '새 랜덤 선택',
+	'Numbers still to pick: {count}': '더 고를 번호: {count}',
+	'Play a chosen number of rounds one after another, with the same numbers or a new Random Pick each round. Autoplay stops at the loss, win or profit limit chosen, in the bonus modes too.':
+		'정한 횟수만큼 라운드를 연속으로 플레이합니다. 매 라운드 같은 번호로 하거나 새로 랜덤 선택합니다. 자동 플레이는 정한 손실, 당첨 또는 수익 한도에서 멈추며 보너스 모드에서도 같습니다.',
 };

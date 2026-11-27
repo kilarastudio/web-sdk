@@ -9,6 +9,7 @@
 	const messageMap = $derived({
 		lossLimitReached: i18nDerived.lossLimitReached(),
 		singleWinLimitReached: i18nDerived.singleWinLimitReached(),
+		profitLimitReached: i18nDerived.profitLimitReached(),
 		insufficientFunds: i18nDerived.insufficientFunds(),
 	});
 
