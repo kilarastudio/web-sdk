@@ -21,7 +21,6 @@
 	import ButtonMenuClose from 'components-ui-html/src/components/ButtonMenuClose.svelte';
 	import ButtonPayTable from 'components-ui-html/src/components/ButtonPayTable.svelte';
 	import ButtonGameRules from 'components-ui-html/src/components/ButtonGameRules.svelte';
-	import ButtonSettings from 'components-ui-html/src/components/ButtonSettings.svelte';
 	import ButtonSoundSwitch from 'components-ui-html/src/components/ButtonSoundSwitch.svelte';
 	import ButtonAutoSpin from 'components-ui-html/src/components/ButtonAutoSpin.svelte';
 	import ButtonTurbo from 'components-ui-html/src/components/ButtonTurbo.svelte';
@@ -156,10 +155,13 @@
 	// how many times the amount the mode in play costs (a bonus mode: 10 or 100)
 	const modeCost = $derived(config.levelCost[context.stateGameDerived.level()]);
 
-	// the last results, as multiples of what each round cost
+	// the last results, as multiples of the base bet (the win table's unit)
 	const recent = $derived(context.stateGame.recent.slice(tall ? -3 : -6));
-	const ratio = (value: number) =>
-		`${stateI18nDerived.number(value, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}×`;
+	// two decimals, none from 100× up, so a large win keeps to its chip
+	const ratio = (value: number) => {
+		const digits = value >= 100 ? 0 : 2;
+		return `${stateI18nDerived.number(value, { minimumFractionDigits: digits, maximumFractionDigits: digits })}×`;
+	};
 
 	// the round's win beside the balance: it counts with the card on the board
 	const winText = $derived(
@@ -200,7 +202,8 @@
 	});
 
 	// The menu opens beside its button: under it at the top of a tall screen, over it at the foot
-	// of the wide panel.
+	// of the wide panel. Paytable, info and the sound switch: no settings sheet, since the game has
+	// no music and its only setting would be the sound the switch already covers (user, 2026-11-27).
 	let menuEl = $state<HTMLElement>();
 	let hudEl = $state<HTMLElement>();
 	const menuPlace = $derived.by(() => {
@@ -209,9 +212,10 @@
 		const button = menuEl.getBoundingClientRect();
 		const hud = hudEl.getBoundingClientRect();
 		const gap = unit * 0.6;
-		return tall
-			? `top:${button.bottom - hud.top + gap}px;right:${hud.right - button.right}px`
-			: `bottom:${hud.bottom - button.top + gap}px;left:${Math.max(0, button.right - hud.left - unit * 20)}px`;
+		if (tall) return `top:${button.bottom - hud.top + gap}px;right:${hud.right - button.right}px`;
+		// wide: as wide as the controls and flush with them, over the row the button stands in
+		const panel = panelEl?.getBoundingClientRect() ?? button;
+		return `bottom:${hud.bottom - button.top + gap}px;left:${panel.left - hud.left}px;width:${panel.width}px`;
 	});
 
 	// the shell's buttons ask for their press sound
@@ -245,7 +249,7 @@
 	<div class="recent" aria-label={stateI18nDerived.translate('Recent results')}>
 		{#each recent as result (result.id)}
 			<span class:won={result.ratio >= 1 && result.ratio < 10} class:big={result.ratio >= 10}>
-				{ratio(result.ratio)}
+				{ratio(result.times)}
 			</span>
 		{/each}
 	</div>
@@ -391,7 +395,6 @@
 				<nav class="menu-card" style={menuPlace}>
 					<ButtonPayTable />
 					<ButtonGameRules />
-					<ButtonSettings />
 					<ButtonSoundSwitch />
 				</nav>
 			{/if}

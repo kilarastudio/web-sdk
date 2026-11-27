@@ -54,8 +54,10 @@ export const stateGame = $state({
 	hidden: [] as number[],
 	round: null as Round | null,
 	win: null as ShownWin | null,
-	// what the last rounds won, as multiples of their cost, oldest first
-	recent: [] as { id: number; ratio: number }[],
+	// what the last rounds won, oldest first. times: multiples of the base bet, the unit of the
+	// win table, which is what the chip writes; ratio: against what the round cost, which gives
+	// the chip its colour (a bonus round that wins 400× the bet for a cost of 100× is 4)
+	recent: [] as { id: number; times: number; ratio: number }[],
 	// the round about to play was resumed after a reload: it shows the book's own board
 	resuming: false,
 	// the player asked to see the rest of the draw at once (stop button)
@@ -168,9 +170,9 @@ const showSelection = () => {
 };
 
 let rounds = 0;
-const addRecent = (ratio: number) => {
+const addRecent = (times: number, ratio: number) => {
 	rounds += 1;
-	stateGame.recent = [...stateGame.recent, { id: rounds, ratio }].slice(-RECENT);
+	stateGame.recent = [...stateGame.recent, { id: rounds, times, ratio }].slice(-RECENT);
 };
 
 export const stateGameDerived = {

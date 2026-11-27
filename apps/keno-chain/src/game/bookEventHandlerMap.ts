@@ -152,7 +152,7 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		const { cost, maxWin } = config.betModes[stateGame.round.mode];
 		const times = bookEvent.amount / 100;
 		const ratio = times / cost;
-		if (!stateUrlDerived.replay()) stateGameDerived.addRecent(ratio);
+		if (!stateUrlDerived.replay()) stateGameDerived.addRecent(times, ratio);
 		if (bookEvent.amount <= 0) return;
 		await eventEmitter.broadcastAsync({
 			type: 'winPresent',

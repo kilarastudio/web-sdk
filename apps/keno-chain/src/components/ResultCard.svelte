@@ -12,11 +12,11 @@
 	import { sound } from '../game/sound';
 	import { getContext } from '../game/context';
 
-	// The round's result, in the middle of the board: a dark card with what was hit and the amount
-	// counting up. Only a round that wins shows it. A win of the round's cost or more is green and
-	// counts with a sound, ten times the cost or more is in the win colour; a win below the cost is
-	// shown, not celebrated: no count, no sound. The card stays until the next round or the next
-	// change of the numbers; a press finishes the count.
+	// The round's result, in the middle of the board: a dark card with what was hit and the amount,
+	// shown whole at once. Only a round that wins shows it. A win of the round's cost or more is
+	// green and has a sound, ten times the cost or more is in the win colour; a win below the cost
+	// is shown without a sound. The card stays until the next round or the next change of the
+	// numbers.
 	const context = getContext();
 	const t = stateI18nDerived.translate;
 
@@ -25,55 +25,22 @@
 
 	const round = $derived(context.stateGame.round);
 	const win = $derived(context.stateGame.win);
-	// a press finishes the count
-	let finish = () => {};
-
-	const countUp = (amount: number, duration: number) =>
-		new Promise<void>((resolve) => {
-			const start = performance.now();
-			let done = false;
-			const end = () => {
-				if (done) return;
-				done = true;
-				if (context.stateGame.win) context.stateGame.win.shown = amount;
-				resolve();
-			};
-			finish = end;
-			const step = (now: number) => {
-				if (done) return;
-				const k = Math.min(1, Math.max(0, (now - start) / duration));
-				if (!context.stateGame.win || k >= 1) return end();
-				context.stateGame.win.shown = amount * (1 - Math.pow(1 - k, 3));
-				requestAnimationFrame(step);
-			};
-			requestAnimationFrame(step);
-			// a hidden tab runs no frames: the count still ends
-			waitForTimeout(duration + 100).then(end);
-		});
-
 	context.eventEmitter.subscribeOnMount({
 		winPresent: async ({ amount, ratio, max }) => {
-			const calm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-			const celebrated = ratio >= 1;
-			context.stateGame.win = { shown: celebrated && !calm ? 0 : amount, amount, ratio, max };
-			if (celebrated) {
-				sound.win(ratio >= BIG ? 3 : ratio >= 3 ? 2 : 1);
-				if (!calm) await countUp(amount, Math.min(1800, 500 + Math.log10(ratio + 1) * 520));
-			}
-			finish = () => {};
+			// the whole amount at once: no count (user, 2026-11-27)
+			context.stateGame.win = { shown: amount, amount, ratio, max };
+			if (ratio >= 1) sound.win(ratio >= BIG ? 3 : ratio >= 3 ? 2 : 1);
 			await waitForTimeout(context.stateGame.skip ? 0 : HOLD);
 		},
 	});
 </script>
 
 {#if win && round?.done}
-	<!-- svelte-ignore a11y_click_events_have_key_events, a11y_no_static_element_interactions -->
 	<div
 		class="result"
 		class:win={win.ratio >= 1 && win.ratio < BIG}
 		class:big={win.ratio >= BIG}
 		data-test="win-overlay"
-		onclick={() => finish()}
 	>
 		<small>
 			{t('{hits} OF {picks} HIT', {
@@ -99,7 +66,6 @@
 		background-color: rgba(11, 16, 27, 0.96);
 		text-align: center;
 		transform: translate(-50%, -50%);
-		cursor: pointer;
 		animation: result-in 0.28s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 
 		&.win {

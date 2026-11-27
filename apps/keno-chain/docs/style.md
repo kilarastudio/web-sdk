@@ -34,6 +34,12 @@ studio style differ, the market wins (user, 2026-11-26).
 - The amount field always shows the base amount, also while a bonus mode is armed (user,
   2026-11-27, as Keno Xtreme does): the mode's times stand in gold beside the word (BET 10×), and
   what a round costs is on the armed bonus button and the play bar.
+- The last results are written as multiples of the base bet, the unit of the win table (user,
+  2026-11-27); a chip's colour still follows the win against what the round cost, so green means
+  the round paid its cost or more.
+- The menu holds Paytable, Info and the Audio switch. No Settings row (user, 2026-11-27): the game
+  has no music, so its only setting would be the sound the switch already covers. On wide screens
+  the menu card is as wide as the controls and flush with them, over the row of its button.
 - No stop button (user, 2026-11-27): while a round runs the play bar stays "Play", a little
   quieter, and takes no press. Autoplay is stopped from the autoplay button.
 - No selector for how many numbers: the count picked on the board is the count played. The 1× levels
@@ -87,8 +93,8 @@ studio's order for every game:
   across a number. When the round ends, the chain that set the multiplier is drawn in gold.
 - **Pay row**: the cell of the hits so far is lit green, gold when the round wins its cost or more.
 - **Result**: a dark card in the middle of the board, only when the round wins: "N OF M HIT ·
-  STREAK ×K" and the amount. Green and counted up with a sound from 1× the cost, gold from 10×;
-  below the cost it is shown without count or sound. No card when nothing is won, no sparks.
+  STREAK ×K" and the amount. The amount shows whole at once, no count-up (user,
+  2026-11-27). Green with a sound from 1× the cost, gold from 10×; below the cost no sound. No card when nothing is won, no sparks.
 - **Timing and motion**: one ball every 150 ms (40 ms in turbo) at an even beat, with no pauses
   on hits; the only held beat is the last ball when one more hit would win ten times the cost or
   more. Every animation is one eased move (token, links, pips, meter step, result card), none is
