@@ -42,8 +42,8 @@ export default {
 	Autoplay: 'ऑटोप्ले',
 	Turbo: 'टर्बो',
 	'Show the draw faster.': 'ड्रॉ तेज़ी से दिखाएँ।',
-	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.":
-		'ड्रॉ, लकी नंबर और लकी राउंड गेम सर्वर तय करता है। आपके नंबर सर्वर द्वारा खेले गए नंबरों की जगह लेते हैं; हिट, लकी बॉल, उनका क्रम और जीत सर्वर के ही होते हैं। रीप्ले, या रीलोड के बाद फिर से शुरू हुआ राउंड, सर्वर के अपने नंबर दिखाता है, जो आपके नंबरों से अलग हो सकते हैं; परिणाम वही रहता है।',
+	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed on another device, shows the server's own numbers, which can differ from yours; the result is the same.":
+		'ड्रॉ, लकी नंबर और लकी राउंड गेम सर्वर तय करता है। आपके नंबर सर्वर द्वारा खेले गए नंबरों की जगह लेते हैं; हिट, लकी बॉल, उनका क्रम और जीत सर्वर के ही होते हैं। रीप्ले, या किसी दूसरे डिवाइस पर फिर से शुरू हुआ राउंड, सर्वर के अपने नंबर दिखाता है, जो आपके नंबरों से अलग हो सकते हैं; परिणाम वही रहता है।',
 	'Malfunction voids all wins and plays. A consistent internet connection is required. In the event of a disconnection, reload the game to finish any uncompleted rounds. The expected return is calculated over many plays. The game display is not representative of any physical device and is for illustrative purposes only. Winnings are settled according to the amount received from the Remote Game Server and not from events within the web browser. TM and © 2026 Engine.':
 		'खराबी की स्थिति में सभी जीत और खेल रद्द हो जाते हैं। एक स्थिर इंटरनेट कनेक्शन आवश्यक है। कनेक्शन टूटने पर, अधूरे राउंड पूरे करने के लिए गेम रीलोड करें। अपेक्षित रिटर्न बहुत सारे खेलों के आधार पर निकाला जाता है। गेम का डिस्प्ले किसी भौतिक उपकरण का प्रतिनिधित्व नहीं करता और केवल उदाहरण के लिए है। जीत का निपटान रिमोट गेम सर्वर (Remote Game Server) से प्राप्त राशि के अनुसार होता है, वेब ब्राउज़र के भीतर की घटनाओं के अनुसार नहीं। TM and © 2026 Engine.',
 	ABOUT: 'गेम के बारे में',
@@ -80,8 +80,10 @@ export default {
 	'A lucky ball adds a streak level and never breaks the chain.':
 		'लकी बॉल एक स्ट्रीक लेवल जोड़ती है और चेन कभी नहीं तोड़ती।',
 	'PRESS TO START': 'शुरू करने के लिए दबाएँ',
-	'Replay: the round is shown with its own numbers':
-		'रीप्ले: राउंड उसके अपने नंबरों के साथ दिखाया गया है',
+	'Replay: the numbers can differ, the result is the same':
+		'रीप्ले: नंबर अलग हो सकते हैं, परिणाम वही है',
+	'The numbers on the board can differ from the ones picked in the original round: the round does not keep them. The number of picks, the mode, the hits, their order, the lucky balls and the win are the same.':
+		'बोर्ड पर दिखे नंबर मूल राउंड में चुने गए नंबरों से अलग हो सकते हैं: राउंड उन्हें सहेजता नहीं है। चुने गए नंबरों की संख्या, मोड, हिट, उनका क्रम, लकी बॉल और जीत वही रहते हैं।',
 	'{level} plays {max} numbers': '{level} में {max} नंबर खेले जाते हैं',
 	'Pick {sizes} or {max} numbers': '{sizes} या {max} नंबर चुनें',
 	'pick {count} more': '{count} और चुनें',

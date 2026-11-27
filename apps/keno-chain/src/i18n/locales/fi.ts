@@ -42,8 +42,8 @@ export default {
 	Autoplay: 'Autopeli',
 	Turbo: 'Turbo',
 	'Show the draw faster.': 'Näytä arvonta nopeammin.',
-	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.":
-		'Pelipalvelin päättää arvonnan, onnennumerot ja onnenkierrokset. Omat numerosi korvaavat palvelimen pelaamat numerot; osumat, onnenpallot, niiden järjestys ja voitto ovat palvelimen. Uusinta tai uudelleenlatauksen jälkeen jatkettu kierros näyttää palvelimen omat numerot, jotka voivat poiketa omistasi; tulos on sama.',
+	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed on another device, shows the server's own numbers, which can differ from yours; the result is the same.":
+		'Pelipalvelin päättää arvonnan, onnennumerot ja onnenkierrokset. Omat numerosi korvaavat palvelimen pelaamat numerot; osumat, onnenpallot, niiden järjestys ja voitto ovat palvelimen. Uusinta tai toisella laitteella jatkettu kierros näyttää palvelimen omat numerot, jotka voivat poiketa omistasi; tulos on sama.',
 	'Malfunction voids all wins and plays. A consistent internet connection is required. In the event of a disconnection, reload the game to finish any uncompleted rounds. The expected return is calculated over many plays. The game display is not representative of any physical device and is for illustrative purposes only. Winnings are settled according to the amount received from the Remote Game Server and not from events within the web browser. TM and © 2026 Engine.':
 		'Toimintahäiriö mitätöi kaikki voitot ja pelit. Pelaaminen edellyttää vakaata internetyhteyttä. Jos yhteys katkeaa, lataa peli uudelleen, jotta keskeneräiset kierrokset saadaan päätökseen. Odotettu palautus lasketaan monen pelin perusteella. Pelin näkymä ei vastaa mitään fyysistä laitetta, ja se on tarkoitettu vain havainnollistamaan. Voitot tilitetään Remote Game Serveriltä saadun summan mukaan, ei verkkoselaimen tapahtumien perusteella. TM and © 2026 Engine.',
 	ABOUT: 'TIETOA PELISTÄ',
@@ -81,8 +81,10 @@ export default {
 	'A lucky ball adds a streak level and never breaks the chain.':
 		'Onnenpallo lisää yhden putkitason eikä koskaan katkaise ketjua.',
 	'PRESS TO START': 'ALOITA PAINAMALLA',
-	'Replay: the round is shown with its own numbers':
-		'Uusinta: kierros näytetään sen omilla numeroilla',
+	'Replay: the numbers can differ, the result is the same':
+		'Uusinta: numerot voivat poiketa, tulos on sama',
+	'The numbers on the board can differ from the ones picked in the original round: the round does not keep them. The number of picks, the mode, the hits, their order, the lucky balls and the win are the same.':
+		'Laudan numerot voivat poiketa alkuperäisellä kierroksella valituista: kierros ei tallenna niitä. Valittujen numeroiden määrä, tila, osumat, niiden järjestys, onnenpallot ja voitto ovat samat.',
 	'{level} plays {max} numbers': '{level} pelaa {max} numerolla',
 	'Pick {sizes} or {max} numbers': 'Valitse {sizes} tai {max} numeroa',
 	'pick {count} more': 'valitse vielä {count}',

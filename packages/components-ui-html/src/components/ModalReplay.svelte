@@ -1,4 +1,6 @@
 <script lang="ts">
+	import type { Snippet } from 'svelte';
+
 	import { zIndex } from 'constants-shared/zIndex';
 	import {
 		stateBet,
@@ -17,6 +19,13 @@
 	import { getContext } from '../context';
 	import { i18nDerived } from '../i18n/i18nDerived';
 
+	type Props = {
+		// what this game's replay shows differently from the round as it was played (a keno replay
+		// does not know the player's numbers), above the general note
+		note?: Snippet;
+	};
+
+	const props: Props = $props();
 	const context = getContext();
 
 	// the mode as the game names it, and as the math files name it where that is written otherwise
@@ -82,6 +91,9 @@
 			{/each}
 		</dl>
 
+		{#if props.note}
+			<p class="note game">{@render props.note()}</p>
+		{/if}
 		<p class="note">{i18nDerived.replayNote()}</p>
 
 		{#snippet footer()}
@@ -167,6 +179,12 @@
 		color: var(--ui-text-muted);
 		font-size: 0.8em;
 		text-align: center;
+
+		/* the game's own note says what differs from the round as played: in the text's colour */
+		&.game {
+			color: var(--ui-text);
+			line-height: 1.35;
+		}
 	}
 
 	/*

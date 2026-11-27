@@ -104,6 +104,12 @@
 	{#snippet version()}
 		<GameVersion version={gameVersion} />
 	{/snippet}
+	{#snippet replayNote()}
+		<!-- the RGS never receives the player's numbers, so a replay plays the book's own board -->
+		{t(
+			'The numbers on the board can differ from the ones picked in the original round: the round does not keep them. The number of picks, the mode, the hits, their order, the lucky balls and the win are the same.',
+		)}
+	{/snippet}
 </Modals>
 
 <style>

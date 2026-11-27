@@ -76,9 +76,13 @@ const check = (
 
 export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContext> = {
 	draw: async (bookEvent: BookEventOfType<'draw'>) => {
-		// A replay, or a round resumed after a reload, does not know the player's numbers: it shows
-		// the book's own board. Live play relabels the book onto the player's numbers.
-		const bookBoard = stateUrlDerived.replay() || stateGame.resuming;
+		// A replay, or a round resumed where this device did not keep its numbers (roundPicks), does
+		// not know the player's numbers: it shows the book's own board. Live play relabels the book
+		// onto the player's numbers.
+		const bookBoard =
+			stateUrlDerived.replay() ||
+			stateGame.resuming ||
+			stateGame.picked.length !== bookEvent.selected.length;
 		const shown = bookBoard
 			? { selected: bookEvent.selected, kilau: bookEvent.kilau, numbers: bookEvent.numbers }
 			: relabel(bookEvent, stateGame.picked);

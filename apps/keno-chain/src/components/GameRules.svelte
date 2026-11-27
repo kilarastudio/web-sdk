@@ -151,7 +151,7 @@
 
 	// what is this game's own: the player's numbers stand in for the server's
 	const server = t(
-		"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.",
+		"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed on another device, shows the server's own numbers, which can differ from yours; the result is the same.",
 	);
 	// Engine's template disclaimer, word for word: reviewers check that every point of it is there
 	const disclaimer = t(

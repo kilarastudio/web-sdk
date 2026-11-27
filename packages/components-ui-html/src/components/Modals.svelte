@@ -21,6 +21,8 @@
 		gameRulesSize?: 'medium' | 'large';
 		// what the game adds to the autoplay sheet (ModalAutoSpin); nothing keeps it as it was
 		autoplay?: AutoplayOptions;
+		// what the game adds to the replay's summary, above its general note (ModalReplay)
+		replayNote?: Snippet;
 	};
 
 	const props: Props = $props();
@@ -41,4 +43,4 @@
 	{@render props.version()}
 </ModalGameRules>
 <ModalSettings />
-<ModalReplay />
+<ModalReplay note={props.replayNote} />

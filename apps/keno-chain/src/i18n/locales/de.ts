@@ -43,8 +43,8 @@ export default {
 	Autoplay: 'Autoplay',
 	Turbo: 'Turbo',
 	'Show the draw faster.': 'Zeigt die Ziehung schneller.',
-	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.":
-		'Der Spielserver entscheidet über die Ziehung, die Glückszahlen und die Glücksrunden. Ihre Zahlen nehmen den Platz der Zahlen ein, die der Server gespielt hat; die Treffer, die Glückskugeln, ihre Reihenfolge und der Gewinn stammen vom Server. Eine Wiederholung oder eine nach dem Neuladen fortgesetzte Runde zeigt die eigenen Zahlen des Servers, die von Ihren abweichen können; das Ergebnis ist dasselbe.',
+	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed on another device, shows the server's own numbers, which can differ from yours; the result is the same.":
+		'Der Spielserver entscheidet über die Ziehung, die Glückszahlen und die Glücksrunden. Ihre Zahlen nehmen den Platz der Zahlen ein, die der Server gespielt hat; die Treffer, die Glückskugeln, ihre Reihenfolge und der Gewinn stammen vom Server. Eine Wiederholung oder eine auf einem anderen Gerät fortgesetzte Runde zeigt die eigenen Zahlen des Servers, die von Ihren abweichen können; das Ergebnis ist dasselbe.',
 	'Malfunction voids all wins and plays. A consistent internet connection is required. In the event of a disconnection, reload the game to finish any uncompleted rounds. The expected return is calculated over many plays. The game display is not representative of any physical device and is for illustrative purposes only. Winnings are settled according to the amount received from the Remote Game Server and not from events within the web browser. TM and © 2026 Engine.':
 		'Eine Fehlfunktion macht alle Gewinne und Spiele ungültig. Eine stabile Internetverbindung ist erforderlich. Bei einem Verbindungsabbruch laden Sie das Spiel neu, um nicht abgeschlossene Runden zu beenden. Die erwartete Auszahlung wird über viele Spiele berechnet. Die Spieldarstellung entspricht keinem physischen Gerät und dient nur zur Veranschaulichung. Gewinne werden nach dem vom Remote Game Server empfangenen Betrag abgerechnet, nicht nach Ereignissen im Webbrowser. TM and © 2026 Engine.',
 	ABOUT: 'ÜBER DAS SPIEL',
@@ -82,8 +82,10 @@ export default {
 	'A lucky ball adds a streak level and never breaks the chain.':
 		'Eine Glückskugel bringt eine Serienstufe mehr und unterbricht die Kette nie.',
 	'PRESS TO START': 'ZUM STARTEN DRÜCKEN',
-	'Replay: the round is shown with its own numbers':
-		'Wiederholung: Die Runde wird mit ihren eigenen Zahlen gezeigt',
+	'Replay: the numbers can differ, the result is the same':
+		'Wiederholung: Die Zahlen können abweichen, das Ergebnis ist dasselbe',
+	'The numbers on the board can differ from the ones picked in the original round: the round does not keep them. The number of picks, the mode, the hits, their order, the lucky balls and the win are the same.':
+		'Die Zahlen auf dem Feld können von den in der ursprünglichen Runde gewählten abweichen: Die Runde speichert sie nicht. Die Anzahl der gewählten Zahlen, der Modus, die Treffer, ihre Reihenfolge, die Glückskugeln und der Gewinn sind dieselben.',
 	'{level} plays {max} numbers': '{level} spielt {max} Zahlen',
 	'Pick {sizes} or {max} numbers': '{sizes} oder {max} Zahlen wählen',
 	'pick {count} more': 'noch {count} wählen',

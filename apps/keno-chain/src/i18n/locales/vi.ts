@@ -43,8 +43,8 @@ export default {
 	Autoplay: 'Tự động chơi',
 	Turbo: 'Turbo',
 	'Show the draw faster.': 'Hiển thị việc rút số nhanh hơn.',
-	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.":
-		'Máy chủ trò chơi quyết định việc rút số, các số may mắn và các vòng may mắn. Số của bạn thay cho các số mà máy chủ đã chơi; các lần trúng, bóng may mắn, thứ tự của chúng và khoản thắng là của máy chủ. Khi phát lại, hoặc khi một vòng được tiếp tục sau khi tải lại, trò chơi hiển thị chính các số của máy chủ, có thể khác với số của bạn; kết quả vẫn như nhau.',
+	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed on another device, shows the server's own numbers, which can differ from yours; the result is the same.":
+		'Máy chủ trò chơi quyết định việc rút số, các số may mắn và các vòng may mắn. Số của bạn thay cho các số mà máy chủ đã chơi; các lần trúng, bóng may mắn, thứ tự của chúng và khoản thắng là của máy chủ. Khi phát lại, hoặc khi một vòng được tiếp tục trên một thiết bị khác, trò chơi hiển thị chính các số của máy chủ, có thể khác với số của bạn; kết quả vẫn như nhau.',
 	'Malfunction voids all wins and plays. A consistent internet connection is required. In the event of a disconnection, reload the game to finish any uncompleted rounds. The expected return is calculated over many plays. The game display is not representative of any physical device and is for illustrative purposes only. Winnings are settled according to the amount received from the Remote Game Server and not from events within the web browser. TM and © 2026 Engine.':
 		'Sự cố kỹ thuật làm vô hiệu mọi khoản thắng và lượt chơi. Cần có kết nối internet ổn định. Nếu mất kết nối, hãy tải lại trò chơi để hoàn tất các vòng chưa hoàn thành. Tỷ lệ hoàn trả dự kiến được tính trên nhiều lượt chơi. Hình ảnh trò chơi không đại diện cho bất kỳ thiết bị vật lý nào và chỉ nhằm mục đích minh họa. Tiền thắng được thanh toán theo số tiền nhận từ Máy chủ Trò chơi Từ xa, không theo các sự kiện trong trình duyệt web. TM and © 2026 Engine.',
 	ABOUT: 'GIỚI THIỆU',
@@ -82,8 +82,10 @@ export default {
 	'A lucky ball adds a streak level and never breaks the chain.':
 		'Bóng may mắn thêm một cấp chuỗi và không bao giờ cắt đứt mạch.',
 	'PRESS TO START': 'NHẤN ĐỂ BẮT ĐẦU',
-	'Replay: the round is shown with its own numbers':
-		'Phát lại: vòng chơi hiển thị với chính các số của nó',
+	'Replay: the numbers can differ, the result is the same':
+		'Phát lại: các số có thể khác, kết quả vẫn như nhau',
+	'The numbers on the board can differ from the ones picked in the original round: the round does not keep them. The number of picks, the mode, the hits, their order, the lucky balls and the win are the same.':
+		'Các số trên bảng có thể khác với các số đã chọn ở vòng gốc: vòng chơi không lưu chúng. Số lượng số đã chọn, chế độ, các lần trúng, thứ tự của chúng, bóng may mắn và khoản thắng vẫn như nhau.',
 	'{level} plays {max} numbers': '{level} chơi {max} số',
 	'Pick {sizes} or {max} numbers': 'Chọn {sizes} hoặc {max} số',
 	'pick {count} more': 'chọn thêm {count}',

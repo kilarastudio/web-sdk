@@ -42,8 +42,8 @@ export default {
 	Autoplay: 'لعب تلقائي',
 	Turbo: 'توربو',
 	'Show the draw faster.': 'اعرض السحب بسرعة أكبر.',
-	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.":
-		'يحدد خادم اللعبة السحب وأرقام الحظ وجولات الحظ. تحل أرقامك محل الأرقام التي لعبها الخادم؛ أما الإصابات وكرات الحظ وترتيبها والفوز فيحددها الخادم. وتعرض إعادة العرض، أو الجولة المستأنفة بعد إعادة التحميل، أرقام الخادم نفسها، وقد تختلف عن أرقامك؛ والنتيجة واحدة.',
+	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed on another device, shows the server's own numbers, which can differ from yours; the result is the same.":
+		'يحدد خادم اللعبة السحب وأرقام الحظ وجولات الحظ. تحل أرقامك محل الأرقام التي لعبها الخادم؛ أما الإصابات وكرات الحظ وترتيبها والفوز فيحددها الخادم. وتعرض إعادة العرض، أو الجولة المستأنفة على جهاز آخر، أرقام الخادم نفسها، وقد تختلف عن أرقامك؛ والنتيجة واحدة.',
 	'Malfunction voids all wins and plays. A consistent internet connection is required. In the event of a disconnection, reload the game to finish any uncompleted rounds. The expected return is calculated over many plays. The game display is not representative of any physical device and is for illustrative purposes only. Winnings are settled according to the amount received from the Remote Game Server and not from events within the web browser. TM and © 2026 Engine.':
 		'يؤدي أي عطل إلى إلغاء جميع الأرباح وعمليات اللعب. يلزم اتصال مستقر بالإنترنت. في حال انقطاع الاتصال، أعد تحميل اللعبة لإكمال أي جولات غير مكتملة. يُحتسب العائد المتوقع على مدى عدد كبير من عمليات اللعب. لا تمثل واجهة اللعبة أي جهاز مادي، وهي لأغراض توضيحية فقط. تُسوّى الأرباح وفقًا للمبلغ المستلم من خادم اللعبة البعيد (Remote Game Server)، وليس وفقًا للأحداث داخل متصفح الويب. TM and © 2026 Engine.',
 	ABOUT: 'عن اللعبة',
@@ -80,7 +80,10 @@ export default {
 	'A lucky ball adds a streak level and never breaks the chain.':
 		'كرة الحظ تضيف مستوى تتابع ولا تكسر السلسلة أبدًا.',
 	'PRESS TO START': 'اضغط للبدء',
-	'Replay: the round is shown with its own numbers': 'إعادة عرض: تُعرض الجولة بأرقامها الخاصة',
+	'Replay: the numbers can differ, the result is the same':
+		'إعادة عرض: قد تختلف الأرقام، والنتيجة واحدة',
+	'The numbers on the board can differ from the ones picked in the original round: the round does not keep them. The number of picks, the mode, the hits, their order, the lucky balls and the win are the same.':
+		'قد تختلف الأرقام على اللوحة عن الأرقام المختارة في الجولة الأصلية، فالجولة لا تحفظها. أما عدد الأرقام المختارة والوضع والإصابات وترتيبها وكرات الحظ والفوز فهي نفسها.',
 	'{level} plays {max} numbers': '{level}: عدد الأرقام {max}',
 	'Pick {sizes} or {max} numbers': 'اختر {sizes} أو {max} من الأرقام',
 	'pick {count} more': 'المتبقي للاختيار: {count}',

@@ -44,8 +44,8 @@ export default {
 	Autoplay: 'オートプレイ',
 	Turbo: 'ターボ',
 	'Show the draw faster.': '抽選を速く表示します。',
-	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.":
-		'抽選、ラッキーナンバー、ラッキーラウンドはゲームサーバーが決定します。選んだ数字は、サーバーがプレイした数字の代わりに表示されます。ヒット、ラッキーボール、その順番、配当はサーバーのものです。リプレイや再読み込み後に再開されたラウンドでは、サーバー自身の数字が表示され、選んだ数字と異なる場合がありますが、結果は同じです。',
+	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed on another device, shows the server's own numbers, which can differ from yours; the result is the same.":
+		'抽選、ラッキーナンバー、ラッキーラウンドはゲームサーバーが決定します。選んだ数字は、サーバーがプレイした数字の代わりに表示されます。ヒット、ラッキーボール、その順番、配当はサーバーのものです。リプレイや別の端末で再開されたラウンドでは、サーバー自身の数字が表示され、選んだ数字と異なる場合がありますが、結果は同じです。',
 	'Malfunction voids all wins and plays. A consistent internet connection is required. In the event of a disconnection, reload the game to finish any uncompleted rounds. The expected return is calculated over many plays. The game display is not representative of any physical device and is for illustrative purposes only. Winnings are settled according to the amount received from the Remote Game Server and not from events within the web browser. TM and © 2026 Engine.':
 		'誤作動が発生した場合、すべての配当とプレイは無効になります。安定したインターネット接続が必要です。接続が切れた場合は、ゲームを再読み込みして未完了のラウンドを終了してください。期待還元率は多数のプレイに基づいて計算されます。ゲームの表示は実在の機器を表すものではなく、説明のみを目的としています。配当は、Webブラウザ内の事象ではなく、リモートゲームサーバーから受け取った金額に基づいて精算されます。TM and © 2026 Engine.',
 	ABOUT: 'ゲーム概要',
@@ -82,7 +82,10 @@ export default {
 	'A lucky ball adds a streak level and never breaks the chain.':
 		'ラッキーボールはストリークレベルを1上げ、連続ヒットを途切れさせません。',
 	'PRESS TO START': '押してスタート',
-	'Replay: the round is shown with its own numbers': 'リプレイ：ラウンド本来の数字で表示しています',
+	'Replay: the numbers can differ, the result is the same':
+		'リプレイ：数字は異なる場合がありますが、結果は同じです',
+	'The numbers on the board can differ from the ones picked in the original round: the round does not keep them. The number of picks, the mode, the hits, their order, the lucky balls and the win are the same.':
+		'盤面の数字は、元のラウンドで選んだ数字と異なる場合があります。ラウンドには保存されないためです。選んだ数字の個数、モード、ヒット、その順番、ラッキーボール、配当は同じです。',
 	'{level} plays {max} numbers': '{level}は{max}個の数字をプレイ',
 	'Pick {sizes} or {max} numbers': '{sizes}または{max}個の数字を選択',
 	'pick {count} more': 'あと{count}個選択',

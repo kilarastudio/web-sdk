@@ -43,8 +43,8 @@ export default {
 	Autoplay: 'Автоигра',
 	Turbo: 'Турбо',
 	'Show the draw faster.': 'Ускорьте показ розыгрыша.',
-	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.":
-		'Розыгрыш, счастливые числа и счастливые раунды определяет игровой сервер. Ваши числа занимают место чисел, сыгранных сервером; попадания, счастливые шары, их порядок и выигрыш определяет сервер. Повтор или раунд, возобновлённый после перезагрузки, показывает собственные числа сервера, которые могут отличаться от ваших; результат тот же.',
+	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed on another device, shows the server's own numbers, which can differ from yours; the result is the same.":
+		'Розыгрыш, счастливые числа и счастливые раунды определяет игровой сервер. Ваши числа занимают место чисел, сыгранных сервером; попадания, счастливые шары, их порядок и выигрыш определяет сервер. Повтор или раунд, возобновлённый на другом устройстве, показывает собственные числа сервера, которые могут отличаться от ваших; результат тот же.',
 	'Malfunction voids all wins and plays. A consistent internet connection is required. In the event of a disconnection, reload the game to finish any uncompleted rounds. The expected return is calculated over many plays. The game display is not representative of any physical device and is for illustrative purposes only. Winnings are settled according to the amount received from the Remote Game Server and not from events within the web browser. TM and © 2026 Engine.':
 		'Сбой в работе аннулирует все выигрыши и игры. Требуется стабильное подключение к интернету. При разрыве соединения перезагрузите игру, чтобы завершить незавершённые раунды. Ожидаемый возврат рассчитывается на большом количестве игр. Изображение игры не соответствует какому-либо физическому устройству и служит исключительно для иллюстрации. Выигрыши начисляются в соответствии с суммой, полученной от удалённого игрового сервера (Remote Game Server), а не по событиям в веб-браузере. TM and © 2026 Engine.',
 	ABOUT: 'ОБ ИГРЕ',
@@ -82,8 +82,10 @@ export default {
 	'A lucky ball adds a streak level and never breaks the chain.':
 		'Счастливый шар добавляет уровень серии и никогда не обрывает цепочку.',
 	'PRESS TO START': 'НАЖМИТЕ, ЧТОБЫ НАЧАТЬ',
-	'Replay: the round is shown with its own numbers':
-		'Повтор: раунд показан с его собственными числами',
+	'Replay: the numbers can differ, the result is the same':
+		'Повтор: числа могут отличаться, результат тот же',
+	'The numbers on the board can differ from the ones picked in the original round: the round does not keep them. The number of picks, the mode, the hits, their order, the lucky balls and the win are the same.':
+		'Числа на поле могут отличаться от выбранных в исходном раунде: раунд их не сохраняет. Количество выбранных чисел, режим, попадания, их порядок, счастливые шары и выигрыш те же.',
 	'{level} plays {max} numbers': '{level}: чисел в игре — {max}',
 	'Pick {sizes} or {max} numbers': 'Выберите {sizes} или {max} чисел',
 	'pick {count} more': 'выберите ещё: {count}',

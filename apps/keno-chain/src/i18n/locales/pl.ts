@@ -42,8 +42,8 @@ export default {
 	Autoplay: 'Autogra',
 	Turbo: 'Turbo',
 	'Show the draw faster.': 'Pokazuj losowanie szybciej.',
-	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.":
-		'Serwer gry decyduje o losowaniu, szczęśliwych liczbach i szczęśliwych rundach. Twoje liczby zastępują liczby, którymi zagrał serwer; trafienia, szczęśliwe kule, ich kolejność i wygrana pochodzą z serwera. Powtórka lub runda wznowiona po odświeżeniu pokazuje własne liczby serwera, które mogą różnić się od twoich; wynik jest ten sam.',
+	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed on another device, shows the server's own numbers, which can differ from yours; the result is the same.":
+		'Serwer gry decyduje o losowaniu, szczęśliwych liczbach i szczęśliwych rundach. Twoje liczby zastępują liczby, którymi zagrał serwer; trafienia, szczęśliwe kule, ich kolejność i wygrana pochodzą z serwera. Powtórka lub runda wznowiona na innym urządzeniu pokazuje własne liczby serwera, które mogą różnić się od twoich; wynik jest ten sam.',
 	'Malfunction voids all wins and plays. A consistent internet connection is required. In the event of a disconnection, reload the game to finish any uncompleted rounds. The expected return is calculated over many plays. The game display is not representative of any physical device and is for illustrative purposes only. Winnings are settled according to the amount received from the Remote Game Server and not from events within the web browser. TM and © 2026 Engine.':
 		'Nieprawidłowe działanie unieważnia wszystkie wygrane i rozgrywki. Wymagane jest stabilne połączenie z internetem. W razie utraty połączenia odśwież grę, aby dokończyć niezakończone rundy. Oczekiwany zwrot jest obliczany na podstawie wielu rozgrywek. Wygląd gry nie odzwierciedla żadnego fizycznego urządzenia i służy wyłącznie celom poglądowym. Wygrane są rozliczane według kwoty otrzymanej z Remote Game Server, a nie na podstawie zdarzeń w przeglądarce internetowej. TM and © 2026 Engine.',
 	ABOUT: 'O GRZE',
@@ -81,8 +81,10 @@ export default {
 	'A lucky ball adds a streak level and never breaks the chain.':
 		'Szczęśliwa kula dodaje poziom serii i nigdy nie przerywa łańcucha.',
 	'PRESS TO START': 'NACIŚNIJ, ABY ROZPOCZĄĆ',
-	'Replay: the round is shown with its own numbers':
-		'Powtórka: runda jest pokazana z własnymi liczbami',
+	'Replay: the numbers can differ, the result is the same':
+		'Powtórka: liczby mogą się różnić, wynik jest ten sam',
+	'The numbers on the board can differ from the ones picked in the original round: the round does not keep them. The number of picks, the mode, the hits, their order, the lucky balls and the win are the same.':
+		'Liczby na planszy mogą różnić się od wybranych w pierwotnej rundzie: runda ich nie zapisuje. Liczba wybranych liczb, tryb, trafienia, ich kolejność, szczęśliwe kule i wygrana są takie same.',
 	'{level} plays {max} numbers': '{level} gra na {max} liczbach',
 	'Pick {sizes} or {max} numbers': 'Graj na {sizes} lub {max} liczbach',
 	'pick {count} more': 'wybierz jeszcze {count}',

@@ -42,8 +42,8 @@ export default {
 	Autoplay: 'Oto oyun',
 	Turbo: 'Turbo',
 	'Show the draw faster.': 'Çekilişi hızlandırın.',
-	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.":
-		'Çekilişe, şanslı sayılara ve şanslı turlara oyun sunucusu karar verir. Sizin sayılarınız sunucunun oynadığı sayıların yerini alır; isabetler, şanslı toplar, bunların sırası ve kazanç sunucuya aittir. Bir tekrar veya yeniden yüklemeden sonra devam eden bir tur, sunucunun kendi sayılarını gösterir; bunlar sizinkilerden farklı olabilir, ancak sonuç aynıdır.',
+	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed on another device, shows the server's own numbers, which can differ from yours; the result is the same.":
+		'Çekilişe, şanslı sayılara ve şanslı turlara oyun sunucusu karar verir. Sizin sayılarınız sunucunun oynadığı sayıların yerini alır; isabetler, şanslı toplar, bunların sırası ve kazanç sunucuya aittir. Bir tekrar veya başka bir cihazda devam eden bir tur, sunucunun kendi sayılarını gösterir; bunlar sizinkilerden farklı olabilir, ancak sonuç aynıdır.',
 	'Malfunction voids all wins and plays. A consistent internet connection is required. In the event of a disconnection, reload the game to finish any uncompleted rounds. The expected return is calculated over many plays. The game display is not representative of any physical device and is for illustrative purposes only. Winnings are settled according to the amount received from the Remote Game Server and not from events within the web browser. TM and © 2026 Engine.':
 		'Bir arıza tüm kazançları ve oyunları geçersiz kılar. Kesintisiz bir internet bağlantısı gereklidir. Bağlantı kesilirse tamamlanmamış turları bitirmek için oyunu yeniden yükleyin. Beklenen geri dönüş çok sayıda oyun üzerinden hesaplanır. Oyun görüntüsü herhangi bir fiziksel cihazı temsil etmez ve yalnızca açıklama amaçlıdır. Kazançlar, web tarayıcısındaki olaylara göre değil, uzak oyun sunucusundan alınan tutara göre ödenir. TM and © 2026 Engine.',
 	ABOUT: 'HAKKINDA',
@@ -81,7 +81,10 @@ export default {
 	'A lucky ball adds a streak level and never breaks the chain.':
 		'Şanslı top bir seri seviyesi ekler ve diziyi asla bozmaz.',
 	'PRESS TO START': 'BAŞLAMAK İÇİN BASIN',
-	'Replay: the round is shown with its own numbers': 'Tekrar: tur kendi sayılarıyla gösterilir',
+	'Replay: the numbers can differ, the result is the same':
+		'Tekrar: sayılar farklı olabilir, sonuç aynıdır',
+	'The numbers on the board can differ from the ones picked in the original round: the round does not keep them. The number of picks, the mode, the hits, their order, the lucky balls and the win are the same.':
+		'Tahtadaki sayılar, asıl turda seçilen sayılardan farklı olabilir: tur bunları saklamaz. Seçilen sayı adedi, mod, isabetler, sıraları, şanslı toplar ve kazanç aynıdır.',
 	'{level} plays {max} numbers': '{level} {max} sayı oynar',
 	'Pick {sizes} or {max} numbers': '{sizes} veya {max} sayı seçin',
 	'pick {count} more': '{count} tane daha seçin',

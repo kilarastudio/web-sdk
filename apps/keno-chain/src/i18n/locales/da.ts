@@ -42,8 +42,8 @@ export default {
 	Autoplay: 'Autospil',
 	Turbo: 'Turbo',
 	'Show the draw faster.': 'Vis trækningen hurtigere.',
-	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.":
-		'Spilserveren afgør trækningen, lykketallene og lykkerunderne. Dine tal træder i stedet for de tal, serveren spillede; træfferne, lykkekuglerne, deres rækkefølge og gevinsten er serverens. En genspilning eller en runde, der genoptages efter genindlæsning, viser serverens egne tal, som kan afvige fra dine; resultatet er det samme.',
+	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed on another device, shows the server's own numbers, which can differ from yours; the result is the same.":
+		'Spilserveren afgør trækningen, lykketallene og lykkerunderne. Dine tal træder i stedet for de tal, serveren spillede; træfferne, lykkekuglerne, deres rækkefølge og gevinsten er serverens. En genspilning eller en runde, der genoptages på en anden enhed, viser serverens egne tal, som kan afvige fra dine; resultatet er det samme.',
 	'Malfunction voids all wins and plays. A consistent internet connection is required. In the event of a disconnection, reload the game to finish any uncompleted rounds. The expected return is calculated over many plays. The game display is not representative of any physical device and is for illustrative purposes only. Winnings are settled according to the amount received from the Remote Game Server and not from events within the web browser. TM and © 2026 Engine.':
 		'Fejlfunktion annullerer alle gevinster og spil. En stabil internetforbindelse er påkrævet. Hvis forbindelsen afbrydes, skal du genindlæse spillet for at afslutte ufærdige runder. Den forventede tilbagebetaling beregnes over mange spil. Spillets visning repræsenterer ikke nogen fysisk enhed og er kun til illustration. Gevinster afregnes efter det beløb, der modtages fra Remote Game Server, og ikke efter hændelser i webbrowseren. TM and © 2026 Engine.',
 	ABOUT: 'OM SPILLET',
@@ -81,7 +81,10 @@ export default {
 	'A lucky ball adds a streak level and never breaks the chain.':
 		'En lykkekugle giver et stimeniveau mere og bryder aldrig kæden.',
 	'PRESS TO START': 'TRYK FOR AT STARTE',
-	'Replay: the round is shown with its own numbers': 'Genspilning: runden vises med sine egne tal',
+	'Replay: the numbers can differ, the result is the same':
+		'Genspilning: tallene kan afvige, resultatet er det samme',
+	'The numbers on the board can differ from the ones picked in the original round: the round does not keep them. The number of picks, the mode, the hits, their order, the lucky balls and the win are the same.':
+		'Tallene på pladen kan afvige fra dem, der blev valgt i den oprindelige runde: runden gemmer dem ikke. Antallet af valgte tal, tilstanden, træfferne, deres rækkefølge, lykkekuglerne og gevinsten er de samme.',
 	'{level} plays {max} numbers': '{level} spiller {max} tal',
 	'Pick {sizes} or {max} numbers': 'Vælg {sizes} eller {max} tal',
 	'pick {count} more': 'vælg {count} til',

@@ -40,8 +40,8 @@ export default {
 	Autoplay: '自动游戏',
 	Turbo: '极速',
 	'Show the draw faster.': '加快开奖显示。',
-	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.":
-		'开奖、幸运号码和幸运局均由游戏服务器决定。您的已选号码会代替服务器所玩的号码；命中、幸运球、其顺序以及赢奖均以服务器为准。回放或重新加载后恢复的一局会显示服务器自己的号码，可能与您的已选号码不同；结果相同。',
+	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed on another device, shows the server's own numbers, which can differ from yours; the result is the same.":
+		'开奖、幸运号码和幸运局均由游戏服务器决定。您的已选号码会代替服务器所玩的号码；命中、幸运球、其顺序以及赢奖均以服务器为准。回放或在其他设备上恢复的一局会显示服务器自己的号码，可能与您的已选号码不同；结果相同。',
 	'Malfunction voids all wins and plays. A consistent internet connection is required. In the event of a disconnection, reload the game to finish any uncompleted rounds. The expected return is calculated over many plays. The game display is not representative of any physical device and is for illustrative purposes only. Winnings are settled according to the amount received from the Remote Game Server and not from events within the web browser. TM and © 2026 Engine.':
 		'故障将使所有赢奖和游戏无效。需要稳定的互联网连接。如连接中断，请重新加载游戏以完成所有未完成的局。预期返还率基于大量游戏计算。游戏画面不代表任何实体设备，仅供说明之用。赢奖根据从远程游戏服务器收到的金额结算，而非根据网页浏览器内的事件。TM and © 2026 Engine.',
 	ABOUT: '关于游戏',
@@ -78,7 +78,9 @@ export default {
 	'A lucky ball adds a streak level and never breaks the chain.':
 		'幸运球使连击等级提升一级，且永不中断连中。',
 	'PRESS TO START': '点击开始',
-	'Replay: the round is shown with its own numbers': '回放：本局以其自身号码显示',
+	'Replay: the numbers can differ, the result is the same': '回放：号码可能不同，结果相同',
+	'The numbers on the board can differ from the ones picked in the original round: the round does not keep them. The number of picks, the mode, the hits, their order, the lucky balls and the win are the same.':
+		'盘面上的号码可能与原局所选号码不同：该局不会保存这些号码。所选号码的数量、模式、命中、其顺序、幸运球以及赢奖均相同。',
 	'{level} plays {max} numbers': '{level}玩{max}个号码',
 	'Pick {sizes} or {max} numbers': '选择{sizes}或{max}个号码',
 	'pick {count} more': '再选{count}个',

@@ -43,8 +43,8 @@ export default {
 	Autoplay: 'Main Otomatis',
 	Turbo: 'Turbo',
 	'Show the draw faster.': 'Tampilkan undian lebih cepat.',
-	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.":
-		'Server game yang menentukan undian, angka hoki, dan ronde hoki. Angka pilihan Anda menggantikan angka yang dimainkan server; angka yang kena, bola hoki, urutannya, dan kemenangannya tetap dari server. Replay, atau ronde yang dilanjutkan setelah muat ulang, menampilkan angka milik server, yang bisa berbeda dari angka Anda; hasilnya tetap sama.',
+	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed on another device, shows the server's own numbers, which can differ from yours; the result is the same.":
+		'Server game yang menentukan undian, angka hoki, dan ronde hoki. Angka pilihan Anda menggantikan angka yang dimainkan server; angka yang kena, bola hoki, urutannya, dan kemenangannya tetap dari server. Replay, atau ronde yang dilanjutkan di perangkat lain, menampilkan angka milik server, yang bisa berbeda dari angka Anda; hasilnya tetap sama.',
 	'Malfunction voids all wins and plays. A consistent internet connection is required. In the event of a disconnection, reload the game to finish any uncompleted rounds. The expected return is calculated over many plays. The game display is not representative of any physical device and is for illustrative purposes only. Winnings are settled according to the amount received from the Remote Game Server and not from events within the web browser. TM and © 2026 Engine.':
 		'Malfungsi membatalkan semua kemenangan dan permainan. Diperlukan koneksi internet yang stabil. Jika koneksi terputus, muat ulang game untuk menyelesaikan ronde yang belum selesai. Pengembalian yang diharapkan dihitung dari banyak permainan. Tampilan game tidak mewakili perangkat fisik apa pun dan hanya untuk tujuan ilustrasi. Kemenangan dibayarkan sesuai jumlah yang diterima dari server game jarak jauh (Remote Game Server), bukan dari kejadian di dalam browser web. TM dan © 2026 Engine.',
 	ABOUT: 'TENTANG GAME',
@@ -82,8 +82,10 @@ export default {
 	'A lucky ball adds a streak level and never breaks the chain.':
 		'Bola hoki menambah satu level streak dan tidak pernah memutus rentetan.',
 	'PRESS TO START': 'TEKAN UNTUK MULAI',
-	'Replay: the round is shown with its own numbers':
-		'Replay: ronde ditampilkan dengan angkanya sendiri',
+	'Replay: the numbers can differ, the result is the same':
+		'Replay: angkanya bisa berbeda, hasilnya sama',
+	'The numbers on the board can differ from the ones picked in the original round: the round does not keep them. The number of picks, the mode, the hits, their order, the lucky balls and the win are the same.':
+		'Angka di papan bisa berbeda dari angka yang dipilih pada ronde aslinya: ronde tidak menyimpannya. Jumlah angka pilihan, mode, angka yang kena, urutannya, bola hoki, dan kemenangannya tetap sama.',
 	'{level} plays {max} numbers': '{level} memainkan {max} angka',
 	'Pick {sizes} or {max} numbers': 'Pilih {sizes} atau {max} angka',
 	'pick {count} more': 'pilih {count} lagi',

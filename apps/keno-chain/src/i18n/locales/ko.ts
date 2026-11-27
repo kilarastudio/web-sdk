@@ -43,8 +43,8 @@ export default {
 	Autoplay: '자동 플레이',
 	Turbo: '터보',
 	'Show the draw faster.': '추첨을 더 빠르게 보여 줍니다.',
-	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed after a reload, shows the server's own numbers, which can differ from yours; the result is the same.":
-		'추첨, 럭키 넘버, 럭키 라운드는 게임 서버가 결정합니다. 내 번호는 서버가 플레이한 번호를 대신하며, 적중, 럭키 볼, 그 순서와 당첨금은 서버의 결과입니다. 리플레이나 새로고침 후 이어지는 라운드에서는 서버의 번호가 표시되며 내 번호와 다를 수 있지만, 결과는 같습니다.',
+	"The game server decides the draw, the lucky numbers and the lucky rounds. Your numbers take the place of the numbers the server played; the hits, the lucky balls, their order and the win are the server's. A replay, or a round resumed on another device, shows the server's own numbers, which can differ from yours; the result is the same.":
+		'추첨, 럭키 넘버, 럭키 라운드는 게임 서버가 결정합니다. 내 번호는 서버가 플레이한 번호를 대신하며, 적중, 럭키 볼, 그 순서와 당첨금은 서버의 결과입니다. 리플레이나 다른 기기에서 이어지는 라운드에서는 서버의 번호가 표시되며 내 번호와 다를 수 있지만, 결과는 같습니다.',
 	'Malfunction voids all wins and plays. A consistent internet connection is required. In the event of a disconnection, reload the game to finish any uncompleted rounds. The expected return is calculated over many plays. The game display is not representative of any physical device and is for illustrative purposes only. Winnings are settled according to the amount received from the Remote Game Server and not from events within the web browser. TM and © 2026 Engine.':
 		'오작동 시 모든 당첨과 플레이는 무효가 됩니다. 안정적인 인터넷 연결이 필요합니다. 연결이 끊긴 경우 게임을 새로고침하여 완료되지 않은 라운드를 마치세요. 기대 환수율은 많은 플레이를 기준으로 계산됩니다. 게임 화면은 실제 기기를 나타내지 않으며 설명 목적으로만 제공됩니다. 당첨금은 웹 브라우저 내의 이벤트가 아니라 원격 게임 서버에서 받은 금액에 따라 정산됩니다. TM and © 2026 Engine.',
 	ABOUT: '게임 소개',
@@ -82,7 +82,10 @@ export default {
 	'A lucky ball adds a streak level and never breaks the chain.':
 		'럭키 볼은 스트릭 레벨을 1 올리고 연속 적중을 끊지 않습니다.',
 	'PRESS TO START': '눌러서 시작',
-	'Replay: the round is shown with its own numbers': '리플레이: 라운드 고유의 번호로 표시됩니다',
+	'Replay: the numbers can differ, the result is the same':
+		'리플레이: 번호는 다를 수 있지만 결과는 같습니다',
+	'The numbers on the board can differ from the ones picked in the original round: the round does not keep them. The number of picks, the mode, the hits, their order, the lucky balls and the win are the same.':
+		'보드의 번호는 원래 라운드에서 고른 번호와 다를 수 있습니다. 라운드에 저장되지 않기 때문입니다. 고른 번호의 개수, 모드, 적중, 그 순서, 럭키 볼과 당첨금은 같습니다.',
 	'{level} plays {max} numbers': '{level} 모드는 번호 {max}개로 플레이',
 	'Pick {sizes} or {max} numbers': '번호 {sizes} 또는 {max}개 선택',
 	'pick {count} more': '{count}개 더 선택',

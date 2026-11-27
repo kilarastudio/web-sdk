@@ -37,7 +37,7 @@
 		const max = sizes[sizes.length - 1];
 		const missing = context.stateGameDerived.missing();
 		const name = LEVEL_LABELS[level];
-		if (replay) return t('Replay: the round is shown with its own numbers');
+		if (replay) return t('Replay: the numbers can differ, the result is the same');
 		// Calm, Bold and Wild play the same sizes, with gaps: the line lists them, and with some
 		// numbers picked it says how many more reach the next size (7 picked: 1 more)
 		const plays =

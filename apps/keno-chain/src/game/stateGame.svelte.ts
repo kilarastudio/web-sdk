@@ -60,7 +60,8 @@ export const stateGame = $state({
 	// win table, which is what the chip writes; ratio: against what the round cost, which gives
 	// the chip its colour (a bonus round that wins 400× the bet for a cost of 100× is 4)
 	recent: [] as { id: number; times: number; ratio: number }[],
-	// the round about to play was resumed after a reload: it shows the book's own board
+	// the round about to play was resumed after a reload and this device did not keep its numbers
+	// (roundPicks): it shows the book's own board
 	resuming: false,
 	// the player asked to see the rest of the draw at once (stop button)
 	skip: false,
