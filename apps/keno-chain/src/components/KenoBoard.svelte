@@ -146,18 +146,34 @@
 		);
 	};
 
-	// While the draw runs: the hits of the run in play, joined. Once it ends: the chain that set
-	// the multiplier, in the multiplier's colour.
+	// Every pair of hits that was joined in this round keeps its link. The run in play is bright; a
+	// link that a miss broke stays where it was, dimmed (user, 2026-11-27: a broken chain does not
+	// vanish). Once the draw ends, the chain that set the multiplier is drawn again in the
+	// multiplier's colour.
 	const links = $derived.by(() => {
 		if (!round) return [];
 		const level = parseMode(round.mode)!.level;
 		const { chain, best } = chains(level, round.drawn, round.pattern);
-		const shown = round.done ? best : chain;
-		return shown.slice(1).map((n, i) => ({
-			id: `${shown[i]}-${n}${round.done ? '-best' : ''}`,
-			path: route(shown[i], n),
-			best: round.done,
-		}));
+		const pairs = (run: number[]) => new Set(run.slice(1).map((n, i) => `${run[i]}-${n}`));
+		const live = pairs(chain);
+		const gold = round.done ? pairs(best) : new Set<string>();
+
+		const joined: [number, number][] = [];
+		round.drawn.forEach((n, i) => {
+			const before = chains(level, round.drawn.slice(0, i), round.pattern).chain;
+			const now = chains(level, round.drawn.slice(0, i + 1), round.pattern).chain;
+			if (now.length > before.length && now.length > 1) joined.push([now[now.length - 2], n]);
+		});
+
+		return joined.map(([a, b]) => {
+			const key = `${a}-${b}`;
+			return {
+				id: gold.has(key) ? `${key}-best` : key,
+				path: route(a, b),
+				best: gold.has(key),
+				broken: !gold.has(key) && !live.has(key),
+			};
+		});
 	});
 
 	// the token of a drawn number: a flat regular octagon
@@ -219,7 +235,7 @@
 		aria-hidden="true"
 	>
 		{#each links as link (link.id)}
-			<path class:best={link.best} pathLength="1" d={link.path} />
+			<path class:best={link.best} class:broken={link.broken} pathLength="1" d={link.path} />
 		{/each}
 	</svg>
 </div>
@@ -452,6 +468,12 @@
 			stroke-width: 2px;
 			stroke-dasharray: 1;
 			animation: draw 0.2s ease-out both;
+			transition: opacity 0.25s ease-out;
+		}
+
+		/* a miss broke it: it stays, quieter than the run in play */
+		path.broken {
+			opacity: 0.5;
 		}
 
 		path.best {

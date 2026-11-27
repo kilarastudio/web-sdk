@@ -436,6 +436,7 @@
 		--miss: #ff5d62;
 		--gold: #ffc93c;
 		--gold-token: #ffcf45;
+		--gold-hover: #ffd96b;
 		--gold-edge: #c2850a;
 		--gold-ink: #2e2100;
 		--gold-dim: #4a3a0c;

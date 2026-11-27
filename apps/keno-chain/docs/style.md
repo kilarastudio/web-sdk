@@ -31,6 +31,9 @@ studio style differ, the market wins (user, 2026-11-26).
   turbo and the menu button (the menu opens over it). The game is one surface; the last six
   results stand in its top right corner. The controls are drawn at 0.72 of the game's unit (the user found
   them too large beside the board, three times), so the column is narrow and the board leads.
+- The bonus button is a solid gold block with a hard edge under it, dark ink: with Play, the only
+  coloured field in the controls (user, 2026-11-27: it must stand out). Armed, it is held down
+  (its edge above it) and shows the mode's name, its cost and a cross.
 - The amount field always shows the base amount, also while a bonus mode is armed (user,
   2026-11-27, as Keno Xtreme does): the mode's times stand in gold beside the word (BET 10×), and
   what a round costs is on the armed bonus button and the play bar.
@@ -89,8 +92,10 @@ studio's order for every game:
   outlined until one starts.
 - **Draw row**: one square per ball; a hit green, a lucky ball gold, a miss small and grey; hits
   that follow each other are joined.
-- **Chain links**: lines between the hits of the run in play, in the gaps between tiles, never
-  across a number. When the round ends, the chain that set the multiplier is drawn in gold.
+- **Chain links**: lines between the hits that were joined, in the gaps between tiles, never
+  across a number. The run in play is bright green; a link that a miss broke stays in its place,
+  dimmed, so the round's broken chains remain readable. When the round ends, the chain that set
+  the multiplier is drawn in gold.
 - **Pay row**: the cell of the hits so far is lit green, gold when the round wins its cost or more.
 - **Result**: a dark card in the middle of the board, only when the round wins: "N OF M HIT ·
   STREAK ×K" and the amount. The amount shows whole at once, no count-up (user,

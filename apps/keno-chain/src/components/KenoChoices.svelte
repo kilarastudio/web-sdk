@@ -10,8 +10,9 @@
 	// Two choices side by side, as players of Stake's Keno know them. Risk: a select with the
 	// volatility levels of the 1× game (Calm, Bold, Wild). The bonus button: Chain and Chain Max are
 	// modes that cost more than the bet, so they live in the shell's bonus scene, which lists each
-	// with its cost, return and top prize and arms it through a confirmation. While one is armed the
-	// button is filled, names it with its cost, and a press switches it off.
+	// with its cost, return and top prize and arms it through a confirmation. The button is a gold
+	// block; while a mode is armed it is held down, names it with its cost, and a press switches it
+	// off.
 	type Props = { disabled: boolean };
 
 	const props: Props = $props();
@@ -173,11 +174,13 @@
 		gap: 0.5em;
 		min-width: 0;
 		height: 4.4em;
-		padding: 0 1em;
+		/* a solid gold block with a hard edge under it, like the play bar: the one coloured field in
+		   the controls besides Play (user, 2026-11-27: the bonus button stands out) */
+		padding: 0 1em 0.4em;
 		border: none;
-		background-color: var(--field);
-		box-shadow: inset 0 0 0 2px var(--gold-dim);
-		color: var(--gold);
+		background-color: var(--gold);
+		box-shadow: inset 0 -0.4em 0 var(--gold-edge);
+		color: var(--gold-ink);
 		font-family: inherit;
 		font-size: 1em;
 		line-height: 1.15;
@@ -189,8 +192,8 @@
 			opacity 0.15s;
 
 		.mode {
-			font-size: calc(1.5em * var(--ctl, 1));
-			font-weight: 600;
+			font-size: calc(1.6em * var(--ctl, 1));
+			font-weight: 700;
 		}
 
 		/* armed: laid out like the risk field beside it, name over value on the left, the cross
@@ -234,7 +237,7 @@
 
 		@media (hover: hover) {
 			&:not(:disabled):not(.armed):hover {
-				background-color: var(--field-hover);
+				background-color: var(--gold-hover);
 			}
 		}
 
@@ -254,10 +257,9 @@
 
 		&.armed {
 			justify-content: space-between;
-			padding: 0 1.2em;
-			background-color: var(--gold);
-			box-shadow: none;
-			color: var(--gold-ink);
+			/* armed: the block is held down, its edge now above it */
+			padding: 0.3em 1.2em 0;
+			box-shadow: inset 0 0.3em 0 var(--gold-edge);
 		}
 	}
 </style>
