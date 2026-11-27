@@ -123,7 +123,10 @@
 		font-weight: 600;
 		line-height: calc(1.9em / 1.3);
 		font-variant-numeric: tabular-nums;
-		transition: opacity 0.2s;
+		transition:
+			opacity 0.2s,
+			background-color 0.15s,
+			color 0.15s;
 
 		/* a step this mode cannot reach */
 		&.out {
@@ -143,10 +146,12 @@
 		}
 
 		&.bump {
-			animation: step-up 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+			animation: step-up 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 		}
 	}
 
+	/* shorter than the draw's beat (150 ms to the next ball, by when this has all but ended): a
+	   chain of hits never cuts a step that is still moving */
 	@keyframes step-up {
 		from {
 			transform: translateY(-4px);
@@ -165,7 +170,7 @@
 
 		&.up {
 			color: var(--gold);
-			animation: step-up 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+			animation: step-up 0.2s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 		}
 	}
 

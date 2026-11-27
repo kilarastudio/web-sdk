@@ -25,13 +25,16 @@ import type { BookEventContext, BookEvent, BookEventOfType } from './typesBookEv
 // its sound and the meter, not by a pause. The stop button shows the rest at once.
 const DRAW_INTERVAL = 150;
 const DRAW_INTERVAL_TURBO = 40;
-const HOLD_AFTER_DRAW = 120;
+// the last ball lands (its token takes 280 ms) before the result covers the board; the card fades
+// in, so it is seen about two beats of the draw after the last ball
+const HOLD_AFTER_DRAW = 240;
+const HOLD_AFTER_DRAW_TURBO = 120;
 const KILAU_MARK = 180;
 const KILAU_MARK_TURBO = 90;
-// a lucky round marks its 3 numbers one after another and gives them longer before the first
-// ball, so the round reads as a different one
-const KILAU_ROUND_STAGGER = 120;
-const KILAU_ROUND_MARK = 900;
+// A lucky round marks its 3 numbers one after another at the draw's own beat, and the first ball
+// follows the last mark as it follows the single mark of an ordinary round: marks and balls are
+// one run. The long rest that used to stand between the third mark and the first ball (660 ms)
+// made the first ball read as late, a stutter (user, 2026-11-27).
 // the last ball, when one more hit would win ten times the round's cost or more: a held beat
 const LAST_BALL_WAIT = 520;
 const LAST_BALL_STAKES = 10;
@@ -105,19 +108,19 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 			done: false,
 		};
 		// the lucky numbers are marked on the board before the first ball: at once in an ordinary
-		// round; in a lucky round one by one, and the first ball waits longer (KILAU_ROUND_MARK
-		// from the first mark)
+		// round; in a lucky round one by one, a beat apart
 		const marks = _.sortBy(shown.kilau);
 		if (stateGame.round.kilauRound && !turbo()) {
 			for (const [i, n] of marks.entries()) {
-				if (i > 0) await pause(KILAU_ROUND_STAGGER);
+				if (i > 0) await pause(DRAW_INTERVAL);
 				stateGame.round!.kilau.push(n);
+				if (!stateGame.skip) sound.mark(i);
 			}
-			await pause(KILAU_ROUND_MARK - KILAU_ROUND_STAGGER * (marks.length - 1));
 		} else {
 			stateGame.round.kilau.push(...marks);
-			await pause(turbo() ? KILAU_MARK_TURBO : KILAU_MARK);
+			if (marks.length && !stateGame.skip) sound.mark(1);
 		}
+		await pause(turbo() ? KILAU_MARK_TURBO : KILAU_MARK);
 
 		for (const [i, n] of shown.numbers.entries()) {
 			const round = stateGame.round!;
@@ -126,25 +129,31 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 				const level = Math.max(round.bestRun, round.run + 1) + round.kilauHits;
 				if (payTable[round.hits + 1] * ladderMultiplier(level) >= LAST_BALL_STAKES * cost) {
 					round.waiting = true;
+					// the held beat is heard too: it rises until the ball lands
+					const release = stateGame.skip ? () => {} : sound.suspense(LAST_BALL_WAIT / 1000);
 					await pause(LAST_BALL_WAIT);
+					release();
 					round.waiting = false;
 				}
 			}
 
+			const before = ladderMultiplier(round.best);
 			round.drawn.push(n);
 			round.pattern.push(ball);
 			Object.assign(round, steps[i]);
 			if (!stateGame.skip) {
-				if (ball === HIT) sound.hit(round.current);
-				else if (ball === KILAU) sound.lucky();
-				else sound.miss();
+				// a hit's note follows the meter's level, so a chain climbs; it rings fuller when
+				// the hit raised the multiplier
+				if (ball === HIT) sound.hit(round.current, ladderMultiplier(round.best) > before, turbo());
+				else if (ball === KILAU) sound.lucky(turbo());
+				else sound.miss(turbo());
 			}
 
 			if (i === shown.numbers.length - 1) break;
 			await pause(turbo() ? DRAW_INTERVAL_TURBO : DRAW_INTERVAL);
 		}
 		stateGame.round.done = true;
-		await pause(HOLD_AFTER_DRAW);
+		await pause(turbo() ? HOLD_AFTER_DRAW_TURBO : HOLD_AFTER_DRAW);
 	},
 	finalWin: async (bookEvent: BookEventOfType<'finalWin'>) => {
 		stateBet.winBookEventAmount = bookEvent.amount;

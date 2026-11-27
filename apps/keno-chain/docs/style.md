@@ -55,8 +55,29 @@ studio style differ, the market wins (user, 2026-11-26).
 - Everything is sized in one unit, the largest at which the screen fits without scrolling. On a
   long phone the tiles grow a little taller and the room left is shared above and under the game.
   Checked at 390×844, 360×640, 375×667, 768×1024, 1280×800, 844×390 and the 400×225 mini player.
-- Sounds are short synth tones made in the browser (`src/game/sound.ts`), no files: press, miss, a
-  hit whose pitch climbs with the meter, lucky ball, win. They follow the sound settings.
+- **Sound** (`src/game/sound.ts`; designed 2026-11-27, the user asked for sounds that fit the
+  animations and reward the player; not yet heard and approved by them). No files: one small
+  instrument played by the browser's synth, so each sound starts on the frame of its animation.
+  They follow the sound settings.
+  - One key (C major pentatonic): whatever a round plays is in tune with itself. Two voices: a
+    mallet (wooden bar, warm) for the player's numbers, a bell (metal bar, bright) for gold.
+  - Picking a number plays the next note up, freeing one the note it had; Random Pick is a quick
+    run up; a press that did nothing is two low notes down; buttons are a dry click.
+  - A round starts with a low knock and a breath of air while the old tokens fade. A lucky mark
+    is one quiet bell; a lucky round's three marks climb the chord on the beat.
+  - A hit plays the note of the meter's level, so a chain climbs the scale and rings brighter
+    with each hit; a hit that raises the multiplier adds weight and a bell a fifth above; a
+    faint high note goes with the light crossing the token. A miss is a soft low thud (with a
+    middle C in it, for phone speakers). A lucky ball is three bells up the chord.
+  - The last ball's held beat rises (tone and air) for its 520 ms and stops as the ball lands.
+  - A win finishes the phrase as the card comes in: 4 notes from the round's cost, 6 and a held
+    chord from 3×, 7 with a low root, the full chord and an answer from 10×, and the figure
+    again an octave up for the mode's largest win. Below the cost: silence, a loss is not
+    celebrated.
+  - An echo one beat long (150 ms) and a short room hold the notes together; a limiter keeps a
+    fast draw from clipping. Turbo plays shorter, quieter notes.
+  - Checked by rendering scenes offline (`createKit` takes any audio context): peak under 0.9,
+    tails end clean. Previews: `output/kilara-keno/sound/*.wav`.
 
 ## How the game opens
 
@@ -85,8 +106,9 @@ studio's order for every game:
   user's request: a miss is a flat dark sunk tile with a red number); type and icons stay smooth.
 - **Lucky number**: gold frame and a small up arrow, marked before the first ball on a number that
   was not picked; drawn, it carries a gold octagon and the meter goes up one step.
-- **Lucky round** (Calm, Bold, Wild, Chain; 1 round in 5): 3 lucky numbers marked 120 ms apart, the first
-  ball 900 ms after the first mark; the meter's label STREAK gives its place to LUCKY ROUND.
+- **Lucky round** (Calm, Bold, Wild, Chain; 1 round in 5): 3 lucky numbers marked one beat (150 ms)
+  apart, and the first ball follows the last mark as in any round (180 ms): marks and balls are
+  one run. A long rest before the first ball read as a stutter (user, 2026-11-27). The meter's label STREAK gives its place to LUCKY ROUND.
 - **Multiplier stairs**: seven blocks, each taller and a lighter gold; filled up to the best level
   reached. Steps the numbers in play cannot reach are dimmed; steps only a lucky round reaches are
   outlined until one starts.
@@ -95,7 +117,7 @@ studio's order for every game:
 - **Chain links**: lines between the hits that were joined, in the gaps between tiles, never
   across a number. The run in play is bright green; a link that a miss broke stays in its place,
   dimmed, so the round's broken chains remain readable. When the round ends, the chain that set
-  the multiplier is drawn in gold.
+  the multiplier turns gold where it lies (a colour change, the line is not drawn again).
 - **Pay row**: the cell of the hits so far is lit green, gold when the round wins its cost or more.
 - **Result**: a dark card in the middle of the board, only when the round wins: "N OF M HIT ·
   STREAK ×K" and the amount. The amount shows whole at once, no count-up (user,
@@ -106,6 +128,20 @@ studio's order for every game:
   stepped or held. The user found the earlier version (irregular holds on hits, stepped
   "pixel" animations) stuttering, 2026-11-27. Measured: no long tasks and steady 60 fps at 4× CPU
   slowdown, so the stutter was the design, not the machine.
+- **Joins between animations** (checked frame by frame, 2026-11-27; the user feels a stutter
+  where one animation hands over to the next): nothing that is still moving is cut or started
+  again, and nothing appears or leaves in a cut.
+  - Press: the last round's tokens and result card fade out (110 ms) while the sunk tiles rise;
+    the play bar goes down and comes back in 80 ms. The win beside the balance clears at the
+    press. The balance is written at once, no count through the cents.
+  - A token grows in and settles in one curve (280 ms), then light crosses it; a tile sinks and
+    rises in 120 ms. A lucky mark (170 ms) and a meter step (200 ms) end before the next ball.
+  - The last ball's held beat is one swell of the open numbers that is back at rest when the ball
+    lands (2 × 260 ms = the 520 ms wait).
+  - End: the last ball lands, the result card comes 240 ms after it (120 ms in turbo) and the
+    controls open 350 ms later.
+  - Autoplay and Space held: the finished board rests 300 ms, 700 ms after a win (half in turbo),
+    before the next round, so a result is never cut off by the next press.
 
 ## Paytable and info
 

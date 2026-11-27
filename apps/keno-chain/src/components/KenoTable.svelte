@@ -14,7 +14,6 @@
 	// package exports its HUDs, not their parts
 	import UiFadeContainer from 'components-ui-html/src/components/UiFadeContainer.svelte';
 	import UiLabel from 'components-ui-html/src/components/UiLabel.svelte';
-	import LabelBalance from 'components-ui-html/src/components/LabelBalance.svelte';
 	import ButtonDecrease from 'components-ui-html/src/components/ButtonDecrease.svelte';
 	import ButtonIncrease from 'components-ui-html/src/components/ButtonIncrease.svelte';
 	import ButtonMenu from 'components-ui-html/src/components/ButtonMenu.svelte';
@@ -62,7 +61,15 @@
 
 	// the measures of both layouts, in the unit
 	const TALL = { column: 39, gap: 0.6, lip: 0.4, tileFont: 1.95, tile: [4.1, 5.2] };
-	const WIDE = { panel: 27 * 0.72, stage: 66, inner: 60, gap: 1, lip: 0.6, tileFont: 2.7, tile: 5.6 };
+	const WIDE = {
+		panel: 27 * 0.72,
+		stage: 66,
+		inner: 60,
+		gap: 1,
+		lip: 0.6,
+		tileFont: 2.7,
+		tile: 5.6,
+	};
 	const PAD = 1;
 	const TOP = 0.6;
 	const GAP = 1.1;
@@ -221,7 +228,9 @@
 	// the shell's buttons ask for their press sound
 	context.eventEmitter.subscribeOnMount({
 		soundPressGeneral: () => sound.press(),
-		soundPressBet: () => sound.press(),
+		// the play bar: a round that starts has its own sound (actor), one that cannot has the
+		// "no" of the line under the board, so the press itself adds none
+		soundPressBet: () => {},
 	});
 </script>
 
@@ -233,7 +242,15 @@
 	<div class="money" use:fitText>
 		<!-- a replay does not use the balance -->
 		{#if !replay}
-			<div class="balance"><LabelBalance stacked /></div>
+			<!-- the balance is written at once, like the win: no count through the cents between
+				(the shell's own label counts) -->
+			<div class="balance">
+				<UiLabel
+					stacked
+					label={i18nDerived.balance()}
+					value={numberToCurrencyString(stateBet.balanceAmount)}
+				/>
+			</div>
 		{/if}
 		<div class="win {winSize}" data-test="win" aria-live="polite">
 			<UiLabel stacked label={i18nDerived.win()} value={winText} />
@@ -294,11 +311,7 @@
 
 {#snippet replayLabels()}
 	<div class="replay-labels" use:fitText>
-		<UiLabel
-			stacked
-			label={betLabel}
-			value={numberToCurrencyString(stateBet.wageredBetAmount)}
-		/>
+		<UiLabel stacked label={betLabel} value={numberToCurrencyString(stateBet.wageredBetAmount)} />
 		<UiLabel
 			stacked
 			label={`${i18nDerived.realCost()} (×${stateReplay.costMultiplier})`}

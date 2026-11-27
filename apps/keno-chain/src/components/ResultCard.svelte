@@ -4,6 +4,8 @@
 </script>
 
 <script lang="ts">
+	import { fade } from 'svelte/transition';
+
 	import { stateI18nDerived } from 'state-shared';
 	import { bookEventAmountToCountUpCurrencyString } from 'utils-shared/amount';
 	import { waitForTimeout } from 'utils-shared/wait';
@@ -16,7 +18,7 @@
 	// shown whole at once. Only a round that wins shows it. A win of the round's cost or more is
 	// green and has a sound, ten times the cost or more is in the win colour; a win below the cost
 	// is shown without a sound. The card stays until the next round or the next change of the
-	// numbers.
+	// numbers, and leaves in a short fade.
 	const context = getContext();
 	const t = stateI18nDerived.translate;
 
@@ -29,7 +31,7 @@
 		winPresent: async ({ amount, ratio, max }) => {
 			// the whole amount at once: no count (user, 2026-11-27)
 			context.stateGame.win = { shown: amount, amount, ratio, max };
-			if (ratio >= 1) sound.win(ratio >= BIG ? 3 : ratio >= 3 ? 2 : 1);
+			if (ratio >= 1) sound.win(ratio >= BIG ? 3 : ratio >= 3 ? 2 : 1, max);
 			await waitForTimeout(context.stateGame.skip ? 0 : HOLD);
 		},
 	});
@@ -41,6 +43,7 @@
 		class:win={win.ratio >= 1 && win.ratio < BIG}
 		class:big={win.ratio >= BIG}
 		data-test="win-overlay"
+		out:fade={{ duration: 110 }}
 	>
 		<small>
 			{t('{hits} OF {picks} HIT', {

@@ -105,9 +105,12 @@
 		cursor: pointer;
 		pointer-events: auto;
 		touch-action: manipulation;
+		/* the press goes down and comes back in a short move, not in a jump */
 		transition:
 			background-color 0.12s,
-			opacity 0.15s;
+			opacity 0.15s,
+			transform 0.08s ease-out,
+			box-shadow 0.08s ease-out;
 
 		small {
 			font-size: 0.76em;

@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { fade } from 'svelte/transition';
+
 	import { stateI18nDerived } from 'state-shared';
 	import { i18nKey } from 'utils-shared/i18n';
 
@@ -148,8 +150,8 @@
 
 	// Every pair of hits that was joined in this round keeps its link. The run in play is bright; a
 	// link that a miss broke stays where it was, dimmed (user, 2026-11-27: a broken chain does not
-	// vanish). Once the draw ends, the chain that set the multiplier is drawn again in the
-	// multiplier's colour.
+	// vanish). Once the draw ends, the chain that set the multiplier turns to the multiplier's
+	// colour where it lies: the line is not taken away and drawn again.
 	const links = $derived.by(() => {
 		if (!round) return [];
 		const level = parseMode(round.mode)!.level;
@@ -168,7 +170,7 @@
 		return joined.map(([a, b]) => {
 			const key = `${a}-${b}`;
 			return {
-				id: gold.has(key) ? `${key}-best` : key,
+				id: key,
 				path: route(a, b),
 				best: gold.has(key),
 				broken: !gold.has(key) && !live.has(key),
@@ -203,10 +205,12 @@
 			>
 				<span class="face">
 					{#if state === 'hit' || state === 'glow'}
+						<!-- a token leaves in a short fade (a new round, or the numbers changed), never in a cut -->
 						<svg
 							class="token {state}"
 							viewBox="0 0 40 40"
 							aria-hidden="true"
+							out:fade={{ duration: 110 }}
 						>
 							<clipPath id="token-{n}"><path d={TOKEN} /></clipPath>
 							<path d={TOKEN} />
@@ -281,9 +285,11 @@
 		place-items: center;
 		background-color: var(--tile);
 		color: var(--text);
+		/* a tile sinks, rises and takes a press in one short eased move, never in a jump */
 		transition:
-			background-color 0.1s,
-			color 0.1s;
+			background-color 0.12s,
+			color 0.12s,
+			inset 0.12s cubic-bezier(0.2, 0.8, 0.2, 1);
 	}
 
 	.num {
@@ -354,7 +360,11 @@
 		width: 94%;
 		height: 90%;
 		translate: -50% -50%;
-		animation: token-in 0.26s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+		/* it grows in and settles in one move: the curve itself carries it a little past its size
+		   and back, so there is no pose it stops in on the way */
+		animation:
+			token-in 0.28s cubic-bezier(0.3, 1.45, 0.55, 1) both,
+			token-show 0.1s linear both;
 
 		&.hit {
 			fill: var(--hit);
@@ -385,25 +395,23 @@
 		}
 	}
 
-	/* it grows in and settles: one eased move, no held poses */
 	@keyframes token-in {
 		from {
-			scale: 0.55;
+			scale: 0.6;
+		}
+	}
+
+	@keyframes token-show {
+		from {
 			opacity: 0;
-		}
-		60% {
-			scale: 1.08;
-			opacity: 1;
-		}
-		to {
-			scale: 1;
 		}
 	}
 
 	/* a lucky number: not one of the picks; if it is drawn the multiplier climbs one step */
 	.tile.kilau {
 		background-color: var(--gold-dim);
-		animation: kilau-in 0.3s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+		/* over before the first ball (KILAU_MARK, 180 ms), which may be this very number */
+		animation: kilau-in 0.17s cubic-bezier(0.2, 0.8, 0.2, 1) both;
 
 		.face {
 			background-color: var(--gold-ground);
@@ -443,8 +451,10 @@
 		}
 	}
 
+	/* the last ball's held beat (LAST_BALL_WAIT, 520 ms): the open numbers swell once and are back
+	   at rest when the ball lands */
 	.tile.wait .face {
-		animation: wait 0.45s ease-in-out infinite alternate;
+		animation: wait 0.26s ease-in-out 2 alternate;
 	}
 
 	@keyframes wait {
@@ -468,7 +478,9 @@
 			stroke-width: 2px;
 			stroke-dasharray: 1;
 			animation: draw 0.2s ease-out both;
-			transition: opacity 0.25s ease-out;
+			transition:
+				opacity 0.25s ease-out,
+				stroke 0.25s ease-out;
 		}
 
 		/* a miss broke it: it stays, quieter than the run in play */

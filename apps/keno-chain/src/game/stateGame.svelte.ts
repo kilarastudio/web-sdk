@@ -111,7 +111,10 @@ const settleMode = () => {
 	}
 };
 
-const nudge = () => (stateGame.nudges += 1);
+const nudge = () => {
+	stateGame.nudges += 1;
+	sound.deny();
+};
 
 // counts the random picks being shown, so a newer one (or any other edit) ends an older showing
 let showing = 0;
@@ -126,15 +129,16 @@ const editSelection = (picked: number[]) => {
 };
 
 const toggle = (n: number) => {
+	// each number picked plays the next note up, each one freed the note it had
 	if (stateGame.picked.includes(n)) {
 		editSelection(stateGame.picked.filter((p) => p !== n));
+		sound.unpick(count());
 	} else if (count() < MOST) {
 		editSelection([...stateGame.picked, n]);
+		sound.pick(count());
 	} else {
 		nudge();
-		return;
 	}
-	sound.press();
 };
 
 // The risk level of the 1× game. Chain and Chain Max cost 10× and 100× the bet, so they are armed
@@ -158,8 +162,9 @@ const random = () => {
 	stateGame.hidden = [...next];
 	const step = () => {
 		if (run !== showing || !stateGame.hidden.length) return;
+		// a quick run up the scale, one note for each number that lights up
+		sound.deal(next.length - stateGame.hidden.length);
 		stateGame.hidden = stateGame.hidden.slice(1);
-		sound.press();
 		setTimeout(step, RANDOM_PICK_STEP);
 	};
 	step();
