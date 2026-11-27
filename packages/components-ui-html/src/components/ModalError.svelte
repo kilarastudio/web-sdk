@@ -210,9 +210,12 @@
 		}
 	}
 
+	/* a long word in a title (Russian НЕДОСТАТОЧНЫЙ) still fits a 320px phone */
 	.title {
+		max-width: 100%;
 		margin: 0 0 10px;
-		font-size: 26px;
+		font-size: min(26px, 7vw);
+		overflow-wrap: break-word;
 		font-weight: 800;
 		line-height: 1.1;
 		letter-spacing: 0.03em;
@@ -282,6 +285,67 @@
 		letter-spacing: 0.1em;
 		opacity: 0.7;
 		user-select: text;
+	}
+
+	/*
+		A short screen (a phone on its side, Stake's mini player at 400 × 225): the icon steps aside
+		and the panel is wider and tighter, so the title, the whole message and the button are in
+		view without scrolling.
+	*/
+	@media (max-height: 420px) {
+		.error-modal {
+			padding: 8px;
+			font-size: 13px;
+		}
+
+		.panel {
+			width: min(100%, 520px);
+			padding: 14px 18px 12px;
+		}
+
+		.emblem {
+			display: none;
+		}
+
+		.title {
+			margin-bottom: 6px;
+			font-size: 19px;
+		}
+
+		.body {
+			max-width: none;
+			margin-bottom: 12px;
+			line-height: 1.35;
+		}
+
+		.action {
+			height: 40px;
+			font-size: 15px;
+		}
+
+		.code {
+			margin-top: 6px;
+			font-size: 9px;
+		}
+	}
+
+	@media (max-height: 260px) {
+		.error-modal {
+			font-size: 11.5px;
+		}
+
+		.title {
+			font-size: 16px;
+		}
+
+		.body {
+			margin-bottom: 8px;
+		}
+
+		.action {
+			height: 34px;
+			font-size: 13px;
+		}
 	}
 
 	@media (prefers-reduced-motion: reduce) {

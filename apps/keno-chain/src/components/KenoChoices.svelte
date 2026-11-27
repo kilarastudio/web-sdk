@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { stateBet, stateConfig, stateI18nDerived, stateModal } from 'state-shared';
 	import { numberToCurrencyString } from 'utils-shared/amount';
+	import { fitText } from 'components-ui-html/src/components/fitText';
 
 	import config from '../game/config';
 	import { LEVEL_LABELS } from '../game/betModeMeta';
@@ -12,7 +13,8 @@
 	// modes that cost more than the bet, so they live in the shell's bonus scene, which lists each
 	// with its cost, return and top prize and arms it through a confirmation. The button is a gold
 	// block; while a mode is armed it is held down, names it with its cost, and a press switches it
-	// off.
+	// off. A cost too long for the room beside the cross (a weak currency, the largest bet)
+	// shrinks to it, the name with it (fitText).
 	type Props = { disabled: boolean };
 
 	const props: Props = $props();
@@ -64,7 +66,7 @@
 		onclick={pressBonus}
 	>
 		{#if armed}
-			<span class="lines">
+			<span class="lines" use:fitText>
 				<span class="name">{LEVEL_LABELS[level]}</span>
 				<span class="value">
 					{numberToCurrencyString(stateBet.betAmount * config.levelCost[level])}
@@ -72,7 +74,7 @@
 			</span>
 			<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6 6 18" /></svg>
 		{:else}
-			<span class="mode">{t('Bonus')}</span>
+			<span class="mode" use:fitText>{t('Bonus')}</span>
 		{/if}
 	</button>
 </div>
@@ -192,7 +194,8 @@
 			opacity 0.15s;
 
 		.mode {
-			font-size: calc(1.6em * var(--ctl, 1));
+			min-width: 0;
+			font-size: calc(1.6em * var(--ctl, 1) * var(--ui-fit, 1));
 			font-weight: 700;
 		}
 
@@ -210,7 +213,7 @@
 		}
 
 		.name {
-			font-size: calc(1.05em * var(--ctl, 1));
+			font-size: calc(1.05em * var(--ctl, 1) * var(--ui-fit, 1));
 			font-weight: 600;
 			letter-spacing: 0.08em;
 			line-height: 1.2;
@@ -218,7 +221,7 @@
 		}
 
 		.value {
-			font-size: calc(1.6em * var(--ctl, 1));
+			font-size: calc(1.6em * var(--ctl, 1) * var(--ui-fit, 1));
 			font-weight: 600;
 			line-height: 1.2;
 			font-variant-numeric: tabular-nums;

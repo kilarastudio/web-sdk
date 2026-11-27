@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { stateConfig, stateI18nDerived, stateUrlDerived } from 'state-shared';
 	import { UiInfoSection, i18nDerived } from 'components-ui-html';
+	import { fitText } from 'components-ui-html/src/components/fitText';
 
 	import config from '../game/config';
 	import { LEVEL_LABELS, LEVEL_NAMES, stakeWord } from '../game/betModeMeta';
@@ -165,7 +166,8 @@
 </UiInfoSection>
 
 <UiInfoSection title={t('THE BOARD')}>
-	<div class="tiles" role="list">
+	<!-- five names in a row: a long word (Glückszahl, on a narrow phone) shrinks, all five alike -->
+	<div class="tiles" role="list" use:fitText={{ items: 'strong' }}>
 		{#each tiles as tile}
 			<div class="item" role="listitem">
 				<span class="tile {tile.state}" aria-hidden="true">
@@ -332,7 +334,8 @@
 		}
 
 		strong {
-			font-size: 0.87em;
+			max-width: 100%;
+			font-size: calc(0.87em * var(--ui-fit, 1));
 			font-weight: 600;
 			line-height: 1.2;
 		}

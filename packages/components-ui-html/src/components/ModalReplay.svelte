@@ -67,14 +67,16 @@
 	What the replayed round was, before it plays: its mode (the game's name and the math's), the
 	bet, the mode's multiplier and what the round cost, then the payout multiplier and the win. Stake
 	wants all of it in view before the replay starts, in social wording in social play. Closing it
-	leaves the PLAY button in the bar.
+	leaves the PLAY button in the bar. A row too long for the sheet (a long label in German beside
+	the largest amount, in the mini player's two columns) shrinks, label and value together, and
+	every row by the same scale, so nothing is cut off and the rows stay alike.
 -->
 {#if stateModal.modal?.name === 'replay'}
 	<UiSheet title={i18nDerived.replay()} size="small" zIndex={zIndex.dialog} onclose={close}>
-		<dl class="summary">
+		<dl class="summary" use:fitText={{ items: '.row', smallest: 0.4 }}>
 			<div class="row mode">
 				<dt>{i18nDerived.replayMode()}</dt>
-				<dd use:fitText>
+				<dd>
 					<span class="value">
 						{gameMode}
 						{#if mathMode && mathMode !== gameMode}
@@ -86,7 +88,7 @@
 			{#each rows as row}
 				<div class="row" class:total={row.total} class:win={row.win}>
 					<dt>{row.label}</dt>
-					<dd use:fitText><span class="value">{row.value}</span></dd>
+					<dd><span class="value">{row.value}</span></dd>
 				</div>
 			{/each}
 		</dl>
@@ -112,11 +114,19 @@
 		margin: 0;
 	}
 
+	/*
+		The room at a row's sides is a see-through border, not padding: what runs past the row's
+		content box then shows in its scrollWidth, which fitText measures, so a fitted row keeps
+		that room.
+	*/
 	.row {
 		display: flex;
 		align-items: baseline;
 		gap: 1em;
-		padding: 0.55em 0.9em;
+		min-width: 0;
+		padding: 0.55em 0;
+		border: solid transparent;
+		border-width: 0 0.9em;
 
 		&.total {
 			background-color: var(--ui-field);
@@ -124,25 +134,24 @@
 
 		&.mode {
 			margin-bottom: 0.4em;
-			border-bottom: 1px solid var(--ui-field);
+			box-shadow: inset 0 -1px 0 var(--ui-field);
 		}
 	}
 
+	/* label and value keep to one line each; the row shrinks both when they do not fit (fitText) */
 	dt {
 		flex: none;
 		color: var(--ui-text-muted);
-		font-size: 0.75em;
+		font-size: calc(0.75em * var(--ui-fit, 1));
 		font-weight: 600;
 		letter-spacing: 0.1em;
 		text-transform: uppercase;
+		white-space: nowrap;
 	}
 
-	/* the value takes the rest of the row and shrinks to it, so the largest amount stays whole */
 	dd {
-		flex: 1;
-		min-width: 0;
-		margin: 0;
-		overflow: hidden;
+		flex: none;
+		margin: 0 0 0 auto;
 		font-size: calc(1em * var(--ui-fit, 1));
 		text-align: right;
 		white-space: nowrap;
@@ -194,7 +203,7 @@
 	@media (max-height: 299px) {
 		.summary {
 			display: grid;
-			grid-template-columns: 1fr 1fr;
+			grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
 			grid-template-rows: repeat(4, auto);
 			grid-auto-flow: column;
 			column-gap: 8px;
@@ -202,7 +211,8 @@
 		}
 
 		.row {
-			padding: 0.35em 0.6em;
+			padding: 0.35em 0;
+			border-width: 0 0.6em;
 
 			&.mode {
 				grid-row: 1;

@@ -9,6 +9,7 @@
 	import { stateI18nDerived } from 'state-shared';
 	import { bookEventAmountToCountUpCurrencyString } from 'utils-shared/amount';
 	import { waitForTimeout } from 'utils-shared/wait';
+	import { fitText } from 'components-ui-html/src/components/fitText';
 
 	import { ladderMultiplier } from '../game/keno';
 	import { sound } from '../game/sound';
@@ -18,7 +19,8 @@
 	// shown whole at once. Only a round that wins shows it. A win of the round's cost or more is
 	// green and has a sound, ten times the cost or more is in the win colour; a win below the cost
 	// is shown without a sound. The card stays until the next round or the next change of the
-	// numbers, and leaves in a short fade.
+	// numbers, and leaves in a short fade. It is never wider than the board: an amount too long
+	// for it (a weak currency, the largest bet) shrinks to fit, the line over it too (fitText).
 	const context = getContext();
 	const t = stateI18nDerived.translate;
 
@@ -43,6 +45,7 @@
 		class:win={win.ratio >= 1 && win.ratio < BIG}
 		class:big={win.ratio >= BIG}
 		data-test="win-overlay"
+		use:fitText={{ items: 'small, b', smallest: 0.3 }}
 		out:fade={{ duration: 110 }}
 	>
 		<small>
@@ -63,7 +66,9 @@
 		z-index: 6;
 		left: 50%;
 		top: 50%;
+		box-sizing: border-box;
 		min-width: 46%;
+		max-width: 100%;
 		padding: 1em 1.8em 1.2em;
 		border: 2px solid var(--field-hover);
 		background-color: rgba(11, 16, 27, 0.96);
@@ -91,7 +96,7 @@
 	small {
 		display: block;
 		color: var(--muted);
-		font-size: 1.15em;
+		font-size: calc(1.15em * var(--ui-fit, 1));
 		font-weight: 600;
 		letter-spacing: 0.07em;
 		text-transform: uppercase;
@@ -100,7 +105,7 @@
 
 	b {
 		display: block;
-		font-size: var(--result-font, 3.2em);
+		font-size: calc(var(--result-font, 3.2em) * var(--ui-fit, 1));
 		font-weight: 700;
 		line-height: 1.15;
 		font-variant-numeric: tabular-nums;

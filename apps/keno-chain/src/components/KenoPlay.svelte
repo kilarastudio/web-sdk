@@ -11,6 +11,7 @@
 	// the shell's own play logic (what a press does in each state); the package does not export it
 	import ButtonBetProvider from 'components-ui-html/src/components/ButtonBetProvider.svelte';
 	import { numberToCurrencyString } from 'utils-shared/amount';
+	import { fitText } from 'components-ui-html/src/components/fitText';
 
 	import { getContext } from '../game/context';
 
@@ -19,7 +20,7 @@
 	// down a little, and takes no press: there is no stop button (user, 2026-11-27); a round is
 	// over in about two seconds and autoplay is stopped from its own button. Not
 	// ready (numbers missing) it is dimmed but still takes a press, so the game can say what is
-	// missing.
+	// missing. A word and a cost too long for the bar shrink to it together (fitText).
 	type Props = { ready: boolean; replay: boolean };
 
 	const props: Props = $props();
@@ -52,7 +53,7 @@
 		data-test="play"
 		onclick={playReplay}
 	>
-		<span>{sentence(replayLabel)}</span>
+		<span class="fit" use:fitText><span>{sentence(replayLabel)}</span></span>
 	</button>
 {:else}
 	<ButtonBetProvider>
@@ -73,10 +74,12 @@
 				aria-disabled={!play}
 				onclick={() => play && onpress()}
 			>
-				<span>{sentence(i18nDerived.play())}</span>
-				{#if (stateBetDerived.activeBetMode()?.costMultiplier ?? 1) > 1}
-					<small>{numberToCurrencyString(stateBetDerived.betCost())}</small>
-				{/if}
+				<span class="fit" use:fitText>
+					<span>{sentence(i18nDerived.play())}</span>
+					{#if (stateBetDerived.activeBetMode()?.costMultiplier ?? 1) > 1}
+						<small>{numberToCurrencyString(stateBetDerived.betCost())}</small>
+					{/if}
+				</span>
 			</button>
 		{/snippet}
 	</ButtonBetProvider>
@@ -86,9 +89,7 @@
 	/* lengths in the HUD's unit: the bar's own text is 2.2 of it */
 	.play {
 		display: flex;
-		align-items: baseline;
 		justify-content: center;
-		gap: 0.5em;
 		width: 100%;
 		height: calc(var(--play-h) / 2.2 / var(--ctl, 1));
 		margin-bottom: calc(var(--play-lip) / 2.2 / var(--ctl, 1));
@@ -111,6 +112,17 @@
 			opacity 0.15s,
 			transform 0.08s ease-out,
 			box-shadow 0.08s ease-out;
+
+		/* the word and the cost: as wide as they are, the bar less a little room at its sides at
+		   most, and shrunk to that (fitText measures what runs past its end) */
+		.fit {
+			display: flex;
+			align-items: baseline;
+			gap: 0.5em;
+			min-width: 0;
+			max-width: calc(100% - 1em);
+			font-size: calc(1em * var(--ui-fit, 1));
+		}
 
 		small {
 			font-size: 0.76em;

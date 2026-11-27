@@ -3,6 +3,7 @@
 
 	import { stateI18nDerived, stateUrlDerived } from 'state-shared';
 	import { UiInfoSection } from 'components-ui-html';
+	import { fitText } from 'components-ui-html/src/components/fitText';
 
 	import config from '../game/config';
 	import { LEVEL_LABELS, LEVEL_NAMES, stakeWord } from '../game/betModeMeta';
@@ -51,9 +52,32 @@
 	const sample = config.betModes[modeName(levels[0], 5)];
 	const sampleValue = sample.payTable[sample.picks];
 	const sampleLevel = 3;
+
+	// The word over the hits column can be longer than the column (ПОПАДАНИЯ, BONS NUMÉROS): the
+	// column is then as wide as the word, up to a quarter of the table, and the value columns
+	// share what is left; past that quarter the word shrinks to it (fitText on its cell).
+	const hitsColumn = (table: HTMLTableElement) => {
+		const measure = () => {
+			const word = table.querySelector<HTMLElement>('th.hits span');
+			if (!word) return;
+			// the word's width at full size, whatever it is shrunk to now
+			const fit = parseFloat(word.parentElement?.style.getPropertyValue('--ui-fit') ?? '') || 1;
+			const column = Math.min(word.offsetWidth / fit + 6, table.clientWidth * 0.24);
+			table.style.setProperty('--hits-col', `${column}px`);
+		};
+		const observer = new ResizeObserver(measure);
+		observer.observe(table);
+		measure();
+		return { destroy: () => observer.disconnect() };
+	};
 </script>
 
-<div class="formula" aria-label={t('Win = value for the hits × multiplier')}>
+<!-- a word too long for its box on a narrow sheet (MULTIPLICADOR) shrinks, all three boxes alike -->
+<div
+	class="formula"
+	aria-label={t('Win = value for the hits × multiplier')}
+	use:fitText={{ items: 'b, span' }}
+>
 	<div>
 		<b>{t('HITS')}</b>
 		<span>{t('value in the win table')}</span>
@@ -71,7 +95,8 @@
 </div>
 
 <section class="levels">
-	<div class="tabs" role="tablist">
+	<!-- on the narrowest phones a bonus mode's name and cost shrink to their tab, every tab alike -->
+	<div class="tabs" role="tablist" use:fitText={{ items: '.label' }}>
 		{#each levels as level}
 			<button
 				type="button"
@@ -81,8 +106,10 @@
 				data-level={level}
 				onclick={() => (shown = level)}
 			>
-				{LEVEL_NAMES[level]}
-				{#if isPremium(level)}<small>{times(config.levelCost[level])}</small>{/if}
+				<span class="label">
+					{LEVEL_NAMES[level]}
+					{#if isPremium(level)}<small>{times(config.levelCost[level])}</small>{/if}
+				</span>
 			</button>
 		{/each}
 	</div>
@@ -98,14 +125,15 @@
 	</p>
 
 	{#if picks.length > 1}
-		<table data-test="pay-table">
+		<!-- six columns on the narrowest phones: the values shrink to their cells, all alike -->
+		<table data-test="pay-table" use:hitsColumn use:fitText={{ items: 'td' }}>
 			<thead>
 				<tr class="over">
 					<td></td>
 					<th colspan={picks.length} scope="colgroup">{t('NUMBERS PLAYED')}</th>
 				</tr>
 				<tr>
-					<th scope="col">{t('HITS')}</th>
+					<th scope="col" class="hits" use:fitText><span>{t('HITS')}</span></th>
 					{#each picks as size}
 						<th scope="col" class="size" class:mine={size === mine}>{size}</th>
 					{/each}
@@ -201,14 +229,14 @@
 		}
 
 		b {
-			font-size: 0.93em;
+			font-size: calc(0.93em * var(--ui-fit, 1));
 			font-weight: 800;
 			letter-spacing: 0.08em;
 		}
 
 		span {
 			color: var(--ui-text-muted);
-			font-size: 0.8em;
+			font-size: calc(0.8em * var(--ui-fit, 1));
 			line-height: 1.25;
 		}
 
@@ -253,7 +281,6 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		gap: 0.5em;
 		min-width: 0;
 		height: 44px;
 		padding: 0 0.4em;
@@ -279,6 +306,15 @@
 			&.premium {
 				grid-column: auto;
 			}
+		}
+
+		/* the name and its cost: the tab's width at most, shrunk to it (fitText) */
+		.label {
+			display: flex;
+			align-items: baseline;
+			gap: 0.5em;
+			min-width: 0;
+			font-size: calc(1em * var(--ui-fit, 1));
 		}
 
 		small {
@@ -355,7 +391,7 @@
 
 	/* the hits: a narrow column of its own, flush left */
 	tr > :first-child {
-		width: 3.4em;
+		width: max(3.4em, var(--hits-col, 0px));
 		padding: 0;
 		text-align: left;
 	}
@@ -371,6 +407,14 @@
 		height: 1.8em;
 		padding-right: 0;
 		text-align: center;
+	}
+
+	thead th.hits {
+		font-size: calc(0.73em * var(--ui-fit, 1));
+
+		span {
+			display: inline-block;
+		}
 	}
 
 	thead th.size {
@@ -391,6 +435,7 @@
 
 	td {
 		color: var(--ui-text);
+		font-size: calc(var(--cell-font, 1em) * var(--ui-fit, 1));
 		font-weight: 600;
 
 		&.low {
@@ -475,11 +520,11 @@
 		}
 
 		tr > :first-child {
-			width: 2.6em;
+			width: max(2.6em, var(--hits-col, 0px));
 		}
 
-		td {
-			font-size: 0.93em;
+		table {
+			--cell-font: 0.93em;
 		}
 	}
 </style>

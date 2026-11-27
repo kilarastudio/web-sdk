@@ -6,6 +6,7 @@
 
 	import UiSheet from './UiSheet.svelte';
 	import UiAction from './UiAction.svelte';
+	import { fitText } from './fitText';
 	import { stateBonus, stateBonusDerived } from '../stateBonus.svelte';
 	import { i18nDerived } from '../i18n/i18nDerived';
 	import type { EmitterEventModal } from '../types';
@@ -74,10 +75,14 @@
 			</dl>
 		{/if}
 
+		<!-- a cost too long for the row (a weak currency, the largest bet, a narrow phone) shrinks
+			to it, its multiplier with it -->
 		<div class="cost">
-			<span class="label">{i18nDerived.realCost()}</span>
-			<span class="amount">{numberToCurrencyString(cost)}</span>
-			<span class="times">{stateI18nDerived.times(mode.costMultiplier)}</span>
+			<div class="cost-row" use:fitText={{ smallest: 0.4 }}>
+				<span class="label">{i18nDerived.realCost()}</span>
+				<span class="amount">{numberToCurrencyString(cost)}</span>
+				<span class="times">{stateI18nDerived.times(mode.costMultiplier)}</span>
+			</div>
 		</div>
 
 		{#snippet footer()}
@@ -138,32 +143,40 @@
 	}
 
 	.cost {
+		padding: 0.7em 0.9em;
+		background-color: var(--ui-field);
+	}
+
+	.cost-row {
 		display: flex;
 		align-items: baseline;
 		gap: 0.6em;
-		padding: 0.7em 0.9em;
-		background-color: var(--ui-field);
+		min-width: 0;
 	}
 
 	.label {
 		margin-right: auto;
 		color: var(--ui-text-muted);
-		font-size: 0.75em;
+		font-size: calc(0.75em * var(--ui-fit, 1));
 		font-weight: 600;
 		letter-spacing: 0.1em;
 		text-transform: uppercase;
 	}
 
 	.amount {
-		font-size: 1.3em;
+		flex: none;
+		font-size: calc(1.3em * var(--ui-fit, 1));
 		font-weight: 800;
 		font-variant-numeric: tabular-nums;
+		white-space: nowrap;
 	}
 
 	.times {
+		flex: none;
 		color: var(--ui-text-muted);
-		font-size: 0.85em;
+		font-size: calc(0.85em * var(--ui-fit, 1));
 		font-weight: 600;
+		white-space: nowrap;
 	}
 
 	@media (max-height: 299px) {

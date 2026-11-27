@@ -1,9 +1,11 @@
 <script lang="ts">
 	import { stateI18nDerived } from 'state-shared';
+	import { fitText } from 'components-ui-html/src/components/fitText';
 
 	import { getContext } from '../game/context';
 
-	// The picking tools: a fresh random set of numbers, and clear.
+	// The picking tools: a fresh random set of numbers, and clear. A word too long for its button
+	// (Russian "Случайный выбор") shrinks to it (fitText).
 	type Props = { disabled: boolean };
 
 	const props: Props = $props();
@@ -31,7 +33,7 @@
 		<path d="M3 17h3.5c1.3 0 2.3-.5 3.1-1.300M14 8.300c.9-.8 2-1.300 3.500-1.300H21" />
 		<path d="M18.500 4.500 21 7l-2.500 2.500M18.500 14.500 21 17l-2.500 2.500" />
 	</svg>
-	<span>{t('Random Pick')}</span>
+	<span use:fitText>{t('Random Pick')}</span>
 </button>
 <button
 	type="button"
@@ -53,7 +55,7 @@
 	>
 		<path d="M6 6l12 12M18 6 6 18" />
 	</svg>
-	<span>{t('Clear')}</span>
+	<span use:fitText>{t('Clear')}</span>
 </button>
 
 <style lang="scss">
@@ -65,7 +67,7 @@
 		gap: 0.57em;
 		min-width: 0;
 		height: calc(4.6em / 1.4 / var(--ctl, 1));
-		padding: 0;
+		padding: 0 0.4em;
 		border: none;
 		background-color: var(--field);
 		color: var(--text);
@@ -82,6 +84,12 @@
 			flex: none;
 			width: 1.29em;
 			height: 1.29em;
+		}
+
+		/* takes the room the icon leaves, and no more: a longer word shrinks (fitText) */
+		span {
+			min-width: 0;
+			font-size: calc(1em * var(--ui-fit, 1));
 		}
 
 		@media (hover: hover) {

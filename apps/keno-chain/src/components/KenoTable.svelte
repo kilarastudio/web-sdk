@@ -62,7 +62,8 @@
 	// the measures of both layouts, in the unit
 	const TALL = { column: 39, gap: 0.6, lip: 0.4, tileFont: 1.95, tile: [4.1, 5.2] };
 	const WIDE = {
-		panel: 27 * 0.72,
+		// the panel's width in its own unit, which is the game's unit × the panel's scale
+		panel: 27,
 		stage: 66,
 		inner: 60,
 		gap: 1,
@@ -79,6 +80,14 @@
 	const PAD_WIDE = 3;
 	const PAD_WIDE_DOWN = 1.6;
 	const LARGEST_WIDE = 16;
+	// Wide: the controls are drawn at 0.72 of the game's unit, since beside the board they read as
+	// too large at its size (user, 2026-11-27). On a small wide screen (a laptop under 700px tall,
+	// Stake's mini players, a phone on its side) that left their words at 2 to 5px, so there the
+	// scale grows until the controls' own unit is PANEL_MIN px: at most to PANEL_SCALE_MOST, and
+	// never taller than the game beside them (user, 2026-11-27).
+	const PANEL_SCALE = 0.72;
+	const PANEL_SCALE_MOST = 1.3;
+	const PANEL_MIN = 8;
 	const ROWS = 5;
 	const LARGEST = 20;
 
@@ -95,6 +104,7 @@
 	let resized = $state(0);
 	let unit = $state(10);
 	let tileTall = $state(TALL.tile[0]);
+	let panelScale = $state(PANEL_SCALE);
 	let measured = $state(false);
 
 	// the wide layout has no head: the name and the menu stand in its panel
@@ -117,6 +127,7 @@
 
 		let nextUnit: number;
 		let nextTile = tileTall;
+		let nextScale = panelScale;
 		if (tall) {
 			// everything but the tiles' own height, which follows the room left over
 			const fixed = TOP + head + GAP + stage - ROWS * tileTall + GAP + panel + PAD;
@@ -127,17 +138,42 @@
 			);
 			nextTile = Math.min(TALL.tile[1], Math.max(TALL.tile[0], (height / nextUnit - fixed) / ROWS));
 		} else {
-			const across = WIDE.panel + GAP_WIDE + WIDE.stage + PAD_WIDE * 2;
-			const down = Math.max(stage, panel) + PAD_WIDE_DOWN * 2;
-			nextUnit = Math.min(LARGEST_WIDE, width / across, height / down);
+			// what the panel holds, in its own unit: its height less the room its foot was pushed down by
+			const foot = panelEl.querySelector<HTMLElement>('.foot');
+			const pushed = foot ? parseFloat(getComputedStyle(foot).marginTop) || 0 : 0;
+			const holds = (panelEl.scrollHeight - pushed) / (unit * panelScale);
+			const rest = GAP_WIDE + WIDE.stage + PAD_WIDE * 2;
+			const unitAt = (scale: number) =>
+				Math.min(
+					LARGEST_WIDE,
+					width / (WIDE.panel * scale + rest),
+					height / (Math.max(stage, holds * scale) + PAD_WIDE_DOWN * 2),
+				);
+			// the smallest scale at which the controls' unit is PANEL_MIN px, by the screen's height
+			// and by its width (a wider panel leaves the game less of the width)
+			const byHeight = (PANEL_MIN * (stage + PAD_WIDE_DOWN * 2)) / height;
+			const byWidth =
+				width > WIDE.panel * PANEL_MIN
+					? (PANEL_MIN * rest) / (width - WIDE.panel * PANEL_MIN)
+					: PANEL_SCALE_MOST;
+			const wanted = Math.max(PANEL_MIN / LARGEST_WIDE, byHeight, byWidth);
+			// never taller than the game: its foot stays level with the game's
+			const most = Math.max(PANEL_SCALE, Math.min(PANEL_SCALE_MOST, (stage / holds) * 0.98));
+			const scale = Math.round(Math.min(most, Math.max(PANEL_SCALE, wanted)) * 100) / 100;
+			// a hundredth either way is the wobble of whole px, not a change
+			if (Math.abs(scale - panelScale) > 0.015) nextScale = scale;
+			nextUnit = unitAt(nextScale);
 		}
 		// whole px measured at a small unit wobble by a fraction: a change that small is not one
 		const settled =
-			Math.abs(nextUnit - unit) <= unit * 0.004 && Math.abs(nextTile - tileTall) <= 0.02;
+			Math.abs(nextUnit - unit) <= unit * 0.004 &&
+			Math.abs(nextTile - tileTall) <= 0.02 &&
+			nextScale === panelScale;
 		if (settled) measured = true;
 		else {
 			unit = nextUnit;
 			tileTall = nextTile;
+			panelScale = nextScale;
 		}
 	});
 
@@ -215,6 +251,7 @@
 	let hudEl = $state<HTMLElement>();
 	const menuPlace = $derived.by(() => {
 		void unit;
+		void panelScale;
 		if (!stateUi.menuOpen || !menuEl || !hudEl) return '';
 		const button = menuEl.getBoundingClientRect();
 		const hud = hudEl.getBoundingClientRect();
@@ -328,6 +365,7 @@
 			class:measured
 			style:--u="{unit}px"
 			style:--hud-u="{unit}px"
+			style:--panel-scale={panelScale}
 			style:font-size="{unit}px"
 			bind:clientWidth={width}
 			bind:clientHeight={height}
@@ -773,16 +811,17 @@
 		.panel {
 			order: -1;
 			box-sizing: border-box;
-			/* the controls are drawn at 0.72 of the game's unit (WIDE.panel): beside the board they
-			   read as too large at its size (user, 2026-11-27) */
-			--u: calc(var(--hud-u) * 0.72);
+			/* the controls are drawn at --panel-scale of the game's unit: 0.72, since beside the board
+			   they read as too large at its size, and more on a small wide screen, where that would
+			   leave their words too small to read (user, 2026-11-27) */
+			--u: calc(var(--hud-u) * var(--panel-scale));
 			--ui-font-size: calc(var(--u) * 1.5);
 			--ui-button-size: calc(var(--u) * 4.6);
 
 			width: 27em;
 			gap: 1.4em;
 			padding: 0.6em 0 0;
-			font-size: 0.72em;
+			font-size: calc(1em * var(--panel-scale));
 		}
 
 		.logo {

@@ -3,6 +3,8 @@
 	columns as the width allows, never narrower than `min` px a chip.
 -->
 <script lang="ts" generics="TValue extends string | number">
+	import { fitText } from './fitText';
+
 	type Props = {
 		value: TValue;
 		options: Readonly<TValue[]>;
@@ -28,7 +30,7 @@
 			data-test={props['data-test'] ? `${props['data-test']}-${option}` : undefined}
 			onclick={() => props.onchange(option)}
 		>
-			<span>{props.format ? props.format(option) : option}</span>
+			<span use:fitText>{props.format ? props.format(option) : option}</span>
 		</button>
 	{/each}
 </div>
@@ -61,7 +63,12 @@
 			background-color 0.15s,
 			color 0.15s;
 
+		/* as wide as the chip at most: a longer label (a translated choice, a six-decimal amount)
+		   shrinks to it (fitText) */
 		span {
+			min-width: 0;
+			max-width: 100%;
+			font-size: calc(1em * var(--ui-fit, 1));
 			transition: transform 0.08s ease-out;
 		}
 

@@ -324,12 +324,13 @@
 		white-space: pre-line;
 	}
 
+	/* one line where it fits; a longer translation (Turkish MAKSİMUM KAZANÇ) takes a second */
 	.facts {
 		color: var(--ui-text-muted);
 		font-size: 0.72em;
 		font-weight: 600;
 		letter-spacing: 0.06em;
-		white-space: nowrap;
+		text-wrap: balance;
 	}
 
 	/*
@@ -461,9 +462,14 @@
 			width: 5.2em;
 		}
 
+		/* The name and the price share a row. Where a very long price has shrunk, the name gives
+		   up a little of its size too (at most a fifth), so a one-line name and a ten-digit price
+		   both stay whole on a tall phone. */
 		.title {
 			grid-area: title;
-			font-size: calc(1.3em * var(--ui-bonus-title-scale, 1));
+			font-size: calc(
+				1.3em * var(--ui-bonus-title-scale, 1) * (0.6 + 0.4 * max(var(--ui-fit, 1), 0.5))
+			);
 			/* scaled down to keep to one line: then it does, and the price shrinks beside it */
 			white-space: var(--ui-bonus-title-wrap, normal);
 		}
