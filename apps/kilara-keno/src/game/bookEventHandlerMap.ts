@@ -70,7 +70,7 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 		const bookBoard = stateUrlDerived.replay() || stateGame.resuming;
 		const shown = bookBoard
 			? { selected: bookEvent.selected, kilau: bookEvent.kilau, numbers: bookEvent.numbers }
-			: relabel(bookEvent, stateGame.picked, stateGame.kilauPick);
+			: relabel(bookEvent, stateGame.picked);
 		const steps = check(bookEvent, shown);
 
 		stateGame.round = {
@@ -89,9 +89,9 @@ export const bookEventHandlerMap: BookEventHandlerMap<BookEvent, BookEventContex
 			done: false,
 		};
 		// the lucky numbers are marked on the board before the first ball: at once in an ordinary
-		// round; in a lucky round one by one, the player's own first, and the first ball waits
-		// longer (KILAU_ROUND_MARK from the first mark)
-		const marks = _.sortBy(shown.kilau, (n) => (n === stateGame.kilauPick && !bookBoard ? 0 : n));
+		// round; in a lucky round one by one, and the first ball waits longer (KILAU_ROUND_MARK
+		// from the first mark)
+		const marks = _.sortBy(shown.kilau);
 		if (stateGame.round.kilauRound) {
 			for (const [i, n] of marks.entries()) {
 				if (i > 0) await pause(KILAU_ROUND_STAGGER);

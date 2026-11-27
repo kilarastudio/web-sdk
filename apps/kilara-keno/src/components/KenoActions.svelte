@@ -1,25 +1,19 @@
 <script lang="ts">
-	import { stateI18nDerived, stateUrlDerived } from 'state-shared';
+	import { stateI18nDerived } from 'state-shared';
 
 	import { getContext } from '../game/context';
 
 	// Beside the amount in the burst HUD: quick pick fills the slots left at random, clear frees
-	// them all, LUCKY names the player's own lucky number (AUTO: the game places it). LUCKY stays
-	// off in a replay and a resumed round: they show the book's own board.
-	type Props = { disabled: boolean; tall: boolean };
+	// them all.
+	type Props = { disabled: boolean };
 
 	const props: Props = $props();
 	const context = getContext();
 	const t = stateI18nDerived.translate;
 	const press = () => context.eventEmitter.broadcast({ type: 'soundPressGeneral' });
-	const kilauPick = $derived(context.stateGame.kilauPick);
-	const choosing = $derived(context.stateGame.choosingKilau);
-	const kilauOff = $derived(
-		props.disabled || stateUrlDerived.replay() || context.stateGame.resuming,
-	);
 </script>
 
-<div class="actions" class:tall={props.tall}>
+<div class="actions">
 	<button
 		type="button"
 		data-test="quick-pick"
@@ -42,37 +36,14 @@
 	>
 		{t('CLEAR')}
 	</button>
-	<button
-		type="button"
-		class="kilau"
-		class:choosing={choosing && !kilauOff}
-		class:set={kilauPick !== null}
-		data-test="kilau"
-		data-kilau={kilauPick ?? 'auto'}
-		aria-pressed={choosing && !kilauOff}
-		disabled={kilauOff}
-		onclick={() => {
-			press();
-			context.stateGameDerived.kilau();
-		}}
-	>
-		<span>{t('LUCKY')}</span>
-		<span class="state">{kilauPick ?? t('AUTO')}</span>
-	</button>
 </div>
 
 <style lang="scss">
 	.actions {
 		display: grid;
-		/* in the panel: QUICK PICK keeps its whole word and padding, the other two share the rest */
-		grid-template-columns: max-content minmax(0, 1fr) minmax(0, 1fr);
+		grid-template-columns: 1fr 1fr;
 		gap: 0.5em;
 		height: 4.4em;
-
-		/* beside the amount: each as wide as its word, the amount takes the rest */
-		&.tall {
-			grid-template-columns: repeat(3, auto);
-		}
 	}
 
 	button {
@@ -126,25 +97,5 @@
 		&.chosen.chain {
 			background-color: var(--keno-armed);
 		}
-	}
-
-	/* LUCKY and its state under it; the win colour, the only colour a lucky number has, once a number is
-	   named, and as a frame (like a lucky number tile's) while one is being chosen */
-	.kilau .state {
-		color: var(--keno-muted);
-		font-size: 0.8em;
-		font-variant-numeric: tabular-nums;
-	}
-
-	.kilau.set .state {
-		color: var(--keno-win);
-	}
-
-	.kilau.choosing {
-		box-shadow: inset 0 0 0 0.14em var(--keno-win);
-	}
-
-	.kilau:disabled .state {
-		color: inherit;
 	}
 </style>

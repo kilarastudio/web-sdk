@@ -5,7 +5,7 @@ import type { Bet } from './typesBookEvent';
 import { playBet } from './utils';
 import { stateGame } from './stateGame.svelte';
 
-// A keno round is one draw: no lucky rounds, nothing to rebuild on resume.
+// A keno round is one draw: no bonus rounds, nothing to rebuild on resume.
 const primaryMachines = createPrimaryMachines<Bet>({
 	onResumeGameActive: (betToResume) => {
 		// the player's numbers are gone after a reload: the resumed round shows the book's board
@@ -17,8 +17,6 @@ const primaryMachines = createPrimaryMachines<Bet>({
 		stateBet.winBookEventAmount = 0;
 		stateGame.round = null;
 		stateGame.notice = '';
-		// a round starts: a choice of the own lucky number left open ends with nothing chosen
-		stateGame.choosingKilau = false;
 		// cleared before the round is fetched, so a stop pressed while it is fetched still counts
 		stateGame.skip = false;
 	},

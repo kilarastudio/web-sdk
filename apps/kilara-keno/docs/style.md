@@ -4,7 +4,7 @@ This game's own look and feel. What it shares with every Kilara game is in
 `docs/kilara/style-kilara.md`; how it is built is in `docs/kilara/game-workflow.md`.
 
 Status 2026-11-27: math version 3 (Low plays 1 to 10 numbers, High 3 to 10; lucky rounds: in Low,
-High and Chain 1 round in 5 marks 3 lucky numbers; the player may name their own lucky number)
+High and Chain 1 round in 5 marks 3 lucky numbers)
 is in the grey box. Earlier, 2026-11-26: math version 2 (20 modes: Low and High with 2 to 10 numbers, Chain 10× and
 Chain Max 100× with 10 numbers, and lucky numbers in every mode) is built and the grey box follows
 it; the user asked to "implement first", final approval is open. Before that, 2026-11-25: the math is finished (`math-sdk/games/kilara_keno`) and the game exists as a
@@ -18,7 +18,7 @@ is a decision about the look; theme, art style, palette and sound are all still 
 - The game sits inside the burst HUD (`UiBurst` in `packages/components-ui-html`), not under the
   slot HUD: no dock, no round button, no feature badge. The HUD gives the game three places: the
   game itself (streak meter, draw tray, board, status line, win strip), the choices (numbers and
-  level) and the actions beside the amount (QUICK PICK, CLEAR, LUCKY, in that order).
+  level) and the actions beside the amount (QUICK PICK, CLEAR, in that order).
 - The board is 8 × 5 on every screen, as in the keno games players already know.
 - The top bar's title is the game's name (no Kilara logo in the burst HUD), the clock under it.
 - The frame is the one players know from Stake's Keno (see Familiar first in the studio style):
@@ -34,15 +34,10 @@ is a decision about the look; theme, art style, palette and sound are all still 
   1× level. High plays 3 to 10: choosing HIGH with 1 or 2 numbers sets 3 (the numbers picked
   stay), choosing 1 or 2 with High on switches to Low; both say "HIGH PLAYS 3 TO 10 NUMBERS." on
   the status line. No path asks the RGS for a mode the math does not publish.
-- **LUCKY** (third action): its second line says AUTO (the game places the lucky number) or the
-  number the player named. On AUTO a press starts choosing: the status line asks for a number
-  not picked, the next tap on one names it (a tap on a pick only repeats the request), a second
-  press stops with nothing changed; the button carries a gold frame while choosing. With a number
-  named, a press goes back to AUTO. Between rounds the named number carries the lucky number's frame;
-  tapping it makes it one of the player's numbers (LUCKY back on AUTO). QUICK PICK never takes it,
-  CLEAR keeps it. Off during a round, in a replay and in a resumed round. It changes no chance and
-  no win: one of the book's lucky numbers (kilau[sum of the drawn numbers mod their count]) is
-  shown on the named number, the rest of the board relabelled in order around it.
+- The lucky numbers are always placed by the game. A control that let the player place their own
+  (built 2026-11-27 as a third action) was removed the same day: a "lucky number" the player may
+  not have among their own numbers reads as odd, no keno players know does it, and it changed no
+  chance.
 - The HUD sizes everything in one unit, the largest at which the screen fits without scrolling
   (checked at 412×760, 360×560, 768×1024, 1200×675, 844×390 and the 400×225 mini player).
 - Screenshots: `output/kilara-keno/burst-hud/`.
@@ -62,7 +57,7 @@ that was not picked sinks dark); gold stays for wins.
   picked: a square gold frame, number in gold. Drawn, it is a gold ball (board and draw tray) and
   the meter goes up one level. No twinkle, no glint.
 - **lucky round** (Low, High, Chain; 1 round in 5): its 3 lucky numbers are marked one after
-  another, 120 ms apart (the player's own first), and the first ball comes 900 ms after the first
+  another, 120 ms apart, and the first ball comes 900 ms after the first
   mark instead of 450 ms (turbo and stop shorten it like every wait). The meter's label STREAK
   gives its place to LUCKY ROUND in gold, on two lines in the same cell, so nothing moves. Chain
   Max marks 3 in every round and shows no label.

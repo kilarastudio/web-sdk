@@ -102,8 +102,8 @@
 		<div class="keno-vars"><KenoChoices {disabled} stacked={!tall} /></div>
 	{/snippet}
 
-	{#snippet actions({ tall, disabled })}
-		<div class="keno-vars"><KenoActions {disabled} {tall} /></div>
+	{#snippet actions({ disabled })}
+		<div class="keno-vars"><KenoActions {disabled} /></div>
 	{/snippet}
 </UiBurst>
 

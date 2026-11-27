@@ -44,48 +44,23 @@ export const ladderMultiplier = (level: number) =>
 
 type Board = { selected: number[]; kilau: number[]; numbers: number[] };
 
-// The book's lucky number that stands for the player's own: chosen from the book alone (the sum
-// of its drawn numbers), so the frontend draws nothing at random and a book always shows the same.
-export const mainKilau = (book: { kilau: number[]; numbers: number[] }) => {
-	const bookKilau = _.sortBy(book.kilau);
-	return bookKilau[_.sum(book.numbers) % bookKilau.length];
-};
-
 // Live play: the player's numbers stand in for the book's. The i-th smallest of the book's
 // "selected" becomes the player's i-th smallest pick, and the i-th smallest of the book's other
-// numbers the i-th smallest number the player did not pick. With the player's own lucky number,
-// one book lucky number (mainKilau) is set on it first and the rest of the other numbers fill the
-// rest of the board in order. Either way a relabelling of the board: the draw order, hits, lucky
+// numbers the i-th smallest number the player did not pick. A relabelling of the board: the
+// lucky numbers are among the other numbers and move with them. The draw order, hits, lucky
 // balls and win are the book's.
-export const relabel = (book: Board, picked: number[], kilauPick: number | null = null): Board => {
+export const relabel = (book: Board, picked: number[]): Board => {
 	const bookSelected = _.sortBy(book.selected);
 	const playerSelected = _.sortBy(picked);
 	if (bookSelected.length !== playerSelected.length) {
 		throw new Error(`relabel: the book picks ${bookSelected.length}, the player ${picked.length}`);
 	}
-	// a lucky number on one of the player's picks cannot stand: the game places it
-	const own = kilauPick !== null && !playerSelected.includes(kilauPick) ? kilauPick : null;
-	const main = own === null ? null : mainKilau(book);
-	const bookOther = NUMBERS.filter((n) => !bookSelected.includes(n) && n !== main);
-	const playerOther = NUMBERS.filter((n) => !playerSelected.includes(n) && n !== own);
+	const bookOther = NUMBERS.filter((n) => !bookSelected.includes(n));
+	const playerOther = NUMBERS.filter((n) => !playerSelected.includes(n));
 	const map = new Map<number, number>([
 		...bookSelected.map((n, i) => [n, playerSelected[i]] as const),
-		...(main === null ? [] : [[main, own!] as const]),
 		...bookOther.map((n, i) => [n, playerOther[i]] as const),
 	]);
-
-	// checked on every round, not only in development: 40 entries cost nothing, and a board that
-	// is not a relabelling must never be shown; the book's own board is then the honest fallback
-	const images = new Set(map.values());
-	if (map.size !== NUMBERS.length || NUMBERS.some((n) => !map.has(n) || !images.has(n))) {
-		console.error(
-			'relabel: the board map is not a bijection of the board',
-			book,
-			picked,
-			kilauPick,
-		);
-		return { selected: book.selected, kilau: book.kilau, numbers: book.numbers };
-	}
 
 	return {
 		selected: playerSelected,
@@ -132,10 +107,9 @@ export const topLevel = (picks: number, kilau: number) =>
 	Math.min(picks + kilau, config.ladder.length);
 
 // Fills the slots left with numbers the player has not picked; with no slot left, a fresh set.
-// Never the player's own lucky number: it is not one of their picks.
 // This chooses numbers to play, not an outcome, so it may be random.
-export const quickPick = (picked: number[], picks: number, kilauPick: number | null = null) => {
+export const quickPick = (picked: number[], picks: number) => {
 	const keep = picked.length >= picks ? [] : picked;
-	const free = _.shuffle(NUMBERS.filter((n) => !keep.includes(n) && n !== kilauPick));
+	const free = _.shuffle(NUMBERS.filter((n) => !keep.includes(n)));
 	return [...keep, ...free.slice(0, picks - keep.length)];
 };

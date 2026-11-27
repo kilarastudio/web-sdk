@@ -42,10 +42,6 @@ const DEFAULT = { level: 'low' as Level, picks: 5 as Picks };
 export const stateGame = $state({
 	// the player's numbers, in the order they were picked
 	picked: [] as number[],
-	// the player's own lucky number, a number they did not pick; null: the game places it (AUTO)
-	kilauPick: null as number | null,
-	// the next tap on the board names the player's own lucky number
-	choosingKilau: false,
 	round: null as Round | null,
 	// the round about to play was resumed after a reload: it shows the book's own board
 	resuming: false,
@@ -109,9 +105,6 @@ const editSelection = (picked: number[]) => {
 const t = (text: string, values?: Record<string, string | number>) =>
 	stateI18nDerived.translate(text, values);
 
-const notifyChooseKilau = () =>
-	notify(t('TAP A NUMBER YOU DID NOT PICK TO MAKE IT YOUR LUCKY NUMBER.'));
-
 // a level's range of numbers, from the math, e.g. "HIGH PLAYS 3 TO 10 NUMBERS."
 const notifyRange = (next: Level) => {
 	const sizes = levelPicks(next);
@@ -125,26 +118,6 @@ const notifyRange = (next: Level) => {
 };
 
 const toggle = (n: number) => {
-	if (stateGame.choosingKilau) {
-		if (stateGame.picked.includes(n)) {
-			notifyChooseKilau();
-			return;
-		}
-		stateGame.choosingKilau = false;
-		stateGame.kilauPick = n;
-		stateGame.round = null;
-		notify(t('{number} IS YOUR LUCKY NUMBER.', { number: n }));
-		return;
-	}
-	// the own lucky number tapped: it becomes one of the player's numbers, if there is room
-	if (n === stateGame.kilauPick && stateGame.picked.length < picks()) {
-		editSelection([...stateGame.picked, n]);
-		stateGame.kilauPick = null;
-		notify(
-			t('{number} IS NOW ONE OF YOUR NUMBERS. YOUR LUCKY NUMBER IS BACK ON AUTO.', { number: n }),
-		);
-		return;
-	}
 	if (stateGame.picked.includes(n)) {
 		editSelection(stateGame.picked.filter((p) => p !== n));
 	} else if (stateGame.picked.length < picks()) {
@@ -210,23 +183,8 @@ const settleChainConfirm = () => {
 	if (stateModal.modal?.name === 'buyBonus') stateModal.modal = null;
 };
 
-const quick = () => editSelection(quickPick(stateGame.picked, picks(), stateGame.kilauPick));
-// clear frees the picks only: the own lucky number is a choice of its own
+const quick = () => editSelection(quickPick(stateGame.picked, picks()));
 const clear = () => editSelection([]);
-
-// LUCKY: on AUTO, a press starts choosing (the next tap on a number not picked names it) and a
-// second press stops with nothing changed; with a number named, a press goes back to AUTO.
-const kilau = () => {
-	stateGame.round = null;
-	if (stateGame.kilauPick !== null) {
-		stateGame.kilauPick = null;
-		stateGame.notice = '';
-		return;
-	}
-	stateGame.choosingKilau = !stateGame.choosingKilau;
-	if (stateGame.choosingKilau) notifyChooseKilau();
-	else stateGame.notice = '';
-};
 
 export const stateGameDerived = {
 	mode,
@@ -241,5 +199,4 @@ export const stateGameDerived = {
 	setLevel,
 	quick,
 	clear,
-	kilau,
 };

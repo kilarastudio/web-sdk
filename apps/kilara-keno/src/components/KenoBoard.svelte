@@ -21,12 +21,7 @@
 	// once drawn, a ball in that colour.
 	const selected = $derived(context.stateGame.round?.selected ?? context.stateGame.picked);
 	const drawn = $derived(context.stateGame.round?.drawn ?? []);
-	// between rounds the player's own lucky number, if they named one, carries the frame
-	const kilau = $derived(
-		context.stateGame.round?.kilau ??
-			(context.stateGame.kilauPick === null ? [] : [context.stateGame.kilauPick]),
-	);
-	const choosing = $derived(props.editable && context.stateGame.choosingKilau);
+	const kilau = $derived(context.stateGame.round?.kilau ?? []);
 	const last = $derived(drawn[drawn.length - 1]);
 
 	const tileState = (n: number) => {
@@ -51,7 +46,6 @@
 	class="board"
 	style:--columns={props.columns}
 	class:editable={props.editable}
-	class:choosing
 	data-test="board"
 >
 	{#each NUMBERS as n (n)}
@@ -122,18 +116,6 @@
 
 		&:active .number {
 			transform: translateY(1px);
-		}
-	}
-
-	/* choosing the own lucky number: a number that can take it shows the lucky number's frame under the
-	   pointer */
-	.choosing .tile.untouched {
-		@media (hover: hover) {
-			&:hover {
-				background-color: var(--keno-tile);
-				box-shadow: inset 0 0 0 0.12em var(--keno-win);
-				color: var(--keno-win);
-			}
 		}
 	}
 

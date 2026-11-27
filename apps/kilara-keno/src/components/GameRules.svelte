@@ -104,12 +104,6 @@
 				t(
 					'A lucky number that is drawn is a lucky ball. Each lucky ball raises the meter by one level for the round and does not end a run of hits.',
 				),
-				t(
-					"Your own lucky number: press LUCKY, then a number you did not choose. One of the round's lucky numbers then stands on that number; in a round that marks more, the others are placed by the game. Press LUCKY again to go back to AUTO, where the game places it. Tapping your lucky number between rounds makes it one of your numbers.",
-				),
-				t(
-					'Choosing your lucky number changes no chance and no win: like your own numbers, it only decides where the numbers stand on the board.',
-				),
 			],
 		},
 		{
@@ -164,7 +158,7 @@
 	const general = [
 		t('The highest win is {max} the base {amount}.', { max: times(config.wincap), amount }),
 		t(
-			"The draw, the lucky numbers and the lucky rounds are decided by the game server. Your numbers and your own lucky number stand in for the ones the server played: hits, lucky balls, their order and the win are the server's.",
+			"The draw, the lucky numbers and the lucky rounds are decided by the game server. Your numbers stand in for the ones the server played: hits, lucky balls, their order and the win are the server's.",
 		),
 		t(
 			'A replay, or a round resumed after a reload, shows the round with the numbers the server played, which can differ from the numbers chosen. Hits, their order, the multiplier and the win are the same.',
