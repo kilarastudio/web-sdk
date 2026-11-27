@@ -122,7 +122,8 @@
 		display: flex;
 		flex-direction: column;
 		width: 100%;
-		max-height: min(100%, 760px);
+		/* a game may give its sheets more room where the screen has it (--ui-sheet-max-height, --ui-sheet-large) */
+		max-height: min(100%, var(--ui-sheet-max-height, 760px));
 		/* the same see-through Malam as the HUD's dock, the game blurred behind it */
 		background-color: var(--ui-surface);
 		backdrop-filter: blur(14px);
@@ -140,7 +141,7 @@
 		}
 
 		&.large {
-			max-width: 880px;
+			max-width: var(--ui-sheet-large, 880px);
 		}
 	}
 

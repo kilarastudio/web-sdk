@@ -306,8 +306,9 @@
 		image-rendering: pixelated;
 	}
 
+	/* a game with long mode names sets --ui-bonus-title-scale (below 1) so they keep to one line */
 	.title {
-		font-size: 1.5em;
+		font-size: calc(1.5em * var(--ui-bonus-title-scale, 1));
 		font-weight: 800;
 		letter-spacing: 0.1em;
 		line-height: 1.1;
@@ -441,8 +442,9 @@
 
 		.card {
 			display: grid;
-			/* the name as wide as it is, the price in the rest of its row, shrunk to it */
-			grid-template-columns: auto max-content minmax(0, 1fr) 8em;
+			/* the name as wide as it is, the price in the rest of its row, shrunk to it; a name too
+			   long for the card beside its picture wraps instead of pushing the card off the screen */
+			grid-template-columns: auto minmax(0, max-content) minmax(0, 1fr) 8em;
 			grid-template-areas:
 				'img title cost cost'
 				'img description description action'
@@ -461,7 +463,9 @@
 
 		.title {
 			grid-area: title;
-			font-size: 1.3em;
+			font-size: calc(1.3em * var(--ui-bonus-title-scale, 1));
+			/* scaled down to keep to one line: then it does, and the price shrinks beside it */
+			white-space: var(--ui-bonus-title-wrap, normal);
 		}
 
 		.description {

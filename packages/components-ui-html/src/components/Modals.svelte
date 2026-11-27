@@ -17,6 +17,7 @@
 		// what the game's paytable and rules modals show, above the version
 		payTable?: Snippet;
 		gameRules?: Snippet;
+		gameRulesSize?: 'medium' | 'large';
 	};
 
 	const props: Props = $props();
@@ -32,7 +33,7 @@
 	{@render props.payTable?.()}
 	{@render props.version()}
 </ModalPayTable>
-<ModalGameRules>
+<ModalGameRules size={props.gameRulesSize}>
 	{@render props.gameRules?.()}
 	{@render props.version()}
 </ModalGameRules>

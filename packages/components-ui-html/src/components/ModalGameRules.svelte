@@ -9,6 +9,8 @@
 
 	type Props = {
 		children: Snippet;
+		// how wide the sheet may grow: a game whose rules hold tables or pictures asks for 'large'
+		size?: 'medium' | 'large';
 	};
 
 	const props: Props = $props();
@@ -17,7 +19,7 @@
 {#if stateModal.modal?.name === 'gameRules'}
 	<UiSheet
 		title={i18nDerived.info()}
-		size="medium"
+		size={props.size ?? 'medium'}
 		zIndex={zIndex.modal}
 		onclose={() => (stateModal.modal = null)}
 	>

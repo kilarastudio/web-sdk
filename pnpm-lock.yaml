@@ -455,7 +455,7 @@ importers:
         specifier: workspace:*
         version: link:../../packages/eslint-config-custom
 
-  apps/kilara-keno:
+  apps/keno-chain:
     dependencies:
       '@lingui/core':
         specifier: 6.10.0
